@@ -34,8 +34,8 @@ const PreLaunchForm = () => {
     setIsSubmitted(true);
     
     toast({
-      title: "Inscrição confirmada!",
-      description: "Você será notificado sobre o lançamento.",
+      title: "Reserva confirmada!",
+      description: "Sua cópia está reservada. Entraremos em contato em breve!",
     });
   };
 
@@ -59,7 +59,7 @@ const PreLaunchForm = () => {
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            Pré-lançamento exclusivo
+            Reserve sua cópia
           </motion.p>
           <motion.h2
             className="font-display text-3xl md:text-5xl text-foreground mb-6"
@@ -67,8 +67,8 @@ const PreLaunchForm = () => {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
-            Seja o primeiro a{" "}
-            <span className="text-gradient-gold">descobrir</span>
+            Garanta seu{" "}
+            <span className="text-gradient-gold">exemplar</span>
           </motion.h2>
           <motion.p
             className="text-lg text-muted-foreground max-w-lg mx-auto"
@@ -76,8 +76,8 @@ const PreLaunchForm = () => {
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.5, duration: 0.8 }}
           >
-            Reserve sua cópia e receba acesso antecipado a conteúdos exclusivos 
-            sobre os padrões ocultos da história.
+            Reserve agora e seja um dos primeiros a desvendar os segredos que moldaram 
+            reis, gênios e visionários ao longo da história.
           </motion.p>
         </div>
 
@@ -127,15 +127,15 @@ const PreLaunchForm = () => {
                   Enviando...
                 </>
               ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  Reservar Minha Cópia
-                </>
+              <>
+                <Send className="w-5 h-5" />
+                Reservar Meu Livro
+              </>
               )}
             </motion.button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Ao se inscrever, você concorda em receber atualizações sobre o lançamento.
+              Ao reservar, você garante prioridade na aquisição do livro assim que for lançado.
             </p>
           </motion.form>
         ) : (
@@ -154,10 +154,10 @@ const PreLaunchForm = () => {
               <CheckCircle className="w-10 h-10 text-gold" />
             </motion.div>
             <h3 className="font-display text-2xl text-foreground mb-4">
-              Inscrição Confirmada!
+              Reserva Confirmada!
             </h3>
             <p className="text-muted-foreground">
-              Você receberá em primeira mão todas as novidades sobre o lançamento.
+              Seu exemplar está reservado. Você receberá um email com os próximos passos para aquisição.
             </p>
           </motion.div>
         )}

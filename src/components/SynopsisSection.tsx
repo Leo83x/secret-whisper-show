@@ -4,14 +4,14 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 const characters = [
-  { name: "Salomão", image: "https://images.unsplash.com/photo-1577083553180-ecc38ff78dd6?w=200&h=200&fit=crop&crop=face", era: "970 a.C." },
-  { name: "Alexandre", image: "https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=200&h=200&fit=crop&crop=face", era: "356 a.C." },
-  { name: "Cleópatra", image: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=200&h=200&fit=crop&crop=face", era: "69 a.C." },
-  { name: "Da Vinci", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face", era: "1452" },
-  { name: "Napoleão", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face", era: "1769" },
-  { name: "Mandela", image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face", era: "1918" },
-  { name: "Jobs", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face", era: "1955" },
-  { name: "Musk", image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=face", era: "1971" },
+  { name: "Salomão", image: "https://upload.wikimedia.org/wikipedia/commons/5/51/King_Solomon_in_Old_Age_%281Kings_4%29.jpg", era: "970 a.C." },
+  { name: "Alexandre", image: "https://upload.wikimedia.org/wikipedia/commons/e/e1/Alexander_the_Great_mosaic_%28cropped%29.jpg", era: "356 a.C." },
+  { name: "Cleópatra", image: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Cleopatra_-_John_William_Waterhouse.jpg", era: "69 a.C." },
+  { name: "Da Vinci", image: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Leonardo_self.jpg", era: "1452" },
+  { name: "Napoleão", image: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg", era: "1769" },
+  { name: "Mandela", image: "https://upload.wikimedia.org/wikipedia/commons/0/02/Nelson_Mandela_1994.jpg", era: "1918" },
+  { name: "Jobs", image: "https://upload.wikimedia.org/wikipedia/commons/d/dc/Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg", era: "1955" },
+  { name: "Musk", image: "https://upload.wikimedia.org/wikipedia/commons/3/34/Elon_Musk_Royal_Society_%28crop2%29.jpg", era: "1971" },
 ];
 
 const CharacterCard = ({ name, image, era, index }: { name: string; image: string; era: string; index: number }) => {
