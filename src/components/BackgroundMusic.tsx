@@ -7,8 +7,8 @@ const BackgroundMusic = () => {
   const [showPrompt, setShowPrompt] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Ambient music URL - royalty-free cinematic music
-  const musicUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3";
+  // Epic cinematic orchestral music - royalty-free
+  const musicUrl = "https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3";
 
   useEffect(() => {
     if (audioRef.current) {
@@ -63,10 +63,10 @@ const BackgroundMusic = () => {
               </motion.div>
               
               <h2 className="font-display text-2xl md:text-3xl text-foreground mb-4">
-                Experiência Imersiva
+                Experiência Épica
               </h2>
               <p className="text-muted-foreground mb-8">
-                Para uma experiência cinematográfica completa, recomendamos ativar o som ambiente.
+                Para uma jornada cinematográfica através da história, recomendamos ativar a trilha sonora épica.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
