@@ -8,7 +8,7 @@ const BackgroundMusic = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Epic cinematic orchestral music - royalty-free
-  const musicUrl = "https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3";
+  const musicUrl = "https://cdn.pixabay.com/audio/2023/08/13/audio_e48d7e6e5e.mp3";
 
   useEffect(() => {
     if (audioRef.current) {

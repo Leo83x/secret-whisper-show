@@ -80,30 +80,6 @@ const HeroSection = () => {
           transition={{ duration: 1.5, delay: 3.5, ease: "easeOut" }}
         />
 
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-16 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 4 }}
-        >
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-            className="flex flex-col items-center gap-3"
-          >
-            <span className="text-xs tracking-[0.3em] uppercase text-muted-foreground/60">
-              Descubra
-            </span>
-            <div className="w-6 h-10 border-2 border-gold/40 rounded-full flex justify-center pt-2">
-              <motion.div
-                className="w-1.5 h-3 bg-gold/60 rounded-full"
-                animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              />
-            </div>
-          </motion.div>
-        </motion.div>
       </div>
     </section>
   );
