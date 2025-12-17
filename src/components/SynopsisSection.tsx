@@ -100,11 +100,11 @@ const SynopsisSection = () => {
             </KineticText>
           </p>
           <motion.p
-            className="text-4xl md:text-6xl font-display text-gradient-gold glow-gold"
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
-            whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            className="text-4xl md:text-6xl font-display text-gold"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1.2, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             quem observava
           </motion.p>
@@ -142,12 +142,12 @@ const SynopsisSection = () => {
 
           <motion.p
             className="text-4xl md:text-6xl font-display text-foreground"
-            initial={{ opacity: 0, scale: 0.9, filter: "blur(15px)" }}
-            whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.3 }}
           >
-            Buscavam <span className="text-gradient-gold glow-gold">padrões</span>.
+            Buscavam <span className="text-gold">padrões</span>.
           </motion.p>
 
           <div className="space-y-6 pt-10">
@@ -216,11 +216,11 @@ const SynopsisSection = () => {
           </motion.p>
 
           <motion.p
-            className="text-5xl md:text-7xl font-display text-gradient-gold glow-gold"
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
-            whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            className="text-5xl md:text-7xl font-display text-gold"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             Sempre foi sobre nós.
           </motion.p>
