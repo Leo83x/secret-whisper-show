@@ -38,25 +38,20 @@ const IntroBridgeSection = () => {
 
             {/* Scroll indicator - appears after text sequence */}
             <motion.div
-                className="absolute bottom-10 flex flex-col items-center gap-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 15, duration: 2 }}
+                className="absolute bottom-32 md:bottom-24 flex flex-col items-center gap-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 15, duration: 1.5 }}
             >
-                <span className="text-muted-foreground/60 text-sm tracking-[0.2em] font-light uppercase">
+                <span className="text-gold/70 text-base md:text-lg tracking-[0.3em] font-display uppercase">
                     Role para descobrir
                 </span>
                 <motion.div
-                    className="w-0.5 h-16 bg-gradient-to-b from-transparent via-gold/50 to-transparent"
-                    animate={{ height: ["0%", "100%", "0%"], top: ["0%", "50%", "100%"] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <motion.div
-                    animate={{ y: [0, 10, 0] }}
+                    animate={{ y: [0, 12, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                 >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold/50">
-                        <path d="M7 13L12 18L17 13M7 6L12 11L17 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gold">
+                        <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </motion.div>
             </motion.div>

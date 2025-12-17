@@ -24,19 +24,19 @@ const KineticText = ({
 
   const variants = {
     fade: {
-      hidden: { opacity: 0, y: 20 },
+      hidden: { opacity: 0, y: 15 },
       visible: { opacity: 1, y: 0 },
     },
     blur: {
-      hidden: { opacity: 0, filter: "blur(10px)" },
-      visible: { opacity: 1, filter: "blur(0px)" },
+      hidden: { opacity: 0 },
+      visible: { opacity: 1 },
     },
     scale: {
-      hidden: { opacity: 0, scale: 0.8 },
-      visible: { opacity: 1, scale: 1 },
+      hidden: { opacity: 0 },
+      visible: { opacity: 1 },
     },
     slide: {
-      hidden: { opacity: 0, x: -30 },
+      hidden: { opacity: 0, x: -20 },
       visible: { opacity: 1, x: 0 },
     },
   };
@@ -66,15 +66,20 @@ const KineticText = ({
   return (
     <motion.span
       ref={ref}
-      className={`inline-block ${className}`}
+      className={`inline ${className}`}
       variants={container}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
+      style={{ display: "inline" }}
     >
       {items.map((word, index) => (
-        <motion.span key={index} variants={item} className="inline-block">
+        <motion.span 
+          key={index} 
+          variants={item} 
+          style={{ display: "inline" }}
+        >
           {word}
-          {splitBy === "words" && index < items.length - 1 && "\u00A0"}
+          {splitBy === "words" && index < items.length - 1 && " "}
         </motion.span>
       ))}
     </motion.span>
