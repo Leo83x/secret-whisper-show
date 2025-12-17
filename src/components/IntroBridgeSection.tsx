@@ -8,7 +8,7 @@ const IntroBridgeSection = () => {
     ];
 
     return (
-        <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
+        <section className="relative min-h-screen flex flex-col items-center justify-center overflow-visible touch-pan-y">
             {/* Background glow */}
             <div className="absolute inset-0 bg-background z-0" />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gold/5 rounded-full blur-3xl" />

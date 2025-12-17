@@ -167,7 +167,7 @@ const SynopsisSection = () => {
         </AnimatedSection>
 
         {/* The patterns */}
-        <AnimatedSection className="bg-secondary/30 rounded-3xl p-10 md:p-16 border border-gold/10 relative overflow-hidden">
+        <AnimatedSection className="bg-secondary/30 rounded-3xl p-10 md:p-16 border border-gold/10 relative overflow-visible">
           {/* Decorative glow */}
           <div className="absolute -top-20 -right-20 w-40 h-40 bg-gold/10 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-cyan/10 rounded-full blur-3xl" />
