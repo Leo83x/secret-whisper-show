@@ -9,7 +9,7 @@ import IntroBridgeSection from "@/components/IntroBridgeSection";
 
 const Index = () => {
   return (
-    <main className="relative min-h-screen bg-background overflow-x-hidden overflow-y-auto">
+    <main className="relative min-h-screen bg-background overflow-x-hidden">
       <ParticleBackground />
       <BackgroundMusic />
 
