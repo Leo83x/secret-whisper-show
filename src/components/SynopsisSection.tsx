@@ -172,11 +172,12 @@ const SynopsisSection = () => {
           <div className="absolute -top-20 -right-20 w-40 h-40 bg-gold/10 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-cyan/10 rounded-full blur-3xl" />
 
-          <p className="relative text-lg md:text-2xl text-foreground/80 leading-relaxed text-center italic">
-            <KineticText variant="fade">
-              A mesma ambição que moveu Alexandre. O mesmo conflito moral que atormentou Salomão. O mesmo perfeccionismo que consumiu Jobs. A mesma ruptura que define Musk.
-            </KineticText>
-          </p>
+          <div className="relative text-lg md:text-2xl text-foreground/80 leading-relaxed text-center italic space-y-4">
+            <p><KineticText variant="fade">A mesma ambição que moveu Alexandre.</KineticText></p>
+            <p><KineticText variant="fade" delay={0.2}>O mesmo conflito moral que atormentou Salomão.</KineticText></p>
+            <p><KineticText variant="fade" delay={0.4}>O mesmo perfeccionismo que consumiu Jobs.</KineticText></p>
+            <p><KineticText variant="fade" delay={0.6}>A mesma ruptura que define Musk.</KineticText></p>
+          </div>
         </AnimatedSection>
 
         {/* The threat */}
