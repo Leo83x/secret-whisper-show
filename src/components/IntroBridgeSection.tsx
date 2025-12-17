@@ -21,13 +21,28 @@ const IntroBridgeSection = () => {
     // 90-100%: Fade out all
 
     // Helper to create fade in/out transform
+    // Optimized ranges to cover the full scroll height without empty spaces
     const useTextOpacity = (index: number) => {
-        const start = index * 0.25;
-        const end = start + 0.25;
-        // Fade in rapidly, stay, fade out
+        // Divide scroll into 3 segments with slight overlap
+        const segmentDuration = 1 / texts.length; // 0.33
+        const start = index * segmentDuration;
+        const end = start + segmentDuration;
+
+        // Overlap factor to ensure seamless transition
+        const overlap = 0.05;
+
+        // Ranges:
+        // Text 0: 0.00 -> 0.33 (Fade IN: 0-0.1, Stay: 0.1-0.28, Fade OUT: 0.28-0.38)
+        // Text 1: 0.33 -> 0.66 (Fade IN: 0.28-0.38, ...)
+
+        const fadeInStart = start;
+        const fadeInEnd = start + 0.1;
+        const fadeOutStart = end - 0.05;
+        const fadeOutEnd = end + 0.05;
+
         return useTransform(
             scrollYProgress,
-            [start, start + 0.05, end - 0.05, end],
+            [fadeInStart, fadeInEnd, fadeOutStart, fadeOutEnd],
             [0, 1, 1, 0]
         );
     };
