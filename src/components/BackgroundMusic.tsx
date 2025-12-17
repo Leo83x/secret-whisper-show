@@ -1,38 +1,44 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 
 const BackgroundMusic = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Epic cinematic orchestral music - royalty-free
-  const musicUrl = "https://cdn.pixabay.com/audio/2023/08/13/audio_e48d7e6e5e.mp3";
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = 0.3;
-      audioRef.current.loop = true;
-    }
-  }, []);
+  // "Heart of Courage" by Two Steps From Hell (Epic Cinematic)
+  // URL: https://www.youtube.com/watch?v=XYKUeZQbMF0
+  // Embed URL needs: autoplay=1&loop=1&playlist=VIDEO_ID (for looping)
+  const videoId = "XYKUeZQbMF0";
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&showinfo=0`;
 
   const toggleMusic = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-      setShowPrompt(false);
-    }
+    setIsPlaying(!isPlaying);
+    setShowPrompt(false);
   };
 
   return (
     <>
-      <audio ref={audioRef} src={musicUrl} preload="auto" />
-      
+      {/* 
+        Hidden YouTube Iframe 
+        We render it only when isPlaying is true.
+        This automatically starts playback (autoplay=1) when mounted.
+        Unmounting stops it.
+      */}
+      {isPlaying && (
+        <div className="hidden">
+          <iframe
+            width="560"
+            height="315"
+            src={embedUrl}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      )}
+
       {/* Initial prompt to enable sound */}
       <AnimatePresence>
         {showPrompt && (
@@ -50,7 +56,7 @@ const BackgroundMusic = () => {
             >
               <motion.div
                 className="w-20 h-20 mx-auto mb-6 rounded-full border-2 border-gold/50 flex items-center justify-center"
-                animate={{ 
+                animate={{
                   boxShadow: [
                     "0 0 20px rgba(201, 169, 98, 0.2)",
                     "0 0 40px rgba(201, 169, 98, 0.4)",
@@ -61,14 +67,14 @@ const BackgroundMusic = () => {
               >
                 <Volume2 className="w-10 h-10 text-gold" />
               </motion.div>
-              
+
               <h2 className="font-display text-2xl md:text-3xl text-foreground mb-4">
                 Experiência Épica
               </h2>
               <p className="text-muted-foreground mb-8">
                 Para uma jornada cinematográfica através da história, recomendamos ativar a trilha sonora épica.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <motion.button
                   onClick={toggleMusic}

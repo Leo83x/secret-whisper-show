@@ -22,7 +22,7 @@ const FooterSection = () => {
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          © 2024 · Todos os direitos reservados
+          © 2024 Sociedade Silenciosa · Todos os direitos reservados
         </motion.p>
       </div>
     </footer>
