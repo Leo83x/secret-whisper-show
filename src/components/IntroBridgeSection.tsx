@@ -43,8 +43,8 @@ const IntroBridgeSection = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 15, duration: 1.5 }}
             >
-                <span className="text-gold/70 text-base md:text-lg tracking-[0.3em] font-display uppercase">
-                    Role para descobrir
+                <span className="text-gold/70 text-base md:text-lg tracking-widest font-sans uppercase">
+                    Deslize para baixo
                 </span>
                 <motion.div
                     animate={{ y: [0, 12, 0] }}

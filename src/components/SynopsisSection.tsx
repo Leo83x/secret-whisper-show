@@ -137,7 +137,7 @@ const SynopsisSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            Eles não buscavam poder.
+            A sociedade secreta não buscava poder.
           </motion.p>
 
           <motion.p

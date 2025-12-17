@@ -39,8 +39,8 @@ const BookRevealSection = () => {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <p className="text-sm tracking-[0.2em] uppercase text-gold mb-4">
-              O primeiro ato da revelação
+            <p className="text-sm tracking-widest uppercase text-gold mb-4 font-sans">
+              Chegou a hora da verdade
             </p>
             <h2 className="font-display text-3xl md:text-5xl text-foreground mb-6 leading-tight">
               E agora, ele não pode mais permanecer em{" "}
