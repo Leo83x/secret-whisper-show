@@ -27,7 +27,7 @@ const IntroBridgeSection = () => {
                         transition={{
                             duration: 5, // Slower duration for better readability
                             times: [0, 0.2, 0.8, 1],
-                            delay: 1.5 + (i * 4), // Initial delay of 1.5s, then 4s spacing
+                            delay: 2.5 + (i * 4), // Initial delay of 2.5s, then 4s spacing
                             repeat: 0
                         }}
                     >
