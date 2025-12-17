@@ -3,7 +3,7 @@ import KineticText from "./KineticText";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-visible touch-pan-y">
       {/* Cinematic vignette overlay */}
       <div className="absolute inset-0 bg-radial-vignette pointer-events-none" />
       
