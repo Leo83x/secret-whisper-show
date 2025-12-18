@@ -16,10 +16,10 @@ import musk from "@/assets/characters/musk.png";
 const characters = [
   { name: "Salomão", image: salomao, era: "970 a.C." },
   { name: "Alexandre", image: alexandre, era: "356 a.C." },
+  { name: "Júlio César", image: julioCesar, era: "100 a.C." },
   { name: "Cleópatra", image: cleopatra, era: "69 a.C." },
   { name: "Joana d'Arc", image: joanaDarc, era: "1412" },
   { name: "Da Vinci", image: daVinci, era: "1452" },
-  { name: "Júlio César", image: julioCesar, era: "100 a.C." },
   { name: "Napoleão", image: napoleao, era: "1769" },
   { name: "Mandela", image: mandela, era: "1918" },
   { name: "Jobs", image: jobs, era: "1955" },
