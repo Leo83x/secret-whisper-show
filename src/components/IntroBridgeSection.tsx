@@ -34,25 +34,27 @@ const IntroBridgeSection = () => {
                 ))}
             </div>
 
-            {/* Scroll indicator - Only on the first screen */}
-            <motion.div
-                className="absolute bottom-10 left-0 right-0 z-20 flex flex-col items-center gap-3 pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0, duration: 1 }}
-            >
-                <span className="text-gold/80 text-sm tracking-[0.2em] font-light uppercase animate-pulse">
-                    Role para descobrir
-                </span>
+            {/* Scroll indicator - Visible on first screen only */}
+            <div className="absolute top-0 left-0 w-full h-screen pointer-events-none z-20 flex flex-col justify-end pb-10 items-center">
                 <motion.div
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="flex flex-col items-center gap-3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0, duration: 1 }}
                 >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gold/50">
-                        <path d="M7 13L12 18L17 13M7 6L12 11L17 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <span className="text-gold/80 text-sm tracking-[0.2em] font-light uppercase animate-pulse">
+                        Role para descobrir
+                    </span>
+                    <motion.div
+                        animate={{ y: [0, 10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gold/50">
+                            <path d="M7 13L12 18L17 13M7 6L12 11L17 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </motion.div>
                 </motion.div>
-            </motion.div>
+            </div>
         </section>
     );
 };
