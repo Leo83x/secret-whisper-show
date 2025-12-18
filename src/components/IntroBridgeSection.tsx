@@ -20,11 +20,11 @@ const IntroBridgeSection = () => {
                 {texts.map((text, i) => (
                     <motion.div
                         key={i}
-                        className="h-screen w-full flex items-center justify-center p-6 snap-center"
+                        className="min-h-[100dvh] w-full flex items-center justify-center p-6 snap-center"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        viewport={{ amount: 0.5, margin: "-100px" }}
+                        viewport={{ amount: 0.3, margin: "0px" }}
                         transition={{ duration: 0.8 }}
                     >
                         <p className="text-2xl md:text-5xl font-display text-transparent bg-clip-text bg-gradient-to-r from-gold/50 via-gold to-gold/50 text-center tracking-widest leading-tight">
