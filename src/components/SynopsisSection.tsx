@@ -96,7 +96,7 @@ const SynopsisSection = () => {
         <AnimatedSection className="text-center">
           <p className="text-xl md:text-3xl text-muted-foreground italic leading-relaxed mb-8">
             <KineticText variant="fade">
-              Mas o que nunca foi revelado é
+              Mas o que nunca foi revelado é que
             </KineticText>
           </p>
           <motion.p
@@ -106,7 +106,7 @@ const SynopsisSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            quem observava
+            existe um código oculto.
           </motion.p>
         </AnimatedSection>
 
@@ -115,7 +115,7 @@ const SynopsisSection = () => {
           <div className="space-y-10 text-center">
             <p className="text-lg md:text-xl text-muted-foreground">
               <KineticText variant="slide">
-                Desde os tempos de Salomão, passando por
+                Séculos separam estas mentes. Mas um segredo as une.
               </KineticText>
             </p>
 
@@ -137,7 +137,7 @@ const SynopsisSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            A sociedade secreta não buscava poder.
+            Uma <span className="text-gold font-display">Sociedade Silenciosa</span> decifrou esse código.
           </motion.p>
 
           <motion.p
@@ -147,7 +147,7 @@ const SynopsisSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.3 }}
           >
-            Buscavam <span className="text-gold">padrões</span>.
+            Eles encontraram <span className="text-gold">padrões</span>.
           </motion.p>
 
           <div className="space-y-6 pt-10">
