@@ -26,7 +26,6 @@ const BackgroundMusic = () => {
       setIsPlaying(false);
     } else {
       command("unMute");
-      command("setVolume");
       command("playVideo");
       setIsPlaying(true);
     }
