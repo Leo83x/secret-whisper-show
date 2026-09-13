@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 
 const IntroBridgeSection = () => {
     const texts = [
-        "Nas sombras da história...",
-        "Uma verdade aguarda...",
-        "O momento chegou."
+        "Por milênios, alguém observou as grandes decisões históricas.",
+        "Uma verdade permaneceu escondida entre guerras, impérios, descobertas, revoluções e quedas.",
+        "Até agora."
     ];
 
     return (
@@ -27,7 +27,7 @@ const IntroBridgeSection = () => {
                         viewport={{ amount: 0.3, margin: "0px" }}
                         transition={{ duration: 0.8 }}
                     >
-                        <p className="text-2xl md:text-5xl font-display text-transparent bg-clip-text bg-gradient-to-r from-gold/50 via-gold to-gold/50 text-center tracking-widest leading-tight">
+                        <p className="max-w-4xl text-2xl md:text-5xl font-display text-transparent bg-clip-text bg-gradient-to-r from-gold/50 via-gold to-gold/50 text-center tracking-wide leading-tight">
                             {text}
                         </p>
                     </motion.div>
@@ -35,24 +35,16 @@ const IntroBridgeSection = () => {
             </div>
 
             {/* Scroll indicator - Visible on first screen only */}
-            <div className="absolute top-0 left-0 w-full h-screen pointer-events-none z-20 flex flex-col justify-end pb-10 items-center">
+            <div className="absolute top-0 left-0 w-full h-screen pointer-events-none z-20 flex flex-col justify-end pb-24 items-center">
                 <motion.div
                     className="flex flex-col items-center gap-3"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0, duration: 1 }}
                 >
-                    <span className="text-gold/80 text-sm tracking-[0.2em] font-light uppercase animate-pulse">
+                    <span className="font-sans text-gold/80 text-sm tracking-[0.2em] font-light uppercase animate-pulse">
                         Role para descobrir
                     </span>
-                    <motion.div
-                        animate={{ y: [0, 10, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gold/50">
-                            <path d="M7 13L12 18L17 13M7 6L12 11L17 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </motion.div>
                 </motion.div>
             </div>
         </section>
