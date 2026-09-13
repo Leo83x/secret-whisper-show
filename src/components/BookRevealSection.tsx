@@ -1,10 +1,12 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import ModernReadingModal from "./ModernReadingModal";
 import bookCover from "@/assets/book-cover.png";
 
 const BookRevealSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <section ref={ref} className="relative py-32 px-6 overflow-visible touch-pan-y">
@@ -51,18 +53,33 @@ const BookRevealSection = () => {
               os mesmos padrões que moldaram reis, gênios, heróis e visionários.
             </p>
             
-            <motion.button
-              className="group relative px-8 py-4 bg-gold text-background font-display text-lg tracking-wider rounded-full overflow-hidden transition-all duration-300 hover:shadow-lg"
-              style={{ boxShadow: "0 0 30px rgba(201, 169, 98, 0.3)" }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span className="relative z-10">Quero Saber Mais</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-gold-light to-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </motion.button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
+              <motion.button
+                onClick={() => setIsModalOpen(true)}
+                className="group relative px-8 py-4 bg-gold text-background font-display text-base tracking-wider rounded-full overflow-hidden transition-all duration-300 hover:shadow-lg"
+                style={{ boxShadow: "0 0 30px rgba(201, 169, 98, 0.3)" }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  ✨ Conhecer a Leitura Moderna
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-gold-light to-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </motion.button>
+
+              <a
+                href="http://localhost:3000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-4 rounded-full border border-gold/40 text-gold font-display text-sm tracking-wider uppercase hover:bg-gold/10 transition-all text-center"
+              >
+                Ler Amostra Grátis ➔
+              </a>
+            </div>
           </motion.div>
         </div>
       </div>
+      <ModernReadingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 };
