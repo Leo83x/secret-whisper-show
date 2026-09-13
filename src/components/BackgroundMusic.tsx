@@ -1,43 +1,54 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 
 const BackgroundMusic = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // "Heart of Courage" by Two Steps From Hell (Epic Cinematic)
-  // URL: https://www.youtube.com/watch?v=XYKUeZQbMF0
-  // Embed URL needs: autoplay=1&loop=1&playlist=VIDEO_ID (for looping)
   const videoId = "XYKUeZQbMF0";
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&showinfo=0`;
+  // Loaded muted right away so the audio buffer is ready; we just unmute on demand.
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&enablejsapi=1&playsinline=1`;
+
+  const command = (func: string) => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: "command", func, args: [] }),
+      "*"
+    );
+  };
 
   const toggleMusic = () => {
-    setIsPlaying(!isPlaying);
+    if (isPlaying) {
+      command("mute");
+      command("pauseVideo");
+      setIsPlaying(false);
+    } else {
+      command("unMute");
+      command("playVideo");
+      setIsPlaying(true);
+    }
     setShowPrompt(false);
   };
 
   return (
     <>
-      {/* 
-        Hidden YouTube Iframe 
-        We render it only when isPlaying is true.
-        This automatically starts playback (autoplay=1) when mounted.
-        Unmounting stops it.
-      */}
-      {isPlaying && (
-        <div className="hidden">
-          <iframe
-            width="560"
-            height="315"
-            src={embedUrl}
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      )}
+      {/* Hidden YouTube player, preloaded muted so playback starts instantly */}
+      <div
+        aria-hidden
+        className="fixed -z-50 opacity-0 pointer-events-none w-px h-px overflow-hidden"
+      >
+        <iframe
+          ref={iframeRef}
+          width="560"
+          height="315"
+          src={embedUrl}
+          title="Trilha sonora"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        />
+      </div>
 
       {/* Initial prompt to enable sound */}
       <AnimatePresence>
