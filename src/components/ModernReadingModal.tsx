@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, BookOpen, Smartphone, ShieldCheck, Moon, ArrowRight, ExternalLink } from "lucide-react";
+import { X, Sparkles, BookOpen, Smartphone, ShieldCheck, Moon, ArrowRight, ExternalLink, Play } from "lucide-react";
 
 interface ModernReadingModalProps {
   isOpen: boolean;
@@ -8,23 +8,28 @@ interface ModernReadingModalProps {
 }
 
 export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, onClose }) => {
+  const [showVideo, setShowVideo] = useState(false);
+
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto">
         {/* Backdrop escuro com desfoque cinematográfico */}
         <motion.div
-          className="fixed inset-0 bg-black/80 backdrop-blur-md"
+          className="fixed inset-0 bg-black/85 backdrop-blur-md"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={() => {
+            setShowVideo(false);
+            onClose();
+          }}
         />
 
         {/* Modal Container */}
         <motion.div
-          className="relative w-full max-w-2xl bg-[#090e17] border border-gold/30 rounded-2xl p-6 sm:p-8 shadow-[0_0_50px_rgba(201,169,98,0.2)] z-10 overflow-hidden"
+          className="relative w-full max-w-3xl bg-[#090e17] border border-gold/30 rounded-2xl p-6 sm:p-8 shadow-[0_0_60px_rgba(201,169,98,0.25)] z-10 overflow-hidden my-auto max-h-[90vh] overflow-y-auto"
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -35,7 +40,10 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
 
           {/* Botão Fechar */}
           <button
-            onClick={onClose}
+            onClick={() => {
+              setShowVideo(false);
+              onClose();
+            }}
             className="absolute top-4 right-4 text-muted-foreground hover:text-gold transition-colors p-2 rounded-full hover:bg-white/5"
             aria-label="Fechar modal"
           >
@@ -52,8 +60,45 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
               A Revolução da <span className="text-gradient-gold">Leitura Moderna</span>
             </h3>
             <p className="text-muted-foreground text-sm sm:text-base mt-2 max-w-lg mx-auto">
-              Muito além de um simples PDF estático. Uma experiência imersiva construída para transformar sua relação com a obra.
+              Muito além de um simples texto estático. Uma experiência imersiva com trilha, reconstituições visuais e interatividade.
             </p>
+          </div>
+
+          {/* TEASER EM VÍDEO CINEMATOGRÁFICO */}
+          <div className="mb-8 rounded-xl overflow-hidden border border-gold/30 bg-black/60 shadow-2xl relative">
+            {showVideo ? (
+              <div className="relative w-full pb-[56.25%] h-0">
+                <iframe
+                  src="https://www.youtube.com/embed/NPOIMTcfisg?autoplay=1&rel=0&modestbranding=1"
+                  title="Teaser Cinematográfico - Roma 49 a.C."
+                  className="absolute inset-0 w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div 
+                onClick={() => setShowVideo(true)}
+                className="group relative cursor-pointer aspect-video w-full flex flex-col items-center justify-center p-6 text-center overflow-hidden"
+              >
+                {/* Imagem de Fundo do Vídeo */}
+                <div 
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60"
+                  style={{ backgroundImage: "radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(9,14,23,0.95) 100%)" }}
+                />
+                
+                {/* Botão Play Pulsante */}
+                <div className="relative z-10 w-16 h-16 rounded-full bg-gold/90 text-black flex items-center justify-center shadow-[0_0_30px_rgba(201,169,98,0.6)] group-hover:scale-110 group-hover:bg-gold transition-all duration-300 mb-3">
+                  <Play className="w-7 h-7 fill-black ml-1" />
+                </div>
+                <span className="relative z-10 font-display text-sm uppercase tracking-[0.2em] text-gold font-semibold">
+                  Assistir Teaser Oficial (Roma — 49 a.C.)
+                </span>
+                <span className="relative z-10 text-xs text-muted-foreground mt-1">
+                  Reconstituição visual da decisão de Júlio César no Rubicão
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Grid de Recursos Interativos */}
@@ -65,7 +110,7 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
               <div>
                 <h4 className="text-sm font-semibold text-foreground">Mobile-First por Gestos</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Deslize com o polegar (swipe) para virar páginas suavemente no smartphone.
+                  Folheie e deslize com o polegar suavemente no smartphone.
                 </p>
               </div>
             </div>
@@ -77,7 +122,7 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
               <div>
                 <h4 className="text-sm font-semibold text-foreground">Modo Zen & 4 Temas</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Dossiê Gold, Neon, Sépia ou Escuro com isolamento total de distrações.
+                  Dossiê Gold, Neon, Sépia ou Escuro com foco total na história.
                 </p>
               </div>
             </div>
@@ -89,7 +134,7 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
               <div>
                 <h4 className="text-sm font-semibold text-foreground">Tipografia Confortável</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Fonte Inter sem serifa para máxima clareza e controle de espaçamento.
+                  Fonte Inter sem serifa otimizada para leitura prolongada em telas.
                 </p>
               </div>
             </div>
@@ -99,9 +144,9 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-foreground">Dossiês Históricos</h4>
+                <h4 className="text-sm font-semibold text-foreground">Dossiês & Vídeos Históricos</h4>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Análises de César, Turing, Steve Jobs e Salomão integradas à narrativa.
+                  Reconstituições visuais integradas aos pontos de virada dos capítulos.
                 </p>
               </div>
             </div>
@@ -123,6 +168,7 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
             {/* Botão de Compra da Obra Completa */}
             <button
               onClick={() => {
+                setShowVideo(false);
                 onClose();
                 const formSection = document.getElementById("pre-launch");
                 if (formSection) {
@@ -136,7 +182,7 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
             </button>
           </div>
 
-          {/* Rodapé sutil de garantia */}
+          {/* Rodapé sutil */}
           <p className="text-center text-[11px] text-muted-foreground/70 mt-5 font-mono">
             * Degustação gratuita inclui o Prólogo e o Capítulo 1 completo.
           </p>
