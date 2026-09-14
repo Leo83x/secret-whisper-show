@@ -1,29 +1,26 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
-import ModernReadingModal from "./ModernReadingModal";
+import { useRef } from "react";
 import bookCover from "@/assets/book-cover.png";
 
 const BookRevealSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <section ref={ref} className="relative py-32 px-6 overflow-visible touch-pan-y">
       {/* Glow effect behind book */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/10 rounded-full blur-3xl opacity-50" />
-      
+
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col lg:flex-row items-center gap-16">
           {/* Book Image */}
           <motion.div
             className="relative w-full max-w-md"
-            initial={{ opacity: 0, x: -50, rotateY: -15 }}
-            animate={isInView ? { opacity: 1, x: 0, rotateY: 0 } : {}}
+            initial={{ opacity: 0, x: -50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <div className="relative">
-              {/* Shadow under book */}
               <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-4/5 h-8 bg-background/80 blur-xl rounded-full" />
               <img
                 src={bookCover}
@@ -41,45 +38,37 @@ const BookRevealSection = () => {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <p className="text-sm tracking-widest uppercase text-gold mb-4 font-sans">
-              Chegou a hora da verdade
+            <p className="font-sans text-sm tracking-widest uppercase text-gold mb-4">
+              O livro
             </p>
             <h2 className="font-display text-3xl md:text-5xl text-foreground mb-6 leading-tight">
-              E agora, ele não pode mais permanecer em{" "}
-              <span className="text-gradient-gold">silêncio.</span>
+              O Último Segredo da <span className="text-gradient-gold">Humanidade</span>
             </h2>
-            <p className="text-lg text-muted-foreground mb-10 max-w-lg">
-              Mais do que recontar a história, este livro convida você a reconhecer, em si mesmo, 
-              os mesmos padrões que moldaram reis, gênios, heróis e visionários.
+            <p className="text-lg text-muted-foreground mb-6 max-w-lg">
+              Uma investigação sobre os padrões ocultos por trás das grandes decisões da
+              História — e sobre o que acontece quando esses padrões deixam de pertencer
+              apenas ao passado.
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
-              <motion.button
-                onClick={() => setIsModalOpen(true)}
-                className="group relative px-8 py-4 bg-gold text-background font-display text-base tracking-wider rounded-full overflow-hidden transition-all duration-300 hover:shadow-lg"
-                style={{ boxShadow: "0 0 30px rgba(201, 169, 98, 0.3)" }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  ✨ Conhecer a Leitura Moderna
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-gold-light to-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.button>
-
-              <a
-                href="http://localhost:3000"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-4 rounded-full border border-gold/40 text-gold font-display text-sm tracking-wider uppercase hover:bg-gold/10 transition-all text-center"
-              >
-                Ler Amostra Grátis ➔
-              </a>
+            <div className="text-muted-foreground/90 mb-10 space-y-1">
+              <p>Uma história sobre poder.</p>
+              <p>Comportamento.</p>
+              <p>Escolhas.</p>
+              <p>E o futuro.</p>
             </div>
+
+            <motion.a
+              href="#reserva"
+              className="group relative inline-block px-8 py-4 bg-gold text-background font-display text-lg tracking-wider rounded-full overflow-hidden transition-all duration-300 hover:shadow-lg"
+              style={{ boxShadow: "0 0 30px rgba(201, 169, 98, 0.3)" }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="relative z-10">Conheça o livro</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-gold-light to-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.a>
           </motion.div>
         </div>
       </div>
-      <ModernReadingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 };
