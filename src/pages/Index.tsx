@@ -2,7 +2,6 @@ import ParticleBackground from "@/components/ParticleBackground";
 import HeroSection from "@/components/HeroSection";
 import SynopsisSection from "@/components/SynopsisSection";
 import BookRevealSection from "@/components/BookRevealSection";
-import PreLaunchForm from "@/components/PreLaunchForm";
 import FooterSection from "@/components/FooterSection";
 import BackgroundMusic from "@/components/BackgroundMusic";
 import IntroBridgeSection from "@/components/IntroBridgeSection";
@@ -18,7 +17,6 @@ const Index = () => {
         <HeroSection />
         <SynopsisSection />
         <BookRevealSection />
-        <PreLaunchForm />
         <FooterSection />
       </div>
     </main>

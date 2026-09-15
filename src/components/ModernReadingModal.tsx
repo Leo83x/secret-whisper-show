@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, BookOpen, Smartphone, ShieldCheck, Moon, ArrowRight, ExternalLink, Play } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Moon, Type, BookMarked, ArrowRight, X, Sparkles } from 'lucide-react';
 
 interface ModernReadingModalProps {
   isOpen: boolean;
@@ -8,188 +7,120 @@ interface ModernReadingModalProps {
 }
 
 export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, onClose }) => {
-  const [showVideo, setShowVideo] = useState(false);
+  const [videoStarted, setVideoStarted] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      window.dispatchEvent(new CustomEvent('ereader:modal-open'));
+      setVideoStarted(false);
+    } else {
+      window.dispatchEvent(new CustomEvent('ereader:modal-close'));
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
+  const handleStartReading = () => {
+    window.location.href = 'http://localhost:3000';
+  };
+
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto">
-        {/* Backdrop escuro com desfoque cinematográfico */}
-        <motion.div
-          className="fixed inset-0 bg-black/85 backdrop-blur-md"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => {
-            setShowVideo(false);
-            onClose();
-          }}
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div className="relative w-full max-w-lg bg-[#0b1120] border border-[#c9a962]/30 rounded-2xl p-6 shadow-2xl text-slate-100 overflow-y-auto max-h-[90vh]">
+        <div className="absolute -top-20 -right-20 w-60 h-60 bg-[#c9a962]/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Modal Container */}
-        <motion.div
-          className="relative w-full max-w-3xl bg-[#090e17] border border-gold/30 rounded-2xl p-6 sm:p-8 shadow-[0_0_60px_rgba(201,169,98,0.25)] z-10 overflow-hidden my-auto max-h-[90vh] overflow-y-auto"
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-amber-400 transition-colors rounded-full hover:bg-white/5 z-10"
         >
-          {/* Efeito de luz dourada interna */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
+          <X className="w-5 h-5" />
+        </button>
 
-          {/* Botão Fechar */}
-          <button
-            onClick={() => {
-              setShowVideo(false);
-              onClose();
-            }}
-            className="absolute top-4 right-4 text-muted-foreground hover:text-gold transition-colors p-2 rounded-full hover:bg-white/5"
-            aria-label="Fechar modal"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        {/* Badge */}
+        <div className="mb-4 text-center">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold tracking-wider text-[#c9a962] uppercase bg-[#c9a962]/10 border border-[#c9a962]/30 rounded-full">
+            <Sparkles className="w-3.5 h-3.5" /> Experiência de Leitura Digital
+          </span>
+        </div>
 
-          {/* Badge & Título */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold/30 bg-gold/10 text-gold text-xs tracking-widest uppercase font-mono mb-3">
-              <Sparkles className="w-3.5 h-3.5" />
-              Uma Nova Era na Leitura Digital
-            </div>
-            <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground leading-tight">
-              A Revolução da <span className="text-gradient-gold">Leitura Moderna</span>
-            </h3>
-            <p className="text-muted-foreground text-sm sm:text-base mt-2 max-w-lg mx-auto">
-              Muito além de um simples texto estático. Uma experiência imersiva com trilha, reconstituições visuais e interatividade.
-            </p>
-          </div>
+        {/* Título com SEGREDO em azul */}
+        <h3 className="text-2xl md:text-3xl font-bold text-center text-white mb-4 leading-snug">
+          O Último <span className="text-sky-400">SEGREDO</span> da Humanidade
+        </h3>
 
-          {/* TEASER EM VÍDEO CINEMATOGRÁFICO */}
-          <div className="mb-8 rounded-xl overflow-hidden border border-gold/30 bg-black/60 shadow-2xl relative">
-            {showVideo ? (
-              <div className="relative w-full pb-[56.25%] h-0">
-                <iframe
-                  src="https://www.youtube.com/embed/NPOIMTcfisg?autoplay=1&rel=0&modestbranding=1"
-                  title="Teaser Cinematográfico - Roma 49 a.C."
-                  className="absolute inset-0 w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <div 
-                onClick={() => setShowVideo(true)}
-                className="group relative cursor-pointer aspect-video w-full flex flex-col items-center justify-center p-6 text-center overflow-hidden"
+        {/* Vídeo com capa limpa + botão play dourado + iframe sem pointer-events para ocultar elementos ao maximo */}
+        <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 mb-4 bg-black shadow-inner">
+          {!videoStarted ? (
+            <>
+              <img
+                src="https://img.youtube.com/vi/AskB3oknGnA/maxresdefault.jpg"
+                alt="Teaser"
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={() => setVideoStarted(true)}
+                className="absolute inset-0 flex items-center justify-center group bg-black/40 hover:bg-black/20 transition-colors"
               >
-                {/* Imagem de Fundo do Vídeo */}
-                <div 
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60"
-                  style={{ backgroundImage: "radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(9,14,23,0.95) 100%)" }}
-                />
-                
-                {/* Botão Play Pulsante */}
-                <div className="relative z-10 w-16 h-16 rounded-full bg-gold/90 text-black flex items-center justify-center shadow-[0_0_30px_rgba(201,169,98,0.6)] group-hover:scale-110 group-hover:bg-gold transition-all duration-300 mb-3">
-                  <Play className="w-7 h-7 fill-black ml-1" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-xl transition-transform group-hover:scale-110"
+                     style={{ background: "linear-gradient(135deg, #c9a962, #e2c27b)", boxShadow: "0 0 30px rgba(201,169,98,0.6)" }}>
+                  <svg viewBox="0 0 24 24" className="w-7 h-7 fill-black ml-1">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
                 </div>
-                <span className="relative z-10 font-display text-sm uppercase tracking-[0.2em] text-gold font-semibold">
-                  Assistir Teaser Oficial (Roma — 49 a.C.)
-                </span>
-                <span className="relative z-10 text-xs text-muted-foreground mt-1">
-                  Reconstituição visual da decisão de Júlio César no Rubicão
-                </span>
-              </div>
-            )}
-          </div>
+              </button>
+            </>
+          ) : (
+            <iframe
+              src="https://www.youtube.com/embed/AskB3oknGnA?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&playsinline=1"
+              title="Teaser Oficial"
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen={false}
+            />
+          )}
+        </div>
 
-          {/* Grid de Recursos Interativos */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
-            <div className="flex items-start gap-3 p-3.5 rounded-xl border border-white/5 bg-white/[0.02] hover:border-gold/20 transition-all">
-              <div className="p-2 rounded-lg bg-gold/10 text-gold shrink-0">
-                <Smartphone className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-foreground">Mobile-First por Gestos</h4>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Folheie e deslize com o polegar suavemente no smartphone.
-                </p>
-              </div>
-            </div>
+        {/* Subtítulo */}
+        <p className="text-sm text-slate-400 text-center mb-5 px-2">
+          Experimente uma nova forma de ler com temas, fontes e progresso salvo.
+        </p>
 
-            <div className="flex items-start gap-3 p-3.5 rounded-xl border border-white/5 bg-white/[0.02] hover:border-gold/20 transition-all">
-              <div className="p-2 rounded-lg bg-gold/10 text-gold shrink-0">
-                <Moon className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-foreground">Modo Zen & 4 Temas</h4>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Dossiê Gold, Neon, Sépia ou Escuro com foco total na história.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3.5 rounded-xl border border-white/5 bg-white/[0.02] hover:border-gold/20 transition-all">
-              <div className="p-2 rounded-lg bg-gold/10 text-gold shrink-0">
-                <BookOpen className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-foreground">Tipografia Confortável</h4>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Fonte Inter sem serifa otimizada para leitura prolongada em telas.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3.5 rounded-xl border border-white/5 bg-white/[0.02] hover:border-gold/20 transition-all">
-              <div className="p-2 rounded-lg bg-gold/10 text-gold shrink-0">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-foreground">Dossiês & Vídeos Históricos</h4>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Reconstituições visuais integradas aos pontos de virada dos capítulos.
-                </p>
-              </div>
+        {/* Diferenciais */}
+        <div className="flex flex-col gap-2.5 mb-6">
+          <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
+            <Moon className="w-5 h-5 text-[#c9a962] shrink-0" />
+            <div>
+              <h4 className="text-xs font-semibold text-white">Modos Noturnos</h4>
+              <p className="text-[11px] text-slate-400">Temático Gold, Escuro e Claro</p>
             </div>
           </div>
 
-          {/* Ações / CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
-            {/* Botão de Degustação no E-Reader */}
-            <a
-              href="http://localhost:3000"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gold text-black font-display font-semibold text-sm tracking-wider uppercase shadow-[0_0_25px_rgba(201,169,98,0.3)] hover:shadow-[0_0_35px_rgba(201,169,98,0.5)] hover:scale-[1.02] transition-all duration-200"
-            >
-              <span>Experimentar Degustação</span>
-              <ExternalLink className="w-4 h-4" />
-            </a>
-
-            {/* Botão de Compra da Obra Completa */}
-            <button
-              onClick={() => {
-                setShowVideo(false);
-                onClose();
-                const formSection = document.getElementById("pre-launch");
-                if (formSection) {
-                  formSection.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-gold/40 hover:border-gold text-gold font-display font-semibold text-sm tracking-wider uppercase hover:bg-gold/10 transition-all duration-200"
-            >
-              <span>Comprar Obra Completa</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+          <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
+            <Type className="w-5 h-5 text-[#c9a962] shrink-0" />
+            <div>
+              <h4 className="text-xs font-semibold text-white">Fontes Customizáveis</h4>
+              <p className="text-[11px] text-slate-400">Serif, Inter e Cinzel — ajuste a seu gosto</p>
+            </div>
           </div>
 
-          {/* Rodapé sutil */}
-          <p className="text-center text-[11px] text-muted-foreground/70 mt-5 font-mono">
-            * Degustação gratuita inclui o Prólogo e o Capítulo 1 completo.
-          </p>
-        </motion.div>
+          <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
+            <BookMarked className="w-5 h-5 text-[#c9a962] shrink-0" />
+            <div>
+              <h4 className="text-xs font-semibold text-white">Continue de onde parou</h4>
+              <p className="text-[11px] text-slate-400">O progresso da leitura é salvo automaticamente</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Botão de Ação */}
+        <button
+          onClick={handleStartReading}
+          className="w-full py-3.5 px-6 bg-gradient-to-r from-[#c9a962] to-[#e2c27b] text-black font-bold rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#c9a962]/20 group text-sm uppercase"
+        >
+          <span>Iniciar Leitura Degustação</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </button>
       </div>
-    </AnimatePresence>
+    </div>
   );
 };
-
-export default ModernReadingModal;

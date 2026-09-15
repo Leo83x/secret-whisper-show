@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 
@@ -7,9 +7,7 @@ const BackgroundMusic = () => {
   const [showPrompt, setShowPrompt] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // "Heart of Courage" by Two Steps From Hell (Epic Cinematic)
   const videoId = "XYKUeZQbMF0";
-  // Loaded muted right away so the audio buffer is ready; we just unmute on demand.
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&enablejsapi=1&playsinline=1`;
 
   const command = (func: string) => {
@@ -32,9 +30,29 @@ const BackgroundMusic = () => {
     setShowPrompt(false);
   };
 
+  // Pausar música quando modal de leitura abrir, retomar quando fechar
+  useEffect(() => {
+    const handleModalOpen = () => {
+      command("mute");
+      command("pauseVideo");
+    };
+    const handleModalClose = () => {
+      if (isPlaying) {
+        command("unMute");
+        command("playVideo");
+      }
+    };
+    window.addEventListener("ereader:modal-open", handleModalOpen);
+    window.addEventListener("ereader:modal-close", handleModalClose);
+    return () => {
+      window.removeEventListener("ereader:modal-open", handleModalOpen);
+      window.removeEventListener("ereader:modal-close", handleModalClose);
+    };
+  }, [isPlaying]);
+
   return (
     <>
-      {/* Hidden YouTube player, preloaded muted so playback starts instantly */}
+      {/* Hidden YouTube player */}
       <div
         aria-hidden
         className="fixed -z-50 opacity-0 pointer-events-none w-px h-px overflow-hidden"
@@ -50,7 +68,7 @@ const BackgroundMusic = () => {
         />
       </div>
 
-      {/* Initial prompt to enable sound */}
+      {/* Initial prompt */}
       <AnimatePresence>
         {showPrompt && (
           <motion.div
