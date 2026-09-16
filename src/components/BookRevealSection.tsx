@@ -46,9 +46,8 @@ const BookRevealSection = () => {
             <h2 className="font-display text-3xl md:text-5xl text-foreground mb-6 leading-tight">
               O Último <span className="bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent">SEGREDO</span> da Humanidade
             </h2>
-            <p className="text-lg text-muted-foreground mb-6 max-w-lg">
-              Uma investigação sobre os padrões ocultos por trás das grandes decisões da
-              História — e o que acontece quando esses padrões deixam de pertencer apenas ao passado.
+            <p className="text-lg text-muted-foreground mb-6 max-w-lg font-light leading-relaxed">
+              Uma investigação eletrizante sobre os padrões ocultos por trás das grandes decisões da História — e o que acontece quando o passado bate à nossa porta.
             </p>
             <div className="text-muted-foreground/90 mb-8 space-y-1">
               <p>Uma história sobre poder.</p>
@@ -57,7 +56,7 @@ const BookRevealSection = () => {
               <p>E o futuro.</p>
             </div>
 
-            {/* Print 1: Diferenciais da experiência inseridos diretamente na seção do livro */}
+            {/* Diferenciais */}
             <div className="mb-8">
               <p className="text-sm text-slate-300 font-medium mb-3">
                 Experimente uma nova forma de ler com temas, fontes e progresso salvo:
@@ -90,7 +89,7 @@ const BookRevealSection = () => {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
             >
-              Iniciar Leitura
+              INICIAR LEITURA
             </motion.button>
           </motion.div>
         </div>
