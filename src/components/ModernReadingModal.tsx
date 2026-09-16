@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Moon, Type, BookMarked, ArrowRight, X, Sparkles } from 'lucide-react';
+import { ArrowRight, X, Sparkles } from 'lucide-react';
 
 interface ModernReadingModalProps {
   isOpen: boolean;
@@ -43,13 +43,13 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
           </span>
         </div>
 
-        {/* Título com SEGREDO em azul */}
+        {/* Título com SEGREDO em azul metálico */}
         <h3 className="text-2xl md:text-3xl font-bold text-center text-white mb-4 leading-snug">
-          O Último <span className="text-sky-400">SEGREDO</span> da Humanidade
+          O Último <span className="bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent">SEGREDO</span> da Humanidade
         </h3>
 
-        {/* Vídeo com capa limpa + botão play dourado + iframe sem pointer-events para ocultar elementos ao maximo */}
-        <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 mb-4 bg-black shadow-inner">
+        {/* Vídeo Teaser — ao clicar em play, ativa o iframe sem os controles do YouTube */}
+        <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 mb-6 bg-black shadow-inner">
           {!videoStarted ? (
             <>
               <img
@@ -70,54 +70,24 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
               </button>
             </>
           ) : (
-            <iframe
-              src="https://www.youtube.com/embed/AskB3oknGnA?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&playsinline=1"
-              title="Teaser Oficial"
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen={false}
-            />
+            <div className="w-full h-full overflow-hidden relative">
+              <iframe
+                src="https://www.youtube.com/embed/AskB3oknGnA?autoplay=1&controls=0&autohide=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&loop=1&playlist=AskB3oknGnA"
+                title="Teaser Oficial"
+                className="w-full h-[118%] -mt-[9%] pointer-events-none select-none scale-105"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen={false}
+              />
+            </div>
           )}
-        </div>
-
-        {/* Subtítulo */}
-        <p className="text-sm text-slate-400 text-center mb-5 px-2">
-          Experimente uma nova forma de ler com temas, fontes e progresso salvo.
-        </p>
-
-        {/* Diferenciais */}
-        <div className="flex flex-col gap-2.5 mb-6">
-          <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
-            <Moon className="w-5 h-5 text-[#c9a962] shrink-0" />
-            <div>
-              <h4 className="text-xs font-semibold text-white">Modos Noturnos</h4>
-              <p className="text-[11px] text-slate-400">Temático Gold, Escuro e Claro</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
-            <Type className="w-5 h-5 text-[#c9a962] shrink-0" />
-            <div>
-              <h4 className="text-xs font-semibold text-white">Fontes Customizáveis</h4>
-              <p className="text-[11px] text-slate-400">Serif, Inter e Cinzel — ajuste a seu gosto</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
-            <BookMarked className="w-5 h-5 text-[#c9a962] shrink-0" />
-            <div>
-              <h4 className="text-xs font-semibold text-white">Continue de onde parou</h4>
-              <p className="text-[11px] text-slate-400">O progresso da leitura é salvo automaticamente</p>
-            </div>
-          </div>
         </div>
 
         {/* Botão de Ação */}
         <button
           onClick={handleStartReading}
-          className="w-full py-3.5 px-6 bg-gradient-to-r from-[#c9a962] to-[#e2c27b] text-black font-bold rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#c9a962]/20 group text-sm uppercase"
+          className="w-full py-4 px-6 bg-gradient-to-r from-[#c9a962] to-[#e2c27b] text-black font-bold rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#c9a962]/20 group text-sm uppercase"
         >
-          <span>Iniciar Leitura Degustação</span>
+          <span>Iniciar Leitura</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>

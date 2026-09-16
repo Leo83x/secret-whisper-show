@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import bookCover from "/capa_ush.jpg";
 import { ModernReadingModal } from "./ModernReadingModal";
+import { Moon, Type, BookMarked } from "lucide-react";
 
 const BookRevealSection = () => {
   const ref = useRef(null);
@@ -14,6 +15,7 @@ const BookRevealSection = () => {
 
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col lg:flex-row items-center gap-16">
+          {/* Capa do Livro */}
           <motion.div
             className="relative w-full max-w-md"
             initial={{ opacity: 0, x: -50 }}
@@ -31,6 +33,7 @@ const BookRevealSection = () => {
             </div>
           </motion.div>
 
+          {/* Conteúdo CTA */}
           <motion.div
             className="flex-1 text-center lg:text-left"
             initial={{ opacity: 0, y: 40 }}
@@ -54,6 +57,32 @@ const BookRevealSection = () => {
               <p>E o futuro.</p>
             </div>
 
+            {/* Print 1: Diferenciais da experiência inseridos diretamente na seção do livro */}
+            <div className="mb-8">
+              <p className="text-sm text-slate-300 font-medium mb-3">
+                Experimente uma nova forma de ler com temas, fontes e progresso salvo:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="flex flex-col items-center lg:items-start p-3 bg-white/5 border border-white/10 rounded-xl">
+                  <Moon className="w-5 h-5 text-[#c9a962] mb-1" />
+                  <h4 className="text-xs font-semibold text-white">Modos Noturnos</h4>
+                  <p className="text-[11px] text-slate-400">Gold, Escuro e Claro</p>
+                </div>
+
+                <div className="flex flex-col items-center lg:items-start p-3 bg-white/5 border border-white/10 rounded-xl">
+                  <Type className="w-5 h-5 text-[#c9a962] mb-1" />
+                  <h4 className="text-xs font-semibold text-white">Fontes Customizáveis</h4>
+                  <p className="text-[11px] text-slate-400">Serif, Inter e Cinzel</p>
+                </div>
+
+                <div className="flex flex-col items-center lg:items-start p-3 bg-white/5 border border-white/10 rounded-xl">
+                  <BookMarked className="w-5 h-5 text-[#c9a962] mb-1" />
+                  <h4 className="text-xs font-semibold text-white">Progresso Salvo</h4>
+                  <p className="text-[11px] text-slate-400">Continua de onde parou</p>
+                </div>
+              </div>
+            </div>
+
             <motion.button
               onClick={() => setIsModalOpen(true)}
               className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#c9a962] to-[#e2c27b] text-black font-bold tracking-wider rounded-full shadow-xl transition-all duration-300 hover:scale-105 text-sm uppercase"
@@ -61,7 +90,7 @@ const BookRevealSection = () => {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
             >
-              Experimentar Leitura
+              Iniciar Leitura
             </motion.button>
           </motion.div>
         </div>
