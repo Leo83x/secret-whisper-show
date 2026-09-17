@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="O Último Segredo da Humanidade — Leonardo de Paula. E-Reader Digital Interativo.">
+    <title>O Último Segredo da Humanidade</title>
+    
+    <!-- Google Fonts: Inter (sans), Space Grotesk (cyber/future), Crimson Text (serif), Share Tech Mono (terminal) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=1200.0">
+</head>
+<body data-theme="gold" data-width="normal" data-font="sans" class="cursor-active">
+
+    <!-- Canvas de partículas de fundo -->
+    <canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+    <!-- Cursor futurista (oculto no toque) -->
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    <!-- Barra de progresso de leitura -->
+        <!-- Cortina de Transição Cibernética -->
+    <div class="curtain-hud" id="curtain-hud">// CARREGANDO REGISTRO...</div>
+    </div>
+        <!-- Botão Flutuante para Sair da Tela Cheia / Modo Zen -->
+    <button class="zen-exit-floating-btn" id="btn-exit-zen" aria-label="Sair da Tela Cheia" title="Sair da Tela Cheia (ESC)">✕</button>
+    <div class="progress-bar" role="progressbar" aria-label="Progresso de leitura">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Feixe holográfico de transição de texto -->
+    
+
+    <!-- ===== TELA DE CAPA ===== -->
+    <!-- ===== TELA DE CAPA COM EFEITO DE FOLHEAR 3D ===== -->
+    <div class="cover-screen" id="cover-screen" role="dialog" aria-label="Capa do livro">
+        <div class="book-3d-scene">
+            <!-- Livro 3D interativo -->
+            <div class="book-3d" id="book-3d">
+                <!-- Capa Frontal (Folha que abre) -->
+                <div class="book-page book-cover-page" id="book-cover-page">
+                    <div class="page-front">
+                        <img src="assets/capa_ush.jpg" alt="Capa - O Último Segredo da Humanidade" class="cover-full-img" />
+                        <div class="page-spine-shadow"></div>
+                        <div class="page-glare"></div>
+                        <div class="flip-arrow-indicator">➔</div>
+                    </div>
+                    <div class="page-back">
+                        <!-- Orelha / Página Interna após folhear -->
+                        <div class="inner-cover-content">
+                            <span class="dossier-tag">ARQUIVO OFICIAL</span>
+                            <h2 class="inner-cover-title">O ÚLTIMO SEGREDO DA HUMANIDADE</h2>
+                            <p class="inner-cover-author">Leonardo de Paula</p>
+                            <hr class="inner-cover-hr">
+                            <p class="inner-cover-quote">
+                                "Durante milênios, algumas das maiores decisões da humanidade foram observadas, registradas e comparadas."
+                            </p>
+                            <p class="inner-cover-desc">
+                                Uma anomalia de 0,0000007% encontrada na madrugada da Faria Lima desencadeia uma jornada através dos bastidores das grandes decisões da história.
+                            </p>
+                            
+                            <div class="inner-actions-row">
+                                <button class="cover-btn" id="btn-start-reading">
+                                    <span class="cover-btn-text">INICIAR LEITURA</span>
+                                    <span class="cover-btn-arrow" aria-hidden="true">➔</span>
+                                </button>
+                                <button class="cover-btn cover-btn--secondary" id="btn-open-teaser">
+                                    <span class="cover-btn-text">🎬 VER TEASER (ROMA)</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="page-spine-shadow right"></div>
+                    </div>
+                </div>
+
+                <!-- Segunda página / Base do livro -->
+                <div class="book-page book-back-page">
+                    <div class="page-inner-sheet">
+                        <div class="inner-sheet-header">
+                            <span class="dossier-tag">DOSSIÊ DO LEITOR</span>
+                            <h3>COMEÇAR A JORNADA</h3>
+                        </div>
+                        <p class="inner-sheet-text">Clique abaixo para continuar a leitura do livro de onde parou.</p>
+                        <button class="cover-btn" id="btn-sheet-start">
+                            <span>CONTINUAR LEITURA ➔</span>
+                        </button>
+                    </div>
+                    <div class="page-spine-shadow"></div>
+                </div>
+            </div>
+            
+            <p class="cover-hint-text">Toque ou clique na capa para folhear</p>
+        </div>
+    </div>
+
+    <!-- ===== HEADER SUPERIOR ===== -->
+    <header class="reader-header" id="reader-header">
+        <div class="header-left">
+            <button class="btn-icon" id="btn-menu" title="Índice de Capítulos (M)" aria-label="Abrir índice">
+                <svg width="20" height="15" viewBox="0 0 20 15" fill="none" aria-hidden="true">
+                    <rect width="20" height="2" rx="1" fill="currentColor"/>
+                    <rect y="6.5" width="14" height="2" rx="1" fill="currentColor"/>
+                    <rect y="13" width="20" height="2" rx="1" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="book-meta">
+                <span class="book-meta-title">O Último Segredo da Humanidade</span>
+                <span class="book-meta-chapter" id="chapter-indicator">Prólogo</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="reading-pct" id="reading-pct">0%</span>
+            <button class="btn-icon" id="btn-zen" title="Tela Cheia / Modo Zen (Z)" aria-label="Tela Cheia">⛶</button>
+            <button class="btn-icon" id="btn-settings" title="Configurações (S)" aria-label="Configurações">⚙</button>
+        </div>
+    </header>
+
+    <!-- ===== SIDEBAR — ÍNDICE DE CAPÍTULOS ===== -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+    <nav class="sidebar" id="sidebar" aria-label="Índice de capítulos">
+        <div class="sidebar-header">
+            <div>
+                <p class="sidebar-label">ÍNDICE</p>
+                <p class="sidebar-book">O Último Segredo da Humanidade</p>
+                <p class="sidebar-author-name">Leonardo de Paula</p>
+            </div>
+            <button class="btn-icon" id="btn-close-sidebar" aria-label="Fechar índice">✕</button>
+        </div>
+        <div class="sidebar-quicksearch">
+            <input type="text" id="chapter-search" placeholder="Filtrar capítulos..." aria-label="Buscar capítulos">
+        </div>
+        <ul class="chapter-list" id="chapter-list" role="list"></ul>
+    </nav>
+
+    <!-- ===== CONTEÚDO PRINCIPAL ===== -->
+    <main class="reader-main" id="reader-main">
+        <!-- Notificação sutil de transição/gesto -->
+        <div class="swipe-hint" id="swipe-hint" aria-hidden="true"></div>
+
+        <article class="content-wrapper" id="content-wrapper" aria-live="polite">
+            <!-- Capítulo renderizado dinamicamente via JS -->
+        </article>
+
+        <!-- Navegação entre capítulos (Desktop e Mobile) -->
+        <nav class="chapter-nav" id="chapter-nav" aria-label="Navegação entre capítulos">
+            <button class="nav-btn" id="btn-prev" aria-label="Capítulo anterior">
+                <span class="nav-arrow" aria-hidden="true">←</span>
+                <span class="nav-label" id="prev-label">Anterior</span>
+            </button>
+            <div class="nav-center">
+                <span class="nav-current" id="nav-current">1 / 23</span>
+                <span class="nav-mobile-swipe-tip">Deslize para trocar</span>
+            </div>
+            <button class="nav-btn nav-btn--right" id="btn-next" aria-label="Próximo capítulo">
+                <span class="nav-label" id="next-label">Próximo</span>
+                <span class="nav-arrow" aria-hidden="true">→</span>
+            </button>
+        </nav>
+    </main>
+
+    <!-- ===== BARRA INFERIOR MOBILE (THUMB-DOCK) ===== -->
+    <div class="mobile-bottom-bar" id="mobile-bottom-bar" aria-label="Controles rápidos">
+        <button class="mobile-bar-btn" id="m-btn-prev" title="Capítulo Anterior" aria-label="Anterior">
+            <span>←</span>
+        </button>
+        <button class="mobile-bar-btn" id="m-btn-menu" title="Índice" aria-label="Índice">
+            <span class="mobile-icon-label">ÍNDICE</span>
+        </button>
+        <div class="mobile-bar-center" id="m-nav-current">
+            1 / 23
+        </div>
+        <button class="mobile-bar-btn" id="m-btn-settings" title="Ajustes" aria-label="Ajustes">
+            <span class="mobile-icon-label">AJUSTES</span>
+        </button>
+        <button class="mobile-bar-btn" id="m-btn-next" title="Próximo Capítulo" aria-label="Próximo">
+            <span>→</span>
+        </button>
+    </div>
+
+    <!-- ===== PAINEL DE CONFIGURAÇÕES ===== -->
+    <aside class="settings-panel" id="settings-panel" aria-label="Configurações de leitura">
+        <div class="settings-header">
+            <h2 class="settings-title">CONFIGURAÇÕES</h2>
+            <button class="btn-icon" id="btn-close-settings" aria-label="Fechar configurações">✕</button>
+        </div>
+
+        <div class="settings-body">
+            <!-- 1. ESTILO DE LEITURA (TEMAS) PRIMEIRO -->
+            <div class="settings-section">
+                <p class="settings-label">Estilo de Leitura</p>
+                <div class="theme-grid">
+                    <button class="theme-card active" data-theme="gold">
+                        <span class="theme-color gold"></span>
+                        <span class="theme-name">Temático (Gold)</span>
+                    </button>
+                    <button class="theme-card" data-theme="dark">
+                        <span class="theme-color dark"></span>
+                        <span class="theme-name">Escuro</span>
+                    </button>
+                    <button class="theme-card" data-theme="light">
+                        <span class="theme-color light"></span>
+                        <span class="theme-name">Claro</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. TIPO DE FONTE (APENAS 3 ESSENCIAIS) -->
+            <div class="settings-section">
+                <p class="settings-label">Tipo de Fonte</p>
+                <div class="font-family-grid">
+                    <button class="font-btn active" data-font="serif">
+                        <span class="font-preview font-serif">Aa</span>
+                        <div class="font-info">
+                            <span class="font-name">Serif</span>
+                            <span class="font-desc">Livro clássico</span>
+                        </div>
+                    </button>
+                    <button class="font-btn" data-font="sans">
+                        <span class="font-preview font-sans">Aa</span>
+                        <div class="font-info">
+                            <span class="font-name">Inter (Sans)</span>
+                            <span class="font-desc">Ideal p/ telas</span>
+                        </div>
+                    </button>
+                    <button class="font-btn" data-font="epic">
+                        <span class="font-preview font-cinzel">Aa</span>
+                        <div class="font-info">
+                            <span class="font-name">Cinzel (Épico)</span>
+                            <span class="font-desc">Título oficial</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. TAMANHO DA FONTE -->
+            <div class="settings-section">
+                <div class="settings-label-row">
+                    <p class="settings-label">Tamanho da Fonte</p>
+                    <span class="settings-val" id="font-size-value">18px</span>
+                </div>
+                <div class="slider-wrapper">
+                    <span class="slider-hint">A-</span>
+                    <input type="range" id="font-size" min="14" max="26" value="18" step="1">
+                    <span class="slider-hint">A+</span>
+                </div>
+            </div>
+
+            <!-- 4. ESPAÇAMENTO DE LINHAS -->
+            <div class="settings-section">
+                <div class="settings-label-row">
+                    <p class="settings-label">Espaçamento de Linhas</p>
+                    <span class="settings-val" id="line-height-value">1.75</span>
+                </div>
+                <div class="slider-wrapper">
+                    <span class="slider-hint">1.4</span>
+                    <input type="range" id="line-height" min="1.4" max="2.2" value="1.75" step="0.05">
+                    <span class="slider-hint">2.2</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+        <!-- ===== MODAL DE VÍDEO CINEMATOGRÁFICO ===== -->
+    <div class="video-modal-backdrop" id="video-modal" role="dialog" aria-label="Teaser em Vídeo" aria-hidden="true">
+        <div class="video-modal-container">
+            <button class="video-modal-close" id="btn-close-video" aria-label="Fechar Vídeo">✕ FECHAR</button>
+            <div class="video-modal-header">
+                <span class="dossier-tag">RECONSTITUIÇÃO HISTÓRICA</span>
+                <h3 class="video-modal-title">ROMA — 49 a.C. · O SENADO E O RUBICÃO</h3>
+            </div>
+            <div class="video-responsive-wrapper">
+                <iframe id="video-iframe" 
+                        src="" 
+                        title="Teaser Cinematográfico - Roma 49 a.C." 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+            <p class="video-modal-caption">Reconstituição visual da deliberação que precipitou a guerra civil romana.</p>
+        </div>
+    </div>
+
+    <script src="js/chapters.js?v=1200.0"></script>
+    <script src="js/app.js?v=1200.0"></script>
+</body>
+</html>
