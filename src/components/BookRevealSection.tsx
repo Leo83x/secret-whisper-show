@@ -64,20 +64,20 @@ const BookRevealSection = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="flex flex-col items-center lg:items-start p-3 bg-white/5 border border-white/10 rounded-xl">
                   <Moon className="w-5 h-5 text-[#c9a962] mb-1" />
-                  <h4 className="text-xs font-semibold text-white">Modos Noturnos</h4>
-                  <p className="text-[11px] text-slate-400">Gold, Escuro e Claro</p>
+                  <h4 className="text-base font-medium text-slate-100 font-sans">Modos Noturnos</h4>
+                  <p className="text-xs text-slate-300 font-sans">Gold, Escuro e Claro</p>
                 </div>
 
                 <div className="flex flex-col items-center lg:items-start p-3 bg-white/5 border border-white/10 rounded-xl">
                   <Type className="w-5 h-5 text-[#c9a962] mb-1" />
-                  <h4 className="text-xs font-semibold text-white">Fontes Customizáveis</h4>
-                  <p className="text-[11px] text-slate-400">Serif, Inter e Cinzel</p>
+                  <h4 className="text-base font-medium text-slate-100 font-sans">Fontes Customizáveis</h4>
+                  <p className="text-xs text-slate-300 font-sans">Serif, Inter e Cinzel</p>
                 </div>
 
                 <div className="flex flex-col items-center lg:items-start p-3 bg-white/5 border border-white/10 rounded-xl">
                   <BookMarked className="w-5 h-5 text-[#c9a962] mb-1" />
-                  <h4 className="text-xs font-semibold text-white">Progresso Salvo</h4>
-                  <p className="text-[11px] text-slate-400">Continua de onde parou</p>
+                  <h4 className="text-base font-medium text-slate-100 font-sans">Progresso Salvo</h4>
+                  <p className="text-xs text-slate-300 font-sans">Continua de onde parou</p>
                 </div>
               </div>
             </div>
