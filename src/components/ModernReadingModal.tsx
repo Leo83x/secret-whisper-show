@@ -53,7 +53,7 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
           {!videoStarted ? (
             <>
               <img
-                src="https://img.youtube.com/vi/AskB3oknGnA/maxresdefault.jpg"
+                src="https://img.youtube.com/vi/c5VJNP6-PHE/maxresdefault.jpg"
                 alt="Teaser"
                 className="w-full h-full object-cover"
               />
@@ -72,7 +72,7 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
           ) : (
             <div className="w-full h-full overflow-hidden relative">
               <iframe
-                src="https://www.youtube.com/embed/AskB3oknGnA?autoplay=1&controls=0&autohide=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&loop=1&playlist=AskB3oknGnA"
+                src="https://www.youtube.com/embed/c5VJNP6-PHE?autoplay=1&controls=0&autohide=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1&loop=1&playlist=c5VJNP6-PHE"
                 title="Teaser Oficial"
                 className="w-full h-[118%] -mt-[9%] pointer-events-none select-none scale-105"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
