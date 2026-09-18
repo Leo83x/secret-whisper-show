@@ -2906,3 +2906,7 @@ img[src*="ch07_alexandre"] {
 [data-theme="light"] .dossier-meta {
   color: #475569 !important; /* Slate 600 para o tema claro */
 }
+body[data-font=serif] #content-wrapper, body[data-font=serif] #content-wrapper p { font-family: Crimson Text, Georgia, serif !important; }
+body[data-font=sans] #content-wrapper, body[data-font=sans] #content-wrapper p { font-family: Inter, sans-serif !important; }
+body[data-font=epic] #content-wrapper, body[data-font=epic] #content-wrapper p, body[data-font=cinzel] #content-wrapper { font-family: Cinzel, serif !important; }
+#content-wrapper p { font-size: inherit !important; line-height: inherit !important; }
