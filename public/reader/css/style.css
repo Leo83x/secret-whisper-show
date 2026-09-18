@@ -2910,3 +2910,9 @@ body[data-font=serif] #content-wrapper, body[data-font=serif] #content-wrapper p
 body[data-font=sans] #content-wrapper, body[data-font=sans] #content-wrapper p { font-family: Inter, sans-serif !important; }
 body[data-font=epic] #content-wrapper, body[data-font=epic] #content-wrapper p, body[data-font=cinzel] #content-wrapper { font-family: Cinzel, serif !important; }
 #content-wrapper p { font-size: inherit !important; line-height: inherit !important; }
+
+/* MODO FULLSCREEN E ZEN */
+body.zen .reader-header, body.zen-mode .reader-header, :fullscreen .reader-header { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+body.zen .mobile-bottom-bar, body.zen-mode .mobile-bottom-bar, body.zen .chapter-nav, body.zen-mode .chapter-nav, :fullscreen .mobile-bottom-bar, :fullscreen .chapter-nav { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+body.zen .reader-main, body.zen-mode .reader-main, :fullscreen .reader-main { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+body.zen .zen-exit-floating-btn, body.zen-mode .zen-exit-floating-btn, :fullscreen .zen-exit-floating-btn { display: flex !important; opacity: 1 !important; visibility: visible !important; transform: scale(1) !important; }
