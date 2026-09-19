@@ -74,7 +74,7 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
               <iframe
                 src="https://www.youtube.com/embed/c5VJNP6-PHE?autoplay=1&controls=0&cc_load_policy=0&fs=0&playsinline=1&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&loop=1&playlist=c5VJNP6-PHE"
                 title="Teaser Oficial"
-                className="w-full h-[118%] -mt-[9%] pointer-events-none select-none scale-105"
+                className="w-full h-[135%] -mt-[17.5%] pointer-events-none select-none scale-105"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen={false}
               />
