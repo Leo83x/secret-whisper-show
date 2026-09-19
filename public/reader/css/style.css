@@ -2974,3 +2974,48 @@ span.dossier-tag,
   border-color: #0284c7 !important;
   color: #0284c7 !important;
 }
+
+
+/* ==========================================================================
+   TEMA SEPIA (LIVRO FÍSICO ELEGANTE)
+   ========================================================================== */
+[data-theme="sepia"] {
+  --bg:          #f4ecd8 !important;
+  --bg2:         #e8dfc8 !important;
+  --bg3:         #ded2b6 !important;
+  --tx:          #2b2118 !important;
+  --tx2:         #4a3c2c !important;
+  --tx3:         #736049 !important;
+  --acc:         #8c5a2b !important;
+  --acc2:        #a66e38 !important;
+  --acc-glow:   rgba(140, 90, 43, 0.15) !important;
+  --border:     rgba(140, 90, 43, 0.2) !important;
+  --glass:      rgba(244, 236, 216, 0.95) !important;
+  --shadow:     0 8px 32px rgba(43, 33, 24, 0.08) !important;
+  --prog:       #8c5a2b !important;
+}
+
+[data-theme="sepia"] .chapter-body p,
+[data-theme="sepia"] .chapter-title,
+[data-theme="sepia"] .content-wrapper {
+  color: #2b2118 !important;
+}
+
+[data-theme="sepia"] .dossier-meta {
+  color: #4a3c2c !important;
+}
+
+[data-theme="sepia"] .dossier-tag,
+[data-theme="sepia"] span.dossier-tag,
+[data-theme="sepia"] .inner-sheet-header .dossier-tag,
+[data-theme="sepia"] .chaptermeta,
+[data-theme="sepia"] .scenebreak {
+  background: rgba(140, 90, 43, 0.1) !important;
+  border-color: #8c5a2b !important;
+  color: #8c5a2b !important;
+}
+
+.theme-color.sepia {
+  background: #f4ecd8 !important;
+  border: 1px solid #8c5a2b !important;
+}
