@@ -2946,3 +2946,31 @@ body.zen .zen-exit-floating-btn, body.zen-mode .zen-exit-floating-btn, :fullscre
   color: #0284c7 !important;
   box-shadow: 0 2px 8px rgba(2, 132, 199, 0.1) !important;
 }
+
+
+/* Correção definitiva da tarja DOSSIÊ DO LEITOR / ARQUIVO OFICIAL */
+.dossier-tag,
+span.dossier-tag,
+.inner-sheet-header .dossier-tag {
+  background: rgba(201, 169, 98, 0.15) !important;
+  border: 1px solid var(--acc, #c9a962) !important;
+  color: var(--acc, #c9a962) !important;
+  padding: 0.35rem 0.9rem !important;
+  border-radius: 9999px !important;
+  display: inline-block !important;
+  letter-spacing: 0.18em !important;
+  box-shadow: none !important;
+  margin-bottom: 0.75rem !important;
+  line-height: 1.2 !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .dossier-tag,
+[data-theme="light"] span.dossier-tag,
+[data-theme="light"] .inner-sheet-header .dossier-tag {
+  background: rgba(2, 132, 199, 0.12) !important;
+  border-color: #0284c7 !important;
+  color: #0284c7 !important;
+}
