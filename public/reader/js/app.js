@@ -107,6 +107,14 @@
 
   /* ── RENDERIZAÇÃO DO CAPÍTULO ───────────────────────── */
   function renderChapter(idx) {
+    if (dom.contentWrapper) {
+      dom.contentWrapper.classList.add('page-flip-exit');
+      setTimeout(() => {
+        dom.contentWrapper.classList.remove('page-flip-exit');
+        dom.contentWrapper.classList.add('page-flip-enter');
+        setTimeout(() => dom.contentWrapper.classList.remove('page-flip-enter'), 300);
+      }, 150);
+    }
     if (typeof BOOK === 'undefined' || !BOOK.chapters[idx]) return;
     currentIdx = idx;
     const ch = BOOK.chapters[idx];
