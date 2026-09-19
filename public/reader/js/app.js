@@ -110,6 +110,9 @@
     if (typeof BOOK === 'undefined' || !BOOK.chapters[idx]) return;
     currentIdx = idx;
     const ch = BOOK.chapters[idx];
+    const textOnly = (ch.content || "").replace(/<[^>]*>/g, " ");
+    const wordCount = textOnly.trim().split(/\s+/).filter(Boolean).length;
+    const readMinutes = Math.max(1, Math.ceil(wordCount / 238));
 
     let html = '';
 
@@ -133,7 +136,8 @@
     html += `
       <div class="chapter-header">
         <span class="chapter-num">${ch.num || ''}</span>
-        <h1 class="chapter-title">${ch.title || ''}</h1>
+        <div class="chapter-reading-estimate" style="margin-bottom: 0.6rem;"><span class="reading-time-badge" style="display: inline-flex; align-items: center; gap: 0.35rem; font-family: var(--font-mono, monospace); font-size: 0.75rem; color: var(--acc); opacity: 0.9; padding: 0.25rem 0.65rem; background: var(--bg2); border: 1px solid var(--border); border-radius: 9999px;">⏱ ${readMinutes} min de leitura</span></div>
+          <h1 class="chapter-title">${ch.title || ''}</h1>
         ${ch.subtitle ? `<div class="chapter-subtitle">${ch.subtitle}</div>` : ''}
       </div>
       <div class="chapter-body">
