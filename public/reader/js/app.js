@@ -107,6 +107,17 @@
 
   /* ── RENDERIZAÇÃO DO CAPÍTULO ───────────────────────── */
   function renderChapter(idx) {
+    const wrapper = document.getElementById('content-wrapper');
+    if (wrapper) {
+      wrapper.style.opacity = '0';
+      wrapper.style.transform = 'translateY(12px)';
+      wrapper.style.transition = 'none';
+      setTimeout(() => {
+        wrapper.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        wrapper.style.opacity = '1';
+        wrapper.style.transform = 'translateY(0)';
+      }, 50);
+    }
     if (dom.contentWrapper) {
       dom.contentWrapper.classList.add('page-flip-exit');
       setTimeout(() => {

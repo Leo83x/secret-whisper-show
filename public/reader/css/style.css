@@ -3035,3 +3035,37 @@ span.dossier-tag,
   opacity: 0 !important;
   transform: translateX(16px) scale(0.99) !important;
 }
+
+
+/* Correção de Contraste nos Cards de Imagens / Dossiês no Modo Claro */
+[data-theme="light"] .dossier-card,
+[data-theme="light"] .historical-dossier-card,
+[data-theme="light"] .chapter-dossier {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .dossier-card *,
+[data-theme="light"] .historical-dossier-card *,
+[data-theme="light"] .chapter-dossier * {
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .dossier-header,
+[data-theme="light"] .dossier-title,
+[data-theme="light"] .dossier-subtitle {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .dossier-meta,
+[data-theme="light"] .dossier-location,
+[data-theme="light"] .dossier-date {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .dossier-desc,
+[data-theme="light"] .dossier-caption {
+  color: #334155 !important;
+}
