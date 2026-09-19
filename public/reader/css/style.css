@@ -2916,3 +2916,9 @@ body.zen .reader-header, body.zen-mode .reader-header, :fullscreen .reader-heade
 body.zen .mobile-bottom-bar, body.zen-mode .mobile-bottom-bar, body.zen .chapter-nav, body.zen-mode .chapter-nav, :fullscreen .mobile-bottom-bar, :fullscreen .chapter-nav { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
 body.zen .reader-main, body.zen-mode .reader-main, :fullscreen .reader-main { padding-top: 2rem !important; padding-bottom: 2rem !important; }
 body.zen .zen-exit-floating-btn, body.zen-mode .zen-exit-floating-btn, :fullscreen .zen-exit-floating-btn { display: flex !important; opacity: 1 !important; visibility: visible !important; transform: scale(1) !important; }
+
+/* OCULTAR BOTAO DE VIDEO DOS CARDS DE DOSSIE E REORGANIZAR CONTRASTE DE METADADOS */
+.dossier-video-btn, button[class*=\ video\], .btn-watch-teaser { display: none !important; }
+.dossier-meta { color: #e2e8f0 !important; font-weight: 600 !important; }
+[data-theme=\light\] .dossier-meta { color: #475569 !important; font-weight: 600 !important; }
+[data-theme=\light\] .dossier-tag, [data-theme=\light\] .chaptermeta, [data-theme=\light\] .scenebreak { color: #0284c7 !important; }
