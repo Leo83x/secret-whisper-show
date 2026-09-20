@@ -3065,3 +3065,54 @@ span.dossier-tag,
   color: #475569 !important;
   font-weight: 500 !important;
 }
+
+
+/* ==========================================================================
+   FORÇAR FUNDO CLARO E TEXTOS EM CINZA ESCURO NOS CARDS DO MODO CLARO
+   ========================================================================== */
+[data-theme="light"] .historical-dossier-card,
+[data-theme="light"] [class*="dossier-card"],
+[data-theme="light"] [class*="historical-card"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06) !important;
+}
+
+[data-theme="light"] .dossier-badge-row,
+[data-theme="light"] .dossier-caption-row,
+[data-theme="light"] [class*="dossier-badge"],
+[data-theme="light"] [class*="dossier-caption"] {
+  background-color: #f8fafc !important;
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .dossier-badge-row *,
+[data-theme="light"] .dossier-caption-row *,
+[data-theme="light"] .historical-dossier-card *,
+[data-theme="light"] [class*="dossier"] * {
+  color: #334155 !important;
+}
+
+[data-theme="light"] .dossier-title,
+[data-theme="light"] .historical-dossier-card h3,
+[data-theme="light"] .historical-dossier-card h4 {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .dossier-meta,
+[data-theme="light"] .dossier-location,
+[data-theme="light"] .dossier-date,
+[data-theme="light"] [class*="dossier-meta"] {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .dossier-subcaption,
+[data-theme="light"] .dossier-desc,
+[data-theme="light"] .historical-dossier-card p {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
