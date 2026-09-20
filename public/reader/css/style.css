@@ -3116,3 +3116,52 @@ span.dossier-tag,
   color: #475569 !important;
   font-weight: 500 !important;
 }
+
+
+/* Fix universal de contraste para temas claros (body[data-theme="light"]) */
+body[data-theme="light"] .historical-dossier-card,
+body[data-theme="light"] [class*="dossier-card"],
+body[data-theme="light"] [class*="historical-card"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+body[data-theme="light"] .dossier-badge-row,
+body[data-theme="light"] .dossier-caption-row,
+body[data-theme="light"] [class*="dossier-badge"],
+body[data-theme="light"] [class*="dossier-caption"] {
+  background-color: #f8fafc !important;
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body[data-theme="light"] .dossier-badge-row *,
+body[data-theme="light"] .dossier-caption-row *,
+body[data-theme="light"] .historical-dossier-card *,
+body[data-theme="light"] [class*="dossier"] * {
+  color: #334155 !important;
+}
+
+body[data-theme="light"] .dossier-title,
+body[data-theme="light"] .historical-dossier-card h3,
+body[data-theme="light"] .historical-dossier-card h4 {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+body[data-theme="light"] .dossier-meta,
+body[data-theme="light"] .dossier-location,
+body[data-theme="light"] .dossier-date,
+body[data-theme="light"] [class*="dossier-meta"] {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+body[data-theme="light"] .dossier-subcaption,
+body[data-theme="light"] .dossier-desc,
+body[data-theme="light"] .historical-dossier-card p {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
