@@ -3031,3 +3031,37 @@ span.dossier-tag,
   color: #0284c7 !important;
   font-weight: 700 !important;
 }
+
+
+/* Correção definitiva de cores nos cards de imagens no Modo Claro */
+[data-theme="light"] .historical-dossier-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .dossier-badge-row {
+  background: #f1f5f9 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .dossier-badge-row *,
+[data-theme="light"] .dossier-meta {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .dossier-caption-row {
+  background: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .dossier-title {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .dossier-subcaption {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
