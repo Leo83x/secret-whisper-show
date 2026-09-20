@@ -107,31 +107,6 @@
 
   /* ── RENDERIZAÇÃO DO CAPÍTULO ───────────────────────── */
   function renderChapter(idx) {
-    const wrapper = document.getElementById('content-wrapper');
-    if (wrapper) {
-      wrapper.classList.remove('page-flip-anim');
-      void wrapper.offsetWidth; // trigger reflow
-      wrapper.classList.add('page-flip-anim');
-    }
-    const wrapper = document.getElementById('content-wrapper');
-    if (wrapper) {
-      wrapper.style.opacity = '0';
-      wrapper.style.transform = 'translateY(12px)';
-      wrapper.style.transition = 'none';
-      setTimeout(() => {
-        wrapper.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-        wrapper.style.opacity = '1';
-        wrapper.style.transform = 'translateY(0)';
-      }, 50);
-    }
-    if (dom.contentWrapper) {
-      dom.contentWrapper.classList.add('page-flip-exit');
-      setTimeout(() => {
-        dom.contentWrapper.classList.remove('page-flip-exit');
-        dom.contentWrapper.classList.add('page-flip-enter');
-        setTimeout(() => dom.contentWrapper.classList.remove('page-flip-enter'), 300);
-      }, 150);
-    }
     if (typeof BOOK === 'undefined' || !BOOK.chapters[idx]) return;
     currentIdx = idx;
     const ch = BOOK.chapters[idx];
