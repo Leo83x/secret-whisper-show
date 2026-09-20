@@ -3069,3 +3069,47 @@ span.dossier-tag,
 [data-theme="light"] .dossier-caption {
   color: #334155 !important;
 }
+
+
+/* ==========================================================================
+   CORREÇÃO DEFINITIVA DE CONSTRASTE DO DOSSIÊ NO MODO CLARO
+   ========================================================================== */
+[data-theme="light"] .dossier-badge-row,
+[data-theme="light"] .dossier-caption-row,
+[data-theme="light"] [class*="dossier-badge"],
+[data-theme="light"] [class*="dossier-caption"] {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .dossier-badge-row *,
+[data-theme="light"] .dossier-caption-row *,
+[data-theme="light"] .historical-dossier-card * {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .dossier-tag,
+[data-theme="light"] span.dossier-tag,
+[data-theme="light"] .dossier-meta,
+[data-theme="light"] .dossier-location,
+[data-theme="light"] .dossier-date {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+
+/* Keyframe para Transição Suave de Capítulo (Flip/Fade) */
+.page-flip-anim {
+  animation: pageFlipFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes pageFlipFade {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

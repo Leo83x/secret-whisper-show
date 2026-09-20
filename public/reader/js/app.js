@@ -109,6 +109,12 @@
   function renderChapter(idx) {
     const wrapper = document.getElementById('content-wrapper');
     if (wrapper) {
+      wrapper.classList.remove('page-flip-anim');
+      void wrapper.offsetWidth; // trigger reflow
+      wrapper.classList.add('page-flip-anim');
+    }
+    const wrapper = document.getElementById('content-wrapper');
+    if (wrapper) {
       wrapper.style.opacity = '0';
       wrapper.style.transform = 'translateY(12px)';
       wrapper.style.transition = 'none';
