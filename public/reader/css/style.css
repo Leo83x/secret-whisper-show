@@ -3019,3 +3019,15 @@ span.dossier-tag,
   background: #f4ecd8 !important;
   border: 1px solid #8c5a2b !important;
 }
+
+
+/* Fix visual do topo do card de imagem no Modo Claro */
+[data-theme="light"] .dossier-badge-row {
+  background: #f1f5f9 !important;
+}
+[data-theme="light"] .dossier-badge-row span,
+[data-theme="light"] .dossier-badge-row div,
+[data-theme="light"] .dossier-meta {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
