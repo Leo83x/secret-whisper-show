@@ -3164,3 +3164,9 @@ body[data-theme="light"] .historical-dossier-card p {
   color: #475569 !important;
   font-weight: 500 !important;
 }
+
+html body[data-theme=\ light\] .historical-dossier-card, body[data-theme=\light\] .historical-dossier-card { background: #ffffff !important; background-color: #ffffff !important; border-color: #cbd5e1 !important; }
+html body[data-theme=\light\] .dossier-badge-row, body[data-theme=\light\] .dossier-badge-row, html body[data-theme=\light\] .dossier-caption-row, body[data-theme=\light\] .dossier-caption-row { background: #f8fafc !important; background-color: #f8fafc !important; }
+html body[data-theme=\light\] .dossier-tag, body[data-theme=\light\] .dossier-tag, html body[data-theme=\light\] .dossier-meta, body[data-theme=\light\] .dossier-meta { color: #0284c7 !important; font-weight: 700 !important; }
+html body[data-theme=\light\] .dossier-title, body[data-theme=\light\] .dossier-title { color: #0284c7 !important; font-weight: 700 !important; }
+html body[data-theme=\light\] .dossier-subcaption, body[data-theme=\light\] .dossier-subcaption { color: #334155 !important; font-weight: 500 !important; }
