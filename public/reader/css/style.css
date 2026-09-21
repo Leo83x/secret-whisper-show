@@ -2860,7 +2860,7 @@ img.dossier-img,
 /* === REMOÇÃO DEFINITIVA DE BARRAS BRANCAS EM IMAGENS HISTÓRICAS === */
 .dossier-image-wrapper,
 .historical-dossier-card .dossier-image-wrapper,
-[class*="dossier"] {
+body:not([data-theme="light"]):not([data-theme="sepia"]) [class*="dossier"] {
   background-color: #0b1120 !important;
   background: #0b1120 !important;
 }
@@ -2902,7 +2902,7 @@ body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta { color: #e2e
   font-weight: 500 !important;
 }
 
-[data-theme="light"] .dossier-meta {
+[data-theme="light"] [data-theme="light"] .dossier-meta {
   color: #475569 !important; /* Slate 600 para o tema claro */
 }
 body[data-font=serif] #content-wrapper, body[data-font=serif] #content-wrapper p { font-family: Crimson Text, Georgia, serif !important; }
@@ -2919,8 +2919,8 @@ body.zen .zen-exit-floating-btn, body.zen-mode .zen-exit-floating-btn, :fullscre
 /* OCULTAR BOTAO DE VIDEO DOS CARDS DE DOSSIE E REORGANIZAR CONTRASTE DE METADADOS */
 .dossier-video-btn, button[class*=\ video\], .btn-watch-teaser { display: none !important; }
 body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta { color: #e2e8f0 !important; font-weight: 600 !important; }
-[data-theme=\light\] .dossier-meta { color: #475569 !important; font-weight: 600 !important; }
-[data-theme=\light\] .dossier-tag, [data-theme=\light\] .chaptermeta, [data-theme=\light\] .scenebreak { color: #0284c7 !important; }
+[data-theme="light"] .dossier-meta { color: #475569 !important; font-weight: 600 !important; }
+[data-theme="light"] .dossier-tag, [data-theme="light"] .chaptermeta, [data-theme="light"] .scenebreak { color: #0284c7 !important; }
 
 
 /* Item 3: Melhoria visual da tag Dossiê do Leitor */
@@ -3165,8 +3165,8 @@ body[data-theme="light"] .historical-dossier-card p {
   font-weight: 500 !important;
 }
 
-html body[data-theme=\ light\] .historical-dossier-card, body[data-theme=\light\] .historical-dossier-card { background: #ffffff !important; background-color: #ffffff !important; border-color: #cbd5e1 !important; }
-html body[data-theme=\light\] .dossier-badge-row, body[data-theme=\light\] .dossier-badge-row, html body[data-theme=\light\] .dossier-caption-row, body[data-theme=\light\] .dossier-caption-row { background: #f8fafc !important; background-color: #f8fafc !important; }
-html body[data-theme=\light\] .dossier-tag, body[data-theme=\light\] .dossier-tag, html body[data-theme=\light\] .dossier-meta, body[data-theme=\light\] .dossier-meta { color: #0284c7 !important; font-weight: 700 !important; }
-html body[data-theme=\light\] .dossier-title, body[data-theme=\light\] .dossier-title { color: #0284c7 !important; font-weight: 700 !important; }
-html body[data-theme=\light\] .dossier-subcaption, body[data-theme=\light\] .dossier-subcaption { color: #334155 !important; font-weight: 500 !important; }
+html body[data-theme=\ light\] .historical-dossier-card, body[data-theme="light"] .historical-dossier-card { background: #ffffff !important; background-color: #ffffff !important; border-color: #cbd5e1 !important; }
+html body[data-theme="light"] .dossier-badge-row, body[data-theme="light"] .dossier-badge-row, html body[data-theme="light"] .dossier-caption-row, body[data-theme="light"] .dossier-caption-row { background: #f8fafc !important; background-color: #f8fafc !important; }
+html body[data-theme="light"] .dossier-tag, body[data-theme="light"] .dossier-tag, html body[data-theme="light"] .dossier-meta, body[data-theme="light"] .dossier-meta { color: #0284c7 !important; font-weight: 700 !important; }
+html body[data-theme="light"] .dossier-title, body[data-theme="light"] .dossier-title { color: #0284c7 !important; font-weight: 700 !important; }
+html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dossier-subcaption { color: #334155 !important; font-weight: 500 !important; }
