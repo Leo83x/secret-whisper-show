@@ -2897,8 +2897,7 @@ img[src*="ch07_alexandre"] {
 
 
 /* === VISIBILIDADE DE CIDADE E ANO (.dossier-meta) NOS TEMAS ESCUROS === */
-.dossier-meta {
-  color: #e2e8f0 !important; /* Slate 200 - alto contraste e leitura cristalina no escuro */
+body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta { color: #e2e8f0 !important; /* Slate 200 - alto contraste e leitura cristalina no escuro */
   opacity: 0.95 !important;
   font-weight: 500 !important;
 }
@@ -2919,7 +2918,7 @@ body.zen .zen-exit-floating-btn, body.zen-mode .zen-exit-floating-btn, :fullscre
 
 /* OCULTAR BOTAO DE VIDEO DOS CARDS DE DOSSIE E REORGANIZAR CONTRASTE DE METADADOS */
 .dossier-video-btn, button[class*=\ video\], .btn-watch-teaser { display: none !important; }
-.dossier-meta { color: #e2e8f0 !important; font-weight: 600 !important; }
+body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta { color: #e2e8f0 !important; font-weight: 600 !important; }
 [data-theme=\light\] .dossier-meta { color: #475569 !important; font-weight: 600 !important; }
 [data-theme=\light\] .dossier-tag, [data-theme=\light\] .chaptermeta, [data-theme=\light\] .scenebreak { color: #0284c7 !important; }
 
