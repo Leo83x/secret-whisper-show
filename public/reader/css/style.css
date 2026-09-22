@@ -2015,7 +2015,7 @@ body.zen .zen-exit-floating-btn,
   text-transform: uppercase;
 }
 
-.dossier-meta {
+.dossier-meta-old {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.12em;
@@ -2897,12 +2897,12 @@ img[src*="ch07_alexandre"] {
 
 
 /* === VISIBILIDADE DE CIDADE E ANO (.dossier-meta) NOS TEMAS ESCUROS === */
-body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta { color: #e2e8f0 !important; /* Slate 200 - alto contraste e leitura cristalina no escuro */
+body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta-old { color: #e2e8f0 !important; /* Slate 200 - alto contraste e leitura cristalina no escuro */
   opacity: 0.95 !important;
   font-weight: 500 !important;
 }
 
-[data-theme="light"] [data-theme="light"] .dossier-meta {
+[data-theme="light"] [data-theme="light"] .dossier-meta-old {
   color: #475569 !important; /* Slate 600 para o tema claro */
 }
 body[data-font=serif] #content-wrapper, body[data-font=serif] #content-wrapper p { font-family: Crimson Text, Georgia, serif !important; }
@@ -2918,9 +2918,9 @@ body.zen .zen-exit-floating-btn, body.zen-mode .zen-exit-floating-btn, :fullscre
 
 /* OCULTAR BOTAO DE VIDEO DOS CARDS DE DOSSIE E REORGANIZAR CONTRASTE DE METADADOS */
 .dossier-video-btn, button[class*=\ video\], .btn-watch-teaser { display: none !important; }
-body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta { color: #e2e8f0 !important; font-weight: 600 !important; }
-[data-theme="light"] .dossier-meta { color: #475569 !important; font-weight: 600 !important; }
-[data-theme="light"] .dossier-tag, [data-theme="light"] .chaptermeta, [data-theme="light"] .scenebreak { color: #0284c7 !important; }
+body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta-old { color: #e2e8f0 !important; font-weight: 600 !important; }
+[data-theme="light"] .dossier-meta-old { color: #475569 !important; font-weight: 600 !important; }
+[data-theme="light"] .dossier-tag-old, [data-theme="light"] .chaptermeta, [data-theme="light"] .scenebreak { color: #0284c7 !important; }
 
 
 /* Item 3: Melhoria visual da tag Dossiê do Leitor */
@@ -2948,8 +2948,8 @@ body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta { color: #e2e
 
 
 /* Correção definitiva da tarja DOSSIÊ DO LEITOR / ARQUIVO OFICIAL */
-.dossier-tag,
-span.dossier-tag,
+.dossier-tag-old,
+span.dossier-tag-old,
 .inner-sheet-header .dossier-tag {
   background: rgba(201, 169, 98, 0.15) !important;
   border: 1px solid var(--acc, #c9a962) !important;
@@ -2966,8 +2966,8 @@ span.dossier-tag,
   font-weight: 700 !important;
 }
 
-[data-theme="light"] .dossier-tag,
-[data-theme="light"] span.dossier-tag,
+[data-theme="light"] .dossier-tag-old,
+[data-theme="light"] span.dossier-tag-old,
 [data-theme="light"] .inner-sheet-header .dossier-tag {
   background: rgba(2, 132, 199, 0.12) !important;
   border-color: #0284c7 !important;
@@ -3000,13 +3000,13 @@ span.dossier-tag,
   color: #2b2118 !important;
 }
 
-[data-theme="sepia"] .dossier-meta {
+[data-theme="sepia"] .dossier-meta-old {
   color: #4a3c2c !important;
 }
 
-[data-theme="sepia"] .dossier-tag,
-[data-theme="sepia"] span.dossier-tag,
-[data-theme="sepia"] .inner-sheet-header .dossier-tag,
+[data-theme="sepia"] .dossier-tag-old,
+[data-theme="sepia"] span.dossier-tag-old,
+[data-theme="sepia"] .inner-sheet-header .dossier-tag-old,
 [data-theme="sepia"] .chaptermeta,
 [data-theme="sepia"] .scenebreak {
   background: rgba(140, 90, 43, 0.1) !important;
@@ -3026,7 +3026,7 @@ span.dossier-tag,
 }
 [data-theme="light"] .dossier-badge-row span,
 [data-theme="light"] .dossier-badge-row div,
-[data-theme="light"] .dossier-meta {
+[data-theme="light"] .dossier-meta-old {
   color: #0284c7 !important;
   font-weight: 700 !important;
 }
@@ -3045,7 +3045,7 @@ span.dossier-tag,
 }
 
 [data-theme="light"] .dossier-badge-row *,
-[data-theme="light"] .dossier-meta {
+[data-theme="light"] .dossier-meta-old {
   color: #0284c7 !important;
   font-weight: 700 !important;
 }
@@ -3101,7 +3101,7 @@ span.dossier-tag,
   font-weight: 700 !important;
 }
 
-[data-theme="light"] .dossier-meta,
+[data-theme="light"] .dossier-meta-old,
 [data-theme="light"] .dossier-location,
 [data-theme="light"] .dossier-date,
 [data-theme="light"] [class*="dossier-meta"] {
@@ -3150,7 +3150,7 @@ body[data-theme="light"] .historical-dossier-card h4 {
   font-weight: 700 !important;
 }
 
-body[data-theme="light"] .dossier-meta,
+body[data-theme="light"] .dossier-meta-old,
 body[data-theme="light"] .dossier-location,
 body[data-theme="light"] .dossier-date,
 body[data-theme="light"] [class*="dossier-meta"] {
@@ -3167,6 +3167,6 @@ body[data-theme="light"] .historical-dossier-card p {
 
 html body[data-theme=\ light\] .historical-dossier-card, body[data-theme="light"] .historical-dossier-card { background: #ffffff !important; background-color: #ffffff !important; border-color: #cbd5e1 !important; }
 html body[data-theme="light"] .dossier-badge-row, body[data-theme="light"] .dossier-badge-row, html body[data-theme="light"] .dossier-caption-row, body[data-theme="light"] .dossier-caption-row { background: #f8fafc !important; background-color: #f8fafc !important; }
-html body[data-theme="light"] .dossier-tag, body[data-theme="light"] .dossier-tag, html body[data-theme="light"] .dossier-meta, body[data-theme="light"] .dossier-meta { color: #0284c7 !important; font-weight: 700 !important; }
+html body[data-theme="light"] .dossier-tag-old, body[data-theme="light"] .dossier-tag-old, html body[data-theme="light"] .dossier-meta-old, body[data-theme="light"] .dossier-meta-old { color: #0284c7 !important; font-weight: 700 !important; }
 html body[data-theme="light"] .dossier-title, body[data-theme="light"] .dossier-title { color: #0284c7 !important; font-weight: 700 !important; }
 html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dossier-subcaption { color: #334155 !important; font-weight: 500 !important; }
