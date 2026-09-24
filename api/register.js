@@ -1,3 +1,4 @@
+// API Serverless pura com leitura de stream nativa do Node (sem Vercel body getter)
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -15,19 +16,31 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
-    let name = '';
-    let email = '';
-    let phone = '';
-    let ref = '';
-
-    // Handle raw string body vs parsed object body in Vercel Serverless
-    if (req.body) {
-      const b = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      name = b.name || '';
-      email = b.email || '';
-      phone = b.phone || '';
-      ref = b.ref || '';
+    // Leitura segura do corpo do POST via stream buffer ou req.body pré-parseado
+    let rawData = '';
+    if (typeof req.body === 'object' && req.body !== null) {
+      rawData = JSON.stringify(req.body);
+    } else if (typeof req.body === 'string') {
+      rawData = req.body;
     }
+
+    if (!rawData) {
+      const buffers = [];
+      for await (const chunk of req) {
+        buffers.push(chunk);
+      }
+      rawData = Buffer.concat(buffers).toString('utf-8');
+    }
+
+    let parsed = {};
+    if (rawData) {
+      try { parsed = JSON.parse(rawData); } catch(e) {}
+    }
+
+    const name = parsed.name || '';
+    const email = parsed.email || '';
+    const phone = parsed.phone || '';
+    const ref = parsed.ref || '';
 
     if (!name || !email) {
       return res.status(400).json({ error: 'Nome e e-mail são obrigatórios' });
