@@ -1,4 +1,3 @@
-// Standalone register API using native fetch to Supabase REST API
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -16,29 +15,33 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
-    const { name, email, phone, ref } = req.body || {};
+    // Vercel serverless request body parsing
+    let body = req.body;
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body); } catch(e) {}
+    }
+    body = body || {};
+
+    const { name, email, phone, ref } = body;
 
     if (!name || !email) {
       return res.status(400).json({ error: 'Nome e e-mail são obrigatórios' });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanName = name.trim();
-    const cleanPhone = phone ? phone.trim() : null;
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanName = String(name).trim();
+    const cleanPhone = phone ? String(phone).trim() : null;
 
     // 1. Consulta se o leitor já existe via REST nativo
     const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/readers?email=eq.${encodeURIComponent(cleanEmail)}&select=*`, {
       method: 'GET',
       headers: {
         'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${SUPABASE_KEY}`
       }
     });
 
-    const checkText = await checkRes.text();
-    let checkData = [];
-    try { checkData = JSON.parse(checkText); } catch(e) {}
+    const checkData = await checkRes.json();
 
     if (Array.isArray(checkData) && checkData.length > 0) {
       return res.status(200).json({
@@ -53,6 +56,16 @@ export default async function handler(req, res) {
     const firstName = cleanName.split(' ')[0].replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
     const refCode = 'USH-' + (firstName || 'LEITOR') + '-' + Math.floor(1000 + Math.random() * 9000);
 
+    const payload = {
+      email: cleanEmail,
+      name: cleanName,
+      phone: cleanPhone,
+      status: 'free',
+      access_token: accessToken,
+      referral_code: refCode,
+      referred_by: ref || null
+    };
+
     const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/readers`, {
       method: 'POST',
       headers: {
@@ -61,23 +74,13 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
-      body: JSON.stringify([{
-        email: cleanEmail,
-        name: cleanName,
-        phone: cleanPhone,
-        status: 'free',
-        access_token: accessToken,
-        referral_code: refCode,
-        referred_by: ref || null
-      }])
+      body: JSON.stringify(payload)
     });
 
-    const insertText = await insertRes.text();
-    let insertData = [];
-    try { insertData = JSON.parse(insertText); } catch(e) {}
+    const insertData = await insertRes.json();
 
     if (!insertRes.ok) {
-      return res.status(500).json({ error: 'Erro Supabase Insert: ' + insertText });
+      return res.status(500).json({ error: 'Erro Supabase Insert: ' + JSON.stringify(insertData) });
     }
 
     const newReader = Array.isArray(insertData) ? insertData[0] : insertData;
@@ -91,10 +94,10 @@ export default async function handler(req, res) {
           'Authorization': `Bearer ${SUPABASE_KEY}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify([{
+        body: JSON.stringify({
           reader_id: newReader.id,
           reading_progress: { max_chapter: 1, last_chapter: 1 }
-        }])
+        })
       });
     }
 
