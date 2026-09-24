@@ -4,9 +4,16 @@ const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ydezgyxfggplxapargdq.s
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'ush-admin-2026';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
 export default async function handler(req, res) {
+  // Configuração de cabeçalhos CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   const authHeader = req.headers.authorization || '';
   const token = authHeader.replace('Bearer ', '').trim();
 
@@ -15,7 +22,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const action = req.query.action || req.body?.action;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const action = req.query.action || (req.body ? req.body.action : null);
 
     // Ação: Liberação Manual de Acesso (Upgrade free -> paid)
     if (action === 'grant-access' && req.method === 'POST') {
@@ -29,7 +37,7 @@ export default async function handler(req, res) {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) return res.status(500).json({ error: error.message });
       return res.status(200).json({ success: true, message: 'Acesso vitalicio liberado com sucesso!', reader: data });
     }
 
@@ -45,7 +53,7 @@ export default async function handler(req, res) {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) return res.status(500).json({ error: error.message });
       return res.status(200).json({ success: true, message: 'Acesso revogado com sucesso!', reader: data });
     }
 
@@ -55,22 +63,25 @@ export default async function handler(req, res) {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      return res.status(500).json({ error: 'Erro no Supabase: ' + error.message });
+    }
 
-    const totalReaders = readers.length;
-    const paidReaders = readers.filter(r => r.status === 'paid').length;
-    const freeReaders = readers.filter(r => r.status === 'free').length;
+    const safeReaders = readers || [];
+    const totalReaders = safeReaders.length;
+    const paidReaders = safeReaders.filter(r => r.status === 'paid').length;
+    const freeReaders = safeReaders.filter(r => r.status === 'free').length;
     const totalRevenue = paidReaders * 49;
 
     // Métricas da Corrente (Indicações)
     const referralMap = {};
-    readers.forEach(r => {
+    safeReaders.forEach(r => {
       if (r.referred_by) {
         referralMap[r.referred_by] = (referralMap[r.referred_by] || 0) + 1;
       }
     });
 
-    const readersWithChain = readers.map(r => ({
+    const readersWithChain = safeReaders.map(r => ({
       ...r,
       referrals_count: referralMap[r.referral_code] || 0
     }));
@@ -87,6 +98,6 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message || 'Erro interno no servidor' });
+    return res.status(500).json({ error: 'Erro de execução: ' + (err.message || String(err)) });
   }
 }
