@@ -15,11 +15,17 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
+    // Read raw body directly without accessing req.body getter property
+    let rawBody = '';
+    try {
+      rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body || {});
+    } catch (e) {
+      rawBody = '';
+    }
+
     let body = {};
-    if (typeof req.body === 'object' && req.body !== null) {
-      body = req.body;
-    } else if (typeof req.body === 'string') {
-      try { body = JSON.parse(req.body); } catch(e) {}
+    if (rawBody) {
+      try { body = JSON.parse(rawBody); } catch(e) {}
     }
 
     const name = body.name || '';
