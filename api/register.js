@@ -15,14 +15,19 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
-    // Vercel serverless request body parsing
-    let body = req.body;
-    if (typeof body === 'string') {
-      try { body = JSON.parse(body); } catch(e) {}
-    }
-    body = body || {};
+    let name = '';
+    let email = '';
+    let phone = '';
+    let ref = '';
 
-    const { name, email, phone, ref } = body;
+    // Handle raw string body vs parsed object body in Vercel Serverless
+    if (req.body) {
+      const b = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      name = b.name || '';
+      email = b.email || '';
+      phone = b.phone || '';
+      ref = b.ref || '';
+    }
 
     if (!name || !email) {
       return res.status(400).json({ error: 'Nome e e-mail são obrigatórios' });
@@ -41,7 +46,11 @@ export default async function handler(req, res) {
       }
     });
 
-    const checkData = await checkRes.json();
+    const checkText = await checkRes.text();
+    let checkData = [];
+    if (checkText) {
+      try { checkData = JSON.parse(checkText); } catch(e) {}
+    }
 
     if (Array.isArray(checkData) && checkData.length > 0) {
       return res.status(200).json({
@@ -77,10 +86,14 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload)
     });
 
-    const insertData = await insertRes.json();
+    const insertText = await insertRes.text();
+    let insertData = [];
+    if (insertText) {
+      try { insertData = JSON.parse(insertText); } catch(e) {}
+    }
 
     if (!insertRes.ok) {
-      return res.status(500).json({ error: 'Erro Supabase Insert: ' + JSON.stringify(insertData) });
+      return res.status(500).json({ error: 'Erro Supabase Insert (' + insertRes.status + '): ' + insertText });
     }
 
     const newReader = Array.isArray(insertData) ? insertData[0] : insertData;
@@ -107,6 +120,6 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    return res.status(500).json({ error: 'Erro no servidor de registro: ' + (err.message || String(err)) });
+    return res.status(500).json({ error: 'Erro de execução: ' + (err.stack || err.message || String(err)) });
   }
 }
