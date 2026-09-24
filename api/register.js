@@ -1,8 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ydezgyxfggplxapargdq.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
-
+// Standalone register API using native fetch to Supabase REST API
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -16,8 +12,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ydezgyxfggplxapargdq.supabase.co';
+  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
+
   try {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     const { name, email, phone, ref } = req.body || {};
 
     if (!name || !email) {
@@ -28,29 +26,40 @@ export default async function handler(req, res) {
     const cleanName = name.trim();
     const cleanPhone = phone ? phone.trim() : null;
 
-    // 1. Verifica se o leitor já existe no banco
-    const { data: existing, error: selectErr } = await supabase
-      .from('readers')
-      .select('*')
-      .eq('email', cleanEmail)
-      .maybeSingle();
+    // 1. Consulta se o leitor já existe via REST nativo
+    const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/readers?email=eq.${encodeURIComponent(cleanEmail)}&select=*`, {
+      method: 'GET',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
 
-    if (existing) {
+    const checkData = await checkRes.json();
+
+    if (Array.isArray(checkData) && checkData.length > 0) {
       return res.status(200).json({
         success: true,
-        reader: existing,
+        reader: checkData[0],
         message: 'Leitor já cadastrado'
       });
     }
 
-    // 2. Cria novo leitor se não existir
+    // 2. Insere novo leitor via REST nativo
     const accessToken = 'TK_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
     const firstName = cleanName.split(' ')[0].replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
     const refCode = 'USH-' + (firstName || 'LEITOR') + '-' + Math.floor(1000 + Math.random() * 9000);
 
-    const { data: newReader, error: insertErr } = await supabase
-      .from('readers')
-      .insert([{
+    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/readers`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify([{
         email: cleanEmail,
         name: cleanName,
         phone: cleanPhone,
@@ -59,21 +68,30 @@ export default async function handler(req, res) {
         referral_code: refCode,
         referred_by: ref || null
       }])
-      .select()
-      .single();
+    });
 
-    if (insertErr) {
-      return res.status(500).json({ error: 'Erro Supabase Insert: ' + insertErr.message });
+    const insertData = await insertRes.json();
+
+    if (!insertRes.ok) {
+      return res.status(500).json({ error: 'Erro Supabase Insert: ' + JSON.stringify(insertData) });
     }
 
-    // 3. Inicializa os traits/progresso do leitor
-    if (newReader) {
-      await supabase
-        .from('reader_traits')
-        .insert([{
+    const newReader = Array.isArray(insertData) ? insertData[0] : insertData;
+
+    // 3. Cria o registro de traits via REST nativo
+    if (newReader && newReader.id) {
+      await fetch(`${SUPABASE_URL}/rest/v1/reader_traits`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify([{
           reader_id: newReader.id,
           reading_progress: { max_chapter: 1, last_chapter: 1 }
-        }]);
+        }])
+      });
     }
 
     return res.status(200).json({
@@ -82,6 +100,6 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    return res.status(500).json({ error: 'Erro interno server: ' + (err.message || String(err)) });
+    return res.status(500).json({ error: 'Erro no servidor de registro: ' + (err.message || String(err)) });
   }
 }
