@@ -1,4 +1,3 @@
-// API Serverless pura com leitura de stream nativa do Node (sem Vercel body getter)
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -16,31 +15,17 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
-    // Leitura segura do corpo do POST via stream buffer ou req.body pré-parseado
-    let rawData = '';
+    let body = {};
     if (typeof req.body === 'object' && req.body !== null) {
-      rawData = JSON.stringify(req.body);
+      body = req.body;
     } else if (typeof req.body === 'string') {
-      rawData = req.body;
+      try { body = JSON.parse(req.body); } catch(e) {}
     }
 
-    if (!rawData) {
-      const buffers = [];
-      for await (const chunk of req) {
-        buffers.push(chunk);
-      }
-      rawData = Buffer.concat(buffers).toString('utf-8');
-    }
-
-    let parsed = {};
-    if (rawData) {
-      try { parsed = JSON.parse(rawData); } catch(e) {}
-    }
-
-    const name = parsed.name || '';
-    const email = parsed.email || '';
-    const phone = parsed.phone || '';
-    const ref = parsed.ref || '';
+    const name = body.name || '';
+    const email = body.email || '';
+    const phone = body.phone || '';
+    const ref = body.ref || '';
 
     if (!name || !email) {
       return res.status(400).json({ error: 'Nome e e-mail são obrigatórios' });
@@ -78,7 +63,7 @@ export default async function handler(req, res) {
     const firstName = cleanName.split(' ')[0].replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
     const refCode = 'USH-' + (firstName || 'LEITOR') + '-' + Math.floor(1000 + Math.random() * 9000);
 
-    const payload = {
+    const payload = [{
       email: cleanEmail,
       name: cleanName,
       phone: cleanPhone,
@@ -86,7 +71,7 @@ export default async function handler(req, res) {
       access_token: accessToken,
       referral_code: refCode,
       referred_by: ref || null
-    };
+    }];
 
     const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/readers`, {
       method: 'POST',
@@ -120,10 +105,10 @@ export default async function handler(req, res) {
           'Authorization': `Bearer ${SUPABASE_KEY}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
+        body: JSON.stringify([{
           reader_id: newReader.id,
           reading_progress: { max_chapter: 1, last_chapter: 1 }
-        })
+        }])
       });
     }
 
