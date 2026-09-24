@@ -440,11 +440,51 @@ async function checkChapterAccess(chapterIndex) {
 }
 
 // Handler de Checkout do Paywall
-function handlePaywallCheckout() {
+// Handler de Checkout do Paywall (Integrado com Pagar.me API)
+async function handlePaywallCheckout() {
   const token = localStorage.getItem('ush_token') || new URLSearchParams(window.location.search).get('token');
-  alert('Redirecionando para o Checkout do Pagar.me (R$ 49,00)...');
-  // Futuro: integrar Pagar.me SDK embutido
+  const btn = document.getElementById('paywall-buy-btn');
+
+  if (!token) {
+    alert('Sua sessão de leitor não foi encontrada. Faça seu cadastro novamente.');
+    const regModal = document.getElementById('registration-modal');
+    if (regModal) regModal.style.display = 'flex';
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = 'GERANDO PAGAMENTO SEGURO...';
+  }
+
+  try {
+    const res = await fetch('/api/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token, payment_method: 'checkout' })
+    });
+
+    const data = await res.json();
+
+    if (data.success && data.checkoutUrl) {
+      // Redireciona o leitor para o Checkout Seguro do Pagar.me
+      window.location.href = data.checkoutUrl;
+    } else {
+      alert(data.error || 'Erro ao gerar o checkout. Tente novamente.');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49) →';
+      }
+    }
+  } catch (err) {
+    alert('Erro de conexão com o meio de pagamento. Tente novamente.');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49) →';
+    }
+  }
 }
+
 
 // Verifica no carregamento inicial se o leitor possui token/cadastro
 document.addEventListener('DOMContentLoaded', () => {
