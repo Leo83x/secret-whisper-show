@@ -342,3 +342,118 @@
 
 document.addEventListener('DOMContentLoaded', function() { var getEl = function(id) { return document.getElementById(id); }; var getEls = function(sel) { return document.querySelectorAll(sel); }; var fontMap = { serif: 'Crimson Text, Georgia, serif', sans: 'Inter, sans-serif', epic: 'Cinzel, serif' }; getEls('.font-btn').forEach(function(btn) { btn.addEventListener('click', function() { var fontKey = this.dataset.font; document.body.setAttribute('data-font', fontKey); var fontCss = fontMap[fontKey] || fontMap.serif; var wrapper = getEl('content-wrapper'); if (wrapper) { wrapper.style.setProperty('font-family', fontCss, 'important'); wrapper.querySelectorAll('p, span, div, h1, h2, h3').forEach(function(el) { el.style.setProperty('font-family', fontCss, 'important'); }); } getEls('.font-btn').forEach(function(b) { b.classList.toggle('active', b === btn); }); }); }); function toggleZen() { if (!document.fullscreenElement && !document.webkitFullscreenElement) { var doc = document.documentElement; if (doc.requestFullscreen) doc.requestFullscreen(); else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen(); document.body.classList.add('zen-mode'); } else { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); document.body.classList.remove('zen-mode'); } } var btnZen = getEl('btn-zen'); var btnExitZen = getEl('btn-exit-zen'); if (btnZen) btnZen.addEventListener('click', toggleZen); if (btnExitZen) btnExitZen.addEventListener('click', toggleZen); var mPrev = getEl('m-btn-prev'); var mNext = getEl('m-btn-next'); var btnPrev = getEl('btn-prev'); var btnNext = getEl('btn-next'); if (mPrev && btnPrev) mPrev.addEventListener('click', function() { btnPrev.click(); }); if (mNext && btnNext) mNext.addEventListener('click', function() { btnNext.click(); }); });
 document.addEventListener('DOMContentLoaded', function() { var mNav = document.getElementById('m-nav-current'); var nav = document.getElementById('nav-current'); if (mNav && nav) { var observer = new MutationObserver(function() { mNav.textContent = nav.textContent; }); observer.observe(nav, { childList: true, characterData: true, subtree: true }); mNav.textContent = nav.textContent; } });
+
+
+// Lógica de Registro de Leitor e Controle de Paywall (Capítulo 3+)
+
+async function handleReaderRegistration(e) {
+  if (e) e.preventDefault();
+  const nameInput = document.getElementById('reg-name');
+  const emailInput = document.getElementById('reg-email');
+  const phoneInput = document.getElementById('reg-phone');
+  const btn = document.getElementById('reg-btn');
+
+  if (!nameInput || !emailInput) return;
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+  const phone = phoneInput ? phoneInput.value.trim() : '';
+
+  if (!name || !email) {
+    alert('Por favor, informe seu nome e e-mail.');
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = 'CRIANDO SUA IDENTIDADE...';
+  }
+
+  try {
+    const urlRef = new URLSearchParams(window.location.search).get('ref');
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, phone, ref: urlRef })
+    });
+    const data = await res.json();
+
+    if (data.success && data.reader) {
+      localStorage.setItem('ush_token', data.reader.access_token);
+      localStorage.setItem('ush_name', data.reader.name);
+      
+      const modal = document.getElementById('registration-modal');
+      if (modal) modal.style.display = 'none';
+
+      // Recarrega o leitor com o token de acesso
+      window.location.href = window.location.pathname + '?token=' + data.reader.access_token;
+    } else {
+      alert(data.error || 'Erro ao criar conta. Tente novamente.');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = 'ACESSAR A DEGUSTAÇÃO →';
+      }
+    }
+  } catch (err) {
+    alert('Erro de conexão. Verifique sua rede e tente novamente.');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = 'ACESSAR A DEGUSTAÇÃO →';
+    }
+  }
+}
+
+// Verificação de Acesso e Paywall no Capítulo 3+
+async function checkChapterAccess(chapterIndex) {
+  // Capítulos 1 e 2 (índices 0 e 1) são gratuitos para degustação
+  if (chapterIndex < 2) {
+    return true;
+  }
+
+  const token = localStorage.getItem('ush_token') || new URLSearchParams(window.location.search).get('token');
+
+  // Se não tem token ou não está cadastrado, abre o modal de cadastro primeiro
+  if (!token) {
+    const regModal = document.getElementById('registration-modal');
+    if (regModal) regModal.style.display = 'flex';
+    return false;
+  }
+
+  // Valida com a API se o leitor já é pago ('paid')
+  try {
+    const res = await fetch('/api/validate-access?token=' + token);
+    const data = await res.json();
+
+    if (data.valid && data.isPaid) {
+      return true; // Acesso total liberado!
+    } else {
+      // Leitor cadastrado mas ainda na degustação -> Abre Paywall (R$ 49)
+      const paywallModal = document.getElementById('paywall-modal');
+      if (paywallModal) paywallModal.style.display = 'flex';
+      return false;
+    }
+  } catch (err) {
+    // Em caso de erro de conexão, se estiver no cap 3+, abre o paywall por segurança
+    const paywallModal = document.getElementById('paywall-modal');
+    if (paywallModal) paywallModal.style.display = 'flex';
+    return false;
+  }
+}
+
+// Handler de Checkout do Paywall
+function handlePaywallCheckout() {
+  const token = localStorage.getItem('ush_token') || new URLSearchParams(window.location.search).get('token');
+  alert('Redirecionando para o Checkout do Pagar.me (R$ 49,00)...');
+  // Futuro: integrar Pagar.me SDK embutido
+}
+
+// Verifica no carregamento inicial se o leitor possui token/cadastro
+document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('ush_token') || new URLSearchParams(window.location.search).get('token');
+  if (!token) {
+    // Exibe o modal de cadastro inicial se for o primeiro acesso
+    setTimeout(() => {
+      const regModal = document.getElementById('registration-modal');
+      if (regModal) regModal.style.display = 'flex';
+    }, 1200);
+  }
+});
