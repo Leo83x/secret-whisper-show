@@ -36,7 +36,9 @@ export default async function handler(req, res) {
       }
     });
 
-    const checkData = await checkRes.json();
+    const checkText = await checkRes.text();
+    let checkData = [];
+    try { checkData = JSON.parse(checkText); } catch(e) {}
 
     if (Array.isArray(checkData) && checkData.length > 0) {
       return res.status(200).json({
@@ -70,10 +72,12 @@ export default async function handler(req, res) {
       }])
     });
 
-    const insertData = await insertRes.json();
+    const insertText = await insertRes.text();
+    let insertData = [];
+    try { insertData = JSON.parse(insertText); } catch(e) {}
 
     if (!insertRes.ok) {
-      return res.status(500).json({ error: 'Erro Supabase Insert: ' + JSON.stringify(insertData) });
+      return res.status(500).json({ error: 'Erro Supabase Insert: ' + insertText });
     }
 
     const newReader = Array.isArray(insertData) ? insertData[0] : insertData;
