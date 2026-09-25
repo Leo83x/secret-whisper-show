@@ -1,3 +1,4 @@
+// Endpoint Serverless compatível com Vercel Node Runtime
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -15,29 +16,33 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
-    // Read raw body stream directly to bypass Vercel nodejs getter bug
-    let rawText = '';
-    try {
-      const chunks = [];
-      for await (const chunk of req) {
-        chunks.push(chunk);
+    let name = '';
+    let email = '';
+    let phone = '';
+    let ref = '';
+
+    // Ler body seguro (Object ou JSON String)
+    const body = req.body;
+    if (body) {
+      if (typeof body === 'object') {
+        name = body.name || '';
+        email = body.email || '';
+        phone = body.phone || '';
+        ref = body.ref || '';
+      } else if (typeof body === 'string') {
+        try {
+          const parsed = JSON.parse(body);
+          name = parsed.name || '';
+          email = parsed.email || '';
+          phone = parsed.phone || '';
+          ref = parsed.ref || '';
+        } catch (e) {}
       }
-      rawText = Buffer.concat(chunks).toString('utf-8');
-    } catch (streamErr) {
-      rawText = '';
     }
 
-    let body = {};
-    if (rawText) {
-      try { body = JSON.parse(rawText); } catch(e) {}
-    }
-
-    // Fallback query parameters if body stream is empty
-    const query = req.query || {};
-    const name = body.name || query.name || '';
-    const email = body.email || query.email || '';
-    const phone = body.phone || query.phone || '';
-    const ref = body.ref || query.ref || '';
+    // Fallback para query params se body vier vazio
+    if (!name && req.query && req.query.name) name = req.query.name;
+    if (!email && req.query && req.query.email) email = req.query.email;
 
     if (!name || !email) {
       return res.status(400).json({ error: 'Nome e e-mail são obrigatórios' });
