@@ -107,6 +107,11 @@
 
   /* ── RENDERIZAÇÃO DO CAPÍTULO ───────────────────────── */
   function renderChapter(idx) {
+    if (idx >= 2 && window.currentReaderStatus !== 'paid') {
+        const paywallModal = document.getElementById('paywall-modal');
+        if (paywallModal) paywallModal.style.display = 'flex';
+        return;
+    }
     if (typeof BOOK === 'undefined' || !BOOK.chapters[idx]) return;
     currentIdx = idx;
     const ch = BOOK.chapters[idx];
@@ -343,13 +348,12 @@
 document.addEventListener('DOMContentLoaded', function() { var getEl = function(id) { return document.getElementById(id); }; var getEls = function(sel) { return document.querySelectorAll(sel); }; var fontMap = { serif: 'Crimson Text, Georgia, serif', sans: 'Inter, sans-serif', epic: 'Cinzel, serif' }; getEls('.font-btn').forEach(function(btn) { btn.addEventListener('click', function() { var fontKey = this.dataset.font; document.body.setAttribute('data-font', fontKey); var fontCss = fontMap[fontKey] || fontMap.serif; var wrapper = getEl('content-wrapper'); if (wrapper) { wrapper.style.setProperty('font-family', fontCss, 'important'); wrapper.querySelectorAll('p, span, div, h1, h2, h3').forEach(function(el) { el.style.setProperty('font-family', fontCss, 'important'); }); } getEls('.font-btn').forEach(function(b) { b.classList.toggle('active', b === btn); }); }); }); function toggleZen() { if (!document.fullscreenElement && !document.webkitFullscreenElement) { var doc = document.documentElement; if (doc.requestFullscreen) doc.requestFullscreen(); else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen(); document.body.classList.add('zen-mode'); } else { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); document.body.classList.remove('zen-mode'); } } var btnZen = getEl('btn-zen'); var btnExitZen = getEl('btn-exit-zen'); if (btnZen) btnZen.addEventListener('click', toggleZen); if (btnExitZen) btnExitZen.addEventListener('click', toggleZen); var mPrev = getEl('m-btn-prev'); var mNext = getEl('m-btn-next'); var btnPrev = getEl('btn-prev'); var btnNext = getEl('btn-next'); if (mPrev && btnPrev) mPrev.addEventListener('click', function() { btnPrev.click(); }); if (mNext && btnNext) mNext.addEventListener('click', function() { btnNext.click(); }); });
 document.addEventListener('DOMContentLoaded', function() { var mNav = document.getElementById('m-nav-current'); var nav = document.getElementById('nav-current'); if (mNav && nav) { var observer = new MutationObserver(function() { mNav.textContent = nav.textContent; }); observer.observe(nav, { childList: true, characterData: true, subtree: true }); mNav.textContent = nav.textContent; } });
 
-
-// Lógica de Registro de Leitor e Controle de Paywall (Capítulo 3+)
-
-
-
-// Alternar entre Cadastro (Criar Identidade) e Login (Já sou Leitor)
+// =========================================================
+// SISTEMA DE IDENTIDADE DE LEITOR, PAYWALL E CORRENTE
+// =========================================================
 let isLoginMode = false;
+window.currentReaderStatus = 'free';
+window.currentReaderCode = '';
 
 function toggleAuthMode(overrideMode) {
   if (overrideMode === 'login') isLoginMode = true;
@@ -371,22 +375,21 @@ function toggleAuthMode(overrideMode) {
     if (nameGroup) nameGroup.style.display = 'none';
     if (phoneGroup) phoneGroup.style.display = 'none';
     if (nameInput) nameInput.required = false;
-    if (submitBtn) submitBtn.innerText = 'ENTRAR NO LIVRO →';
-    if (toggleText) toggleText.innerText = 'Ainda não tem uma Identidade?';
-    if (toggleLink) toggleLink.innerText = 'Criar Identidade →';
+    if (submitBtn) submitBtn.innerText = 'ENTRAR NO LIVRO \u2192';
+    if (toggleText) toggleText.innerText = 'Ainda n\u00e3o tem uma Identidade?';
+    if (toggleLink) toggleLink.innerText = 'Criar Identidade \u2192';
   } else {
     if (modalTitle) modalTitle.innerText = 'Inicie sua Jornada';
-    if (modalDesc) modalDesc.innerText = 'Crie sua Identidade para acessar a degustação gratuita e ter seu progresso salvo.';
+    if (modalDesc) modalDesc.innerText = 'Crie sua Identidade para acessar a degusta\u00e7\u00e3o gratuita e ter seu progresso salvo.';
     if (nameGroup) nameGroup.style.display = 'block';
     if (phoneGroup) phoneGroup.style.display = 'block';
     if (nameInput) nameInput.required = true;
-    if (submitBtn) submitBtn.innerText = 'ACESSAR A DEGUSTAÇÃO →';
-    if (toggleText) toggleText.innerText = 'Já possui uma Identidade de Leitor?';
-    if (toggleLink) toggleLink.innerText = 'Já sou Leitor →';
+    if (submitBtn) submitBtn.innerText = 'ACESSAR A DEGUSTA\u00c7\u00c3O \u2192';
+    if (toggleText) toggleText.innerText = 'J\u00e1 possui uma Identidade de Leitor?';
+    if (toggleLink) toggleLink.innerText = 'J\u00e1 sou Leitor \u2192';
   }
 }
 
-// Handler Único para Login e Cadastro
 async function handleReaderRegistration(e) {
   if (e) e.preventDefault();
   const emailInput = document.getElementById('reg-email');
@@ -429,28 +432,131 @@ async function handleReaderRegistration(e) {
       const modal = document.getElementById('registration-modal');
       if (modal) modal.style.display = 'none';
 
-      window.location.href = window.location.pathname + '?token=' + data.reader.access_token;
+      window.location.href = '/reader/?token=' + data.reader.access_token;
     } else {
       alert(data.error || 'Erro ao processar acesso. Tente novamente.');
       if (btn) {
         btn.disabled = false;
-        btn.innerText = isLoginMode ? 'ENTRAR NO LIVRO →' : 'ACESSAR A DEGUSTAÇÃO →';
+        btn.innerText = isLoginMode ? 'ENTRAR NO LIVRO \u2192' : 'ACESSAR A DEGUSTA\u00c7\u00c3O \u2192';
       }
     }
   } catch (err) {
-    alert('Erro de conexão. Verifique sua rede e tente novamente.');
+    alert('Erro de conex\u00e3o. Verifique sua rede e tente novamente.');
     if (btn) {
       btn.disabled = false;
-      btn.innerText = isLoginMode ? 'ENTRAR NO LIVRO →' : 'ACESSAR A DEGUSTAÇÃO →';
+      btn.innerText = isLoginMode ? 'ENTRAR NO LIVRO \u2192' : 'ACESSAR A DEGUSTA\u00c7\u00c3O \u2192';
     }
   }
 }
 
-// Função para Deslogar / Trocar de Leitor no E-reader
+async function checkReaderAccess() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenFromUrl = urlParams.get('token');
+  if (tokenFromUrl) {
+    localStorage.setItem('ush_token', tokenFromUrl);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  const token = localStorage.getItem('ush_token');
+  const modal = document.getElementById('registration-modal');
+
+  if (!token) {
+    if (modal) modal.style.display = 'flex';
+    return;
+  }
+
+  if (modal) modal.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/get-reader-profile?token=' + encodeURIComponent(token));
+    const data = await res.json();
+
+    if (data.success && data.reader) {
+      window.currentReaderStatus = data.reader.status || 'free';
+      window.currentReaderCode = data.reader.referral_code || '';
+
+      const nameEl = document.getElementById('profile-reader-name');
+      const emailEl = document.getElementById('profile-reader-email');
+      const badgeEl = document.getElementById('profile-status-badge');
+      const chainEl = document.getElementById('profile-chain-count');
+
+      if (nameEl) nameEl.innerText = data.reader.name || 'Leitor';
+      if (emailEl) emailEl.innerText = data.reader.email || '--';
+      if (chainEl) chainEl.innerText = data.chainCount || 0;
+      if (badgeEl) {
+        if (data.reader.status === 'paid') {
+          badgeEl.innerText = 'ACESSO COMPLETO';
+          badgeEl.style.background = 'rgba(34,197,94,0.15)';
+          badgeEl.style.color = '#22c55e';
+        } else {
+          badgeEl.innerText = 'DEGUSTA\u00c7\u00c3O';
+          badgeEl.style.background = 'rgba(56,189,248,0.15)';
+          badgeEl.style.color = '#38bdf8';
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao buscar perfil:', e);
+  }
+}
+
+function copyReferralLink() {
+  const token = localStorage.getItem('ush_token');
+  const code = window.currentReaderCode || '';
+  const refCode = code || token || '';
+  const link = window.location.origin + '/reader/?ref=' + encodeURIComponent(refCode);
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => {
+      alert('Link de Indica\u00e7\u00e3o copiado com sucesso!\n\n' + link);
+    }).catch(() => {
+      prompt('Copie o seu link de indica\u00e7\u00e3o abaixo:', link);
+    });
+  } else {
+    prompt('Copie o seu link de indica\u00e7\u00e3o abaixo:', link);
+  }
+}
+
 function logoutReader() {
   if (confirm('Deseja sair da sua Identidade neste dispositivo?')) {
     localStorage.removeItem('ush_token');
     localStorage.removeItem('ush_name');
-    window.location.href = window.location.pathname;
+    window.location.href = '/reader/';
   }
 }
+
+async function handlePaywallCheckout() {
+  const btn = document.getElementById('paywall-buy-btn');
+  const token = localStorage.getItem('ush_token');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = 'PROCESSANDO...';
+  }
+  try {
+    const res = await fetch('/api/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token })
+    });
+    const data = await res.json();
+    if (data.success && data.checkout_url) {
+      window.location.href = data.checkout_url;
+    } else {
+      alert(data.error || 'Erro ao gerar pagamento. Tente novamente.');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49)';
+      }
+    }
+  } catch (err) {
+    alert('Erro de conex\u00e3o ao gerar checkout.');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49)';
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  checkReaderAccess();
+});
