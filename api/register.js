@@ -15,17 +15,16 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
-    // Read raw body directly without accessing req.body getter property
-    let rawBody = '';
-    try {
-      rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body || {});
-    } catch (e) {
-      rawBody = '';
+    // Read body by consuming stream directly to prevent Vercel body getter parser error
+    const chunks = [];
+    for await (const chunk of req) {
+      chunks.push(chunk);
     }
+    const rawBodyText = Buffer.concat(chunks).toString('utf-8');
 
     let body = {};
-    if (rawBody) {
-      try { body = JSON.parse(rawBody); } catch(e) {}
+    if (rawBodyText) {
+      try { body = JSON.parse(rawBodyText); } catch(e) {}
     }
 
     const name = body.name || '';
