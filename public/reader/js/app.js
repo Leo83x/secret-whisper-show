@@ -346,26 +346,71 @@ document.addEventListener('DOMContentLoaded', function() { var mNav = document.g
 
 // Lógica de Registro de Leitor e Controle de Paywall (Capítulo 3+)
 
+
+
+// Alternar entre Cadastro (Criar Identidade) e Login (Já sou Leitor)
+let isLoginMode = false;
+
+function toggleAuthMode(overrideMode) {
+  if (overrideMode === 'login') isLoginMode = true;
+  else if (overrideMode === 'register') isLoginMode = false;
+  else isLoginMode = !isLoginMode;
+
+  const modalTitle = document.querySelector('#registration-modal h2');
+  const modalDesc = document.querySelector('#registration-modal p');
+  const nameGroup = document.getElementById('reg-name')?.parentElement;
+  const phoneGroup = document.getElementById('reg-phone')?.parentElement;
+  const submitBtn = document.getElementById('reg-btn');
+  const toggleText = document.getElementById('auth-toggle-text');
+  const toggleLink = document.getElementById('auth-toggle-link');
+  const nameInput = document.getElementById('reg-name');
+
+  if (isLoginMode) {
+    if (modalTitle) modalTitle.innerText = 'Acessar sua Identidade';
+    if (modalDesc) modalDesc.innerText = 'Digite seu e-mail cadastrado para recuperar seu acesso e progresso de leitura.';
+    if (nameGroup) nameGroup.style.display = 'none';
+    if (phoneGroup) phoneGroup.style.display = 'none';
+    if (nameInput) nameInput.required = false;
+    if (submitBtn) submitBtn.innerText = 'ENTRAR NO LIVRO →';
+    if (toggleText) toggleText.innerText = 'Ainda não tem uma Identidade?';
+    if (toggleLink) toggleLink.innerText = 'Criar Identidade →';
+  } else {
+    if (modalTitle) modalTitle.innerText = 'Inicie sua Jornada';
+    if (modalDesc) modalDesc.innerText = 'Crie sua Identidade para acessar a degustação gratuita e ter seu progresso salvo.';
+    if (nameGroup) nameGroup.style.display = 'block';
+    if (phoneGroup) phoneGroup.style.display = 'block';
+    if (nameInput) nameInput.required = true;
+    if (submitBtn) submitBtn.innerText = 'ACESSAR A DEGUSTAÇÃO →';
+    if (toggleText) toggleText.innerText = 'Já possui uma Identidade de Leitor?';
+    if (toggleLink) toggleLink.innerText = 'Já sou Leitor →';
+  }
+}
+
+// Handler Único para Login e Cadastro
 async function handleReaderRegistration(e) {
   if (e) e.preventDefault();
-  const nameInput = document.getElementById('reg-name');
   const emailInput = document.getElementById('reg-email');
+  const nameInput = document.getElementById('reg-name');
   const phoneInput = document.getElementById('reg-phone');
   const btn = document.getElementById('reg-btn');
 
-  if (!nameInput || !emailInput) return;
-  const name = nameInput.value.trim();
+  if (!emailInput) return;
   const email = emailInput.value.trim();
+  const name = isLoginMode ? (email.split('@')[0]) : (nameInput ? nameInput.value.trim() : '');
   const phone = phoneInput ? phoneInput.value.trim() : '';
 
-  if (!name || !email) {
-    alert('Por favor, informe seu nome e e-mail.');
+  if (!email) {
+    alert('Por favor, informe seu e-mail.');
+    return;
+  }
+  if (!isLoginMode && !name) {
+    alert('Por favor, informe seu nome.');
     return;
   }
 
   if (btn) {
     btn.disabled = true;
-    btn.innerText = 'CRIANDO SUA IDENTIDADE...';
+    btn.innerText = isLoginMode ? 'VERIFICANDO ACESSO...' : 'CRIANDO SUA IDENTIDADE...';
   }
 
   try {
@@ -373,7 +418,7 @@ async function handleReaderRegistration(e) {
     const res = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, phone, ref: urlRef })
+      body: JSON.stringify({ name: name || 'Leitor', email: email, phone: phone, ref: urlRef })
     });
     const data = await res.json();
 
@@ -384,116 +429,28 @@ async function handleReaderRegistration(e) {
       const modal = document.getElementById('registration-modal');
       if (modal) modal.style.display = 'none';
 
-      // Recarrega o leitor com o token de acesso
       window.location.href = window.location.pathname + '?token=' + data.reader.access_token;
     } else {
-      alert(data.error || 'Erro ao criar conta. Tente novamente.');
+      alert(data.error || 'Erro ao processar acesso. Tente novamente.');
       if (btn) {
         btn.disabled = false;
-        btn.innerText = 'ACESSAR A DEGUSTAÇÃO →';
+        btn.innerText = isLoginMode ? 'ENTRAR NO LIVRO →' : 'ACESSAR A DEGUSTAÇÃO →';
       }
     }
   } catch (err) {
     alert('Erro de conexão. Verifique sua rede e tente novamente.');
     if (btn) {
       btn.disabled = false;
-      btn.innerText = 'ACESSAR A DEGUSTAÇÃO →';
+      btn.innerText = isLoginMode ? 'ENTRAR NO LIVRO →' : 'ACESSAR A DEGUSTAÇÃO →';
     }
   }
 }
 
-// Verificação de Acesso e Paywall no Capítulo 3+
-async function checkChapterAccess(chapterIndex) {
-  // Capítulos 1 e 2 (índices 0 e 1) são gratuitos para degustação
-  if (chapterIndex < 2) {
-    return true;
-  }
-
-  const token = localStorage.getItem('ush_token') || new URLSearchParams(window.location.search).get('token');
-
-  // Se não tem token ou não está cadastrado, abre o modal de cadastro primeiro
-  if (!token) {
-    const regModal = document.getElementById('registration-modal');
-    if (regModal) regModal.style.display = 'flex';
-    return false;
-  }
-
-  // Valida com a API se o leitor já é pago ('paid')
-  try {
-    const res = await fetch('/api/validate-access?token=' + token);
-    const data = await res.json();
-
-    if (data.valid && data.isPaid) {
-      return true; // Acesso total liberado!
-    } else {
-      // Leitor cadastrado mas ainda na degustação -> Abre Paywall (R$ 49)
-      const paywallModal = document.getElementById('paywall-modal');
-      if (paywallModal) paywallModal.style.display = 'flex';
-      return false;
-    }
-  } catch (err) {
-    // Em caso de erro de conexão, se estiver no cap 3+, abre o paywall por segurança
-    const paywallModal = document.getElementById('paywall-modal');
-    if (paywallModal) paywallModal.style.display = 'flex';
-    return false;
+// Função para Deslogar / Trocar de Leitor no E-reader
+function logoutReader() {
+  if (confirm('Deseja sair da sua Identidade neste dispositivo?')) {
+    localStorage.removeItem('ush_token');
+    localStorage.removeItem('ush_name');
+    window.location.href = window.location.pathname;
   }
 }
-
-// Handler de Checkout do Paywall
-// Handler de Checkout do Paywall (Integrado com Pagar.me API)
-async function handlePaywallCheckout() {
-  const token = localStorage.getItem('ush_token') || new URLSearchParams(window.location.search).get('token');
-  const btn = document.getElementById('paywall-buy-btn');
-
-  if (!token) {
-    alert('Sua sessão de leitor não foi encontrada. Faça seu cadastro novamente.');
-    const regModal = document.getElementById('registration-modal');
-    if (regModal) regModal.style.display = 'flex';
-    return;
-  }
-
-  if (btn) {
-    btn.disabled = true;
-    btn.innerText = 'GERANDO PAGAMENTO SEGURO...';
-  }
-
-  try {
-    const res = await fetch('/api/create-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: token, payment_method: 'checkout' })
-    });
-
-    const data = await res.json();
-
-    if (data.success && data.checkoutUrl) {
-      // Redireciona o leitor para o Checkout Seguro do Pagar.me
-      window.location.href = data.checkoutUrl;
-    } else {
-      alert(data.error || 'Erro ao gerar o checkout. Tente novamente.');
-      if (btn) {
-        btn.disabled = false;
-        btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49) →';
-      }
-    }
-  } catch (err) {
-    alert('Erro de conexão com o meio de pagamento. Tente novamente.');
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49) →';
-    }
-  }
-}
-
-
-// Verifica no carregamento inicial se o leitor possui token/cadastro
-document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('ush_token') || new URLSearchParams(window.location.search).get('token');
-  if (!token) {
-    // Exibe o modal de cadastro inicial se for o primeiro acesso
-    setTimeout(() => {
-      const regModal = document.getElementById('registration-modal');
-      if (regModal) regModal.style.display = 'flex';
-    }, 1200);
-  }
-});

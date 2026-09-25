@@ -62,9 +62,12 @@
   <div id="dashboard" class="container">
     <div class="header">
       <h1>Painel Admin — Leitores & Vendas</h1>
+      
       <div>
         <input type="text" id="search-input" placeholder="🔍 Buscar leitor por nome ou e-mail..." oninput="filterReaders()" style="width:280px; margin-bottom:0;">
+        <button onclick="logoutAdmin()" style="background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:0.6rem 1rem; font-size:0.8rem; margin-left:10px;">SAIR</button>
       </div>
+
     </div>
 
     <!-- CARDS DE ESTATÍSTICAS -->
@@ -209,6 +212,14 @@
       );
       renderTable(filtered);
     }
-  </script>
+  
+    function logoutAdmin() {
+      adminToken = '';
+      document.getElementById('admin-pass').value = '';
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('login-box').style.display = 'block';
+    }
+
+</script>
 </body>
 </html>
