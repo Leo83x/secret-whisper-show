@@ -1,3 +1,9 @@
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -15,23 +21,17 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
-    let body = req.body;
-    if (!body || Object.keys(body).length === 0) {
-      const chunks = [];
-      for await (const chunk of req) {
-        chunks.push(chunk);
-      }
-      const rawBodyText = Buffer.concat(chunks).toString('utf-8');
-      if (rawBodyText) {
-        try { body = JSON.parse(rawBodyText); } catch(e) {}
-      }
+    const chunks = [];
+    for await (const chunk of req) {
+      chunks.push(chunk);
+    }
+    const rawBodyText = Buffer.concat(chunks).toString('utf-8');
+
+    let body = {};
+    if (rawBodyText) {
+      try { body = JSON.parse(rawBodyText); } catch(e) {}
     }
 
-    if (typeof body === 'string') {
-      try { body = JSON.parse(body); } catch(e) {}
-    }
-
-    body = body || {};
     const name = body.name || '';
     const email = body.email || '';
     const phone = body.phone || '';
