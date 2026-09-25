@@ -1,4 +1,3 @@
-// Express-style body handling via Vercel micro helper
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -16,24 +15,29 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
-    let body = {};
-    if (req.body && typeof req.body === 'object') {
-      body = req.body;
-    } else {
-      const buffers = [];
+    // Read raw body stream directly to bypass Vercel nodejs getter bug
+    let rawText = '';
+    try {
+      const chunks = [];
       for await (const chunk of req) {
-        buffers.push(chunk);
+        chunks.push(chunk);
       }
-      const text = Buffer.concat(buffers).toString('utf-8');
-      if (text) {
-        try { body = JSON.parse(text); } catch(e) {}
-      }
+      rawText = Buffer.concat(chunks).toString('utf-8');
+    } catch (streamErr) {
+      rawText = '';
     }
 
-    const name = body.name || '';
-    const email = body.email || '';
-    const phone = body.phone || '';
-    const ref = body.ref || '';
+    let body = {};
+    if (rawText) {
+      try { body = JSON.parse(rawText); } catch(e) {}
+    }
+
+    // Fallback query parameters if body stream is empty
+    const query = req.query || {};
+    const name = body.name || query.name || '';
+    const email = body.email || query.email || '';
+    const phone = body.phone || query.phone || '';
+    const ref = body.ref || query.ref || '';
 
     if (!name || !email) {
       return res.status(400).json({ error: 'Nome e e-mail são obrigatórios' });
