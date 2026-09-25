@@ -1,9 +1,4 @@
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
-
+// Express-style body handling via Vercel micro helper
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -21,15 +16,18 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
-    const chunks = [];
-    for await (const chunk of req) {
-      chunks.push(chunk);
-    }
-    const rawBodyText = Buffer.concat(chunks).toString('utf-8');
-
     let body = {};
-    if (rawBodyText) {
-      try { body = JSON.parse(rawBodyText); } catch(e) {}
+    if (req.body && typeof req.body === 'object') {
+      body = req.body;
+    } else {
+      const buffers = [];
+      for await (const chunk of req) {
+        buffers.push(chunk);
+      }
+      const text = Buffer.concat(buffers).toString('utf-8');
+      if (text) {
+        try { body = JSON.parse(text); } catch(e) {}
+      }
     }
 
     const name = body.name || '';
