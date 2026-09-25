@@ -107,7 +107,7 @@
 
   /* ── RENDERIZAÇÃO DO CAPÍTULO ───────────────────────── */
   function renderChapter(idx) {
-    if (idx >= 2 && window.currentReaderStatus !== 'paid') {
+    if (idx >= 3 && window.currentReaderStatus !== 'paid') {
         const paywallModal = document.getElementById('paywall-modal');
         if (paywallModal) paywallModal.style.display = 'flex';
         return;
