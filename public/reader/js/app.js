@@ -550,18 +550,22 @@ async function handlePaywallCheckout() {
     const data = await res.json();
     if (data.success) {
       const card = document.querySelector('#paywall-modal .reader-modal-card');
+      const pixCode = (data.pix && data.pix.qr_code) ? data.pix.qr_code : '';
+      const pixUrl = (data.pix && data.pix.qr_code_url) ? data.pix.qr_code_url : '';
+
       if (card) {
         card.innerHTML = `
-          <div style="margin-bottom:1rem;">
+          <div style="position:relative; margin-bottom:0.8rem;">
+            <button onclick="document.getElementById('paywall-modal').style.display='none'" style="position:absolute; top:-10px; right:-5px; background:transparent; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
             <span style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); padding:4px 14px; border-radius:20px; font-size:0.75rem; font-family:monospace;">PIX GERADO COM SUCESSO</span>
           </div>
           <h3 style="color:#fff; font-size:1.2rem; margin-bottom:0.5rem;">Escaneie ou copie o código PIX</h3>
           <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:1rem;">Após a confirmação do pagamento, seu acesso será liberado automaticamente.</p>
-          ${data.pix && data.pix.qr_code_url ? `<img src="${data.pix.qr_code_url}" style="width:180px; height:180px; margin:0 auto 1rem auto; border-radius:12px; border:2px solid #38bdf8; display:block;" />` : ''}
-          <div style="background:#15213b; padding:0.8rem; background:#15213b; border-radius:8px; border:1px solid rgba(256,256,256,0.1); margin-bottom:1rem; word-break:break-all; font-size:0.75rem; color:#e2e8f0; max-height:80px; overflow-y:auto; text-align:left;">
-            ${data.pix && data.pix.qr_code ? data.pix.qr_code : 'Código PIX instalado no Pagar.me! Use o QR Code'}
+          ${pixUrl ? `<img src="${pixUrl}" style="width:180px; height:180px; margin:0 auto 1rem auto; border-radius:12px; border:2px solid #38bdf8; display:block;" />` : '<div style="padding:1.5rem; color:#eab308; font-size:0.85rem;">Copie o código PIX abaixo para pagar no app do seu banco.</div>'  }
+          <div style="background:#15213b; padding:0.8rem; border-radius:8px; border:1px solid rgba(256,256,256,0.1); margin-bottom:1rem; word-break:break-all; font-size:0.75rem; color:#e2e8f0; max-height:80px; overflow-y:auto; text-align:left;">
+            ${pixCode || 'Codigo PIX gerado com sucesso no Pagar.me! Use o Código'}
           </div>
-          <button onclick="navigator.clipboard.writeText('${data.pix && data.pix.qr_code ? data.pix.qr_code : ''}); alert('Código PIX copiado!');" style="width:100%; padding:0.85rem; background:#38bdf8; color:#0f172a; font-weight:800; border:none; border-radius:8px; cursor:pointer;">
+          <button onclick="navigator.clipboard.writeText('${pixCode}'); alert('Código PIX copiado!');" style="width:100%; padding:0.85rem; background:#38bdf8; color:#0f172a; font-weight:800; border:none; border-radius:8px; cursor:pointer;">
             COPIAR CÓDIGO PIX
           </button>
         `;

@@ -114,6 +114,9 @@ export default async function handler(req, res) {
     const tx = charge.last_transaction ? charge.last_transaction : {};
     const isPaid = pagarmeData.status === 'paid' || charge.status === 'paid';
 
+    const pixQrCode = tx.qr_code || tx.qp_code || pagarmeData.qrtcode || pagarmeData.qr_code || '';
+    const pixQrCodeUrl = tx.qr_code_url || tx.qp_code_url || pagarmeData.qr_code_url || '';
+
     await supabase
       .from('readers')
       .update({
@@ -123,17 +126,19 @@ export default async function handler(req, res) {
       })
       .eq('id', reader.id);
 
+
     return res.status(200).json({
       success: true,
       isPaid: isPaid,
       orderId: pagarmeData.id,
       pix: {
-        qr_code: tx.qr_code || tx.qrtcode || tx.qr_code,
-        qr_code_url: tx.qr_code_url || tx.qr_code_url
-      }
+        qr_code: pixQrCode,
+        qr_code_url: pixQrCodeUrl
+      },
+      rawCharge: charge
     });
 
-  } catch (err) {
+} catch (err) {
     return res.status(500).json({ error: err.message || 'Erro interno no servidor' });
   }
 }
