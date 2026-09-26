@@ -3435,3 +3435,161 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
   box-sizing: border-box !important;
 }
+
+
+/* --- ESTILOS DO CARD DE IDENTIDADE E SEUS BOTÕES/LINKS --- */
+.profile-card-container {
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  border-radius: 12px !important;
+  padding: 1.2rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important;
+}
+
+.profile-reader-name {
+  font-weight: 700 !important;
+  color: #f8fafc !important;
+  font-size: 1rem !important;
+  margin-bottom: 2px !important;
+}
+
+.profile-reader-email {
+  font-size: 0.8rem !important;
+  color: #94a3b8 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.profile-chain-box {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px dashed rgba(56, 189, 248, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 0.8rem !important;
+  margin-bottom: 0.4rem !important;
+}
+
+.profile-chain-title {
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  color: #38bdf8 !important;
+  letter-spacing: 0.05em !important;
+  margin-bottom: 0.4rem !important;
+}
+
+.profile-chain-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-size: 0.8rem !important;
+  color: #cbd5e1 !important;
+  margin-bottom: 0.6rem !important;
+}
+
+.profile-copy-btn, .profile-insta-btn, .profile-logout-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 0.65rem 0.9rem !important;
+  border-radius: 8px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+.profile-copy-btn {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  color: #38bdf8 !important;
+}
+
+.profile-copy-btn:hover {
+  background: rgba(56, 189, 248, 0.25) !important;
+}
+
+.profile-insta-btn {
+  background: rgba(225, 29, 72, 0.12) !important;
+  border: 1px solid rgba(225, 29, 72, 0.4) !important;
+  color: #fb7185 !important;
+}
+
+.profile-insta-btn:hover {
+  background: rgba(225, 29, 72, 0.22) !important;
+}
+
+.profile-logout-btn {
+  background: rgba(148, 163, 184, 0.1) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #cbd5e1 !important;
+}
+
+.profile-logout-btn:hover {
+  background: rgba(244, 63, 94, 0.15) !important;
+  border-color: rgba(244, 63, 94, 0.4) !important;
+  color: #f43f5e !important;
+}
+
+/* --- OVERRIDES MODO CLARO PARA CARD DE IDENTIDADE --- */
+[data-theme="light"] .profile-card-container {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .profile-reader-name {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .profile-reader-email {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .profile-chain-box {
+  background: #f8fafc !important;
+  border: 1px dashed #0284c7 !important;
+}
+
+[data-theme="light"] .profile-chain-title {
+  color: #0369a1 !important;
+}
+
+[data-theme="light"] .profile-chain-row {
+  color: #334155 !important;
+}
+
+[data-theme="light"] .profile-copy-btn {
+  background: rgba(2, 132, 199, 0.08) !important;
+  border: 1px solid #0284c7 !important;
+  color: #0284c7 !important;
+}
+
+[data-theme="light"] .profile-copy-btn:hover {
+  background: rgba(2, 132, 199, 0.18) !important;
+}
+
+[data-theme="light"] .profile-insta-btn {
+  background: rgba(225, 29, 72, 0.08) !important;
+  border: 1px solid #e11d48 !important;
+  color: #e11d48 !important;
+}
+
+[data-theme="light"] .profile-insta-btn:hover {
+  background: rgba(225, 29, 72, 0.16) !important;
+}
+
+[data-theme="light"] .profile-logout-btn {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+[data-theme="light"] .profile-logout-btn:hover {
+  background: #ffe4e6 !important;
+  border-color: #e11d48 !important;
+  color: #e11d48 !important;
+}

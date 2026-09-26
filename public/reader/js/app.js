@@ -578,7 +578,7 @@ async function handlePaywallCheckout() {
             <span style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); padding:4px 14px; border-radius:20px; font-size:0.75rem; font-family:monospace;">PIX GERADO COM SUCESSO</span>
           </div>
           <h3 style="color:#fff; font-size:1.2rem; margin-bottom:0.5rem;">Escaneie ou copie o código PIX</h3>
-          <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:1rem;">Após a confirmação do pagamento, seu acesso será liberado automaticamente.</p>
+          <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:1rem;">Após a confirmação do pagamento, seu acesso será liberado automaticamente.<br><span style="font-size:0.75rem; color:#38bdf8;">Favorecido PIX: <strong>LTL EMPREENDIMENTOS</strong></span></p>
           ${pixUrl ? `<img style="width:180px; height:180px; margin:0 auto 1rem auto; border-radius:12px; border:2px solid #38bdf8; display:block;" src="${pixUrl}" alt="QR Code PIX" />` : ''}
           <div style="background:#15213b; padding:0.8rem; border-radius:8px; border:1px solid rgba(256,256,256,0.1); margin-bottom:1rem; word-break:break-all; font-size:0.75rem; color:#e2e8f0; max-height:80px; overflow-y:auto; text-align:left;">
             ${pixCode || 'Código PIX indisponível.try_again'}
