@@ -3620,3 +3620,148 @@ input, textarea, select {
   -ms-user-select: text !important;
   user-select: text !important;
 }
+
+
+
+/* ==========================================================================
+   CARD DE IDENTIDADE ADAPTÁVEL POR TEMA (DARK / LIGHT / SEPIA)
+   ========================================================================== */
+
+/* --- MODO ESCURO (DEFAULT) --- */
+.profile-card-container {
+  background: #0f172a !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  color: #f8fafc !important;
+}
+.profile-reader-name {
+  color: #ffffff !important;
+}
+.profile-reader-email {
+  color: #94a3b8 !important;
+}
+.profile-chain-box {
+  background: #020617 !important;
+  border: 1px dashed rgba(56, 189, 248, 0.3) !important;
+}
+.profile-chain-title {
+  color: #38bdf8 !important;
+}
+.profile-chain-row {
+  color: #e2e8f0 !important;
+}
+
+/* --- MODO CLARO (LIGHT THEME) --- */
+[data-theme="light"] .profile-card-container,
+body[data-theme="light"] .profile-card-container {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  color: #0f172a !important;
+}
+[data-theme="light"] .profile-reader-name,
+body[data-theme="light"] .profile-reader-name {
+  color: #0f172a !important;
+}
+[data-theme="light"] .profile-reader-email,
+body[data-theme="light"] .profile-reader-email {
+  color: #475569 !important;
+}
+[data-theme="light"] .profile-chain-box,
+body[data-theme="light"] .profile-chain-box {
+  background: #f8fafc !important;
+  border: 1px dashed #0284c7 !important;
+}
+[data-theme="light"] .profile-chain-title,
+body[data-theme="light"] .profile-chain-title {
+  color: #0369a1 !important;
+}
+[data-theme="light"] .profile-chain-row,
+body[data-theme="light"] .profile-chain-row {
+  color: #1e293b !important;
+}
+[data-theme="light"] #copy-ref-btn,
+body[data-theme="light"] #copy-ref-btn {
+  background: rgba(2, 132, 199, 0.08) !important;
+  border: 1px solid #0284c7 !important;
+  color: #0284c7 !important;
+}
+[data-theme="light"] #copy-ref-btn:hover,
+body[data-theme="light"] #copy-ref-btn:hover {
+  background: rgba(2, 132, 199, 0.16) !important;
+}
+[data-theme="light"] .profile-card-container a[href*="instagram"],
+body[data-theme="light"] .profile-card-container a[href*="instagram"] {
+  background: rgba(225, 29, 72, 0.08) !important;
+  border: 1px solid #e11d48 !important;
+  color: #e11d48 !important;
+}
+[data-theme="light"] .profile-card-container button[onclick*="logout"],
+body[data-theme="light"] .profile-card-container button[onclick*="logout"] {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+/* --- MODO SÉPIA (SEPIA THEME) --- */
+[data-theme="sepia"] .profile-card-container,
+body[data-theme="sepia"] .profile-card-container {
+  background: #f4ecd8 !important;
+  border: 1px solid #d4c8ac !important;
+  color: #2b2118 !important;
+}
+[data-theme="sepia"] .profile-reader-name,
+body[data-theme="sepia"] .profile-reader-name {
+  color: #2b2118 !important;
+}
+[data-theme="sepia"] .profile-reader-email,
+body[data-theme="sepia"] .profile-reader-email {
+  color: #736049 !important;
+}
+[data-theme="sepia"] .profile-chain-box,
+body[data-theme="sepia"] .profile-chain-box {
+  background: #e8dfc8 !important;
+  border: 1px dashed #8c5a2b !important;
+}
+[data-theme="sepia"] .profile-chain-title,
+body[data-theme="sepia"] .profile-chain-title {
+  color: #8c5a2b !important;
+}
+[data-theme="sepia"] .profile-chain-row,
+body[data-theme="sepia"] .profile-chain-row {
+  color: #3b2d1d !important;
+}
+[data-theme="sepia"] #copy-ref-btn,
+body[data-theme="sepia"] #copy-ref-btn {
+  background: rgba(140, 90, 43, 0.12) !important;
+  border: 1px solid #8c5a2b !important;
+  color: #8c5a2b !important;
+}
+[data-theme="sepia"] .profile-card-container a[href*="instagram"],
+body[data-theme="sepia"] .profile-card-container a[href*="instagram"] {
+  background: rgba(180, 40, 40, 0.1) !important;
+  border: 1px solid #a83232 !important;
+  color: #a83232 !important;
+}
+[data-theme="sepia"] .profile-card-container button[onclick*="logout"],
+body[data-theme="sepia"] .profile-card-container button[onclick*="logout"] {
+  background: #ded2b6 !important;
+  border: 1px solid #c4b693 !important;
+  color: #5c4b38 !important;
+}
+
+/* --- BLOQUEIO TOTAL DE IMPRESSÃO / SALVAR PÁGINA (MEDIA PRINT) --- */
+@media print {
+  html, body, main, #reader-container, article {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  body::before {
+    content: "CONTEÚDO PROTEGIDO POR DIREITOS AUTORAIS (LEI Nº 9.610/98). IMPRESSÃO PROIBIDA.";
+    display: block !important;
+    font-size: 18pt;
+    font-weight: bold;
+    color: red;
+    text-align: center;
+    margin-top: 100pt;
+  }
+}

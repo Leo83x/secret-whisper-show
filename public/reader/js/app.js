@@ -708,10 +708,7 @@ async function handlePaywallCheckout() {
       }, 1500);
     }
 
-    // Tentar limpar a área de transferência
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText('Conteúdo protegido pela Lei de Direitos Autorais (Lei nº 9.610/98).').catch(() => {});
-    }
+// Leitura descarregada temporariamente para evitar captura
   }
 
   // Detectar teclas de PrintScreen e Atalhos de Captura
