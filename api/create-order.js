@@ -1,15 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ydezgyxfggplxapargdq.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHh26J';
-const PAGARME_KEY = process.env.PAGARME_API_KEY || 'sk_54a3c943676e48e4155cJb42';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
+const PAGARME_KEY = process.env.PAGARME_API_KEY || 'sk_54a3c94367f448e48b15cdb7f0e39b42';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function isValidCPF(cpf) {
   if (typeof cpf !== 'string') return false;
   cpf = cpf.replace(/[^\d]+/g, '');
-  if (cpf.length !== 11 || /^(\d)\110}$/.test(cpf)) return false;
+  if (cpf.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(cpf)) return false;
   let sum = 0;
   let remainder;
   for (let i = 1; i <= 9; i++) sum += parseInt(cpf.substring(i - 1, i), 10) * (11 - i);
@@ -20,7 +21,7 @@ function isValidCPF(cpf) {
   for (let i = 1; i <= 10; i++) sum += parseInt(cpf.substring(i - 1, i), 10) * (12 - i);
   remainder = (sum * 10) % 11;
   if (remainder === 10 || remainder === 11) remainder = 0;
-  if (remainder !== parseInt(cpf.substring(10, 11), 10))return false;
+  if (remainder !== parseInt(cpf.substring(10, 11), 10)) return false;
   return true;
 }
 
@@ -28,7 +29,6 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-
 
   try {
     const { token, payment_method, cpf } = req.body || {};
@@ -67,10 +67,10 @@ export default async function handler(req, res) {
         name: reader.name || 'Leitor VIP',
         email: reader.email,
         document: cleanCpf,
-        document_type: 'cpr',
+        document_type: 'cpf',
         type: 'individual',
         phones: {
-          mobile_phone : {
+          mobile_phone: {
             country_code: '55',
             area_code: areaCode,
             number: phoneNumber
@@ -103,17 +103,18 @@ export default async function handler(req, res) {
     const pagarmeData = await pagarmeRes.json();
 
     if (!pagarmeRes.ok) {
-      return res.status(400).json({ error: pagarmeData.message || 'Erro ao comunicar com Pagar.me' });
+      const errDetail = pagarmeData.message || JSON.stringify(pagarmeData.errors || pagarmeData);
+      return res.status(400).json({ error: 'Erro Pagar.me: ' + errDetail });
     }
 
     const charge = (pagarmeData.charges && pagarmeData.charges[0]) || {};
     const tx = charge.last_transaction || {};
 
-    if (!isValidCPF(cleanCpf) || !tx.success || charge.status === 'failed' || !tx.qr_code) {
+    if (!tx.qr_code) {
       const errMsg = (tx.gateway_response && tx.gateway_response.errors && tx.gateway_response.errors[0] && tx.gateway_response.errors[0].message)
         || pagarmeData.message
-        || 'Recusado pelo Pagar.me. Verifique o CPF digitado.';
-      return res.status(400).json({ error: 'Erro PIX Pagar.me: ' + errMsg });
+        || 'PIX nao gerado. Verifique o CPF e tente novamente.';
+      return res.status(400).json({ error: 'Erro PIX: ' + errMsg });
     }
 
     await supabase
