@@ -584,7 +584,7 @@ async function handlePaywallCheckout() {
             ${pixCode || 'Código PIX indisponível.try_again'}
           </div>
           <button id="copy-pix-btn" style="width:100%; padding:0.85rem; background:#38bdf8; color:#0f172a; font-weight:800; border:none; border-radius:8px; cursor:pointer;">
-            �📋 COPIAR CÓDIGO PIX
+            📋 COPIAR CÓDIGO PIX
           </button>
         `;
 

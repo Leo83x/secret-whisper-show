@@ -129,7 +129,7 @@ export default async function handler(req, res) {
       success: true,
       orderId: pagarmeData.id,
       pixQrCode: tx.qr_code,
-      pixQpCodeUsl: tx.qr_code_url
+      pixQrCodeUrl: tx.qr_code_url
     });
 
   } catch (err) {
