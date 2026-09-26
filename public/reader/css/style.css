@@ -3593,3 +3593,30 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   border-color: #e11d48 !important;
   color: #e11d48 !important;
 }
+
+
+
+/* ==========================================================================
+   TRAVAS DE SEGURANÇA E BLOQUEIO DE SELEÇÃO DE TEXTO (LEI 9.610/98)
+   ========================================================================== */
+body, 
+#reader-container, 
+.chapter-content, 
+.chapter-text, 
+p, 
+h1, h2, h3, h4, h5, h6, 
+span, div, article, main {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Permitir seleção apenas em campos de formulário como busca ou input de CPF */
+input, textarea, select {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}

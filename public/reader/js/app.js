@@ -624,3 +624,64 @@ async function handlePaywallCheckout() {
   document.addEventListener('DOMContentLoaded', function() {
   checkReaderAccess();
 });
+
+
+
+/* ==========================================================================
+   LISTENERS DE PROTEÇÃO DE CONTEÚDO E DIREITOS AUTORAIS (LEI 9.610/98)
+   ========================================================================== */
+(function setupContentProtection() {
+  function showCopyWarning() {
+    let warningBox = document.getElementById('copy-protection-toast');
+    if (!warningBox) {
+      warningBox = document.createElement('div');
+      warningBox.id = 'copy-protection-toast';
+      warningBox.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#0f172a; border:1px solid #ef4444; color:#fca5a5; padding:10px 18px; border-radius:8px; font-size:0.8rem; z-index:999999; box-shadow:0 10px 25px rgba(0,0,0,0.5); font-family:sans-serif; text-align:center; transition:opacity 0.3s ease; opacity:0; pointer-events:none;';
+      warningBox.innerHTML = '🔒 Conteúdo protegido pela Lei de Direitos Autorais (Lei nº 9.610/98). Cópia não autorizada.';
+      document.body.appendChild(warningBox);
+    }
+    warningBox.style.opacity = '1';
+    setTimeout(() => {
+      warningBox.style.opacity = '0';
+    }, 2500);
+  }
+
+  // 1. Bloquear menu de contexto (Botão direito do mouse)
+  document.addEventListener('contextmenu', function(e) {
+    // Permitir botão direito apenas em inputs e textareas se necessário
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    e.preventDefault();
+    showCopyWarning();
+    return false;
+  }, false);
+
+  // 2. Interceptar atalhos de teclado (Ctrl+C, Cmd+C, Ctrl+Shift+I, F12, Ctrl+U, Ctrl+S, Ctrl+P)
+  document.addEventListener('keydown', function(e) {
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const modifier = isMac ? e.metaKey : e.ctrlKey;
+
+    // Permitir navegação normal em campos editáveis
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    if (
+      (modifier && (e.key === 'c' || e.key === 'C')) || // Ctrl+C ou Cmd+C
+      (modifier && (e.key === 'u' || e.key === 'U')) || // Ctrl+U (Ver código fonte)
+      (modifier && (e.key === 's' || e.key === 'S')) || // Ctrl+S (Salvar página)
+      (modifier && (e.key === 'p' || e.key === 'P')) || // Ctrl+P (Imprimir)
+      (modifier && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) || // DevTools
+      e.key === 'F12' // Tecla F12
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      showCopyWarning();
+      return false;
+    }
+  }, true);
+
+  // 3. Bloquear evento nativo de copy
+  document.addEventListener('copy', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    e.preventDefault();
+    showCopyWarning();
+  }, false);
+})();
