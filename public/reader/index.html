@@ -185,7 +185,27 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                 <span class="nav-arrow" aria-hidden="true">→</span>
             </button>
         </nav>
-    </main>
+    
+    <!-- RODAPÉ GLOBAL DO E-READER -->
+    <footer id="reader-global-footer" style="margin-top:4rem; padding:2.5rem 1rem 1.5rem 1rem; border-top:1px solid rgba(255,255,255,0.08); text-align:center; font-size:0.75rem; color:var(--text-muted, #94a3b8); line-height:1.6;">
+        <div style="max-width:800px; margin:0 auto; display:flex; flex-direction:column; gap:0.6rem; align-items:center;">
+            <div style="font-weight:700; color:var(--text-main, #e2e8f0); font-size:0.85rem;">O Último Segredo da Humanidade</div>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; color:var(--text-muted, #94a3b8);">
+                <span><strong>Razão Social:</strong> LTL EMPREENDIMENTOS</span>
+                <span>•</span>
+                <span><strong>Registro de Obra:</strong> nº 312254601</span>
+                <span>•</span>
+                <a href="https://www.instagram.com/oultimosegredodahumanidade" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline;">Instagram Suporte</a>
+                <span>•</span>
+                <a href="/reader/terms.html" target="_blank" rel="noopener noreferrer" style="color:#38bdf8; text-decoration:underline; font-weight:600;">Termos de Uso & Proteção Autoral (Lei 9.610/98)</a>
+            </div>
+            <div style="font-size:0.7rem; color:rgba(148,163,184,0.6); margin-top:0.4rem;">
+                © 2026 LTL EMPREENDIMENTOS. Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+
+</main>
 
     <!-- ===== BARRA INFERIOR MOBILE (THUMB-DOCK) ===== -->
     <div class="mobile-bottom-bar" id="mobile-bottom-bar" aria-label="Controles rápidos">
@@ -292,28 +312,36 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
             </div>
         
             <!-- 5. IDENTIDADE DO LEITOR -->
-            <div class="settings-section" id="reader-identity-group">
-                <div class="settings-label-row">
-                    <p class="settings-label reader-id-title">IDENTIDADE DO LEITOR</p>
-                    <span id="profile-status-badge" class="profile-badge">DEGUSTAÇÃO</span>
+            <div class="settings-section" id="reader-identity-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.2rem; margin-top: 1.2rem;">
+                <div class="settings-label-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
+                    <p class="settings-label reader-id-title" style="font-size:0.75rem; font-weight:700; letter-spacing:0.05em; color:var(--text-muted, #94a3b8); margin:0;">IDENTIDADE DO LEITOR</p>
+                    <span id="profile-status-badge" class="profile-badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:3px 10px; border-radius:12px; font-size:0.7rem; font-weight:700; font-family:monospace;">DEGUSTAÇÃO</span>
                 </div>
-                <div id="profile-card-box" class="profile-card-container">
-                    <div id="profile-reader-name" class="profile-reader-name">Leitor Degustação</div>
-                    <div id="profile-reader-email" class="profile-reader-email">--</div>
+                
+                <div id="profile-card-box" class="profile-card-container" style="background:rgba(15, 23, 42, 0.6); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:1.2rem; display:flex; flex-direction:column; gap:0.8rem;">
+                    <div>
+                        <div id="profile-reader-name" class="profile-reader-name" style="font-weight:700; font-size:1rem; color:var(--text-main, #f8fafc); margin-bottom:2px;">Leitor Degustação</div>
+                        <div id="profile-reader-email" class="profile-reader-email" style="font-size:0.8rem; color:var(--text-muted, #94a3b8);">--</div>
+                    </div>
                     
-                    <div class="profile-chain-box">
-                        <div class="profile-chain-title">A SUA CORRENTE</div>
-                        <div class="profile-chain-row">
+                    <div class="profile-chain-box" style="background:rgba(0,0,0,0.2); border:1px dashed rgba(56,189,248,0.3); border-radius:8px; padding:0.8rem;">
+                        <div class="profile-chain-title" style="font-size:0.7rem; font-weight:700; color:#38bdf8; letter-spacing:0.05em; margin-bottom:0.4rem;">A SUA CORRENTE</div>
+                        <div class="profile-chain-row" style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; color:var(--text-main, #e2e8f0); margin-bottom:0.6rem;">
                             <span class="profile-chain-label">Leitores indicados:</span>
-                            <strong id="profile-chain-count" class="profile-chain-count">0</strong>
+                            <strong id="profile-chain-count" class="profile-chain-count" style="color:#38bdf8; font-size:0.95rem;">0</strong>
                         </div>
-                        <button id="copy-ref-btn" onclick="copyReferralLink()" class="profile-copy-btn">📋 COPIAR LINK DE INDICAÇÃO</button>
+                        <button id="copy-ref-btn" onclick="copyReferralLink()" style="width:100%; padding:0.65rem; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.35); border-radius:8px; color:#38bdf8; font-weight:600; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;">
+                            📋 COPIAR LINK DE INDICAÇÃO
+                        </button>
                     </div>
 
-                    <a href="https://www.instagram.com/oultimosegredodahumanidade" target="_blank" rel="noopener noreferrer" class="profile-insta-btn">🍵 SUPORTE NO INSTAGRAM</a>
-                    
-                <a href="/reader/terms.html" target="_blank" class="profile-logout-btn" style="background:rgba(56,189,248,0.06) !important; border:1px solid rgba(56,189,248,0.2) !important; color:#38bdf8 !important; margin-bottom:8px; text-decoration:none !important;">📄 TERMOS DE USO & LEGAL</a>
-                    <button onclick="logoutReader()" class="profile-logout-btn">🪪 SAIR DA IDENTIDADE</button>
+                    <a href="https://www.instagram.com/oultimosegredodahumanidade" target="_blank" rel="noopener noreferrer" style="width:100%; padding:0.65rem; background:rgba(225,29,72,0.1); border:1px solid rgba(225,29,72,0.3); border-radius:8px; color:#fb7185; font-weight:600; font-size:0.78rem; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px; box-sizing:border-box;">
+                        🍵 SUPORTE NO INSTAGRAM
+                    </a>
+
+                    <button onclick="logoutReader()" style="width:100%; padding:0.6rem; background:rgba(148,163,184,0.1); border:1px solid rgba(148,163,184,0.2); border-radius:8px; color:var(--text-muted, #94a3b8); font-weight:600; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                        🪪 SAIR DA IDENTIDADE
+                    </button>
                 </div>
             </div>
 </aside>
@@ -399,8 +427,8 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
         </div>
 
         <button onclick="handlePaywallCheckout()" id="paywall-buy-btn" style="width:100%; padding:0.95rem; background:#22c55e; border:none; border-radius:10px; color:#fff; font-weight:800; cursor:pointer; margin-bottom:0.8rem;">GERAR CÓDIGO PIX (R$ 49)</button>
-        <div style="font-size:0.72rem; color:#94a3b8; display:flex; align-items:center; justify-content:center; gap:4px;">
-     Processado com segurança pelo Pagar.me | Obra Registrada nº 312254601 | <a href="/reader/terms.html" target="_blank" style="color:#38bdf8; text-decoration:underline;">Termos de Uso</a>
+        <div style="font-size:0.7rem; color:#64748b; margin-top:0.6rem; line-height:1.4; text-align:center;">
+          🔒 Processado com segurança pelo Pagar.me &middot; Obra Registrada nº 312254601
         </div>
       </div>
     </div>

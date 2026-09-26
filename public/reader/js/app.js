@@ -685,3 +685,56 @@ async function handlePaywallCheckout() {
     showCopyWarning();
   }, false);
 })();
+
+
+
+/* ==========================================================================
+   TRAVA ANTI-PRINTSCREEN E CAPTURA DE TELA (LEI 9.610/98)
+   ========================================================================== */
+(function setupPrintScreenProtection() {
+  function obfuscateContentTemporarily() {
+    const mainContent = document.querySelector('main') || document.body;
+    if (mainContent) {
+      const originalFilter = mainContent.style.filter;
+      const originalOpacity = mainContent.style.opacity;
+      
+      // Ofusca o conteúdo imediatamente
+      mainContent.style.filter = 'blur(40px)';
+      mainContent.style.opacity = '0.05';
+
+      setTimeout(() => {
+        mainContent.style.filter = originalFilter || '';
+        mainContent.style.opacity = originalOpacity || '';
+      }, 1500);
+    }
+
+    // Tentar limpar a área de transferência
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText('Conteúdo protegido pela Lei de Direitos Autorais (Lei nº 9.610/98).').catch(() => {});
+    }
+  }
+
+  // Detectar teclas de PrintScreen e Atalhos de Captura
+  window.addEventListener('keyup', function(e) {
+    if (e.key === 'PrintScreen' || e.keyCode === 44) {
+      obfuscateContentTemporarily();
+      if (typeof showCopyWarning === 'function') showCopyWarning();
+    }
+  }, true);
+
+  window.addEventListener('keydown', function(e) {
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const isCmdOrCtrl = isMac ? e.metaKey : e.ctrlKey;
+
+    // Tecla PrintScreen no keydown
+    if (e.key === 'PrintScreen' || e.keyCode === 44) {
+      obfuscateContentTemporarily();
+    }
+
+    // Mac: Cmd+Shift+3, Cmd+Shift+4, Cmd+Shift+5
+    // Win: Win+Shift+S (Meta+Shift+S)
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5' || e.key === 's' || e.key === 'S')) {
+      obfuscateContentTemporarily();
+    }
+  }, true);
+})();
