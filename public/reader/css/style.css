@@ -3172,106 +3172,35 @@ html body[data-theme="light"] .dossier-title, body[data-theme="light"] .dossier-
 html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dossier-subcaption { color: #334155 !important; font-weight: 500 !important; }/* v1201 */ 
 /* cache-bump v1205 */ 
 /* v1210 */ 
-/* supreme-fix v9999 */ 
-
-
- /* Fix Legibilidade Card Leitor */
-[data-theme="light"] #profile-card-box {
-  background: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
-}
-[data-theme="light"] #profile-reader-name {
-  color: #0f172a !important;
-}
-[data-theme="light"] #profile-reader-email {
-  color: #475569 !important;
-}
-[data-theme="light"] #profile-card-box div {
-  color: #334155 !important;
-}
-[data-theme="light"] #profile-card-box span {
-  color: #475569 !important;
-}
-
-[data-theme="sepia"] #profile-card-box {
-  background: #e8dfc8 !important;
-  border: 1px solid #d4c8ac !important;
-}
-[data-theme="sepia"] #profile-reader-name {
-  color: #2b2118 !important;
-}
-[data-theme="sepia"] #profile-reader-email {
-  color: #736049 !important;
-}
-[data-theme="sepia"] #profile-card-box div {
-  color: #4a3c2c !important;
-}
-[data-theme="sepia"] #profile-card-box span {
-  color: #736049 !important;
-}
-
-
-
- /* Correcao de Contraste do Card do Leitor no Modo Claro */
-[data-theme="light"] .profile-card-container {
-  background: #f1f5f9 !important;
-  border: 1px solid #cbd5e1 !important;
-}
-[data-theme="light"] .profile-card-container *,
-[data-theme="light"] .settings-section *,
-[data-theme="light"] #reader-identity-group * {
-  color: #0f172a !important;
-}
-[data-theme="light"] #profile-reader-email {
-  color: #475569 !important;
-}
-[data+]#profile-caip-count {
-  color: #0284c7 !important;
-}
-
-
- /* Forcar contraste forte azul escuro nas labels do Modo Claro */
-[data-theme="light"] #reader-identity-group p,
-[data-theme="light"] #reader-identity-group div,
-[data-theme="light"] #reader-identity-group span:not(#profile-status-badge) {
-  color: #0369a1 !important;
-  font-weight: 700 !important;
-}
-[data-theme="light"] #profile-card-box {
-  background: #ffffff !important;
-  border: 1px solid #94a3b8 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
-}
-[data-theme="light"] #profile-card-box div[style*="background"] {
-  background: #f1f5f9 !important;
-  border: 1px dashed #0284c7 !important;
-}
-
+/* supreme-fix v9999 */
 
 
  /* ========================================================================
-   SISTEMA DE IDENTIDADE DO LEITOR - ESTILOS POR TEMA
-   =======================================================================*/
+   SISTEMA DE IDENTIDADE DO LEITOR & MODAL PAIWALL - ESTILOS REFATORADOS
+   =======================================================================0*/
 
 #reader-identity-group {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 1.2rem;
-  margin-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding-top: 1.2rem !important;
+  margin-top: 1.2rem !important;
 }
+
 .settings-label-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.8rem;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 0.8rem !important;
 }
+
 .reader-id-title {
   font-weight: 700 !important;
   color: #38bdf8 !important;
   font-size: 0.82rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
+  margin: 0 !important;
 }
+
 .profile-badge {
   background: rgba(56, 189, 248, 0.15) !important;
   color: #38bdf8 !important;
@@ -3280,31 +3209,42 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   font-size: 0.68rem !important;
   font-family: monospace !important;
   font-weight: 700 !important;
+  display: inline-block !important;
 }
+
 .profile-card-container {
   background: rgba(15, 23, 42, 0.7) !important;
   border: 1px solid rgba(56, 189, 248, 0.2) !important;
   border-radius: 10px !important;
-  padding: 1rmm !important;
+  padding: 1rem !important;
+  display: block !important;
 }
+
+
 .profile-reader-name {
   font-weight: 700 !important;
   color: #f8fafc !important;
   font-size: 0.95rem !important;
   margin-bottom: 2px !important;
 }
+
+
 .profile-reader-email {
   font-size: 0.75rem !important;
   color: #94a3b8 !important;
   margin-bottom: 0.8rem !important;
 }
+
+
 .profile-chain-box {
-  background: rgba(56, 189, 248, 0.05) !important;
+  background: rgba(56, 189, 248, 0.15) !important;
   border: 1px dashed rgba(56, 189, 248, 0.2) !important;
   border-radius: 8px !important;
   padding: 0.8rem !important;
   margin-top: 0.6rem !important;
 }
+
+
 .profile-chain-title {
   font-size: 0.7rem !important;
   font-family: monospace !important;
@@ -3314,32 +3254,42 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   margin-bottom: 4px !important;
   font-weight: 700 !important;
 }
+
+
 .profile-chain-row {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   margin-bottom: 8px !important;
 }
+
+
 .profile-chain-label {
   font-size: 0.78rem !important;
   color: #94a3b8 !important;
 }
+
+
 .profile-chain-count {
   font-size: 0.95rem !important;
   color: #38bdf8 !important;
   font-weight: 700 !important;
 }
+
+
 .profile-copy-btn {
   width: 100% !important;
-  padding: 0.5rmm !important;
+  padding: 0.5rem !important;
   background: rgba(56, 189, 248, 0.12) !important;
-  border: 1px solid rgba(56,189, 248, 0.3) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
   border-radius: 6px !important;
   color: #38bdf8 !important;
   font-size: 0.75rem !important;
   font-weight: 700 !important;
   cursor: pointer !important;
 }
+
+
 .profile-insta-btn {
   display: flex !important;
   align-items: center !important;
@@ -3355,7 +3305,10 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   font-weight: 700 !important;
   text-decoration: none !important;
   margin-top: 0.6rem !important;
+  box-sizing: border-box !important;
 }
+
+
 .profile-logout-btn {
   width: 100% !important;
   padding: 0.65rem !important;
@@ -3369,16 +3322,17 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   margin-top: 0.8rem !important;
 }
 
-*/* --- MODO CLARO (LIGHT THEME) OVERRIDES --- */
+
+/* --- MODO CLARO (LIGHT THEME) OVERRIDES --- */
 [data-theme="light"] #reader-identity-group {
   border-top-color: #cbd5e1 !important;
 }
 [data-theme="light"] .reader-id-title {
-  color: #0f172a !important; /* DARK SLATE BLUE / BLACK */
+  color: #0f172a !important;
 }
 [data-theme="light"] .profile-badge {
-  background: rgba(2, 132, 199, 0.1) !important;
-  color: #0284c7 !important;
+  background: rgba(2, 132, 199, 0.12) !important;
+  color: #0288c7 !important;
 }
 [data-theme="light"] .profile-card-container {
   background: #ffffff !important;
@@ -3386,18 +3340,17 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
 }
 [data-theme="light"] .profile-reader-name {
-  color: #0f172a !important; /* DARK LEGIBLE TEXT */
+  color: #0f172a !important;
 }
 [data-theme="light"] .profile-reader-email {
   color: #334155 !important;
-/* DARK GREY TEXT */
 }
 [data-theme="light"] .profile-chain-box {
   background: #f1f5f9 !important;
   border: 1px dashed #0284c7 !important;
 }
 [data-theme="light"] .profile-chain-title {
-  color: #0369a1 !important; /* DEEP DARK BLUE */
+  color: #0369a1 !important;
 }
 [data-theme="light"] .profile-chain-label {
   color: #334155 !important;
@@ -3411,7 +3364,8 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   color: #0284c7 !important;
 }
 
-*/* --- MODO SEPIA OVERRIDES --- */
+
+/* --- MODO SEPIA OVERRIDES --- */
 [data-theme="sepia"] #reader-identity-group {
   border-top-color: rgba(140, 90, 43, 0.2) !important;
 }
@@ -3423,11 +3377,61 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   color: #8c5a2b !important;
 }
 [data-theme="sepia"] .profile-card-container {
-  background: #e8df28 !important;
+  background: #e8dfc8 !important;
   border: 1px solid #d4c8ac !important;
 }
 [data-theme="sepia"] .profile-reader-name {
   color: #2b2118 !important;
 }
 [data-theme="sepia"] .profile-reader-email {
-  color: #<�����䀅�����х���)�)m��ф�ѡ����͕����t���ɽ����������������(�������ɽչ�耍���Ɉ؀������х���(����ɑ���������͡�����ՄɈ�������х���)�)m��ф�ѡ����͕����t���ɽ�����������ѥѱ���(�������而�ՄɈ�������х���)�)m��ф�ѡ����͕����t���ɽ������������������(�������而ф͌Ɍ�������х���)�)m��ф�ѡ����͕����t���ɽ�������������չЁ�(�������而�ՄɈ�������х���)�)m��ф�ѡ����͕����t���ɽ��������䵉Ѹ��(�������ɽչ��ɝ�������������̰����Ȥ�������х���(����ɑ�������ͽ������ՄɈ�������х���(�������而�ՄɈ�������х���)�
+  color: #736049 !important;
+}
+[data-theme="sepia"] .profile-chain-box {
+  background: #ded2b6 !important;
+  border: 1px dashed #8c5a2b !important;
+}
+[data-theme="sepia"] .profile-chain-title {
+  color: #8c5a2b !important;
+}
+[data-theme="sepia"] .profile-chain-label {
+  color: #4a3c2c !important;
+}
+[data-theme="sepia"] .profile-chain-count {
+  color: #8c5a2b !important;
+}
+[data-theme="sepia"] .profile-copy-btn {
+  background: rgba(140, 90, 43, 0.12) !important;
+  border: 1px solid #8c5a2b !important;
+  color: #8c5a2b !important;
+}
+
+
+/* --- MODAL PAYWALL CENTRALIZADO --- */
+.reader-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(7, 11, 20, 0.88) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.reader-modal-card {
+  position: relative !important;
+  margin: auto !important;
+  background: #0b1120 !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  border-radius: 18px !important;
+  padding: 1.8rem 1.5rem !important;
+  width: 90%!important;
+  max-width: 440px !important;
+  text-align: center !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+  box-sizing: border-box !important;
+}
