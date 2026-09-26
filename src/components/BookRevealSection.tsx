@@ -1,13 +1,15 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import bookCover from "/capa_ush.jpg";
-import { ModernReadingModal } from "./ModernReadingModal";
 import { Moon, Type, BookMarked, ArrowRight, Sparkles, Check } from "lucide-react";
 
 const BookRevealSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleStartReading = () => {
+    window.location.href = '/reader/';
+  };
 
   return (
     <section ref={ref} className="relative py-32 px-6 overflow-visible touch-pan-y">
@@ -32,7 +34,7 @@ const BookRevealSection = () => {
             </div>
           </motion.div>
 
-          {/* Conteúdo Informativo da Obra e Oferta de Preço */}
+          {/* Conteúdo */}
           <motion.div
             className="flex-1 text-center lg:text-left"
             initial={{ opacity: 0, x: 50 }}
@@ -51,7 +53,7 @@ const BookRevealSection = () => {
               Leia em qualquer dispositivo com nosso e-reader nativo. Sem distração, com temas personalizados e navegação direta pelos capítulos.
             </p>
 
-            {/* --- BLOCO DE OFERTA DE PREÇO --- */}
+            {/* Bloco de Preço */}
             <div className="mb-8 p-5 rounded-2xl bg-card/60 border border-gold/30 max-w-md mx-auto lg:mx-0 shadow-lg">
               <div className="flex items-baseline justify-between mb-2">
                 <span className="text-xs uppercase font-semibold text-gold tracking-wider">Acesso Vitalício Completo</span>
@@ -70,13 +72,11 @@ const BookRevealSection = () => {
                 <h4 className="text-sm font-semibold text-foreground mb-1">Modo Noturno</h4>
                 <p className="text-xs text-muted-foreground">Temas claro, escuro e sépia para leitura confortável em qualquer horário.</p>
               </div>
-
               <div className="p-4 rounded-xl bg-card/40 border border-border/30">
                 <Type className="w-5 h-5 text-gold mb-2" />
                 <h4 className="text-sm font-semibold text-foreground mb-1">Tipografia Ajustável</h4>
                 <p className="text-xs text-muted-foreground">Altere o tamanho das fontes e o espaçamento para o seu estilo perfeito.</p>
               </div>
-
               <div className="p-4 rounded-xl bg-card/40 border border-border/30">
                 <BookMarked className="w-5 h-5 text-gold mb-2" />
                 <h4 className="text-sm font-semibold text-foreground mb-1">Marcador Automático</h4>
@@ -84,9 +84,9 @@ const BookRevealSection = () => {
               </div>
             </div>
 
-            {/* --- BOTÃO CTA PREMIUM CINEMATOGRÁFICO --- */}
+            {/* Botão CTA Premium — vai direto para o e-reader */}
             <motion.button
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleStartReading}
               className="relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold tracking-wider rounded-xl shadow-[0_0_30px_rgba(234,179,8,0.45)] hover:shadow-[0_0_40px_rgba(234,179,8,0.65)] transition-all duration-300 text-sm uppercase group"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -98,11 +98,6 @@ const BookRevealSection = () => {
           </motion.div>
         </div>
       </div>
-
-      <ModernReadingModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </section>
   );
 };
