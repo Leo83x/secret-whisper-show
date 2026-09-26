@@ -1,28 +1,37 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ydezgyxfggplxapargdq.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
-const PAGARME_KEY = process.env.PAGARME_API_KEY || 'sk_54a3c94367f448e48b15cdb7f0e39b42';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHh26J';
+const PAGARME_KEY = process.env.PAGARME_API_KEY || 'sk_54a3c943676e48e4155cJb42';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function isValidCPF(cpf) {
+  if (typeof cpf !== 'string') return false;
+  cpf = cpf.replace(/[^\d]+/g, '');
+  if (cpf.length !== 11 || /^(\d)\110}$/.test(cpf)) return false;
+  let sum = 0;
+  let remainder;
+  for (let i = 1; i <= 9; i++) sum += parseInt(cpf.substring(i - 1, i), 10) * (11 - i);
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(cpf.substring(9, 10), 10)) return false;
+  sum = 0;
+  for (let i = 1; i <= 10; i++) sum += parseInt(cpf.substring(i - 1, i), 10) * (12 - i);
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(cpf.substring(10, 11), 10))return false;
+  return true;
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  try {
-    const {
-      token,
-      payment_method,
-      cpf,
-      card_number,
-      card_holder_name,
-      card_expiry_month,
-      card_expiry_year,
-      card_cvv
-    } = req.body || {};
 
+  try {
+    const { token, payment_method, cpf } = req.body || {};
     if (!token) {
       return res.status(400).json({ error: 'Token de leitor obrigatorio' });
     }
@@ -37,32 +46,14 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Leitor nao encontrado' });
     }
 
-    const docCpf= (cpf || reader.cpf || '11111111111').replace(/\D/g, '');
-    const cleanCpf = docCpf.length === 11 ? docCpf : '11111111111';
-
-    // Se os dados do cartao forem enviados, cria cobranca de cartao
-    let paymentPayload = {};
-    if (payment_method === 'credit_card' && card_number) {
-      paymentPayload = {
-        payment_method: 'credit_card',
-        credit_card: {
-          installments: 1,
-          statement_descriptor: 'USH LSVRO',
-          card: {
-            number: card_number.replace(/\D/g, ''),
-            holder_name: card_holder_name ? card_holder_name.toUpperCase() : reader.name.toUpperCase(),
-            exp_month: parseInt(card_expiry_month, 10),
-            exp_year: parseInt(card_expiry_year, 10),
-            cvv: card_cvv
-          }
-        }
-      };
-    } else {
-      paymentPayload = {
-        payment_method: 'pix',
-        pix: { expires_in: 86400 }
-      };
+    const cleanCpf = (cpf || reader.cpf || '').replace(/\D/g, '');
+    if (!isValidCPF(cleanCpf)) {
+      return res.status(400).json({ error: 'Por favor, informe um CPF valido (11 digitos) para a emissao do PIX.' });
     }
+
+    const rawPhone = (reader.phone || '21996982886').replace(/\D/g, '');
+    const areaCode = rawPhone.length >= 10 ? rawPhone.substring(0, 2) : '21';
+    const phoneNumber = rawPhone.length >= 10 ? rawPhone.substring(2) : '996982886';
 
     const orderPayload = {
       items: [
@@ -76,17 +67,22 @@ export default async function handler(req, res) {
         name: reader.name || 'Leitor VIP',
         email: reader.email,
         document: cleanCpf,
-        document_type: 'cpf',
+        document_type: 'cpr',
         type: 'individual',
-        phones: reader.phone ? {
+        phones: {
           mobile_phone : {
             country_code: '55',
-            area_code: reader.phone.replace(/\D/g, '').substring(0, 2) || '11',
-            number: reader.phone.replace(/\D/g, '').substring(2) || '999999999'
+            area_code: areaCode,
+            number: phoneNumber
           }
-        } : undefined
+        }
       },
-      payments: [paymentPayload],
+      payments: [
+        {
+          payment_method: 'pix',
+          pix: { expires_in: 86400 }
+        }
+      ],
       metadata: {
         access_token: reader.access_token,
         reader_id: reader.id,
@@ -107,38 +103,36 @@ export default async function handler(req, res) {
     const pagarmeData = await pagarmeRes.json();
 
     if (!pagarmeRes.ok) {
-      return res.status(400).json({ error: pagarmeData.message || 'Erro ao gerar cobranca no Pagar.me' });
+      return res.status(400).json({ error: pagarmeData.message || 'Erro ao comunicar com Pagar.me' });
     }
 
-    const charge = pagarmeData.charges && pagarmeData.charges[0] ? pagarmeData.charges[0] : {};
-    const tx = charge.last_transaction ? charge.last_transaction : {};
-    const isPaid = pagarmeData.status === 'paid' || charge.status === 'paid';
+    const charge = (pagarmeData.charges && pagarmeData.charges[0]) || {};
+    const tx = charge.last_transaction || {};
 
-    const pixQrCode = tx.qr_code || tx.qp_code || pagarmeData.qrtcode || pagarmeData.qr_code || '';
-    const pixQrCodeUrl = tx.qr_code_url || tx.qp_code_url || pagarmeData.qr_code_url || '';
+    if (!isValidCPF(cleanCpf) || !tx.success || charge.status === 'failed' || !tx.qr_code) {
+      const errMsg = (tx.gateway_response && tx.gateway_response.errors && tx.gateway_response.errors[0] && tx.gateway_response.errors[0].message)
+        || pagarmeData.message
+        || 'Recusado pelo Pagar.me. Verifique o CPF digitado.';
+      return res.status(400).json({ error: 'Erro PIX Pagar.me: ' + errMsg });
+    }
 
     await supabase
       .from('readers')
       .update({
         pagarme_order_id: pagarmeData.id,
         cpf: cleanCpf,
-        status: isPaid ? 'paid' : 'pending'
+        status: 'pending'
       })
       .eq('id', reader.id);
 
-
     return res.status(200).json({
       success: true,
-      isPaid: isPaid,
       orderId: pagarmeData.id,
-      pix: {
-        qr_code: pixQrCode,
-        qr_code_url: pixQrCodeUrl
-      },
-      rawCharge: charge
+      pixQrCode: tx.qr_code,
+      pixQpCodeUsl: tx.qr_code_url
     });
 
-} catch (err) {
+  } catch (err) {
     return res.status(500).json({ error: err.message || 'Erro interno no servidor' });
   }
 }

@@ -292,30 +292,29 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
             </div>
         
             <!-- 5. IDENTIDADE DO LEITOR -->
-            <div class="settings-section" id="reader-identity-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.2rem; margin-top: 1.2rem;">
-                <div class="settings-label-row" style="margin-bottom:0.8rem;">
-                    <p class="settings-label" style="font-weight:700; color:#38bdf8;">IDENTIDADE DO LEITOR</p>
-                    <span id="profile-status-badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; padding:2px 8px; border-radius:12px; font-size:0.68rem; font-family:monospace; font-weight:700;">DEGUSTAÇAO</span>
+            <div class="settings-section" id="reader-identity-group">
+                <div class="settings-label-row">
+                    <p class="settings-label reader-id-title">IDENTIDADE DO LEITOR</p>
+                    <span id="profile-status-badge" class="profile-badge">DEGUSTA ÃAO</span>
                 </div>
-                <div id="profile-card-box" class="profile-card-container" style="border-radius:10px; padding:1rem;">
-                    <div style="font-weight:700; color:#f8fafc; font-size:0.95rem; margin-bottom:2px;" id="profile-reader-name">Leitor Degustação</div>
-                    <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:0.8rem;" id="profile-reader-email">--</div>
+                <div id="profile-card-box" class="profile-card-container">
+                    <div id="profile-reader-name" class="profile-reader-name">Leitor Degustação</div>
+                    <div id="profile-reader-email" class="profile-reader-email">--</div>
                     
-                    <div style="background:rgba(56,189,248,0.05); border:1px dashed rgba(56,189,248,0.2); border-radius:8px; padding:0.8rem; margin-dop:0.6rem;">
-                        <div style="font-size:0.7rem; font-family:monospace; color:#38bdf8; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px; font-weight:700;">A SUA CORRENTE</div~
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-                            <span style="font-size:0.78rem; color:#94a3b8;">Leitores indicados:</span>
-                            <strong style="font-size:0.95rem; color:#38bdf8;" id="profile-chain-count">0</strong>
+                    <div class="profile-chain-box">
+                        <div class="profile-chain-title">A SUA CORRENTE</div>
+                        <div class="profile-chain-row">
+                            <span class="profile-chain-label">Leitores indicados:</span>
+                            <strong id="profile-chain-count" class="profile-chain-count">0</strong>
                         </div>
-                        <button id="copy-ref-btn" onclick="copyReferralLink()" style="width:100%; padding:0.5rem; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.3); border-radius:6px; color:#38bdf8; font-size:0.75rem; font-weight:700; cursor:pointer;">🐔 COPIAR LINK DE INDICAÇÃO </button>
+                        <button id="copy-ref-btn" onclick="copyReferralLink()" class="profile-copy-btn">�K COPIAR LINK DE INDICAÃO</button>
                     </div>
 
-                    <a href="https://www.instagram.com/oultimosegredodahumanidade" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:0.6rem; background:rgba(225,29,72,0.1); border:1px solid rgba(225,29,72,0.3); border-radius:6px; color:#e1127C; font-size:0.75rem; font-weight:700; text-decoration:none; margin-top:0.6rem;">🍵 SUPORTE NO INSTAGRAM</a>
-                      <button onclick="logoutReader()" style="width:100%; padding:0.65rem; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); border-radius:6px; color:#ef4444; font-size:0.75rem; font-weight:700; cursor:pointer; margin-top:0.8rem;">🪪 SAIR DA IDENTIDADE</button>
+                    <a href="https://www.instagram.com/oultimosegredodahumanidade" target="_blank" rel="noopener noreferrer" class="profile-insta-btn">🍵 SUPORTE NO INSTAGRAM</a>
+                    <button onclick="logoutReader()" class="profile-logout-btn">👐 SAIR DA IDENTIDADE</button>
                 </div>
             </div>
-        </div>
-    </aside>
+</aside>
 
         <!-- ===== MODAL DE VÍDEO CINEMATOGRÁFICO ===== -->
     <div class="video-modal-backdrop" id="video-modal" role="dialog" aria-label="Teaser em Vídeo" aria-hidden="true">
@@ -375,33 +374,33 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
   </div>
 
   <!-- MODAL DE PAYWALL (CAPÍTULO 3+ BLOQUEADO) -->
-  <div id="paywall-modal" class="reader-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(7,11,20,0.92); backdrop-filter:blur(12px); z-index:99999; justify-content:center; align-items:center;">
-      <div class="reader-modal-card" style="background:#0b1120; border:1px solid rgba(56,189,248,0.4); border-radius:18px; padding:1.8rem 1.5rem; width:90%; max-width:440px; text-align:center; color:#e2e8f0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <div id="paywall-modal" class="reader-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%: height:100%; background:rgba(7,11,20,0.92); backdrop-filter:blur(12px); z-index:99999; justify-content:center; align-items:center;">
+      <div class="reader-modal-card" style="position:relative; background:#0b1120; border:1px solid rgba(56,189,248,0.4); border-radius:18px; padding:1.8rem 1.5rem; width:90%; max-width:440px; text-align:center; color:#e2e8f0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+        <button onclick="document.getElementById('paywall-modal').style.display='none'" style="position:absolute; top:12px; right:16px; background:transparent; border:none; color:#94a3b8; font-size:1.6rem; cursor:pointer;">&times;</button>
         <div style="margin-bottom:0.8rem;">
-          <span style="background:rgba(234,179,8,0.15); color:#eab308; border:1px solid rgba(234,179,8,0.3); padding:4px 14px; border-radius:20px; font-size:0.72rem; font-family:monospace;">CAPÍTULO BLOQUEADO</span>
+          <span style="background:rgba(234,179,8,0.15); color:#eab308; border:1px solid rgba(234,179,8,0.3); padding:4px 14px; border-radius:20px; font-size:0.72rem; font-family:monospace;">CAPÅTULO BLOQUEADO</span>
         </div>
         <h2 style="font-size:1.3rem; margin-bottom:0.4rem; color:#fff; font-weight:700;">Continue a Jornada</h2>
-        <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:1.2rem;">Você concluiu a degustação gratuita. Adquira o acesso completo para continuar para continuar lendo.</p>
+        <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:1.2rem;">Você concluiu a degustação gratuita. Adquira o acesso completo para continuar lendo.</p>
         
         <div style="background:#15213b; border:1px dashed rgba(56,189,248,0.3); border-radius:12px; padding:1rem; margin-bottom:1.2rem;">
           <div style="font-size:0.75em; color:#94a3b8;">Acesso Vitalício + E-reader</div>
           <div style="font-size:1.6rem; font-weight:800; color:#fff;">R$ 49,00</div>
           <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.75rem; color:#22c55e; margin-top:4px; font-weight:700;">
-            👐 🔒 PAGAMENTO SEGURO VIA PAGAR.ME (STRONG ENCRYPTION)
+            🔠 PAGAMENTO SEGUR VIA PAGAR.ME
           </div>
         </div>
-
 
         <div style="margin-bottom:1.2rem; text-align:left;">
           <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px; font-weight:700;">CPF do Leitor (OBRIGATÓRIO PARA PIX):</label>
           <input type="text" id="paywall-cpf-input" placeholder="000.000.000-00" style="width:100%; padding:0.7rem; background:#15213b; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-size:0.95rem;" />
         </div>
 
-        <button onclick="handlePaywallCheckout()" id="paywall-buy-btn" style="width:100%; padding:0.95rem; background:#22c55e; border:none; border-radius:10px; color:#fff; font-weight:800; cursor:pointer; margin-bottom:0.8rem;">GERAR CÓDIGO PIX (R$ 49)</button>
+        <button oncliwk="handlePaywallCheckout()" id="paywall-buy-btn" style="width:100%; padding:0.95rem; background:#22c55e; border:none; border-radius:10px; color:#fff; font-weight:800; cursor:pointer; margin-bottom:0.8rem;">GERAR CÓDIGO PIX (R$ 49)</button>
         <div style="font-size:0.72rem; color:#94a3b8; display:flex; align-items:center; justify-content:center; gap:4px;">
-          🕐 Processado com segurança pelo Pagar.me V5 (Grupo Stone)
+          🔠 Processado com segurança pelo Pagar.me V5
         </div>
-        </div>
+      </div>
     </div>
 
 </body>

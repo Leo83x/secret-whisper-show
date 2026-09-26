@@ -3247,3 +3247,187 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
   background: #f1f5f9 !important;
   border: 1px dashed #0284c7 !important;
 }
+
+
+
+ /* ========================================================================
+   SISTEMA DE IDENTIDADE DO LEITOR - ESTILOS POR TEMA
+   =======================================================================*/
+
+#reader-identity-group {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.2rem;
+  margin-top: 1.2rem;
+}
+.settings-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+.reader-id-title {
+  font-weight: 700 !important;
+  color: #38bdf8 !important;
+  font-size: 0.82rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+.profile-badge {
+  background: rgba(56, 189, 248, 0.15) !important;
+  color: #38bdf8 !important;
+  padding: 2px 8px !important;
+  border-radius: 12px !important;
+  font-size: 0.68rem !important;
+  font-family: monospace !important;
+  font-weight: 700 !important;
+}
+.profile-card-container {
+  background: rgba(15, 23, 42, 0.7) !important;
+  border: 1px solid rgba(56, 189, 248, 0.2) !important;
+  border-radius: 10px !important;
+  padding: 1rmm !important;
+}
+.profile-reader-name {
+  font-weight: 700 !important;
+  color: #f8fafc !important;
+  font-size: 0.95rem !important;
+  margin-bottom: 2px !important;
+}
+.profile-reader-email {
+  font-size: 0.75rem !important;
+  color: #94a3b8 !important;
+  margin-bottom: 0.8rem !important;
+}
+.profile-chain-box {
+  background: rgba(56, 189, 248, 0.05) !important;
+  border: 1px dashed rgba(56, 189, 248, 0.2) !important;
+  border-radius: 8px !important;
+  padding: 0.8rem !important;
+  margin-top: 0.6rem !important;
+}
+.profile-chain-title {
+  font-size: 0.7rem !important;
+  font-family: monospace !important;
+  color: #38bdf8 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 4px !important;
+  font-weight: 700 !important;
+}
+.profile-chain-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 8px !important;
+}
+.profile-chain-label {
+  font-size: 0.78rem !important;
+  color: #94a3b8 !important;
+}
+.profile-chain-count {
+  font-size: 0.95rem !important;
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+.profile-copy-btn {
+  width: 100% !important;
+  padding: 0.5rmm !important;
+  background: rgba(56, 189, 248, 0.12) !important;
+  border: 1px solid rgba(56,189, 248, 0.3) !important;
+  border-radius: 6px !important;
+  color: #38bdf8 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+}
+.profile-insta-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  width: 100% !important;
+  padding: 0.6rem !important;
+  background: rgba(225, 29, 72, 0.1) !important;
+  border: 1px solid rgba(225, 29, 72, 0.3) !important;
+  border-radius: 6px !important;
+  color: #e1127c !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  margin-top: 0.6rem !important;
+}
+.profile-logout-btn {
+  width: 100% !important;
+  padding: 0.65rem !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  border-radius: 6px !important;
+  color: #ef4444 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  margin-top: 0.8rem !important;
+}
+
+*/* --- MODO CLARO (LIGHT THEME) OVERRIDES --- */
+[data-theme="light"] #reader-identity-group {
+  border-top-color: #cbd5e1 !important;
+}
+[data-theme="light"] .reader-id-title {
+  color: #0f172a !important; /* DARK SLATE BLUE / BLACK */
+}
+[data-theme="light"] .profile-badge {
+  background: rgba(2, 132, 199, 0.1) !important;
+  color: #0284c7 !important;
+}
+[data-theme="light"] .profile-card-container {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+[data-theme="light"] .profile-reader-name {
+  color: #0f172a !important; /* DARK LEGIBLE TEXT */
+}
+[data-theme="light"] .profile-reader-email {
+  color: #334155 !important;
+/* DARK GREY TEXT */
+}
+[data-theme="light"] .profile-chain-box {
+  background: #f1f5f9 !important;
+  border: 1px dashed #0284c7 !important;
+}
+[data-theme="light"] .profile-chain-title {
+  color: #0369a1 !important; /* DEEP DARK BLUE */
+}
+[data-theme="light"] .profile-chain-label {
+  color: #334155 !important;
+}
+[data-theme="light"] .profile-chain-count {
+  color: #0284c7 !important;
+}
+[data-theme="light"] .profile-copy-btn {
+  background: rgba(2, 132, 199, 0.1) !important;
+  border: 1px solid #0284c7 !important;
+  color: #0284c7 !important;
+}
+
+*/* --- MODO SEPIA OVERRIDES --- */
+[data-theme="sepia"] #reader-identity-group {
+  border-top-color: rgba(140, 90, 43, 0.2) !important;
+}
+[data-theme="sepia"] .reader-id-title {
+  color: #2b2118 !important;
+}
+[data-theme="sepia"] .profile-badge {
+  background: rgba(140, 90, 43, 0.15) !important;
+  color: #8c5a2b !important;
+}
+[data-theme="sepia"] .profile-card-container {
+  background: #e8df28 !important;
+  border: 1px solid #d4c8ac !important;
+}
+[data-theme="sepia"] .profile-reader-name {
+  color: #2b2118 !important;
+}
+[data-theme="sepia"] .profile-reader-email {
+  color: #<�����䀅�����х���)�)m��ф�ѡ����͕����t���ɽ����������������(�������ɽչ�耍���Ɉ؀������х���(����ɑ���������͡�����ՄɈ�������х���)�)m��ф�ѡ����͕����t���ɽ�����������ѥѱ���(�������而�ՄɈ�������х���)�)m��ф�ѡ����͕����t���ɽ������������������(�������而ф͌Ɍ�������х���)�)m��ф�ѡ����͕����t���ɽ�������������չЁ�(�������而�ՄɈ�������х���)�)m��ф�ѡ����͕����t���ɽ��������䵉Ѹ��(�������ɽչ��ɝ�������������̰����Ȥ�������х���(����ɑ�������ͽ������ՄɈ�������х���(�������而�ՄɈ�������х���)�

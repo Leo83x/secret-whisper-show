@@ -525,14 +525,32 @@ function logoutReader() {
   }
 }
 
+function isValidCPF(cpf) {
+  if (typeof cpf !== 'string') return false;
+  cpf = cpf.replace(/[^\d]+/g, '');
+  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+  let sum = 0;
+  let remainder;
+  for (let i = 1; i <= 9; i++) sum += parseInt(cpf.substring(i - 1, i), 10) * (11 - i);
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(cpf.substring(9, 10), 10))return false;
+  sum = 0;
+  for (let i = 1; i <= 10; i++) sum += parseInt(cpf.substring(i - 1, i), 10) * (12 - i);
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) remainder = 0;
+  if (remainder !== parseInt(cpf.substring(10, 11), 10)) return false;
+  return true;
+}
+
 async function handlePaywallCheckout() {
   const btn = document.getElementById('paywall-buy-btn');
   const cpfInput = document.getElementById('paywall-cpf-input');
   const token = localStorage.getItem('ush_token');
   const cpf = cpfInput ? cpfInput.value.trim() : '';
 
-  if (!cpf || cpf.replace(/\D/g, '').length !== 11) {
-    alert('Por favor, informe um CPF válido para a emissão do PIX.');
+  if (!isValidCPF(cpf)) {
+    alert('Por favor, informe um CPF válido (11 digitos) para a emissão do PIX.');
     if (cpfInput) cpfInput.focus();
     return;
   }
@@ -550,28 +568,45 @@ async function handlePaywallCheckout() {
     const data = await res.json();
     if (data.success) {
       const card = document.querySelector('#paywall-modal .reader-modal-card');
-      const pixCode = (data.pix && data.pix.qr_code) ? data.pix.qr_code : '';
-      const pixUrl = (data.pix && data.pix.qr_code_url) ? data.pix.qr_code_url : '';
+      const pixCode = data.pixQrCode || (data.pix && data.pix.qr_code) || '';
+      const pixUrl = data.pixQrCodeUrl || (data.pix && data.pix.qr_code_url) || '';
 
       if (card) {
         card.innerHTML = `
           <div style="position:relative; margin-bottom:0.8rem;">
-            <button onclick="document.getElementById('paywall-modal').style.display='none'" style="position:absolute; top:-10px; right:-5px; background:transparent; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">&times;</button>
+            <button onclick="document.getElementById('paywall-modal').style.display='none'" style="position:absolute; top:-10px; right:-5px; background:transparent; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;" aria-label="Fechar">&times;</button>
             <span style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); padding:4px 14px; border-radius:20px; font-size:0.75rem; font-family:monospace;">PIX GERADO COM SUCESSO</span>
           </div>
           <h3 style="color:#fff; font-size:1.2rem; margin-bottom:0.5rem;">Escaneie ou copie o código PIX</h3>
           <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:1rem;">Após a confirmação do pagamento, seu acesso será liberado automaticamente.</p>
-          ${pixUrl ? `<img src="${pixUrl}" style="width:180px; height:180px; margin:0 auto 1rem auto; border-radius:12px; border:2px solid #38bdf8; display:block;" />` : '<div style="padding:1.5rem; color:#eab308; font-size:0.85rem;">Copie o código PIX abaixo para pagar no app do seu banco.</div>'  }
+          ${pixUrl ? `<img style="width:180px; height:180px; margin:0 auto 1rem auto; border-radius:12px; border:2px solid #38bdf8; display:block;" src="${pixUrl}" alt="QR Code PIX" />` : ''}
           <div style="background:#15213b; padding:0.8rem; border-radius:8px; border:1px solid rgba(256,256,256,0.1); margin-bottom:1rem; word-break:break-all; font-size:0.75rem; color:#e2e8f0; max-height:80px; overflow-y:auto; text-align:left;">
-            ${pixCode || 'Codigo PIX gerado com sucesso no Pagar.me! Use o Código'}
+            ${pixCode || 'Código PIX indisponível.try_again'}
           </div>
-          <button onclick="navigator.clipboard.writeText('${pixCode}'); alert('Código PIX copiado!');" style="width:100%; padding:0.85rem; background:#38bdf8; color:#0f172a; font-weight:800; border:none; border-radius:8px; cursor:pointer;">
-            COPIAR CÓDIGO PIX
+          <button id="copy-pix-btn" style="width:100%; padding:0.85rem; background:#38bdf8; color:#0f172a; font-weight:800; border:none; border-radius:8px; cursor:pointer;">
+            �📋 COPIAR CÓDIGO PIX
           </button>
         `;
+
+        setTimeout(() => {
+          const copyBtn = document.getElementById('copy-pix-btn');
+          if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+              if (pixCode) {
+                navigator.clipboard.writeText(pixCode);
+                copyBtn.innerHTML = '✓ CÓDIGO PIX COPIADO!';
+                copyBtn.style.background = '#22c55e';
+                copyBtn.style.color = '#fff';
+                alert('Código PIX copiado com sucesso!');
+              } else {
+                alert('Código PIX indisponível.');
+              }
+            });
+          }
+        }, 100);
       }
     } else {
-      alert(data.error || 'Erro ao gerar PIX. Tente novamente.');
+      alert(data.error || 'Erro ao gerar PIX. Verifique o CPF e tente novamente.');
       if (btn) {
         btn.disabled = false;
         btn.innerText = 'GERAR CÓDIGO PIX (R$ 49)';
