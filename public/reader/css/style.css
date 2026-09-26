@@ -3210,3 +3210,40 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
 [data-theme="sepia"] #profile-card-box span {
   color: #736049 !important;
 }
+
+
+
+ /* Correcao de Contraste do Card do Leitor no Modo Claro */
+[data-theme="light"] .profile-card-container {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+[data-theme="light"] .profile-card-container *,
+[data-theme="light"] .settings-section *,
+[data-theme="light"] #reader-identity-group * {
+  color: #0f172a !important;
+}
+[data-theme="light"] #profile-reader-email {
+  color: #475569 !important;
+}
+[data+]#profile-caip-count {
+  color: #0284c7 !important;
+}
+
+
+ /* Forcar contraste forte azul escuro nas labels do Modo Claro */
+[data-theme="light"] #reader-identity-group p,
+[data-theme="light"] #reader-identity-group div,
+[data-theme="light"] #reader-identity-group span:not(#profile-status-badge) {
+  color: #0369a1 !important;
+  font-weight: 700 !important;
+}
+[data-theme="light"] #profile-card-box {
+  background: #ffffff !important;
+  border: 1px solid #94a3b8 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+}
+[data-theme="light"] #profile-card-box div[style*="background"] {
+  background: #f1f5f9 !important;
+  border: 1px dashed #0284c7 !important;
+}

@@ -12,7 +12,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { token, payment_method } = req.body || {};
+    const {
+      token,
+      payment_method,
+      cpf,
+      card_number,
+      card_holder_name,
+      card_expiry_month,
+      card_expiry_year,
+      card_cvv
+    } = req.body || {};
+
     if (!token) {
       return res.status(400).json({ error: 'Token de leitor obrigatorio' });
     }
@@ -27,6 +37,33 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Leitor nao encontrado' });
     }
 
+    const docCpf= (cpf || reader.cpf || '11111111111').replace(/\D/g, '');
+    const cleanCpf = docCpf.length === 11 ? docCpf : '11111111111';
+
+    // Se os dados do cartao forem enviados, cria cobranca de cartao
+    let paymentPayload = {};
+    if (payment_method === 'credit_card' && card_number) {
+      paymentPayload = {
+        payment_method: 'credit_card',
+        credit_card: {
+          installments: 1,
+          statement_descriptor: 'USH LSVRO',
+          card: {
+            number: card_number.replace(/\D/g, ''),
+            holder_name: card_holder_name ? card_holder_name.toUpperCase() : reader.name.toUpperCase(),
+            exp_month: parseInt(card_expiry_month, 10),
+            exp_year: parseInt(card_expiry_year, 10),
+            cvv: card_cvv
+          }
+        }
+      };
+    } else {
+      paymentPayload = {
+        payment_method: 'pix',
+        pix: { expires_in: 86400 }
+      };
+    }
+
     const orderPayload = {
       items: [
         {
@@ -36,29 +73,20 @@ export default async function handler(req, res) {
         }
       ],
       customer: {
-        name: reader.name,
+        name: reader.name || 'Leitor VIP',
         email: reader.email,
+        document: cleanCpf,
+        document_type: 'cpf',
+        type: 'individual',
         phones: reader.phone ? {
-          mobile_phone: {
+          mobile_phone : {
             country_code: '55',
             area_code: reader.phone.replace(/\D/g, '').substring(0, 2) || '11',
             number: reader.phone.replace(/\D/g, '').substring(2) || '999999999'
           }
         } : undefined
       },
-      payments: [
-        {
-          payment_method: payment_method === 'pix' ? 'pix' : 'checkout',
-          pix: payment_method === 'pix' ? { expires_in: 86400 } : undefined,
-          checkout: payment_method !== 'pix' ? {
-            expires_in: 86400,
-            billing_address_editable: false,
-            customer_editable: false,
-            accepted_payment_methods: ['credit_card', 'pix', 'boleto'],
-            success_url: `https://ush-livro.vercel.app/reader/?token=${reader.access_token}&status=success`
-          } : undefined
-        }
-      ],
+      payments: [paymentPayload],
       metadata: {
         access_token: reader.access_token,
         reader_id: reader.id,
@@ -79,22 +107,30 @@ export default async function handler(req, res) {
     const pagarmeData = await pagarmeRes.json();
 
     if (!pagarmeRes.ok) {
-      return res.status(400).json({ error: pagarmeData.message || 'Erro ao gerar cobrança no Pagar.me' });
+      return res.status(400).json({ error: pagarmeData.message || 'Erro ao gerar cobranca no Pagar.me' });
     }
+
+    const charge = pagarmeData.charges && pagarmeData.charges[0] ? pagarmeData.charges[0] : {};
+    const tx = charge.last_transaction ? charge.last_transaction : {};
+    const isPaid = pagarmeData.status === 'paid' || charge.status === 'paid';
 
     await supabase
       .from('readers')
-      .update({ pagarme_order_id: pagarmeData.id, status: 'pending' })
+      .update({
+        pagarme_order_id: pagarmeData.id,
+        cpf: cleanCpf,
+        status: isPaid ? 'paid' : 'pending'
+      })
       .eq('id', reader.id);
-
-    const checkoutUrl = pagarmeData.checkouts && pagarmeData.checkouts[0] ? pagarmeData.checkouts[0].payment_url : null;
-    const pixData = pagarmeData.charges && pagarmeData.charges[0] && pagarmeData.charges[0].last_transaction ? pagarmeData.charges[0].last_transaction : null;
 
     return res.status(200).json({
       success: true,
+      isPaid: isPaid,
       orderId: pagarmeData.id,
-      checkoutUrl: checkoutUrl,
-      pix: pixData
+      pix: {
+        qr_code: tx.qr_code || tx.qrtcode || tx.qr_code,
+        qr_code_url: tx.qr_code_url || tx.qr_code_url
+      }
     });
 
   } catch (err) {
