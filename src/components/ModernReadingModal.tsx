@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, X, Sparkles } from 'lucide-react';
+import { ArrowRight, X, Sparkles, BookOpen } from 'lucide-react';
 
 interface ModernReadingModalProps {
   isOpen: boolean;
@@ -25,9 +25,9 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="relative w-full max-w-lg bg-[#0b1120] border border-[#c9a962]/30 rounded-2xl p-6 shadow-2xl text-slate-100 overflow-y-auto max-h-[90vh]">
-        <div className="absolute -top-20 -right-20 w-60 h-60 bg-[#c9a962]/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+      <div className="relative w-full max-w-lg bg-[#0b1120] border border-[#c9a962]/40 rounded-2xl p-6 sm:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8)] text-slate-100 overflow-y-auto max-h-[90vh]">
+        <div className="absolute -top-20 -right-20 w-60 h-60 bg-[#c9a962]/15 rounded-full blur-3xl pointer-events-none" />
 
         <button
           onClick={onClose}
@@ -38,58 +38,38 @@ export const ModernReadingModal: React.FC<ModernReadingModalProps> = ({ isOpen, 
 
         {/* Badge */}
         <div className="mb-4 text-center">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold tracking-wider text-[#c9a962] uppercase bg-[#c9a962]/10 border border-[#c9a962]/30 rounded-full">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 text-xs font-semibold tracking-wider text-[#c9a962] uppercase bg-[#c9a962]/10 border border-[#c9a962]/30 rounded-full">
             <Sparkles className="w-3.5 h-3.5" /> Experiência de Leitura Digital
           </span>
         </div>
 
         {/* Título com SEGREDO em azul metálico */}
-        <h3 className="text-2xl md:text-3xl font-bold text-center text-white mb-4 leading-snug">
-          O Último <span className="bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent">SEGREDO</span> da Humanidade
+        <h3 className="text-2xl sm:text-3xl font-bold text-center mb-3 tracking-tight font-display">
+          O ÚLTIMO <span className="bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(56,189,248,0.4)]">SEGREDO</span> DA HUMANIDADE
         </h3>
 
-        {/* Vídeo Teaser — ao clicar em play, ativa o iframe sem os controles do YouTube */}
-        <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 mb-6 bg-black shadow-inner">
-          {!videoStarted ? (
-            <>
-              <img
-                src="https://img.youtube.com/vi/c5VJNP6-PHE/maxresdefault.jpg"
-                alt="Teaser"
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={() => setVideoStarted(true)}
-                className="absolute inset-0 flex items-center justify-center group bg-black/40 hover:bg-black/20 transition-colors"
-              >
-                <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-xl transition-transform group-hover:scale-110"
-                     style={{ background: "linear-gradient(135deg, #c9a962, #e2c27b)", boxShadow: "0 0 30px rgba(201,169,98,0.6)" }}>
-                  <svg viewBox="0 0 24 24" className="w-7 h-7 fill-black ml-1">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-              </button>
-            </>
-          ) : (
-            <div className="w-full h-full overflow-hidden relative">
-              <iframe
-                src="https://www.youtube.com/embed/c5VJNP6-PHE?autoplay=1&controls=0&cc_load_policy=0&fs=0&playsinline=1&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&loop=1&playlist=c5VJNP6-PHE"
-                title="Teaser Oficial"
-                className="w-full h-[125%] -mt-[8%] pointer-events-none select-none scale-105"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen={false}
-              />
-            </div>
-          )}
+        <p className="text-sm text-slate-300 text-center mb-6 leading-relaxed font-light">
+          Inicie a degustação gratuita diretamente no seu navegador. Sem necessidade de download imediato.
+        </p>
+
+        {/* --- BOTÃO CTA PREMIUM CINEMATOGRÁFICO COM SHIMMER & GLOW --- */}
+        <div className="pt-2 pb-2">
+          <button
+            onClick={handleStartReading}
+            className="relative overflow-hidden w-full py-4 px-6 rounded-xl font-extrabold text-base tracking-wider uppercase text-slate-950 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 shadow-[0_0_30px_rgba(234,179,8,0.45)] hover:shadow-[0_0_40px_rgba(234,179,8,0.65)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-3 group"
+          >
+            {/* Feixe de Luz Shimmer Animado */}
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
+            
+            <BookOpen className="w-5 h-5 text-slate-950 group-hover:scale-110 transition-transform" />
+            <span>INICIAR LEITURA GRATUITA</span>
+            <ArrowRight className="w-5 h-5 text-slate-950 group-hover:translate-x-1.5 transition-transform" />
+          </button>
         </div>
 
-        {/* Botão de Ação */}
-        <button
-          onClick={handleStartReading}
-          className="w-full py-4 px-6 bg-gradient-to-r from-[#c9a962] to-[#e2c27b] text-black font-bold rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#c9a962]/20 group text-sm uppercase"
-        >
-          <span>Iniciar Leitura</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </button>
+        <p className="text-[11px] text-center text-slate-400/70 mt-3">
+          🔒 Acesso instantâneo e seguro · Obra Registrada nº 312254601
+        </p>
       </div>
     </div>
   );

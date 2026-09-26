@@ -6,9 +6,9 @@ const FooterSection = () => {
   const isInView = useInView(ref, { once: true });
 
   return (
-    <footer ref={ref} className="relative pt-20 pb-12 px-6 border-t border-border/30 bg-background/80">
-      <div className="max-w-4xl mx-auto text-center">
-        {/* Bloco Poético / Frases de Efeito do Livro */}
+    <footer ref={ref} className="w-full bg-[#070b14] border-t border-border/30 pt-16 pb-12 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto text-center">
+        {/* Frases Poéticas de Encerramento */}
         <motion.div
           className="space-y-4 mb-16"
           initial={{ opacity: 0, y: 15 }}
@@ -35,11 +35,11 @@ const FooterSection = () => {
           </div>
         </motion.div>
 
-        {/* --- CAIXA SEPARADA E DEMARCADA PARA INFORMAÇÕES INSTITUCIONAIS E LEGAIS --- */}
+        {/* --- RODAPÉ INSTITUCIONAL LARGURA TOTAL DE PONTA A PONTA --- */}
         <motion.div
-          className="mt-12 pt-8 pb-6 px-6 rounded-2xl bg-card/40 border border-border/40 text-xs md:text-sm text-muted-foreground/70 space-y-4 shadow-xl"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          className="pt-10 border-t border-border/20 text-xs md:text-sm text-muted-foreground/80 space-y-4"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 font-medium">
@@ -60,15 +60,15 @@ const FooterSection = () => {
               href="/reader/terms.html" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="text-primary hover:text-primary/80 transition-colors underline underline-offset-4"
+              className="text-primary hover:text-primary/80 transition-colors underline underline-offset-4 font-semibold"
             >
               Termos de Uso & Proteção Autoral (Lei nº 9.610/98)
             </a>
           </div>
 
-          <div className="pt-2 border-t border-border/20 text-xs text-muted-foreground/50">
+          <p className="text-xs text-muted-foreground/50 pt-3">
             © {new Date().getFullYear()} LTL EMPREENDIMENTOS. Todos os direitos reservados.
-          </div>
+          </p>
         </motion.div>
       </div>
     </footer>

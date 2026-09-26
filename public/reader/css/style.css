@@ -3765,3 +3765,89 @@ body[data-theme="sepia"] .profile-card-container button[onclick*="logout"] {
     margin-top: 100pt;
   }
 }
+
+
+
+/* ==========================================================================
+   FORÇAR CARD DE IDENTIDADE ESCURO E PREMIUM UNIVERSAL (TODOS OS TEMAS)
+   ========================================================================== */
+.profile-card-container,
+[data-theme="light"] .profile-card-container,
+body[data-theme="light"] .profile-card-container,
+[data-theme="sepia"] .profile-card-container,
+body[data-theme="sepia"] .profile-card-container {
+  background: #0f172a !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  border-radius: 14px !important;
+  padding: 1.2rem !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+  color: #f8fafc !important;
+}
+
+.profile-reader-name,
+[data-theme="light"] .profile-reader-name,
+[data-theme="sepia"] .profile-reader-name {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 1.05rem !important;
+}
+
+.profile-reader-email,
+[data-theme="light"] .profile-reader-email,
+[data-theme="sepia"] .profile-reader-email {
+  color: #94a3b8 !important;
+}
+
+.profile-chain-box,
+[data-theme="light"] .profile-chain-box,
+[data-theme="sepia"] .profile-chain-box {
+  background: #020617 !important;
+  border: 1px dashed rgba(56, 189, 248, 0.4) !important;
+  border-radius: 10px !important;
+  padding: 0.9rem !important;
+}
+
+.profile-chain-title,
+[data-theme="light"] .profile-chain-title,
+[data-theme="sepia"] .profile-chain-title {
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+
+.profile-chain-row,
+[data-theme="light"] .profile-chain-row,
+[data-theme="sepia"] .profile-chain-row {
+  color: #e2e8f0 !important;
+}
+
+#copy-ref-btn,
+[data-theme="light"] #copy-ref-btn,
+[data-theme="sepia"] #copy-ref-btn {
+  background: rgba(56, 189, 248, 0.15) !important;
+  border: 1px solid rgba(56, 189, 248, 0.5) !important;
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+
+#copy-ref-btn:hover,
+[data-theme="light"] #copy-ref-btn:hover {
+  background: rgba(56, 189, 248, 0.28) !important;
+}
+
+.profile-card-container a[href*="instagram"],
+[data-theme="light"] .profile-card-container a[href*="instagram"],
+[data-theme="sepia"] .profile-card-container a[href*="instagram"] {
+  background: rgba(225, 29, 72, 0.15) !important;
+  border: 1px solid rgba(225, 29, 72, 0.5) !important;
+  color: #fb7185 !important;
+  font-weight: 700 !important;
+}
+
+.profile-card-container button[onclick*="logout"],
+[data-theme="light"] .profile-card-container button[onclick*="logout"],
+[data-theme="sepia"] .profile-card-container button[onclick*="logout"] {
+  background: rgba(148, 163, 184, 0.12) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #cbd5e1 !important;
+  font-weight: 700 !important;
+}
