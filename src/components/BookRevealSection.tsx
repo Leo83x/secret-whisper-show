@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import bookCover from "/capa_ush.jpg";
 import { ModernReadingModal } from "./ModernReadingModal";
-import { Moon, Type, BookMarked, ArrowRight, Sparkles } from "lucide-react";
+import { Moon, Type, BookMarked, ArrowRight, Sparkles, Check } from "lucide-react";
 
 const BookRevealSection = () => {
   const ref = useRef(null);
@@ -32,7 +32,7 @@ const BookRevealSection = () => {
             </div>
           </motion.div>
 
-          {/* Conteúdo Informativo do E-reader */}
+          {/* Conteúdo Informativo da Obra e Oferta de Preço */}
           <motion.div
             className="flex-1 text-center lg:text-left"
             initial={{ opacity: 0, x: 50 }}
@@ -47,9 +47,22 @@ const BookRevealSection = () => {
               Uma experiência feita para a sua mente
             </h2>
 
-            <p className="text-muted-foreground text-base sm:text-lg mb-8 leading-relaxed font-light">
+            <p className="text-muted-foreground text-base sm:text-lg mb-6 leading-relaxed font-light">
               Leia em qualquer dispositivo com nosso e-reader nativo. Sem distração, com temas personalizados e navegação direta pelos capítulos.
             </p>
+
+            {/* --- BLOCO DE OFERTA DE PREÇO --- */}
+            <div className="mb-8 p-5 rounded-2xl bg-card/60 border border-gold/30 max-w-md mx-auto lg:mx-0 shadow-lg">
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-xs uppercase font-semibold text-gold tracking-wider">Acesso Vitalício Completo</span>
+                <span className="text-2xl sm:text-3xl font-extrabold text-foreground font-display">R$ 49,00</span>
+              </div>
+              <ul className="text-xs text-muted-foreground space-y-1.5 text-left">
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-400" /> E-reader nativo sem necessidade de aplicativo</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-400" /> Atualizações de capítulos e dossiês históricos</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-400" /> Degustação gratuita liberada agora</li>
+              </ul>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 text-left">
               <div className="p-4 rounded-xl bg-card/40 border border-border/30">
@@ -71,16 +84,14 @@ const BookRevealSection = () => {
               </div>
             </div>
 
-            {/* --- BOTÃO CTA PREMIUM CINEMATOGRÁFICO DE LARGURA TOTAL COM SHIMMER & GLOW --- */}
+            {/* --- BOTÃO CTA PREMIUM CINEMATOGRÁFICO --- */}
             <motion.button
               onClick={() => setIsModalOpen(true)}
               className="relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold tracking-wider rounded-xl shadow-[0_0_30px_rgba(234,179,8,0.45)] hover:shadow-[0_0_40px_rgba(234,179,8,0.65)] transition-all duration-300 text-sm uppercase group"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
-              {/* Feixe de Luz Shimmer Animado */}
               <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
-
               <span>INICIAR LEITURA</span>
               <ArrowRight className="w-4 h-4 text-slate-950 group-hover:translate-x-1.5 transition-transform" />
             </motion.button>
