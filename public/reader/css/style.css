@@ -3173,3 +3173,40 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
 /* cache-bump v1205 */ 
 /* v1210 */ 
 /* supreme-fix v9999 */ 
+
+
+ /* Fix Legibilidade Card Leitor */
+[data-theme="light"] #profile-card-box {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+}
+[data-theme="light"] #profile-reader-name {
+  color: #0f172a !important;
+}
+[data-theme="light"] #profile-reader-email {
+  color: #475569 !important;
+}
+[data-theme="light"] #profile-card-box div {
+  color: #334155 !important;
+}
+[data-theme="light"] #profile-card-box span {
+  color: #475569 !important;
+}
+
+[data-theme="sepia"] #profile-card-box {
+  background: #e8dfc8 !important;
+  border: 1px solid #d4c8ac !important;
+}
+[data-theme="sepia"] #profile-reader-name {
+  color: #2b2118 !important;
+}
+[data-theme="sepia"] #profile-reader-email {
+  color: #736049 !important;
+}
+[data-theme="sepia"] #profile-card-box div {
+  color: #4a3c2c !important;
+}
+[data-theme="sepia"] #profile-card-box span {
+  color: #736049 !important;
+}

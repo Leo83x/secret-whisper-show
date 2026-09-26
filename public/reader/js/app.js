@@ -530,26 +530,42 @@ async function handlePaywallCheckout() {
   const token = localStorage.getItem('ush_token');
   if (btn) {
     btn.disabled = true;
-    btn.innerText = 'PROCESSANDO...';
+    btn.innerText = 'GERANDO PIX...';
   }
   try {
     const res = await fetch('/api/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: token })
+      body: JSON.stringify({ token: token, payment_method: 'pix' })
     });
     const data = await res.json();
-    if (data.success && data.checkout_url) {
-      window.location.href = data.checkout_url;
+    if (data.success) {
+      const card = document.querySelector('#paywall-modal .reader-modal-card');
+      if (card) {
+        card.innerHTML = `
+          <div style="margin-bottom:1rem;">
+            <span style="background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid rgba(34,197,94,0.3); padding:4px 14px; border-radius:20px; font-size:0.75rem; font-family:monospace;">PIX GERADO COM SUCESSO</span>
+          </div>
+          <h3 style="color:#fff; font-size:1.2rem; margin-bottom:0.5rem;">Escaneie ou copie o código PIX</h3>
+          <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:1rem;">Após a confirmação do pagamento, seu acesso será liberado automaticamente.</p>
+          ${data.pix && data.pix.qr_code_url ? `<img src="${data.pix.qr_code_url}" style="width:180px; height:180px; margin:0 auto 1rem auto; border-radius:12px; border:2px solid #38bdf8; display:block;" />` : ''}
+          <div style="background:#15213b; padding:0.8rem; border-radius:8px; border:1px solid rgba(256,256,256,0.1); margin-bottom:1rem; word-break:break-all; font-size:0.75rem; color:#e2e8f0; max-height:80px; overflow-y:auto; text-align:left;">
+            ${data.pix && data.pix.qr_code ? data.pix.qr_code : 'Código PIX instalado no Pagar.me! Use o QR Code'  }
+          </div>
+          <button onclick="navigator.clipboard.writeText('${data.pix && data.pix.qr_code ?data.pix.qr_code : ''}'); alert( 'Código PIX copiado!');" style="width:100%; padding:0.85rem; background:#38bdf8; color:#0f172a; font-weight:800; border:none; border-radius:8px; cursor:pointer;">
+            COPIAR CÓDIGO PIX
+          </button>
+        `;
+      }
     } else {
-      alert(data.error || 'Erro ao gerar pagamento. Tente novamente.');
+      alert(data.error || 'Erro ao gerar PIX. Tente novamente.');
       if (btn) {
         btn.disabled = false;
         btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49)';
       }
     }
   } catch (err) {
-    alert('Erro de conex\u00e3o ao gerar checkout.');
+    alert('Erro de conexão ao gerar checkout PIX.');
     if (btn) {
       btn.disabled = false;
       btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49)';
@@ -557,6 +573,6 @@ async function handlePaywallCheckout() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
   checkReaderAccess();
 });
