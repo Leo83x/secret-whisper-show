@@ -527,16 +527,25 @@ function logoutReader() {
 
 async function handlePaywallCheckout() {
   const btn = document.getElementById('paywall-buy-btn');
+  const cpfInput = document.getElementById('paywall-cpf-input');
   const token = localStorage.getItem('ush_token');
+  const cpf = cpfInput ? cpfInput.value.trim() : '';
+
+  if (!cpf || cpf.replace(/\D/g, '').length !== 11) {
+    alert('Por favor, informe um CPF válido para a emissão do PIX.');
+    if (cpfInput) cpfInput.focus();
+    return;
+  }
+
   if (btn) {
-    btn.disabled = true;
     btn.innerText = 'GERANDO PIX...';
+    btn.disabled = true;
   }
   try {
     const res = await fetch('/api/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: token, payment_method: 'pix' })
+      body: JSON.stringify({ token: token, payment_method: 'pix', cpf: cpf })
     });
     const data = await res.json();
     if (data.success) {
@@ -549,10 +558,10 @@ async function handlePaywallCheckout() {
           <h3 style="color:#fff; font-size:1.2rem; margin-bottom:0.5rem;">Escaneie ou copie o código PIX</h3>
           <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:1rem;">Após a confirmação do pagamento, seu acesso será liberado automaticamente.</p>
           ${data.pix && data.pix.qr_code_url ? `<img src="${data.pix.qr_code_url}" style="width:180px; height:180px; margin:0 auto 1rem auto; border-radius:12px; border:2px solid #38bdf8; display:block;" />` : ''}
-          <div style="background:#15213b; padding:0.8rem; border-radius:8px; border:1px solid rgba(256,256,256,0.1); margin-bottom:1rem; word-break:break-all; font-size:0.75rem; color:#e2e8f0; max-height:80px; overflow-y:auto; text-align:left;">
-            ${data.pix && data.pix.qr_code ? data.pix.qr_code : 'Código PIX instalado no Pagar.me! Use o QR Code'  }
+          <div style="background:#15213b; padding:0.8rem; background:#15213b; border-radius:8px; border:1px solid rgba(256,256,256,0.1); margin-bottom:1rem; word-break:break-all; font-size:0.75rem; color:#e2e8f0; max-height:80px; overflow-y:auto; text-align:left;">
+            ${data.pix && data.pix.qr_code ? data.pix.qr_code : 'Código PIX instalado no Pagar.me! Use o QR Code'}
           </div>
-          <button onclick="navigator.clipboard.writeText('${data.pix && data.pix.qr_code ?data.pix.qr_code : ''}'); alert( 'Código PIX copiado!');" style="width:100%; padding:0.85rem; background:#38bdf8; color:#0f172a; font-weight:800; border:none; border-radius:8px; cursor:pointer;">
+          <button onclick="navigator.clipboard.writeText('${data.pix && data.pix.qr_code ? data.pix.qr_code : ''}); alert('Código PIX copiado!');" style="width:100%; padding:0.85rem; background:#38bdf8; color:#0f172a; font-weight:800; border:none; border-radius:8px; cursor:pointer;">
             COPIAR CÓDIGO PIX
           </button>
         `;
@@ -561,14 +570,14 @@ async function handlePaywallCheckout() {
       alert(data.error || 'Erro ao gerar PIX. Tente novamente.');
       if (btn) {
         btn.disabled = false;
-        btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49)';
+        btn.innerText = 'GERAR CÓDIGO PIX (R$ 49)';
       }
     }
   } catch (err) {
     alert('Erro de conexão ao gerar checkout PIX.');
     if (btn) {
       btn.disabled = false;
-      btn.innerText = 'ADQUIRIR ACESSO COMPLETO (R$ 49)';
+      btn.innerText = 'GERAR CÓDIGO PIX (R$ 49)';
     }
   }
 }
