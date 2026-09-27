@@ -107,23 +107,29 @@
 
   /* ── RENDERIZAÇÃO DO CAPÍTULO ───────────────────────── */
   
-  /* ── MARCADOR AUTOMÁTICO (PROGRESSO & POSIÇÃO EXATA DA LINHA) ── */
+    /* ── MARCADOR AUTOMÁTICO (PROGRESSO & POSIÇÃO EXATA DA LINHA) ── */
   function getSavedBookmark() {
     try {
       const savedCh = parseInt(localStorage.getItem('ush_last_chapter') || '0', 10);
       const savedScroll = parseInt(localStorage.getItem('ush_scroll_pos') || '0', 10);
       const totalCh = (typeof BOOK !== 'undefined' && BOOK.chapters) ? BOOK.chapters.length : 23;
       const validCh = (savedCh >= 0 && savedCh < totalCh) ? savedCh : 0;
-      return { chapter: validCh, scroll: isNaN(savedScroll) ? 0 : savedScroll };
+      return { 
+        chapter: validCh, 
+        scroll: (!isNaN(savedScroll) && savedScroll > 0) ? savedScroll : 0 
+      };
     } catch (e) {
       return { chapter: 0, scroll: 0 };
     }
   }
 
-  function saveCurrentBookmark(chapterIdx) {
+  function saveCurrentBookmark(chapterIdx, resetScroll) {
     try {
       if (chapterIdx !== undefined && chapterIdx !== null) {
         localStorage.setItem('ush_last_chapter', chapterIdx);
+        if (resetScroll) {
+          localStorage.setItem('ush_scroll_pos', 0);
+        }
       }
     } catch (e) {}
   }
@@ -132,16 +138,18 @@
     const bookmark = getSavedBookmark();
     const coverLabel = $('cover-btn-label');
     const sheetLabel = $('sheet-btn-label');
-    if (bookmark.chapter > 0 || bookmark.scroll > 200) {
-      if (coverLabel) coverLabel.textContent = 'CONTINUAR LEITURA';
-      if (sheetLabel) sheetLabel.textContent = 'CONTINUAR LEITURA ➔';
+    if (bookmark.chapter > 0 || bookmark.scroll > 150) {
+      const labelText = bookmark.chapter === 0 ? 'CONTINUAR PRÓLOGO' : ('CONTINUAR LEITURA (CAP. ' + bookmark.chapter + ')');
+      if (coverLabel) coverLabel.textContent = labelText;
+      if (sheetLabel) sheetLabel.textContent = labelText + ' ➔';
     } else {
       if (coverLabel) coverLabel.textContent = 'INICIAR LEITURA';
       if (sheetLabel) sheetLabel.textContent = 'INICIAR LEITURA ➔';
     }
   }
 
-  function renderChapter(idx) {
+  function renderChapter(idx, isUserNavigation) {
+    if (isUserNavigation === undefined) isUserNavigation = true;
     if (idx >= 3 && window.currentReaderStatus !== 'paid') {
         const paywallModal = document.getElementById('paywall-modal');
         if (paywallModal) paywallModal.style.display = 'flex';
@@ -149,6 +157,10 @@
     }
     if (typeof BOOK === 'undefined' || !BOOK.chapters[idx]) return;
     currentIdx = idx;
+
+    if (isUserNavigation) {
+      saveCurrentBookmark(idx, true);
+    }
     const ch = BOOK.chapters[idx];
     const textOnly = (ch.content || "").replace(/<[^>]*>/g, " ");
     const wordCount = textOnly.trim().split(/\s+/).filter(Boolean).length;
@@ -267,12 +279,27 @@
     });
   }
 
-  function openBookAndStart(idx) {
-    renderChapter(idx);
+  function openBookAndStart(targetIdx) {
+    const bookmark = getSavedBookmark();
+    const chToOpen = (targetIdx !== undefined && targetIdx !== null) ? targetIdx : bookmark.chapter;
+    const isSameSavedChapter = (chToOpen === bookmark.chapter);
+
+    renderChapter(chToOpen, !isSameSavedChapter);
+
     if (dom.coverScreen) {
       dom.coverScreen.style.display = 'none';
     }
-    window.scrollTo(0, 0);
+
+    if (isSameSavedChapter && bookmark.scroll > 30) {
+      setTimeout(function () {
+        window.scrollTo({ top: bookmark.scroll, behavior: 'instant' });
+      }, 60);
+      setTimeout(function () {
+        window.scrollTo({ top: bookmark.scroll, behavior: 'smooth' });
+      }, 220);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }
 
   function openSidebar() {
@@ -310,7 +337,7 @@
       dom.btnSheetStart.addEventListener('click', function (e) {
         e.stopPropagation();
         e.preventDefault();
-        openBookAndStart(currentIdx || 0);
+        openBookAndStart();
       });
     }
 
@@ -319,7 +346,7 @@
       dom.btnStart.addEventListener('click', function (e) {
         e.stopPropagation();
         e.preventDefault();
-        openBookAndStart(0);
+        openBookAndStart();
       });
     }
 
@@ -378,17 +405,34 @@
     scrollSaveTimer = setTimeout(function () {
       if (dom.coverScreen && dom.coverScreen.style.display === 'none') {
         try {
-          localStorage.setItem('ush_scroll_pos', Math.round(window.scrollY));
+          if (window.scrollY > 0) {
+            localStorage.setItem('ush_scroll_pos', Math.round(window.scrollY));
+            localStorage.setItem('ush_last_chapter', currentIdx);
+          }
         } catch (e) {}
       }
-    }, 150);
+    }, 120);
   }, { passive: true });
+
+  window.addEventListener('beforeunload', function () {
+    if (dom.coverScreen && dom.coverScreen.style.display === 'none') {
+      try {
+        localStorage.setItem('ush_scroll_pos', Math.round(window.scrollY));
+        localStorage.setItem('ush_last_chapter', currentIdx);
+      } catch (e) {}
+    }
+  });
 
   function init() {
     loadSettings();
     buildChapterList();
-    renderChapter(0);
+    
+    const bookmark = getSavedBookmark();
+    currentIdx = bookmark.chapter;
+    renderChapter(bookmark.chapter, false);
+    
     setupListeners();
+    updateCoverButtonLabel();
   }
 
   init();
