@@ -160,14 +160,15 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
       }
 
       /* ==========================================================
-         2. PÁGINAS INTERNAS DO LIVRO 3D (ANEXOS 1 E 2)
+         2. PÁGINAS INTERNAS DO LIVRO 3D
          ========================================================== */
+      /* Estilos refinados da Folha de Rosto Oficial no livro 3D */
       .title-page-layout {
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
         height: 100% !important;
-        padding: 2.2rem 1.6rem 1.6rem 1.6rem !important;
+        padding: 2.8rem 1.8rem 2rem 1.8rem !important;
         box-sizing: border-box !important;
         text-align: center !important;
       }
@@ -176,96 +177,37 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
       }
       .title-page-title {
         font-family: "Cinzel", serif !important;
-        font-size: 1.35rem !important;
+        font-size: 1.45rem !important;
         font-weight: 700 !important;
         color: #ffffff !important;
         line-height: 1.35 !important;
         letter-spacing: 0.08em !important;
-        margin-bottom: 1.3rem !important;
+        margin-bottom: 1.2rem !important;
+      }
+      .title-page-divider {
+        width: 45px !important;
+        height: 1px !important;
+        background: #c9a962 !important;
+        margin: 0 auto 1.2rem auto !important;
+        opacity: 0.6 !important;
       }
       .title-page-subtitle {
         font-family: "Cinzel", serif !important;
         font-size: 0.95rem !important;
         font-weight: 600 !important;
         color: #c9a962 !important;
-        letter-spacing: 0.15em !important;
-        margin-bottom: 1.3rem !important;
+        letter-spacing: 0.18em !important;
+        margin-bottom: 1.2rem !important;
       }
       .title-page-author {
         font-family: "Crimson Text", serif !important;
-        font-size: 1.05rem !important;
+        font-size: 1.15rem !important;
         color: #e2e8f0 !important;
         font-style: italic !important;
       }
 
-      .metadata-page-layout {
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-        height: 100% !important;
-        padding: 1.6rem 1.3rem 1.3rem 1.3rem !important;
-        box-sizing: border-box !important;
-        text-align: left !important;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-      }
-      .metadata-scroll-container {
-        overflow-y: auto !important;
-        flex: 1 !important;
-        padding-right: 6px !important;
-        margin-bottom: 0.8rem !important;
-        scrollbar-width: thin !important;
-      }
-      .metadata-scroll-container::-webkit-scrollbar {
-        width: 4px !important;
-      }
-      .metadata-scroll-container::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2) !important;
-        border-radius: 4px !important;
-      }
-      .book-metadata-header {
-        font-size: 0.72rem !important;
-        line-height: 1.5 !important;
-        color: #cbd5e1 !important;
-      }
-      .book-metadata-header strong {
-        color: #ffffff !important;
-      }
-      .metadata-divider {
-        border: none !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
-        margin: 0.65rem 0 !important;
-      }
-      .book-metadata-block {
-        margin-bottom: 0.65rem !important;
-      }
-      .metadata-heading {
-        font-size: 0.72rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.06em !important;
-        color: #c9a962 !important;
-        margin-bottom: 0.35rem !important;
-        text-transform: uppercase !important;
-      }
-      .metadata-text {
-        font-size: 0.73rem !important;
-        line-height: 1.5 !important;
-        color: #e2e8f0 !important;
-        text-align: justify !important;
-      }
-      .metadata-text.author-note {
-        font-style: italic !important;
-        color: #cbd5e1 !important;
-      }
-      .metadata-footer-action {
-        width: 100% !important;
-        padding-top: 0.4rem !important;
-      }
-
-      /* ─── CONTRASTE MODO CLARO (LIGHT THEME) ─── */
-      [data-theme="light"] .page-back {
-        background: #ffffff !important;
-        border-color: #cbd5e1 !important;
-      }
+      /* Modo Claro Overrides para Folha de Rosto */
+      [data-theme="light"] .page-back,
       [data-theme="light"] .page-inner-sheet {
         background: #ffffff !important;
         border-color: #cbd5e1 !important;
@@ -279,33 +221,12 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
       [data-theme="light"] .title-page-author {
         color: #334155 !important;
       }
-      [data-theme="light"] .book-metadata-header {
-        color: #334155 !important;
-      }
-      [data-theme="light"] .book-metadata-header strong {
-        color: #0f172a !important;
-      }
-      [data-theme="light"] .metadata-divider {
-        border-top-color: #e2e8f0 !important;
-      }
-      [data-theme="light"] .metadata-heading {
-        color: #8c6d23 !important;
-      }
-      [data-theme="light"] .metadata-text {
-        color: #1e293b !important;
-      }
-      [data-theme="light"] .metadata-text.author-note {
-        color: #334155 !important;
-      }
-      [data-theme="light"] .metadata-scroll-container::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.2) !important;
+      [data-theme="light"] .title-page-divider {
+        background: #8c6d23 !important;
       }
 
-      /* ─── CONTRASTE MODO SÉPIA (SEPIA THEME) ─── */
-      [data-theme="sepia"] .page-back {
-        background: #f4ecd8 !important;
-        border-color: #d4c8ac !important;
-      }
+      /* Modo Sépia Overrides para Folha de Rosto */
+      [data-theme="sepia"] .page-back,
       [data-theme="sepia"] .page-inner-sheet {
         background: #f4ecd8 !important;
         border-color: #d4c8ac !important;
@@ -319,23 +240,8 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
       [data-theme="sepia"] .title-page-author {
         color: #4a3828 !important;
       }
-      [data-theme="sepia"] .book-metadata-header {
-        color: #4a3828 !important;
-      }
-      [data-theme="sepia"] .book-metadata-header strong {
-        color: #2b2118 !important;
-      }
-      [data-theme="sepia"] .metadata-divider {
-        border-top-color: #d4c8ac !important;
-      }
-      [data-theme="sepia"] .metadata-heading {
-        color: #8c5a2b !important;
-      }
-      [data-theme="sepia"] .metadata-text {
-        color: #2b2118 !important;
-      }
-      [data-theme="sepia"] .metadata-text.author-note {
-        color: #4a3828 !important;
+      [data-theme="sepia"] .title-page-divider {
+        background: #8c5a2b !important;
       }
 
       /* ==========================================================
@@ -442,10 +348,11 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                         <div class="flip-arrow-indicator">➔</div>
                     </div>
                     <div class="page-back">
-                        <!-- ANEXO 1: FOLHA DE ROSTO (VERSO DA CAPA) -->
+                        <!-- FOLHA DE ROSTO OFICIAL -->
                         <div class="inner-cover-content title-page-layout">
                             <div class="title-page-center">
                                 <h2 class="title-page-title">O ÚLTIMO SEGREDO<br>DA HUMANIDADE</h2>
+                                <div class="title-page-divider"></div>
                                 <p class="title-page-subtitle">LIVRO I</p>
                                 <p class="title-page-author">Por: Leonardo de Paula</p>
                             </div>
@@ -456,7 +363,7 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                                     <span class="cover-btn-arrow" aria-hidden="true">➔</span>
                                 </button>
                                 <button class="cover-btn cover-btn--secondary" id="btn-open-teaser">
-                                    <span class="cover-btn-text">🎬 VER TEASER (ROMA)</span>
+                                    <span class="cover-btn-text">🎬 VER TEASER</span>
                                 </button>
                             </div>
                         </div>
@@ -464,38 +371,21 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                     </div>
                 </div>
 
-                <!-- ANEXO 2: FICHA TÉCNICA / LOGLINE / NOTA DO AUTOR -->
+                <!-- Segunda página / Base do livro -->
                 <div class="book-page book-back-page">
-                    <div class="page-inner-sheet metadata-page-layout">
-                        <div class="metadata-scroll-container">
-                            <div class="book-metadata-header">
-                                <p><strong>Gênero:</strong> Ficção Especulativa / Techno-Thriller</p>
-                                <p><strong>Público-Alvo:</strong> Adulto (Fãs de Dan Brown, Black Mirror, Yuval Harari)</p>
-                                <p><strong>Status:</strong> Manuscrito Completo — Livro I</p>
-                            </div>
-
-                            <hr class="metadata-divider" />
-
-                            <div class="book-metadata-block">
-                                <h4 class="metadata-heading">LOGLINE (RESUMO EXECUTIVO):</h4>
-                                <p class="metadata-text">
-                                    Um auditor de dados que passou a vida convertendo caos em números encontra, numa divergência estatística pequena demais para qualquer outra pessoa notar, a assinatura de um padrão que se repete há três mil anos — de Roma a uma sala de reuniões em 2007. Ao investigar, Caio Avelar descobre que algumas das maiores crises da história talvez não tenham sido tão caóticas quanto o mundo acredita. Perseguido por aqueles que fizeram de tudo para manter esse padrão oculto, e ao lado da única pessoa cujo comportamento ele nunca consegue prever por completo, Caio precisa decidir até onde está disposto a ir para descobrir a verdade — antes que ela descubra quem ele é.
-                                </p>
-                            </div>
-
-                            <hr class="metadata-divider" />
-
-                            <div class="book-metadata-block">
-                                <h4 class="metadata-heading">NOTA DO AUTOR:</h4>
-                                <p class="metadata-text author-note">
-                                    Esta é uma obra de ficção. Nomes, personagens, lugares e incidentes são produtos da imaginação do autor ou usados de forma fictícia. Qualquer semelhança com eventos reais, instituições ou modelos preditivos vigentes é mera coincidência — ou apenas a repetição de um padrão inevitável.
-                                </p>
-                            </div>
+                    <div class="page-inner-sheet title-page-layout">
+                        <div class="title-page-center">
+                            <h2 class="title-page-title">O ÚLTIMO SEGREDO<br>DA HUMANIDADE</h2>
+                            <div class="title-page-divider"></div>
+                            <p class="title-page-subtitle">LIVRO I</p>
+                            <p class="title-page-author">Por: Leonardo de Paula</p>
                         </div>
-
-                        <div class="metadata-footer-action">
+                        <div class="inner-actions-row">
                             <button class="cover-btn" id="btn-sheet-start">
-                                <span>CONTINUAR LEITURA ➔</span>
+                                <span>INICIAR LEITURA ➔</span>
+                            </button>
+                            <button class="cover-btn cover-btn--secondary" id="btn-sheet-teaser" onclick="document.getElementById('btn-open-teaser').click();">
+                                <span>🎬 VER TEASER</span>
                             </button>
                         </div>
                     </div>
@@ -512,9 +402,9 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
 
         </div>
     
-        <!-- RODAPÉ ESSENCIAL NA CAPA (1 LINHA DISCRETA NA BASE) -->
+        <!-- RODAPÉ ESSENCIAL NA CAPA (APENAS TERMOS DE USO) -->
         <div class="cover-minimal-footer">
-            <span>Registro de Obra nº 312254601 · <a href="/reader/terms.html" target="_blank" class="cover-footer-link">Termos de Uso</a></span>
+            <a href="/reader/terms.html" target="_blank" class="cover-footer-link">Termos de Uso</a>
         </div>
     </div>
 
