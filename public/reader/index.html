@@ -154,6 +154,108 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
         background: #475569 !important;
       }
 
+      
+      /* Estilos dos Anexos 1 e 2 nas páginas internas do livro 3D */
+      .title-page-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        height: 100% !important;
+        padding: 2.5rem 1.8rem 1.8rem 1.8rem !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+      }
+      .title-page-center {
+        margin: auto 0 !important;
+      }
+      .title-page-title {
+        font-family: "Cinzel", serif !important;
+        font-size: 1.4rem !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        line-height: 1.35 !important;
+        letter-spacing: 0.08em !important;
+        margin-bottom: 1.5rem !important;
+      }
+      .title-page-subtitle {
+        font-family: "Cinzel", serif !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        color: #c9a962 !important;
+        letter-spacing: 0.15em !important;
+        margin-bottom: 1.5rem !important;
+      }
+      .title-page-author {
+        font-family: "Crimson Text", serif !important;
+        font-size: 1.05rem !important;
+        color: #cbd5e1 !important;
+        font-style: italic !important;
+      }
+
+      /* Página Anexo 2: Ficha Técnica & Logline */
+      .metadata-page-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        height: 100% !important;
+        padding: 1.6rem 1.4rem 1.4rem 1.4rem !important;
+        box-sizing: border-box !important;
+        text-align: left !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      }
+      .metadata-scroll-container {
+        overflow-y: auto !important;
+        flex: 1 !important;
+        padding-right: 6px !important;
+        margin-bottom: 0.8rem !important;
+        scrollbar-width: thin !important;
+      }
+      .metadata-scroll-container::-webkit-scrollbar {
+        width: 4px !important;
+      }
+      .metadata-scroll-container::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 4px !important;
+      }
+      .book-metadata-header {
+        font-size: 0.72rem !important;
+        line-height: 1.5 !important;
+        color: #cbd5e1 !important;
+      }
+      .book-metadata-header strong {
+        color: #ffffff !important;
+      }
+      .metadata-divider {
+        border: none !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        margin: 0.7rem 0 !important;
+      }
+      .book-metadata-block {
+        margin-bottom: 0.7rem !important;
+      }
+      .metadata-heading {
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.06em !important;
+        color: #c9a962 !important;
+        margin-bottom: 0.35rem !important;
+        text-transform: uppercase !important;
+      }
+      .metadata-text {
+        font-size: 0.73rem !important;
+        line-height: 1.5 !important;
+        color: #94a3b8 !important;
+        text-align: justify !important;
+      }
+      .metadata-text.author-note {
+        font-style: italic !important;
+        color: #8da2be !important;
+      }
+      .metadata-footer-action {
+        width: 100% !important;
+        padding-top: 0.4rem !important;
+      }
+
       /* Rodapé minimalista essencial na base da tela de capa */
       .cover-minimal-footer {
         position: absolute;
@@ -224,18 +326,13 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                         <div class="flip-arrow-indicator">➔</div>
                     </div>
                     <div class="page-back">
-                        <!-- Orelha / Página Interna após folhear -->
-                        <div class="inner-cover-content">
-                            <span class="dossier-tag">ARQUIVO OFICIAL</span>
-                            <h2 class="inner-cover-title">O ÚLTIMO SEGREDO DA HUMANIDADE</h2>
-                            <p class="inner-cover-author">Leonardo de Paula</p>
-                            <hr class="inner-cover-hr">
-                            <p class="inner-cover-quote">
-                                "Durante milênios, algumas das maiores decisões da humanidade foram observadas, registradas e comparadas."
-                            </p>
-                            <p class="inner-cover-desc">
-                                Uma anomalia de 0,0000007% encontrada na madrugada da Faria Lima desencadeia uma jornada através dos bastidores das grandes decisões da história.
-                            </p>
+                        <!-- ANEXO 1: FOLHA DE ROSTO (VERSO DA CAPA) -->
+                        <div class="inner-cover-content title-page-layout">
+                            <div class="title-page-center">
+                                <h2 class="title-page-title">O ÚLTIMO SEGREDO<br>DA HUMANIDADE</h2>
+                                <p class="title-page-subtitle">LIVRO I</p>
+                                <p class="title-page-author">Por: Leonardo de Paula</p>
+                            </div>
                             
                             <div class="inner-actions-row">
                                 <button class="cover-btn" id="btn-start-reading">
@@ -251,17 +348,40 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                     </div>
                 </div>
 
-                <!-- Segunda página / Base do livro -->
+                <!-- ANEXO 2: FICHA TÉCNICA / LOGLINE / NOTA DO AUTOR -->
                 <div class="book-page book-back-page">
-                    <div class="page-inner-sheet">
-                        <div class="inner-sheet-header">
-                            
-                            <h3>COMEÇAR A JORNADA</h3>
+                    <div class="page-inner-sheet metadata-page-layout">
+                        <div class="metadata-scroll-container">
+                            <div class="book-metadata-header">
+                                <p><strong>Gênero:</strong> Ficção Especulativa / Techno-Thriller</p>
+                                <p><strong>Público-Alvo:</strong> Adulto (Fãs de Dan Brown, Black Mirror, Yuval Harari)</p>
+                                <p><strong>Status:</strong> Manuscrito Completo — Livro I</p>
+                            </div>
+
+                            <hr class="metadata-divider" />
+
+                            <div class="book-metadata-block">
+                                <h4 class="metadata-heading">LOGLINE (RESUMO EXECUTIVO):</h4>
+                                <p class="metadata-text">
+                                    Um auditor de dados que passou a vida convertendo caos em números encontra, numa divergência estatística pequena demais para qualquer outra pessoa notar, a assinatura de um padrão que se repete há três mil anos — de Roma a uma sala de reuniões em 2007. Ao investigar, Caio Avelar descobre que algumas das maiores crises da história talvez não tenham sido tão caóticas quanto o mundo acredita. Perseguido por aqueles que fizeram de tudo para manter esse padrão oculto, e ao lado da única pessoa cujo comportamento ele nunca consegue prever por completo, Caio precisa decidir até onde está disposto a ir para descobrir a verdade — antes que ela descubra quem ele é.
+                                </p>
+                            </div>
+
+                            <hr class="metadata-divider" />
+
+                            <div class="book-metadata-block">
+                                <h4 class="metadata-heading">NOTA DO AUTOR:</h4>
+                                <p class="metadata-text author-note">
+                                    Esta é uma obra de ficção. Nomes, personagens, lugares e incidentes são produtos da imaginação do autor ou usados de forma fictícia. Qualquer semelhança com eventos reais, instituições ou modelos preditivos vigentes é mera coincidência — ou apenas a repetição de um padrão inevitável.
+                                </p>
+                            </div>
                         </div>
-                        <p class="inner-sheet-text">Clique abaixo para continuar a leitura do livro de onde parou.</p>
-                        <button class="cover-btn" id="btn-sheet-start">
-                            <span>CONTINUAR LEITURA ➔</span>
-                        </button>
+
+                        <div class="metadata-footer-action">
+                            <button class="cover-btn" id="btn-sheet-start">
+                                <span>CONTINUAR LEITURA ➔</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="page-spine-shadow"></div>
                 </div>
@@ -269,11 +389,16 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
             
             <p class="cover-hint-text">Toque ou clique na capa para folhear</p>
 
-            <!-- RODAPÉ INSTITUCIONAL DA CAPA -->
+            
             
 
             
 
+        </div>
+    
+        <!-- RODAPÉ ESSENCIAL NA CAPA (1 LINHA DISCRETA NA BASE) -->
+        <div class="cover-minimal-footer">
+            <span>Registro de Obra nº 312254601 · <a href="/reader/terms.html" target="_blank" class="cover-footer-link">Termos de Uso</a></span>
         </div>
     </div>
 

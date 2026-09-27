@@ -43,8 +43,6 @@ const FooterSection = () => {
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 font-medium">
-            <span className="text-foreground/90">Razão Social: <strong className="font-semibold text-foreground">LTL EMPREENDIMENTOS</strong></span>
-            <span className="hidden sm:inline text-muted-foreground/30">•</span>
             <span className="text-foreground/90">Registro de Obra: <strong className="font-semibold text-foreground">nº 312254601</strong></span>
             <span className="hidden sm:inline text-muted-foreground/30">•</span>
             <a 
