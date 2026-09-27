@@ -1,10 +1,10 @@
 /* =========================================================
-   E-READER ÔÇö O ├ÜLTIMO SEGREDO DA HUMANIDADE
+   E-READER — O ÚLTIMO SEGREDO DA HUMANIDADE
    Autor: Leonardo de Paula
-   style.css ÔÇö Mobile-First, Temas, Fontes & Efeitos Futuristas
+   style.css — Mobile-First, Temas, Fontes & Efeitos Futuristas
    ========================================================= */
 
-/* ÔöÇÔöÇÔöÇ CUSTOM PROPERTIES & THEMES ÔöÇÔöÇÔöÇ */
+/* ─── CUSTOM PROPERTIES & THEMES ─── */
 
 :root {
   --header-h: 56px;
@@ -14,7 +14,7 @@
   --radius: 10px;
   --speed: 0.28s;
 
-  /* Fontes padr├úo */
+  /* Fontes padrão */
   --font-reading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-ui: 'Space Grotesk', -apple-system, sans-serif;
   --font-mono: 'Share Tech Mono', monospace;
@@ -24,7 +24,7 @@
   --lh: 1.75;
 }
 
-/* ÔöÇÔöÇÔöÇ FAM├ìLIAS DE FONTE (SELETOR) ÔöÇÔöÇÔöÇ */
+/* ─── FAMÍLIAS DE FONTE (SELETOR) ─── */
 [data-font="sans"] {
   --font-reading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -38,9 +38,9 @@
   --font-reading: 'Share Tech Mono', monospace;
 }
 
-/* ÔöÇÔöÇÔöÇ TEMAS DE CORES ÔöÇÔöÇÔöÇ */
+/* ─── TEMAS DE CORES ─── */
 
-/* TEMA 1: Escuro Futurista (Padr├úo) */
+/* TEMA 1: Escuro Futurista (Padrão) */
 [data-theme="dark"] {
   --bg:          #0b1120;
   --bg2:         #15213b;
@@ -78,7 +78,7 @@
   --scanline:    rgba(0,240,255,0.03);
 }
 
-/* TEMA 3: S├®pia Papel */
+/* TEMA 3: Sépia Papel */
 [data-theme="sepia"] {
   --bg:          #fbf0d9;
   --bg2:         #f0e0c0;
@@ -116,7 +116,7 @@
   --scanline:    transparent;
 }
 
-/* ÔöÇÔöÇÔöÇ RESET & BASE ÔöÇÔöÇÔöÇ */
+/* ─── RESET & BASE ─── */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -147,7 +147,7 @@ body.cursor-active {
   
 }
 
-/* ÔöÇÔöÇÔöÇ SELE├ç├âO & SCROLLBAR ÔöÇÔöÇÔöÇ */
+/* ─── SELEÇÃO & SCROLLBAR ─── */
 
 ::selection {
   background: var(--acc-glow);
@@ -168,7 +168,7 @@ body.cursor-active {
   background: var(--acc);
 }
 
-/* ÔöÇÔöÇÔöÇ CANVAS PART├ìCULAS ÔöÇÔöÇÔöÇ */
+/* ─── CANVAS PARTÍCULAS ─── */
 
 #particles-canvas {
   position: fixed;
@@ -180,7 +180,7 @@ body.cursor-active {
   transition: opacity 0.4s ease;
 }
 
-/* ÔöÇÔöÇÔöÇ CURSOR FUTURISTA (DESKTOP) ÔöÇÔöÇÔöÇ */
+/* ─── CURSOR FUTURISTA (DESKTOP) ─── */
 
 .cursor-dot {
   position: fixed;
@@ -220,7 +220,7 @@ body.cursor-active {
   body.cursor-active { cursor: auto; }
 }
 
-/* ÔöÇÔöÇÔöÇ BARRA DE PROGRESSO NO TOPO ÔöÇÔöÇÔöÇ */
+/* ─── BARRA DE PROGRESSO NO TOPO ─── */
 
 .progress-bar {
   position: fixed;
@@ -238,7 +238,7 @@ body.cursor-active {
   transition: width 0.2s ease-out;
 }
 
-/* ÔöÇÔöÇÔöÇ FEIXE HOLOGR├üFICO DE TRANSI├ç├âO (SCAN-BEAM) ÔöÇÔöÇÔöÇ */
+/* ─── FEIXE HOLOGRÁFICO DE TRANSIÇÃO (SCAN-BEAM) ─── */
 
 .scan-beam {
   position: fixed;
@@ -270,7 +270,7 @@ body.cursor-active {
   }
 }
 
-/* ÔöÇÔöÇÔöÇ TELA DE CAPA (START SCREEN) ÔöÇÔöÇÔöÇ */
+/* ─── TELA DE CAPA (START SCREEN) ─── */
 
 .cover-screen {
   position: fixed;
@@ -405,7 +405,7 @@ body.cursor-active {
   letter-spacing: 0.06em;
 }
 
-/* ÔöÇÔöÇÔöÇ HEADER SUPERIOR ÔöÇÔöÇÔöÇ */
+/* ─── HEADER SUPERIOR ─── */
 
 .reader-header {
   position: fixed;
@@ -499,7 +499,7 @@ body.zen .reader-main {
   padding-bottom: 2rem;
 }
 
-/* ÔöÇÔöÇÔöÇ BOT├òES ├ìCONE COM TOUCH OTIMIZADO ÔöÇÔöÇÔöÇ */
+/* ─── BOTÕES ÍCONE COM TOUCH OTIMIZADO ─── */
 
 .btn-icon {
   width: 40px;
@@ -524,7 +524,7 @@ body.zen .reader-main {
   box-shadow: 0 0 14px var(--acc-glow);
 }
 
-/* ÔöÇÔöÇÔöÇ SIDEBAR ÔÇö ├ìNDICE DE CAP├ìTULOS ÔöÇÔöÇÔöÇ */
+/* ─── SIDEBAR — ÍNDICE DE CAPÍTULOS ─── */
 
 .sidebar-overlay {
   position: fixed;
@@ -673,7 +673,7 @@ body.zen .reader-main {
   line-height: 1.35;
 }
 
-/* ÔöÇÔöÇÔöÇ CONTE├ÜDO PRINCIPAL (LEITOR) ÔöÇÔöÇÔöÇ */
+/* ─── CONTEÚDO PRINCIPAL (LEITOR) ─── */
 
 .reader-main {
   position: relative;
@@ -696,7 +696,7 @@ body.zen .reader-main {
 [data-width="normal"] { --cw: 680px; }
 [data-width="wide"]   { --cw: 840px; }
 
-/* Efeito Hologr├ífico / Revela├º├úo de Entrada */
+/* Efeito Holográfico / Revelação de Entrada */
 .content-wrapper.animating {
   animation: cyberEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -745,7 +745,7 @@ body.zen .reader-main {
   z-index: 0;
 }
 
-/* ÔöÇÔöÇÔöÇ TIPOGRAFIA DOS CAP├ìTULOS ÔöÇÔöÇÔöÇ */
+/* ─── TIPOGRAFIA DOS CAPÍTULOS ─── */
 
 .chapter-eyebrow {
   font-family: var(--font-mono);
@@ -769,7 +769,7 @@ body.zen .reader-main {
   letter-spacing: -0.01em;
 }
 
-/* Par├ígrafos da obra */
+/* Parágrafos da obra */
 .chapter-body p {
   font-family: var(--font-reading);
   font-size: var(--fs);
@@ -782,7 +782,7 @@ body.zen .reader-main {
   transition: font-size 0.25s, line-height 0.25s;
 }
 
-/* Metadados do cap├¡tulo (Local, Data, Registro) */
+/* Metadados do capítulo (Local, Data, Registro) */
 .chapter-body .chaptermeta {
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -857,7 +857,7 @@ body.zen .reader-main {
   margin: 0.85rem 0;
 }
 
-/* Cita├º├Áes */
+/* Citações */
 .chapter-body blockquote {
   border-left: 3px solid var(--acc);
   padding: 0.9rem 1.25rem;
@@ -897,7 +897,7 @@ body.zen .reader-main {
   transform: translate(-50%, -50%) scale(1.05);
 }
 
-/* ÔöÇÔöÇÔöÇ NAVEGA├ç├âO DE CAP├ìTULOS (DESKTOP) ÔöÇÔöÇÔöÇ */
+/* ─── NAVEGAÇÃO DE CAPÍTULOS (DESKTOP) ─── */
 
 .chapter-nav {
   display: flex;
@@ -975,7 +975,7 @@ body.zen .reader-main {
   display: none;
 }
 
-/* ÔöÇÔöÇÔöÇ DOCK INFERIOR MOBILE (THUMB BAR) ÔöÇÔöÇÔöÇ */
+/* ─── DOCK INFERIOR MOBILE (THUMB BAR) ─── */
 
 .mobile-bottom-bar {
   display: none;
@@ -1049,7 +1049,7 @@ body.zen .reader-main {
   }
 }
 
-/* ÔöÇÔöÇÔöÇ PAINEL DE CONFIGURA├ç├òES (MODAL / DRAWER) ÔöÇÔöÇÔöÇ */
+/* ─── PAINEL DE CONFIGURAÇÕES (MODAL / DRAWER) ─── */
 
 .settings-panel {
   position: fixed;
@@ -1133,7 +1133,7 @@ body.zen .reader-main {
   font-weight: 600;
 }
 
-/* ÔöÇÔöÇÔöÇ GRID DE FAM├ìLIAS DE FONTE ÔöÇÔöÇÔöÇ */
+/* ─── GRID DE FAMÍLIAS DE FONTE ─── */
 
 .font-family-grid {
   display: grid;
@@ -1199,7 +1199,7 @@ body.zen .reader-main {
   opacity: 0.8;
 }
 
-/* ÔöÇÔöÇÔöÇ GRID DE TEMAS ÔöÇÔöÇÔöÇ */
+/* ─── GRID DE TEMAS ─── */
 
 .theme-grid {
   display: grid;
@@ -1243,7 +1243,7 @@ body.zen .reader-main {
 .theme-swatch--sepia { background: linear-gradient(135deg, #fbf0d9, #f0e0c0); border: 1.5px solid #8b5e23; }
 .theme-swatch--light { background: linear-gradient(135deg, #f8fafc, #edf2f7); border: 1.5px solid #2563eb; }
 
-/* ÔöÇÔöÇÔöÇ SLIDERS ÔöÇÔöÇÔöÇ */
+/* ─── SLIDERS ─── */
 
 .slider-row {
   display: flex;
@@ -1289,7 +1289,7 @@ body.zen .reader-main {
   transform: scale(1.25);
 }
 
-/* ÔöÇÔöÇÔöÇ GRID DE LARGURA ÔöÇÔöÇÔöÇ */
+/* ─── GRID DE LARGURA ─── */
 
 .width-grid {
   display: grid;
@@ -1318,7 +1318,7 @@ body.zen .reader-main {
   box-shadow: 0 0 10px var(--acc-glow);
 }
 
-/* ÔöÇÔöÇÔöÇ TOGGLES ÔöÇÔöÇÔöÇ */
+/* ─── TOGGLES ─── */
 
 .toggle-row {
   display: flex;
@@ -1383,7 +1383,7 @@ body.zen .reader-main {
   box-shadow: 0 0 10px var(--acc);
 }
 
-/* ÔöÇÔöÇÔöÇ ATALHOS ÔöÇÔöÇÔöÇ */
+/* ─── ATALHOS ─── */
 
 .shortcuts-grid {
   display: grid;
@@ -1409,7 +1409,7 @@ kbd {
   color: var(--tx2);
 }
 
-/* ÔöÇÔöÇÔöÇ MOBILE ADAPTATIONS (SMARTPHONES & TABLETS) ÔöÇÔöÇÔöÇ */
+/* ─── MOBILE ADAPTATIONS (SMARTPHONES & TABLETS) ─── */
 
 @media (max-width: 768px) {
   :root {
@@ -1423,7 +1423,7 @@ kbd {
     padding: 1rem 1rem 3rem;
   }
 
-  /* Painel de configura├º├Áes vira Bottom Sheet moderno no celular */
+  /* Painel de configurações vira Bottom Sheet moderno no celular */
   .settings-panel {
     top: auto;
     bottom: -110%;
@@ -1457,11 +1457,11 @@ kbd {
   }
 
   .toggle-row--cursor {
-    display: none; /* Celular n├úo tem cursor sci-fi desktop */
+    display: none; /* Celular não tem cursor sci-fi desktop */
   }
 }
 
-/* ÔöÇÔöÇÔöÇ CORTINA & FEIXE CIBERN├ëTICO DE TRANSI├ç├âO ÔöÇÔöÇÔöÇ */
+/* ─── CORTINA & FEIXE CIBERNÉTICO DE TRANSIÇÃO ─── */
 .cyber-curtain {
   position: fixed;
   inset: 0;
@@ -1559,7 +1559,7 @@ kbd {
   }
 }
 
-/* ÔöÇÔöÇÔöÇ VINCULA├ç├âO EXPL├ìCITA DE FONTES COM FOR├çA M├üXIMA ÔöÇÔöÇÔöÇ */
+/* ─── VINCULAÇÃO EXPLÍCITA DE FONTES COM FORÇA MÁXIMA ─── */
 body,
 .content-wrapper,
 .chapter-body,
@@ -1595,7 +1595,7 @@ body[data-font="mono"] .chapter-body p {
   font-family: 'Share Tech Mono', 'Courier New', monospace !important;
 }
 
-/* Anima├º├úo aprimorada de entrada do texto */
+/* Animação aprimorada de entrada do texto */
 .content-wrapper.animating {
   animation: textHoloReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
@@ -1632,7 +1632,7 @@ body[data-font="mono"] .chapter-body p {
   }
 }
 
-/* ÔöÇÔöÇÔöÇ TEMA 5: DOSSI├è DOURADO / SECRET WHISPER (LANDING PAGE STYLE) ÔöÇÔöÇÔöÇ */
+/* ─── TEMA 5: DOSSIÊ DOURADO / SECRET WHISPER (LANDING PAGE STYLE) ─── */
 [data-theme="gold"] {
   --bg:          #060b13;
   --bg2:         #111b2e;
@@ -1651,7 +1651,7 @@ body[data-font="mono"] .chapter-body p {
   --scanline:    rgba(201,169,98,0.025);
 }
 
-/* ÔöÇÔöÇÔöÇ FONTE ├ëPICA CINZEL ÔöÇÔöÇÔöÇ */
+/* ─── FONTE ÉPICA CINZEL ─── */
 [data-font="cinzel"] {
   --font-reading: 'Cinzel', serif;
 }
@@ -1682,7 +1682,7 @@ body[data-font="cinzel"] .chapter-body p {
   text-shadow: 0 0 25px rgba(201, 169, 98, 0.6), 0 0 50px rgba(201, 169, 98, 0.4);
 }
 
-/* ÔöÇÔöÇÔöÇ ATMOSFERAS VISUAIS DIN├éMICAS POR CAP├ìTULO / ├ëPOCA ÔöÇÔöÇÔöÇ */
+/* ─── ATMOSFERAS VISUAIS DINÂMICAS POR CAPÍTULO / ÉPOCA ─── */
 
 [data-env="sp"] {
   --bg:          #060b13;
@@ -1804,7 +1804,7 @@ body[data-font="cinzel"] .chapter-body p {
   --particle:    0,240,255;
 }
 
-/* ÔöÇÔöÇÔöÇ CONTAINER PARA IMAGENS DOS CAP├ìTULOS ÔöÇÔöÇÔöÇ */
+/* ─── CONTAINER PARA IMAGENS DOS CAPÍTULOS ─── */
 
 /* 1. Imagem no corpo do texto (Inline) */
 .chapter-image-container {
@@ -1835,7 +1835,7 @@ body[data-font="cinzel"] .chapter-body p {
   letter-spacing: 0.05em;
 }
 
-/* 2. Imagem de Fundo do Cap├¡tulo (Header / Background Overlay) */
+/* 2. Imagem de Fundo do Capítulo (Header / Background Overlay) */
 .chapter-hero-bg {
   width: 100%;
   height: 220px;
@@ -1856,7 +1856,7 @@ body[data-font="cinzel"] .chapter-body p {
 }
 
 
-/* ÔöÇÔöÇÔöÇ DIAGRAMA├ç├âO DO CABE├çALHO DO CAP├ìTULO ÔöÇÔöÇÔöÇ */
+/* ─── DIAGRAMAÇÃO DO CABEÇALHO DO CAPÍTULO ─── */
 .chapter-header-block {
   margin-bottom: 2.2rem;
   padding-bottom: 1.4rem;
@@ -1891,7 +1891,7 @@ body[data-font="cinzel"] .chapter-body p {
 
 
 
-/* ÔöÇÔöÇÔöÇ ENTRADA DE CAP├ìTULO & ANIMA├ç├âO CASCATA (100% OPACO) ÔöÇÔöÇÔöÇ */
+/* ─── ENTRADA DE CAPÍTULO & ANIMAÇÃO CASCATA (100% OPACO) ─── */
 
 .chapter-body p {
   font-family: var(--font-reading);
@@ -1907,7 +1907,7 @@ body[data-font="cinzel"] .chapter-body p {
   transition: font-size 0.25s, line-height 0.25s;
 }
 
-/* Anima├º├úo fluida em cada troca de cap├¡tulo */
+/* Animação fluida em cada troca de capítulo */
 .content-wrapper.chapter-entering {
   animation: chapterEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -1940,7 +1940,7 @@ body[data-font="cinzel"] .chapter-body p {
   }
 }
 
-/* ÔöÇÔöÇÔöÇ BOTAO FLUTUANTE PARA SAIR DO MODO ZEN / TELA CHEIA ÔöÇÔöÇÔöÇ */
+/* ─── BOTAO FLUTUANTE PARA SAIR DO MODO ZEN / TELA CHEIA ─── */
 .zen-exit-floating-btn {
   position: fixed;
   top: 16px;
@@ -1981,7 +1981,7 @@ body.zen .zen-exit-floating-btn,
 }
 
 
-/* ÔöÇÔöÇÔöÇ CARD DE DOSSI├è HIST├ôRICO NO CORPO DO CAP├ìTULO ÔöÇÔöÇÔöÇ */
+/* ─── CARD DE DOSSIÊ HISTÓRICO NO CORPO DO CAPÍTULO ─── */
 .historical-dossier-card {
   margin: 2.5rem 0 3rem;
   background: var(--bg2);
@@ -2090,7 +2090,7 @@ body.zen .zen-exit-floating-btn,
 }
 
 
-/* ÔöÇÔöÇÔöÇ EXPERI├èNCIA DO LIVRO F├ìSICO / CAPA 3D COM EFEITO DE FOLHEAR ÔöÇÔöÇÔöÇ */
+/* ─── EXPERIÊNCIA DO LIVRO FÍSICO / CAPA 3D COM EFEITO DE FOLHEAR ─── */
 
 .book-3d-scene {
   position: relative;
@@ -2172,7 +2172,7 @@ body.zen .zen-exit-floating-btn,
   display: block;
 }
 
-/* Sombra da lombada para sensa├º├úo de livro real */
+/* Sombra da lombada para sensação de livro real */
 .page-spine-shadow {
   position: absolute;
   top: 0; bottom: 0; left: 0;
@@ -2199,7 +2199,7 @@ body.zen .zen-exit-floating-btn,
   50% { opacity: 1; transform: translateX(-50%) scale(1.04); box-shadow: 0 0 24px var(--acc); }
 }
 
-/* Conte├║do da orelha / folha interna */
+/* Conteúdo da orelha / folha interna */
 .inner-cover-content {
   text-align: left;
 }
@@ -2255,7 +2255,7 @@ body.zen .zen-exit-floating-btn,
   text-align: center;
 }
 
-/* ÔöÇÔöÇÔöÇ CONTRA-CAPA NO FINAL DO EP├ìLOGO ÔöÇÔöÇÔöÇ */
+/* ─── CONTRA-CAPA NO FINAL DO EPÍLOGO ─── */
 .book-back-cover-container {
   margin: 4rem auto 2rem;
   max-width: 440px;
@@ -2290,7 +2290,7 @@ body.zen .zen-exit-floating-btn,
 }
 
 
-/* ÔöÇÔöÇÔöÇ MODAL DE V├ìDEO CINEMATOGR├üFICO ÔöÇÔöÇÔöÇ */
+/* ─── MODAL DE VÍDEO CINEMATOGRÁFICO ─── */
 .video-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -2391,7 +2391,7 @@ body.zen .zen-exit-floating-btn,
   text-align: center;
 }
 
-/* Linha de bot├Áes da capa */
+/* Linha de botões da capa */
 .cover-btns-row {
   display: flex;
   flex-direction: row;
@@ -2414,7 +2414,7 @@ body.zen .zen-exit-floating-btn,
   box-shadow: 0 0 20px var(--acc-glow);
 }
 
-/* Bot├úo de play dentro do card do cap├¡tulo */
+/* Botão de play dentro do card do capítulo */
 .dossier-video-btn {
   display: inline-flex;
   align-items: center;
@@ -2442,7 +2442,7 @@ body.zen .zen-exit-floating-btn,
 }
 
 
-/* ÔöÇÔöÇÔöÇ CAPA FULLSCREEN IMERSIVA ÔöÇÔöÇÔöÇ */
+/* ─── CAPA FULLSCREEN IMERSIVA ─── */
 .book-3d-scene {
   position: relative;
   width: 100%;
@@ -2512,7 +2512,7 @@ body.zen .zen-exit-floating-btn,
   text-transform: uppercase;
 }
 
-/* P├ígina interna / Orelha ap├│s folhear */
+/* Página interna / Orelha após folhear */
 .inner-cover-content {
   text-align: left;
   display: flex;
@@ -2534,7 +2534,7 @@ body.zen .zen-exit-floating-btn,
   font-size: 0.82rem;
 }
 
-/* Segunda p├ígina de base (Pr├│logo) */
+/* Segunda página de base (Prólogo) */
 .page-inner-sheet {
   padding: 2.2rem 1.8rem;
   display: flex;
@@ -2563,7 +2563,7 @@ body.zen .zen-exit-floating-btn,
 }
 
 
-/* === CAPA 3D ÔÇö REGRAS DEFINITIVAS === */
+/* === CAPA 3D — REGRAS DEFINITIVAS === */
 .cover-screen.hidden {
   display: none !important;
 }
@@ -2592,7 +2592,7 @@ button, a, input, select, label {
   display: none !important;
 }
 
-/* === ESTILOS ELEGANTES DOS BOT├òES DE CONFIGURA├ç├òES === */
+/* === ESTILOS ELEGANTES DOS BOTÕES DE CONFIGURAÇÕES === */
 .theme-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2690,7 +2690,7 @@ button, a, input, select, label {
 }
 
 
-/* === CORRE├ç├òES DEFINITIVAS DE LEITURA E CONTRASTE === */
+/* === CORREÇÕES DEFINITIVAS DE LEITURA E CONTRASTE === */
 .chapter-body,
 .chapter-body p,
 .chapter-header,
@@ -2717,7 +2717,7 @@ button, a, input, select, label {
   color: #0f172a !important;
 }
 
-/* Ajuste de contraste para o texto dos itens do ├¡ndice */
+/* Ajuste de contraste para o texto dos itens do índice */
 .ch-num {
   color: var(--acc, #c9a962) !important;
   font-weight: 600 !important;
@@ -2806,7 +2806,7 @@ button, a, input, select, label {
 }
 
 
-/* === ALINHAMENTO DO ├ìNDICE EM LINHA ├ÜNICA (SEM QUEBRA) === */
+/* === ALINHAMENTO DO ÍNDICE EM LINHA ÚNICA (SEM QUEBRA) === */
 .chapter-item-btn {
   display: flex !important;
   align-items: center !important;
@@ -2833,7 +2833,7 @@ button, a, input, select, label {
 }
 
 
-/* === IMAGENS DOS CARDS DE DOSSI├è ÔÇö SEM BARRAS, PREENCHIMENTO TOTAL === */
+/* === IMAGENS DOS CARDS DE DOSSIÊ — SEM BARRAS, PREENCHIMENTO TOTAL === */
 .dossier-card img,
 .dossier-portrait img,
 .historical-card img,
@@ -2846,7 +2846,7 @@ img.dossier-img,
   height: 100% !important;
 }
 
-/* C├¡rculo do dossi├¬ ÔÇö for├ºar overflow hidden + cover */
+/* Círculo do dossiê — forçar overflow hidden + cover */
 .dossier-circle,
 .dossier-avatar,
 .portrait-circle,
@@ -2857,7 +2857,7 @@ img.dossier-img,
 }
 
 
-/* === REMO├ç├âO DEFINITIVA DE BARRAS BRANCAS EM IMAGENS HIST├ôRICAS === */
+/* === REMOÇÃO DEFINITIVA DE BARRAS BRANCAS EM IMAGENS HISTÓRICAS === */
 .dossier-image-wrapper,
 .historical-dossier-card .dossier-image-wrapper,
 body:not([data-theme="light"]):not([data-theme="sepia"]) [class*="dossier"] {
@@ -2923,7 +2923,7 @@ body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta-old { color: 
 [data-theme="light"] .dossier-tag-old, [data-theme="light"] .chaptermeta, [data-theme="light"] .scenebreak { color: #0284c7 !important; }
 
 
-/* Item 3: Melhoria visual da tag Dossi├¬ do Leitor */
+/* Item 3: Melhoria visual da tag Dossiê do Leitor */
 .dossier-tag {
   display: inline-block !important;
   font-family: var(--font-mono, monospace) !important;
@@ -2947,7 +2947,7 @@ body:not([data-theme=light]):not([data-theme=sepia]) .dossier-meta-old { color: 
 }
 
 
-/* Corre├º├úo definitiva da tarja DOSSI├è DO LEITOR / ARQUIVO OFICIAL */
+/* Correção definitiva da tarja DOSSIÊ DO LEITOR / ARQUIVO OFICIAL */
 .dossier-tag-old,
 span.dossier-tag-old,
 .inner-sheet-header .dossier-tag {
@@ -2976,7 +2976,7 @@ span.dossier-tag-old,
 
 
 /* ==========================================================================
-   TEMA SEPIA (LIVRO F├ìSICO ELEGANTE)
+   TEMA SEPIA (LIVRO FÍSICO ELEGANTE)
    ========================================================================== */
 [data-theme="sepia"] {
   --bg:          #f4ecd8 !important;
@@ -3032,7 +3032,7 @@ span.dossier-tag-old,
 }
 
 
-/* Corre├º├úo definitiva de cores nos cards de imagens no Modo Claro */
+/* Correção definitiva de cores nos cards de imagens no Modo Claro */
 [data-theme="light"] .historical-dossier-card {
   background: #ffffff !important;
   border-color: #cbd5e1 !important;
@@ -3067,7 +3067,7 @@ span.dossier-tag-old,
 
 
 /* ==========================================================================
-   FOR├çAR FUNDO CLARO E TEXTOS EM CINZA ESCURO NOS CARDS DO MODO CLARO
+   FORÇAR FUNDO CLARO E TEXTOS EM CINZA ESCURO NOS CARDS DO MODO CLARO
    ========================================================================== */
 [data-theme="light"] .historical-dossier-card,
 [data-theme="light"] [class*="dossier-card"],
@@ -3437,7 +3437,7 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
 }
 
 
-/* --- ESTILOS DO CARD DE IDENTIDADE E SEUS BOT├òES/LINKS --- */
+/* --- ESTILOS DO CARD DE IDENTIDADE E SEUS BOTÕES/LINKS --- */
 .profile-card-container {
   background: rgba(15, 23, 42, 0.75) !important;
   border: 1px solid rgba(56, 189, 248, 0.25) !important;
@@ -3597,7 +3597,7 @@ html body[data-theme="light"] .dossier-subcaption, body[data-theme="light"] .dos
 
 
 /* ==========================================================================
-   TRAVAS DE SEGURAN├çA E BLOQUEIO DE SELE├ç├âO DE TEXTO (LEI 9.610/98)
+   TRAVAS DE SEGURANÇA E BLOQUEIO DE SELEÇÃO DE TEXTO (LEI 9.610/98)
    ========================================================================== */
 body, 
 #reader-container, 
@@ -3613,7 +3613,7 @@ span, div, article, main {
   -webkit-touch-callout: none !important;
 }
 
-/* Permitir sele├º├úo apenas em campos de formul├írio como busca ou input de CPF */
+/* Permitir seleção apenas em campos de formulário como busca ou input de CPF */
 input, textarea, select {
   -webkit-user-select: text !important;
   -moz-user-select: text !important;
@@ -3622,189 +3622,43 @@ input, textarea, select {
 }
 
 
-
-
 /* ==========================================================================
-   ESTILOS DEFINITIVOS: CARD DE IDENTIDADE E RODAPÉ DA CAPA (TODOS OS TEMAS)
+   REGRAS FINAIS: IDENTIDADE 100% SÓLIDA E RODAPÉ ESSENCIAL NA CAPA
    ========================================================================== */
 
-/* 1. COVER SCREEN & CENTRALIZAÇÃO DA CAPA */
-.cover-screen {
-  position: fixed !important;
-  inset: 0 !important;
-  background: var(--bg) !important;
-  z-index: 600 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  padding: 2.5rem 1rem 1.5rem 1rem !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-  box-sizing: border-box !important;
-}
-
-.book-3d-scene {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  margin: auto !important;
-  width: 100% !important;
-  max-width: 900px !important;
-}
-
-/* 2. RODAPÉ DA CAPA DO LIVRO */
-.cover-institutional-footer {
-  width: 100% !important;
-  max-width: 850px !important;
-  margin: 2.5rem auto 1rem auto !important;
-  padding-top: 1.5rem !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
-  text-align: center !important;
-  box-sizing: border-box !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-}
-
-.cover-institutional-footer .cover-footer-title {
-  font-size: 0.85rem !important;
-  font-weight: 700 !important;
-  color: #ffffff !important;
-  letter-spacing: 0.05em !important;
-  margin-bottom: 0.5rem !important;
-}
-
-.cover-institutional-footer .cover-footer-links {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
-  align-items: center !important;
-  gap: 12px !important;
-  font-size: 0.75rem !important;
-  color: #94a3b8 !important;
-  margin-bottom: 0.6rem !important;
-}
-
-.cover-institutional-footer .footer-sep {
-  opacity: 0.3 !important;
-}
-
-.cover-institutional-footer .footer-link {
-  color: #e2e8f0 !important;
-  text-decoration: underline !important;
-  transition: color 0.2s ease !important;
-}
-
-.cover-institutional-footer .footer-link:hover {
-  color: #38bdf8 !important;
-}
-
-.cover-institutional-footer .footer-link-terms {
-  color: #38bdf8 !important;
-  font-weight: 600 !important;
-}
-
-.cover-institutional-footer .cover-footer-copy {
-  font-size: 0.7rem !important;
-  color: #64748b !important;
-}
-
-/* --- OVERRIDE MODO CLARO DO RODAPÉ DA CAPA --- */
-[data-theme="light"] .cover-institutional-footer,
-body[data-theme="light"] .cover-institutional-footer {
-  border-top-color: #cbd5e1 !important;
-}
-
-[data-theme="light"] .cover-institutional-footer .cover-footer-title,
-body[data-theme="light"] .cover-institutional-footer .cover-footer-title {
-  color: #0f172a !important;
-}
-
-[data-theme="light"] .cover-institutional-footer .cover-footer-links,
-body[data-theme="light"] .cover-institutional-footer .cover-footer-links {
-  color: #334155 !important;
-}
-
-[data-theme="light"] .cover-institutional-footer .footer-sep,
-body[data-theme="light"] .cover-institutional-footer .footer-sep {
-  color: #94a3b8 !important;
-  opacity: 0.6 !important;
-}
-
-[data-theme="light"] .cover-institutional-footer .footer-link,
-body[data-theme="light"] .cover-institutional-footer .footer-link {
-  color: #0369a1 !important;
-}
-
-[data-theme="light"] .cover-institutional-footer .footer-link-terms,
-body[data-theme="light"] .cover-institutional-footer .footer-link-terms {
-  color: #0284c7 !important;
-}
-
-[data-theme="light"] .cover-institutional-footer .cover-footer-copy,
-body[data-theme="light"] .cover-institutional-footer .cover-footer-copy {
-  color: #475569 !important;
-}
-
-/* --- OVERRIDE MODO SÉPIA DO RODAPÉ DA CAPA --- */
-[data-theme="sepia"] .cover-institutional-footer,
-body[data-theme="sepia"] .cover-institutional-footer {
-  border-top-color: #d4c8ac !important;
-}
-
-[data-theme="sepia"] .cover-institutional-footer .cover-footer-title,
-body[data-theme="sepia"] .cover-institutional-footer .cover-footer-title {
-  color: #2b2118 !important;
-}
-
-[data-theme="sepia"] .cover-institutional-footer .cover-footer-links,
-body[data-theme="sepia"] .cover-institutional-footer .cover-footer-links {
-  color: #5c4b38 !important;
-}
-
-[data-theme="sepia"] .cover-institutional-footer .footer-link,
-body[data-theme="sepia"] .cover-institutional-footer .footer-link {
-  color: #8c5a2b !important;
-}
-
-
-/* 3. CARD DE IDENTIDADE DO LEITOR (100% SÓLIDO, OPACO E LEGÍVEL EM QUALQUER TEMA) */
-#profile-card-box,
+/* Card de Identidade com fundo escuro sólido #0b1120 em TODOS os temas */
 #profile-card-box.profile-card-container,
-[data-theme="light"] #profile-card-box,
-[data-theme="sepia"] #profile-card-box {
-  background-color: #0f172a !important;
-  background: #0f172a !important;
+[data-theme="light"] #profile-card-box.profile-card-container,
+[data-theme="sepia"] #profile-card-box.profile-card-container {
+  background-color: #0b1120 !important;
+  background: #0b1120 !important;
   border: 1px solid #1e293b !important;
-  border-radius: 14px !important;
-  padding: 1.2rem !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 12px !important;
+  padding: 1.1rem !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 0.8rem !important;
-  box-sizing: border-box !important;
-  opacity: 1 !important;
+  gap: 0.75rem !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45) !important;
 }
 
-#profile-card-box #profile-reader-name {
+#profile-card-box .profile-reader-name {
   color: #ffffff !important;
   font-weight: 700 !important;
   font-size: 1rem !important;
   margin-bottom: 2px !important;
 }
 
-#profile-card-box #profile-reader-email {
+#profile-card-box .profile-reader-email {
   color: #94a3b8 !important;
   font-size: 0.78rem !important;
+  margin-bottom: 0.4rem !important;
 }
 
 #profile-card-box .profile-chain-box {
-  background-color: #020617 !important;
   background: #020617 !important;
   border: 1px dashed rgba(56, 189, 248, 0.4) !important;
-  border-radius: 10px !important;
-  padding: 0.8rem !important;
-  box-sizing: border-box !important;
+  border-radius: 8px !important;
+  padding: 0.75rem !important;
 }
 
 #profile-card-box .profile-chain-title {
@@ -3821,60 +3675,121 @@ body[data-theme="sepia"] .cover-institutional-footer .footer-link {
   align-items: center !important;
   font-size: 0.8rem !important;
   color: #f1f5f9 !important;
-  margin-bottom: 0.6rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+#profile-card-box .profile-chain-label {
+  color: #cbd5e1 !important;
 }
 
 #profile-card-box .profile-chain-count {
   color: #38bdf8 !important;
-  font-size: 0.95rem !important;
   font-weight: 700 !important;
+  font-size: 0.95rem !important;
 }
 
-#profile-card-box .profile-btn {
+#profile-card-box .profile-copy-btn {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 6px !important;
   width: 100% !important;
   padding: 0.65rem 0.8rem !important;
-  border-radius: 8px !important;
-  font-size: 0.78rem !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  box-sizing: border-box !important;
-  border: none !important;
-  transition: transform 0.15s ease, opacity 0.15s ease !important;
-}
-
-#profile-card-box .profile-btn:hover {
-  transform: translateY(-1px) !important;
-  opacity: 0.95 !important;
-}
-
-#profile-card-box .profile-btn:active {
-  transform: translateY(0) !important;
-}
-
-#profile-card-box .profile-btn-ref {
-  background-color: #0284c7 !important;
   background: #0284c7 !important;
+  border: none !important;
+  border-radius: 8px !important;
   color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.78rem !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s ease !important;
 }
 
-#profile-card-box .profile-btn-insta {
-  background-color: #be123c !important;
+#profile-card-box .profile-copy-btn:hover {
+  opacity: 0.9 !important;
+}
+
+#profile-card-box .profile-insta-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  width: 100% !important;
+  padding: 0.65rem 0.8rem !important;
   background: #be123c !important;
+  border: none !important;
+  border-radius: 8px !important;
   color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.78rem !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s ease !important;
+  box-sizing: border-box !important;
 }
 
-#profile-card-box .profile-btn-logout {
-  background-color: #334155 !important;
+#profile-card-box .profile-insta-btn:hover {
+  opacity: 0.9 !important;
+}
+
+#profile-card-box .profile-logout-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  width: 100% !important;
+  padding: 0.6rem 0.8rem !important;
   background: #334155 !important;
+  border: none !important;
+  border-radius: 8px !important;
   color: #f8fafc !important;
+  font-weight: 700 !important;
+  font-size: 0.78rem !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s ease !important;
 }
 
-/* 4. BLOQUEIO DE IMPRESSÃO */
+#profile-card-box .profile-logout-btn:hover {
+  background: #475569 !important;
+}
+
+/* Rodapé minimalista essencial na base da tela de capa */
+.cover-minimal-footer {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #94a3b8;
+  z-index: 20;
+  pointer-events: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.cover-minimal-footer .cover-footer-link {
+  color: #38bdf8;
+  text-decoration: underline;
+}
+
+[data-theme="light"] .cover-minimal-footer {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .cover-minimal-footer .cover-footer-link {
+  color: #0284c7 !important;
+}
+
+[data-theme="sepia"] .cover-minimal-footer {
+  color: #5c4b38 !important;
+}
+
+[data-theme="sepia"] .cover-minimal-footer .cover-footer-link {
+  color: #8c5a2b !important;
+}
+
+/* Bloqueio de impressão */
 @media print {
   html, body { display: none !important; }
 }
