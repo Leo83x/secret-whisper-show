@@ -84,10 +84,10 @@ const BookRevealSection = () => {
               </div>
             </div>
 
-            {/* Botão CTA Premium — vai direto para o e-reader */}
+            {/* Botão CTA Dourado Nobre #c9a962 */}
             <motion.button
               onClick={handleStartReading}
-              className="relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold tracking-wider rounded-xl shadow-[0_0_30px_rgba(234,179,8,0.45)] hover:shadow-[0_0_40px_rgba(234,179,8,0.65)] transition-all duration-300 text-sm uppercase group"
+              className="relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-extrabold tracking-wider rounded-xl shadow-[0_0_25px_rgba(201,169,98,0.35)] hover:shadow-[0_0_35px_rgba(201,169,98,0.55)] transition-all duration-300 text-sm uppercase group"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
