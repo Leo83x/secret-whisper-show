@@ -18,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/reader/css/style.css?v=20260927.6">
+    <link rel="stylesheet" href="/reader/css/style.css?v=20260927.7">
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -359,11 +359,8 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                             
                             <div class="inner-actions-row">
                                 <button class="cover-btn" id="btn-start-reading">
-                                    <span class="cover-btn-text">INICIAR LEITURA</span>
+                                    <span class="cover-btn-text" id="cover-btn-label">INICIAR LEITURA</span>
                                     <span class="cover-btn-arrow" aria-hidden="true">➔</span>
-                                </button>
-                                <button class="cover-btn cover-btn--secondary" id="btn-open-teaser">
-                                    <span class="cover-btn-text">🎬 VER TEASER</span>
                                 </button>
                             </div>
                         </div>
@@ -382,10 +379,7 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                         </div>
                         <div class="inner-actions-row">
                             <button class="cover-btn" id="btn-sheet-start">
-                                <span>INICIAR LEITURA ➔</span>
-                            </button>
-                            <button class="cover-btn cover-btn--secondary" id="btn-sheet-teaser" onclick="document.getElementById('btn-open-teaser').click();">
-                                <span>🎬 VER TEASER</span>
+                                <span id="sheet-btn-label">INICIAR LEITURA ➔</span>
                             </button>
                         </div>
                     </div>

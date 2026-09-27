@@ -106,6 +106,41 @@
   }
 
   /* ── RENDERIZAÇÃO DO CAPÍTULO ───────────────────────── */
+  
+  /* ── MARCADOR AUTOMÁTICO (PROGRESSO & POSIÇÃO EXATA DA LINHA) ── */
+  function getSavedBookmark() {
+    try {
+      const savedCh = parseInt(localStorage.getItem('ush_last_chapter') || '0', 10);
+      const savedScroll = parseInt(localStorage.getItem('ush_scroll_pos') || '0', 10);
+      const totalCh = (typeof BOOK !== 'undefined' && BOOK.chapters) ? BOOK.chapters.length : 23;
+      const validCh = (savedCh >= 0 && savedCh < totalCh) ? savedCh : 0;
+      return { chapter: validCh, scroll: isNaN(savedScroll) ? 0 : savedScroll };
+    } catch (e) {
+      return { chapter: 0, scroll: 0 };
+    }
+  }
+
+  function saveCurrentBookmark(chapterIdx) {
+    try {
+      if (chapterIdx !== undefined && chapterIdx !== null) {
+        localStorage.setItem('ush_last_chapter', chapterIdx);
+      }
+    } catch (e) {}
+  }
+
+  function updateCoverButtonLabel() {
+    const bookmark = getSavedBookmark();
+    const coverLabel = $('cover-btn-label');
+    const sheetLabel = $('sheet-btn-label');
+    if (bookmark.chapter > 0 || bookmark.scroll > 200) {
+      if (coverLabel) coverLabel.textContent = 'CONTINUAR LEITURA';
+      if (sheetLabel) sheetLabel.textContent = 'CONTINUAR LEITURA ➔';
+    } else {
+      if (coverLabel) coverLabel.textContent = 'INICIAR LEITURA';
+      if (sheetLabel) sheetLabel.textContent = 'INICIAR LEITURA ➔';
+    }
+  }
+
   function renderChapter(idx) {
     if (idx >= 3 && window.currentReaderStatus !== 'paid') {
         const paywallModal = document.getElementById('paywall-modal');
@@ -335,6 +370,20 @@
   }
 
   /* ── INICIALIZAÇÃO ───────────────────────────────────── */
+  
+  /* ── SALVAMENTO CONTÍNUO DA LINHA DE LEITURA (SCROLL POSITION) ── */
+  let scrollSaveTimer = null;
+  window.addEventListener('scroll', function () {
+    clearTimeout(scrollSaveTimer);
+    scrollSaveTimer = setTimeout(function () {
+      if (dom.coverScreen && dom.coverScreen.style.display === 'none') {
+        try {
+          localStorage.setItem('ush_scroll_pos', Math.round(window.scrollY));
+        } catch (e) {}
+      }
+    }, 150);
+  }, { passive: true });
+
   function init() {
     loadSettings();
     buildChapterList();
