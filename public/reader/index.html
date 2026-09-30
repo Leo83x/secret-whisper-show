@@ -18,6 +18,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA MANIFEST & ICONS -->
+    <link rel="manifest" href="/reader/manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="/reader/icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="O Último Segredo">
+    <meta name="application-name" content="O Último Segredo">
+    <meta name="theme-color" content="#070b14">
     <link rel="stylesheet" href="/reader/css/style.css?v=20260927.7">
 <!-- Meta Pixel Code -->
 <script>
@@ -302,6 +309,20 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
       [data-theme="sepia"] .cover-minimal-footer .cover-footer-link {
         color: #8c5a2b !important;
         font-weight: 700 !important;
+      }
+
+      
+      /* PWA STANDALONE & SAFE AREAS (NOTCH / GESTURE BAR) */
+      @supports (padding-top: env(safe-area-inset-top)) {
+        .reader-header {
+          padding-top: max(0.75rem, env(safe-area-inset-top)) !important;
+        }
+        .cover-minimal-footer {
+          bottom: max(14px, env(safe-area-inset-bottom)) !important;
+        }
+        .content-wrapper {
+          padding-bottom: max(3.5rem, env(safe-area-inset-bottom)) !important;
+        }
       }
 
       /* Bloqueio de impressão */
@@ -599,7 +620,17 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                     <button onclick="logoutReader()" class="profile-logout-btn">🪪 SAIR DA IDENTIDADE</button>
                 </div>
             </div>
-</aside>
+
+            <!-- 6. APLICATIVO DO LIVRO (PWA) -->
+            <div class="settings-section" id="pwa-install-group" style="display:none; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.2rem; margin-top: 1.2rem;">
+                <p class="settings-label" style="font-size:0.75rem; font-weight:700; letter-spacing:0.05em; color:var(--text-muted, #94a3b8); margin-bottom:0.6rem;">ACESSO RÁPIDO NO CELULAR</p>
+                <button id="btn-pwa-install" style="width:100%; padding:0.75rem 1rem; background:rgba(201,169,98,0.15); border:1px solid rgba(201,169,98,0.4); border-radius:10px; color:#c9a962; font-weight:700; font-size:0.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">
+                    📲 FIXAR LIVRO NA TELA INICIAL
+                </button>
+                <p style="font-size:0.7rem; color:#94a3b8; margin-top:0.4rem; text-align:center; line-height:1.3;">Abra o livro com 1 toque direto da tela do celular.</p>
+            </div>
+
+        </aside>
 
         <!-- ===== MODAL DE VÍDEO CINEMATOGRÁFICO ===== -->
     <div class="video-modal-backdrop" id="video-modal" role="dialog" aria-label="Teaser em Vídeo" aria-hidden="true">
@@ -690,6 +721,56 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
         </div>
       </div>
     </div>
+
+
+    <!-- PWA SERVICE WORKER & INSTALL LOGIC -->
+    <script>
+      (function() {
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/reader/sw.js', { scope: '/reader/' })
+              .then(function(reg) {
+                console.log('[PWA] Service Worker ativo:', reg.scope);
+              })
+              .catch(function(err) {
+                console.warn('[PWA] Service Worker ignorado:', err);
+              });
+          });
+        }
+
+        var deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', function(e) {
+          e.preventDefault();
+          deferredPrompt = e;
+          var group = document.getElementById('pwa-install-group');
+          if (group) group.style.display = 'block';
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+          var btn = document.getElementById('btn-pwa-install');
+          if (btn) {
+            btn.addEventListener('click', function() {
+              if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(choice) {
+                  if (choice.outcome === 'accepted') {
+                    console.log('[PWA] Usuário aceitou instalar o livro');
+                    var group = document.getElementById('pwa-install-group');
+                    if (group) group.style.display = 'none';
+                  }
+                  deferredPrompt = null;
+                });
+              } else {
+                alert('Para adicionar à tela inicial no iPhone ou navegador:
+
+1. Toque no ícone Compartilhar (ou no menu do navegador)
+2. Selecione "Adicionar à Tela de Início"');
+              }
+            });
+          }
+        });
+      })();
+    </script>
 
 </body>
 </html>
