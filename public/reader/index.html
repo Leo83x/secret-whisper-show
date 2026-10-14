@@ -506,54 +506,17 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
 </main>
 
     <!-- ===== BARRA INFERIOR MOBILE (THUMB-DOCK) ===== -->
-    <div class="mobile-bottom-bar" id="mobile-bottom-bar" aria-label="Controles rápidos">
+    <div class="mobile-bottom-bar" id="mobile-bottom-bar" aria-label="Navegação entre capítulos">
         <button class="mobile-bar-btn" id="m-btn-prev" title="Capítulo Anterior" aria-label="Anterior">
-            <span>←</span>
-        </button>
-        <button class="mobile-bar-btn" id="m-btn-menu" title="Índice" aria-label="Índice">
-            <span class="mobile-icon-label">ÍNDICE</span>
+            <span class="mobile-nav-arrow">←</span>
         </button>
         <div class="mobile-bar-center" id="m-nav-current">
             1 / 23
         </div>
-        <button class="mobile-bar-btn" id="m-btn-settings" title="Ajustes" aria-label="Ajustes">
-            <span class="mobile-icon-label">AJUSTES</span>
-        </button>
         <button class="mobile-bar-btn" id="m-btn-next" title="Próximo Capítulo" aria-label="Próximo">
-            <span>→</span>
+            <span class="mobile-nav-arrow">→</span>
         </button>
     </div>
-
-    <!-- ===== PAINEL DE CONFIGURAÇÕES ===== -->
-    <aside class="settings-panel" id="settings-panel" aria-label="Configurações de leitura">
-        <div class="settings-header">
-            <h2 class="settings-title">CONFIGURAÇÕES</h2>
-            <button class="btn-icon" id="btn-close-settings" aria-label="Fechar configurações">✕</button>
-        </div>
-
-        <div class="settings-body">
-            <!-- 1. ESTILO DE LEITURA (TEMAS) PRIMEIRO -->
-            <div class="settings-section">
-                <p class="settings-label">Estilo de Leitura</p>
-                <div class="theme-grid">
-                    <button class="theme-card active" data-theme="gold">
-                        <span class="theme-color gold"></span>
-                        <span class="theme-name">Temático (Gold)</span>
-                    </button>
-                    <button class="theme-card" data-theme="dark">
-                        <span class="theme-color dark"></span>
-                        <span class="theme-name">Escuro</span>
-                    </button>
-                                        <button class="theme-card" data-theme="sepia">
-                        <span class="theme-color sepia"></span>
-                        <span class="theme-name">Sépia</span>
-                    </button>
-                    <button class="theme-card" data-theme="light">
-                        <span class="theme-color light"></span>
-                        <span class="theme-name">Claro</span>
-                    </button>
-                </div>
-            </div>
 
             <!-- 2. TIPO DE FONTE (APENAS 3 ESSENCIAIS) -->
             <div class="settings-section">
@@ -736,9 +699,10 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
     </div>
 
 
-    <!-- PWA SERVICE WORKER & INSTALL LOGIC -->
+    <!-- PWA SERVICE WORKER & INSTALL LOGIC (ANDROID + IOS + DESKTOP) -->
     <script>
       (function() {
+        // 1. Registro do Service Worker
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', function() {
             navigator.serviceWorker.register('/reader/sw.js', { scope: '/reader/' })
@@ -752,6 +716,10 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
         }
 
         var deferredPrompt = null;
+        var isIOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) && !window.MSStream;
+        var isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+
+        // Captura do evento de instalação no Android / Chrome / Edge
         window.addEventListener('beforeinstallprompt', function(e) {
           e.preventDefault();
           deferredPrompt = e;
@@ -761,29 +729,192 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
 
         document.addEventListener('DOMContentLoaded', function() {
           var btn = document.getElementById('btn-pwa-install');
+          var group = document.getElementById('pwa-install-group');
+          var iosModal = document.getElementById('ios-pwa-modal');
+          var iosBanner = document.getElementById('ios-install-banner');
+          var closeIosModal = document.getElementById('btn-close-ios-modal');
+          var confirmIosModal = document.getElementById('btn-confirm-ios-modal');
+          var backdropIosModal = document.getElementById('ios-pwa-backdrop');
+          var closeIosBanner = document.getElementById('btn-close-ios-banner');
+
+          // Configuração para iOS
+          if (isIOS && !isStandalone) {
+            if (group) {
+              group.style.display = 'block';
+              if (btn) {
+                btn.innerHTML = '📱 FIXAR LIVRO NO IPHONE / IPAD';
+              }
+            }
+            // Exibe o toast informativo suave após 3.5 segundos se ainda não foi dispensado
+            if (!localStorage.getItem('ush_ios_banner_dismissed') && iosBanner) {
+              setTimeout(function() {
+                iosBanner.style.display = 'flex';
+              }, 3500);
+            }
+          }
+
+          // Ação do botão de instalação nas configurações
           if (btn) {
             btn.addEventListener('click', function() {
-              if (deferredPrompt) {
+              if (isIOS) {
+                if (iosModal) iosModal.style.display = 'flex';
+              } else if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then(function(choice) {
                   if (choice.outcome === 'accepted') {
-                    console.log('[PWA] Usuário aceitou instalar o livro');
-                    var group = document.getElementById('pwa-install-group');
                     if (group) group.style.display = 'none';
                   }
                   deferredPrompt = null;
                 });
               } else {
-                alert('Para adicionar à tela inicial no iPhone ou navegador:
-
-1. Toque no ícone Compartilhar (ou no menu do navegador)
-2. Selecione "Adicionar à Tela de Início"');
+                alert('Para instalar este livro:\n\n• No Android/Chrome: toque nos 3 pontinhos do navegador e selecione "Adicionar à tela inicial" ou "Instalar aplicativo".\n• No iPhone: toque em Compartilhar e selecione "Adicionar à Tela de Início".');
               }
             });
           }
+
+          // Fechar modal do iOS
+          function closeIosPrompt() {
+            if (iosModal) iosModal.style.display = 'none';
+          }
+          if (closeIosModal) closeIosModal.addEventListener('click', closeIosPrompt);
+          if (confirmIosModal) confirmIosModal.addEventListener('click', closeIosPrompt);
+          if (backdropIosModal) backdropIosModal.addEventListener('click', closeIosPrompt);
+
+          // Fechar toast inferior do iOS
+          if (closeIosBanner && iosBanner) {
+            closeIosBanner.addEventListener('click', function() {
+              iosBanner.style.display = 'none';
+              localStorage.setItem('ush_ios_banner_dismissed', 'true');
+            });
+          }
+
+          // ==========================================================
+          // PROTEÇÃO ANTI-PRINT / ANTI-SCREENSHOT (ANDROID, IOS, PC)
+          // ==========================================================
+          var shield = document.getElementById('reader-screen-shield');
+          var shieldTimeout = null;
+
+          function activateShield() {
+            if (shield) {
+              shield.style.display = 'flex';
+              document.body.classList.add('screen-protected');
+            }
+          }
+
+          function deactivateShield() {
+            if (shieldTimeout) clearTimeout(shieldTimeout);
+            shieldTimeout = setTimeout(function() {
+              if (shield) {
+                shield.style.display = 'none';
+                document.body.classList.remove('screen-protected');
+              }
+            }, 300);
+          }
+
+          // 1. Detecção de perda de foco / captura do sistema operacional (Android e iOS)
+          window.addEventListener('blur', function() {
+            activateShield();
+          });
+          window.addEventListener('focus', function() {
+            deactivateShield();
+          });
+          document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+              activateShield();
+            } else {
+              deactivateShield();
+            }
+          });
+
+          // 2. Interceptação de atalhos de PrintScreen no teclado
+          window.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen' || e.keyCode === 44) {
+              activateShield();
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText('');
+              }
+              setTimeout(deactivateShield, 1500);
+            }
+          });
+
+          // 3. Bloqueio de atalhos de impressão, salvar e inspecionar
+          window.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) {
+              e.preventDefault();
+              activateShield();
+              setTimeout(deactivateShield, 1000);
+            }
+          });
+
+          // 4. Bloqueio de seleção, menu de contexto e cópia
+          document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+          });
+          document.addEventListener('copy', function(e) {
+            e.preventDefault();
+          });
+          document.addEventListener('cut', function(e) {
+            e.preventDefault();
+          });
+          document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+          });
         });
       })();
     </script>
+
+
+    <!-- ===== ESCUDO DE TELA ANTI-PRINT / ANTI-CAPTURA ===== -->
+    <div id="reader-screen-shield" class="screen-shield-overlay" style="display:none;" aria-hidden="true">
+        <div class="screen-shield-card">
+            <div class="screen-shield-icon">🔒</div>
+            <h3 class="screen-shield-title">CONTEÚDO PROTEGIDO</h3>
+            <p class="screen-shield-desc">O Último Segredo da Humanidade // Reprodução e captura de tela não autorizadas.</p>
+        </div>
+    </div>
+
+    <!-- ===== MARCA D'ÁGUA FORENSE SUTIL ===== -->
+    <div id="reader-watermark" class="reader-watermark-overlay" aria-hidden="true">
+        <div class="watermark-pattern">O ÚLTIMO SEGREDO DA HUMANIDADE • REGISTRO DE LEITURA PROTEGIDA • PROIBIDA REPRODUÇÃO</div>
+    </div>
+
+    <!-- ===== MODAL GUIA DE INSTALAÇÃO NO IPHONE / IPAD (IOS) ===== -->
+    <div id="ios-pwa-modal" class="ios-install-modal" style="display:none;" aria-modal="true" role="dialog">
+        <div class="ios-install-backdrop" id="ios-pwa-backdrop"></div>
+        <div class="ios-install-card">
+            <button class="ios-install-close" id="btn-close-ios-modal" aria-label="Fechar">&times;</button>
+            <div class="ios-install-header">
+                <img src="/reader/icons/apple-touch-icon.png" alt="O Último Segredo" class="ios-app-icon" />
+                <div>
+                    <h3 class="ios-title">Instalar Livro no iPhone</h3>
+                    <p class="ios-subtitle">Leitura offline sem barras de navegação</p>
+                </div>
+            </div>
+            <div class="ios-steps-list">
+                <div class="ios-step-item">
+                    <span class="ios-step-num">1</span>
+                    <p>Toque no ícone <strong>Compartilhar</strong> <span class="ios-icon-box">⎋</span> na barra inferior do Safari.</p>
+                </div>
+                <div class="ios-step-item">
+                    <span class="ios-step-num">2</span>
+                    <p>Role o menu para baixo e selecione <strong>Adicionar à Tela de Início</strong> <span class="ios-icon-box">➕</span>.</p>
+                </div>
+                <div class="ios-step-item">
+                    <span class="ios-step-num">3</span>
+                    <p>Toque em <strong>Adicionar</strong> no canto superior direito.</p>
+                </div>
+            </div>
+            <button class="ios-confirm-btn" id="btn-confirm-ios-modal">Entendi, vou adicionar</button>
+        </div>
+    </div>
+
+    <!-- ===== TOAST INFORMATIVO INFERIOR PARA IOS (NÃO-INTRUSIVO) ===== -->
+    <div id="ios-install-banner" class="ios-bottom-banner" style="display:none;">
+        <div class="ios-banner-text">
+            <span>📱 <strong>Adicionar à tela de início:</strong> toque em <span class="ios-mini-icon">⎋</span> e depois em <strong>'Adicionar à Tela de Início'</strong>.</span>
+        </div>
+        <button class="ios-banner-close" id="btn-close-ios-banner">✕</button>
+    </div>
 
 </body>
 </html>
