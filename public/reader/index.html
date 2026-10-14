@@ -735,7 +735,7 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
       (function() {
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/reader/sw.js?v=2.11', { scope: '/reader/' })
+            navigator.serviceWorker.register('/reader/sw.js?v=2.12', { scope: '/reader/' })
               .then(function(reg) {
                 console.log('[PWA] Service Worker ativo:', reg.scope);
               })
@@ -787,11 +787,6 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
             <h3 class="screen-shield-title">CONTEÚDO PROTEGIDO</h3>
             <p class="screen-shield-desc">O Último Segredo da Humanidade // Reprodução e captura de tela não autorizadas.</p>
         </div>
-    </div>
-
-    <!-- ===== MARCA D'ÁGUA FORENSE SUTIL ===== -->
-    <div id="reader-watermark" class="reader-watermark-overlay" aria-hidden="true">
-        <div class="watermark-pattern">O ÚLTIMO SEGREDO DA HUMANIDADE • REGISTRO DE LEITURA PROTEGIDA • PROIBIDA REPRODUÇÃO</div>
     </div>
 
     <!-- ===== MODAL GUIA DE INSTALAÇÃO NO IPHONE / IPAD (IOS) ===== -->

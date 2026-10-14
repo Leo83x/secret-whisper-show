@@ -3878,28 +3878,7 @@ input, textarea, select {
   line-height: 1.5;
 }
 
-/* Marca d'água forense sutil */
-.reader-watermark-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 90;
-  opacity: 0.045;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.watermark-pattern {
-  font-size: 0.85rem;
-  font-family: var(--font-mono, monospace);
-  color: #ffffff;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  transform: rotate(-30deg);
-  white-space: nowrap;
-  user-select: none;
-}
+
 
 /* Trava contra toque longo e salvar imagem */
 .chapter-body, .historical-dossier-card, img {

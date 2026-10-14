@@ -1,4 +1,4 @@
-// API Serverless pura sem dependências externas (Direct Supabase REST API)
+// API Serverless pura sem dependencias externas (Direct Supabase REST API)
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -17,14 +17,18 @@ export default async function handler(req, res) {
   }
 
   const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ydezgyxfggplxapargdq.supabase.co';
-  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
+  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
     const action = req.query.action || (req.body ? req.body.action : null);
 
-    // Ação: Liberação/Revogação Manual
+    // Acao: Liberacao/Revogacao Manual de Acesso
     if ((action === 'grant-access' || action === 'revoke-access') && req.method === 'POST') {
       const { readerId } = req.body || {};
+      if (!readerId) {
+        return res.status(400).json({ success: false, error: 'ID do leitor nao fornecido.' });
+      }
+
       const newStatus = action === 'grant-access' ? 'paid' : 'free';
 
       const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/readers?id=eq.${readerId}`, {
@@ -38,11 +42,20 @@ export default async function handler(req, res) {
         body: JSON.stringify({ status: newStatus })
       });
 
+      if (!updateRes.ok) {
+        const errText = await updateRes.text();
+        return res.status(500).json({ success: false, error: `Erro ao alterar no Supabase (${updateRes.status}): ${errText}` });
+      }
+
       const updatedData = await updateRes.json();
-      return res.status(200).json({ success: true, message: `Status alterado para ${newStatus} com sucesso!`, reader: updatedData });
+      return res.status(200).json({
+        success: true,
+        message: `Acesso do leitor alterado para ${newStatus === 'paid' ? 'LIBERADO (PAGO)' : 'DEGUSTACAO (GRATIS)'}!`,
+        reader: updatedData
+      });
     }
 
-    // Chamada REST nativa para listar leitores (sem SDK)
+    // Chamada REST nativa para listar leitores
     const restRes = await fetch(`${SUPABASE_URL}/rest/v1/readers?select=*&order=created_at.desc`, {
       method: 'GET',
       headers: {
@@ -56,10 +69,10 @@ export default async function handler(req, res) {
 
     if (!restRes.ok) {
       return res.status(200).json({
-        success: true,
+        success: false,
         stats: { totalReaders: 0, paidReaders: 0, freeReaders: 0, totalRevenue: 0 },
         readers: [],
-        supaError: readersData
+        error: `Supabase retornou erro (${restRes.status}). Verifique se o projeto esta ativo.`
       });
     }
 
@@ -94,10 +107,10 @@ export default async function handler(req, res) {
 
   } catch (err) {
     return res.status(200).json({
-      success: true,
+      success: false,
       stats: { totalReaders: 0, paidReaders: 0, freeReaders: 0, totalRevenue: 0 },
       readers: [],
-      error: String(err)
+      error: `Falha ao conectar com o banco Supabase: ${err.message || String(err)}. Verifique se o projeto no Supabase nao esta pausado por inatividade.`
     });
   }
 }
