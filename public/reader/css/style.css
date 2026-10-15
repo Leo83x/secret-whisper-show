@@ -4000,3 +4000,66 @@ input, textarea, select {
   font-size: 0.9rem;
   cursor: pointer;
 }
+
+
+/* ==========================================================================
+   PASSAGENS HISTÓRICAS: TIPOGRAFIA E IDENTIDADE EDITORIAL DISTINTA
+   ========================================================================== */
+.historical-narrative {
+  position: relative;
+  margin: 1.8rem 0 2.4rem;
+  padding: 0.5rem 0 0.5rem 1.4rem;
+  border-left: 2px solid rgba(201, 169, 98, 0.4);
+  transition: border-color 0.3s ease;
+}
+
+[data-theme="light"] .historical-narrative {
+  border-left-color: rgba(2, 132, 199, 0.45);
+}
+
+[data-theme="sepia"] .historical-narrative {
+  border-left-color: rgba(140, 90, 43, 0.45);
+}
+
+.historical-narrative p {
+  font-family: 'Crimson Text', 'Cinzel', Georgia, serif !important;
+  font-size: calc(var(--fs) * 1.02);
+  line-height: calc(var(--lh) * 1.05);
+  letter-spacing: 0.015em;
+  font-style: normal;
+}
+
+/* Título e localização da reconstituição histórica */
+.historical-narrative p.chaptermeta {
+  font-family: var(--font-mono, monospace) !important;
+  color: var(--acc, #c9a962) !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.2em !important;
+  font-weight: 700 !important;
+}
+
+.historical-narrative > p:nth-of-type(2),
+.historical-narrative > p:nth-of-type(3) {
+  font-family: 'Cinzel', serif !important;
+  letter-spacing: 0.08em !important;
+  font-weight: 600 !important;
+  color: var(--acc, #c9a962) !important;
+}
+
+[data-theme="light"] .historical-narrative > p:nth-of-type(2),
+[data-theme="light"] .historical-narrative > p:nth-of-type(3) {
+  color: #0284c7 !important;
+}
+
+[data-theme="sepia"] .historical-narrative > p:nth-of-type(2),
+[data-theme="sepia"] .historical-narrative > p:nth-of-type(3) {
+  color: #8c5a2b !important;
+}
+
+@media (max-width: 768px) {
+  .historical-narrative {
+    margin: 1.4rem 0 1.8rem;
+    padding-left: 1rem;
+    border-left-width: 2px;
+  }
+}
