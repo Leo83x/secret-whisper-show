@@ -53,6 +53,68 @@
     saveSettings();
   }
 
+
+  function applyHistoricalPassageStyling(container) {
+    if (!container) return;
+    const boxes = container.querySelectorAll('.historical-narrative');
+    boxes.forEach(function(box) {
+      box.style.setProperty('position', 'relative', 'important');
+      box.style.setProperty('margin', '2.2rem 0 2.8rem', 'important');
+      box.style.setProperty('padding', '1.4rem 1.2rem 1.4rem 1.5rem', 'important');
+      box.style.setProperty('border-left', '4px solid #c9a962', 'important');
+      box.style.setProperty('background', 'rgba(201, 169, 98, 0.055)', 'important');
+      box.style.setProperty('border-radius', '0 10px 10px 0', 'important');
+      box.style.setProperty('box-shadow', 'inset 0 0 22px rgba(201, 169, 98, 0.035)', 'important');
+
+      var paragraphs = box.querySelectorAll('p');
+      paragraphs.forEach(function(p, idx) {
+        if (idx === 0) {
+          p.style.setProperty('font-family', '"Share Tech Mono", monospace', 'important');
+          p.style.setProperty('font-size', '0.78rem', 'important');
+          p.style.setProperty('letter-spacing', '0.22em', 'important');
+          p.style.setProperty('text-transform', 'uppercase', 'important');
+          p.style.setProperty('color', '#c9a962', 'important');
+          p.style.setProperty('margin-bottom', '0.4rem', 'important');
+          p.style.setProperty('font-style', 'normal', 'important');
+          p.style.setProperty('font-weight', '700', 'important');
+        } else if (idx === 1) {
+          p.style.setProperty('font-family', '"Cinzel", Georgia, serif', 'important');
+          p.style.setProperty('font-size', '1.35rem', 'important');
+          p.style.setProperty('font-weight', '700', 'important');
+          p.style.setProperty('letter-spacing', '0.12em', 'important');
+          p.style.setProperty('text-transform', 'uppercase', 'important');
+          p.style.setProperty('color', '#c9a962', 'important');
+          p.style.setProperty('margin-bottom', '0.35rem', 'important');
+          p.style.setProperty('line-height', '1.3', 'important');
+          p.style.setProperty('font-style', 'normal', 'important');
+        } else if (idx === 2) {
+          p.style.setProperty('font-family', '"Cinzel", Georgia, serif', 'important');
+          p.style.setProperty('font-size', '0.88rem', 'important');
+          p.style.setProperty('font-weight', '600', 'important');
+          p.style.setProperty('letter-spacing', '0.1em', 'important');
+          p.style.setProperty('text-transform', 'uppercase', 'important');
+          p.style.setProperty('color', '#94a3b8', 'important');
+          p.style.setProperty('padding-bottom', '0.85rem', 'important');
+          p.style.setProperty('border-bottom', '1px dashed rgba(201, 169, 98, 0.35)', 'important');
+          p.style.setProperty('margin-bottom', '1.35rem', 'important');
+          p.style.setProperty('line-height', '1.4', 'important');
+          p.style.setProperty('font-style', 'normal', 'important');
+        } else {
+          p.style.setProperty('font-family', '"Cormorant Garamond", Georgia, serif', 'important');
+          p.style.setProperty('font-style', 'italic', 'important');
+          var computedFs = (currentFontSize ? Math.round(currentFontSize * 1.08) : 20);
+          p.style.setProperty('font-size', computedFs + 'px', 'important');
+          p.style.setProperty('line-height', '1.85', 'important');
+          p.style.setProperty('letter-spacing', '0.02em', 'important');
+          p.style.setProperty('margin-bottom', '1.2em', 'important');
+        }
+      });
+    });
+  }
+  window.reapplyHistoricalStyles = function() {
+    if (dom.contentWrapper) applyHistoricalPassageStyling(dom.contentWrapper);
+  };
+
   function applyFontFamily(fontKey) {
     currentFont = fontKey;
     const fontCss = FONT_MAP[fontKey] || FONT_MAP.serif;
@@ -74,6 +136,7 @@
     if (dom.lineHeightValue) dom.lineHeightValue.textContent = lh;
     if (dom.fontSizeSlider) dom.fontSizeSlider.value = size;
     if (dom.lineHeightSlider) dom.lineHeightSlider.value = lh;
+    applyHistoricalPassageStyling(dom.contentWrapper);
     saveSettings();
   }
 
@@ -227,6 +290,7 @@
     // Reaplicar formatações de fonte no conteúdo recém-renderizado
     applyFontFamily(currentFont);
     applyTypography(currentFontSize, currentLineHeight);
+    applyHistoricalPassageStyling(dom.contentWrapper);
   }
 
 
@@ -438,7 +502,7 @@
   init();
 })();
 
-document.addEventListener('DOMContentLoaded', function() { var getEl = function(id) { return document.getElementById(id); }; var getEls = function(sel) { return document.querySelectorAll(sel); }; var fontMap = { serif: 'Crimson Text, Georgia, serif', sans: 'Inter, sans-serif', epic: 'Cinzel, serif' }; getEls('.font-btn').forEach(function(btn) { btn.addEventListener('click', function() { var fontKey = this.dataset.font; document.body.setAttribute('data-font', fontKey); var fontCss = fontMap[fontKey] || fontMap.serif; var wrapper = getEl('content-wrapper'); if (wrapper) { wrapper.style.setProperty('font-family', fontCss, 'important'); wrapper.querySelectorAll('p, span, div, h1, h2, h3').forEach(function(el) { el.style.setProperty('font-family', fontCss, 'important'); }); } getEls('.font-btn').forEach(function(b) { b.classList.toggle('active', b === btn); }); }); }); function toggleZen() { if (!document.fullscreenElement && !document.webkitFullscreenElement) { var doc = document.documentElement; if (doc.requestFullscreen) doc.requestFullscreen(); else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen(); document.body.classList.add('zen-mode'); } else { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); document.body.classList.remove('zen-mode'); } } var btnZen = getEl('btn-zen'); var btnExitZen = getEl('btn-exit-zen'); if (btnZen) btnZen.addEventListener('click', toggleZen); if (btnExitZen) btnExitZen.addEventListener('click', toggleZen); var mPrev = getEl('m-btn-prev'); var mNext = getEl('m-btn-next'); var btnPrev = getEl('btn-prev'); var btnNext = getEl('btn-next'); if (mPrev && btnPrev) mPrev.addEventListener('click', function() { btnPrev.click(); }); if (mNext && btnNext) mNext.addEventListener('click', function() { btnNext.click(); }); });
+document.addEventListener('DOMContentLoaded', function() { var getEl = function(id) { return document.getElementById(id); }; var getEls = function(sel) { return document.querySelectorAll(sel); }; var fontMap = { serif: 'Crimson Text, Georgia, serif', sans: 'Inter, sans-serif', epic: 'Cinzel, serif' }; getEls('.font-btn').forEach(function(btn) { btn.addEventListener('click', function() { var fontKey = this.dataset.font; document.body.setAttribute('data-font', fontKey); var fontCss = fontMap[fontKey] || fontMap.serif; var wrapper = getEl('content-wrapper'); if (wrapper) { wrapper.style.setProperty('font-family', fontCss, 'important'); wrapper.querySelectorAll('p, span, div, h1, h2, h3').forEach(function(el) { if (el.closest('.historical-narrative')) return; el.style.setProperty('font-family', fontCss, 'important'); }); } if (typeof window.reapplyHistoricalStyles === 'function') { window.reapplyHistoricalStyles(); } getEls('.font-btn').forEach(function(b) { b.classList.toggle('active', b === btn); }); }); }); function toggleZen() { if (!document.fullscreenElement && !document.webkitFullscreenElement) { var doc = document.documentElement; if (doc.requestFullscreen) doc.requestFullscreen(); else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen(); document.body.classList.add('zen-mode'); } else { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); document.body.classList.remove('zen-mode'); } } var btnZen = getEl('btn-zen'); var btnExitZen = getEl('btn-exit-zen'); if (btnZen) btnZen.addEventListener('click', toggleZen); if (btnExitZen) btnExitZen.addEventListener('click', toggleZen); var mPrev = getEl('m-btn-prev'); var mNext = getEl('m-btn-next'); var btnPrev = getEl('btn-prev'); var btnNext = getEl('btn-next'); if (mPrev && btnPrev) mPrev.addEventListener('click', function() { btnPrev.click(); }); if (mNext && btnNext) mNext.addEventListener('click', function() { btnNext.click(); }); });
 document.addEventListener('DOMContentLoaded', function() { var mNav = document.getElementById('m-nav-current'); var nav = document.getElementById('nav-current'); if (mNav && nav) { var observer = new MutationObserver(function() { mNav.textContent = nav.textContent; }); observer.observe(nav, { childList: true, characterData: true, subtree: true }); mNav.textContent = nav.textContent; } });
 
 // =========================================================
