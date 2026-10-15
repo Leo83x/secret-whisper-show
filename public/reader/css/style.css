@@ -4005,61 +4005,105 @@ input, textarea, select {
 /* ==========================================================================
    PASSAGENS HISTÓRICAS: TIPOGRAFIA E IDENTIDADE EDITORIAL DISTINTA
    ========================================================================== */
+
+/* ==========================================================================
+   PASSAGENS HISTÓRICAS: IDENTIDADE TIPOGRÁFICA E EDITORIAL INCONFUNDÍVEL
+   ========================================================================== */
 .historical-narrative {
-  position: relative;
-  margin: 1.8rem 0 2.4rem;
-  padding: 0.5rem 0 0.5rem 1.4rem;
-  border-left: 2px solid rgba(201, 169, 98, 0.4);
-  transition: border-color 0.3s ease;
+  position: relative !important;
+  margin: 2rem 0 2.5rem !important;
+  padding: 1.2rem 1.2rem 1.2rem 1.4rem !important;
+  border-left: 3px solid var(--acc, #c9a962) !important;
+  background: rgba(201, 169, 98, 0.045) !important;
+  border-radius: 0 10px 10px 0 !important;
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.04) !important;
+  transition: all 0.3s ease !important;
 }
 
 [data-theme="light"] .historical-narrative {
-  border-left-color: rgba(2, 132, 199, 0.45);
+  border-left-color: #0284c7 !important;
+  background: rgba(2, 132, 199, 0.04) !important;
 }
 
 [data-theme="sepia"] .historical-narrative {
-  border-left-color: rgba(140, 90, 43, 0.45);
+  border-left-color: #8c5a2b !important;
+  background: rgba(140, 90, 43, 0.05) !important;
 }
 
+/* Corpo das passagens históricas: Itálico literário elegante */
 .historical-narrative p {
-  font-family: 'Crimson Text', 'Cinzel', Georgia, serif !important;
-  font-size: calc(var(--fs) * 1.02);
-  line-height: calc(var(--lh) * 1.05);
-  letter-spacing: 0.015em;
-  font-style: normal;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-style: italic !important;
+  font-size: calc(var(--fs) * 1.06) !important;
+  line-height: calc(var(--lh) * 1.08) !important;
+  letter-spacing: 0.02em !important;
+  color: var(--tx) !important;
+  margin-bottom: 1.2em !important;
 }
 
-/* Título e localização da reconstituição histórica */
-.historical-narrative p.chaptermeta {
+/* 1. Código do Arquivo (Ex: ARQUIVO 02) */
+.historical-narrative p.chaptermeta,
+.historical-narrative > p:first-of-type {
   font-family: var(--font-mono, monospace) !important;
+  font-style: normal !important;
   color: var(--acc, #c9a962) !important;
   font-size: 0.78rem !important;
-  letter-spacing: 0.2em !important;
+  letter-spacing: 0.22em !important;
   font-weight: 700 !important;
+  text-transform: uppercase !important;
+  margin-bottom: 0.35rem !important;
 }
 
-.historical-narrative > p:nth-of-type(2),
+/* 2. Nome do Personagem Histórico (Ex: JÚLIO CÉSAR) */
+.historical-narrative > p:nth-of-type(2) {
+  font-family: 'Cinzel', serif !important;
+  font-style: normal !important;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  color: var(--acc, #c9a962) !important;
+  text-transform: uppercase !important;
+  margin-bottom: 0.3rem !important;
+}
+
+/* 3. Local e Data Histórica (Ex: ROMA — 49 A.C.) */
 .historical-narrative > p:nth-of-type(3) {
   font-family: 'Cinzel', serif !important;
-  letter-spacing: 0.08em !important;
+  font-style: normal !important;
+  font-size: 0.85rem !important;
   font-weight: 600 !important;
-  color: var(--acc, #c9a962) !important;
+  letter-spacing: 0.12em !important;
+  color: var(--tx2, #94a3b8) !important;
+  text-transform: uppercase !important;
+  padding-bottom: 0.85rem !important;
+  margin-bottom: 1.4rem !important;
+  border-bottom: 1px dashed rgba(201, 169, 98, 0.3) !important;
 }
 
-[data-theme="light"] .historical-narrative > p:nth-of-type(2),
-[data-theme="light"] .historical-narrative > p:nth-of-type(3) {
+[data-theme="light"] .historical-narrative p.chaptermeta,
+[data-theme="light"] .historical-narrative > p:first-of-type,
+[data-theme="light"] .historical-narrative > p:nth-of-type(2) {
   color: #0284c7 !important;
 }
+[data-theme="light"] .historical-narrative > p:nth-of-type(3) {
+  color: #475569 !important;
+  border-bottom-color: rgba(2, 132, 199, 0.25) !important;
+}
 
-[data-theme="sepia"] .historical-narrative > p:nth-of-type(2),
-[data-theme="sepia"] .historical-narrative > p:nth-of-type(3) {
+[data-theme="sepia"] .historical-narrative p.chaptermeta,
+[data-theme="sepia"] .historical-narrative > p:first-of-type,
+[data-theme="sepia"] .historical-narrative > p:nth-of-type(2) {
   color: #8c5a2b !important;
+}
+[data-theme="sepia"] .historical-narrative > p:nth-of-type(3) {
+  color: #5c4b38 !important;
+  border-bottom-color: rgba(140, 90, 43, 0.25) !important;
 }
 
 @media (max-width: 768px) {
   .historical-narrative {
-    margin: 1.4rem 0 1.8rem;
-    padding-left: 1rem;
-    border-left-width: 2px;
+    margin: 1.6rem 0 2rem !important;
+    padding: 1rem 0.85rem 1rem 1.1rem !important;
+    border-left-width: 3px !important;
   }
 }
