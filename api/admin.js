@@ -79,7 +79,7 @@ export default async function handler(req, res) {
     const safeReaders = Array.isArray(readersData) ? readersData : [];
     const totalReaders = safeReaders.length;
     const paidReaders = safeReaders.filter(r => r.status === 'paid').length;
-    const freeReaders = safeReaders.filter(r => r.status === 'free').length;
+    const freeReaders = safeReaders.filter(r => r.status !== 'paid').length;
     const totalRevenue = paidReaders * 49;
 
     const referralMap = {};
