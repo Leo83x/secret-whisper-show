@@ -38,7 +38,7 @@
     <meta name="apple-mobile-web-app-title" content="O Último Segredo">
     <meta name="application-name" content="O Último Segredo">
     <meta name="theme-color" content="#070b14">
-    <link rel="stylesheet" href="/reader/css/style.css?v=20261015.4">
+    <link rel="stylesheet" href="/reader/css/style.css?v=20261015.5">
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -623,7 +623,8 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                         <button id="copy-ref-btn" onclick="copyReferralLink()" class="profile-copy-btn">📋 COPIAR LINK DE INDICAÇÃO</button>
                     </div>
 
-                    <a href="https://www.instagram.com/oultimosegredodahumanidade" target="_blank" rel="noopener noreferrer" class="profile-insta-btn">🍵 SUPORTE NO INSTAGRAM</a>
+                    <a href="https://www.instagram.com/oultimosegredodahumanidade" target="_blank" rel="noopener noreferrer" <button onclick="checkReaderAccess().then(() => alert('Status atualizado: ' + (window.currentReaderStatus === 'paid' ? 'ACESSO COMPLETO LIBERADO!' : 'Em degustação')))" class="profile-sync-btn" style="width:100%; padding:0.6rem; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#38bdf8; font-size:0.75rem; font-weight:700; margin-bottom:0.6rem; cursor:pointer;">🔄 SINCRONIZAR ACESSO</button>
+                    class="profile-insta-btn">🍵 SUPORTE NO INSTAGRAM</a>
                     <button onclick="logoutReader()" class="profile-logout-btn">🪪 SAIR DA IDENTIDADE</button>
                 </div>
             </div>
@@ -660,8 +661,8 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
         </div>
     </div>
 
-    <script src="/reader/js/chapters.js?v=20261015.4"></script>
-    <script src="/reader/js/app.js?v=20261015.4"></script>
+    <script src="/reader/js/chapters.js?v=20261015.5"></script>
+    <script src="/reader/js/app.js?v=20261015.5"></script>
 
   
     
@@ -725,6 +726,13 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
         <button onclick="handlePaywallCheckout()" id="paywall-buy-btn" style="width:100%; padding:0.95rem; background:#22c55e; border:none; border-radius:10px; color:#fff; font-weight:800; cursor:pointer; margin-bottom:0.8rem;">GERAR CÓDIGO PIX (R$ 49)</button>
         <div style="font-size:0.7rem; color:#64748b; margin-top:0.6rem; line-height:1.4; text-align:center;">
           🔒 Processado com segurança pelo Pagar.me &middot; Obra Registrada nº 312254601
+        </div>
+      
+        <div style="margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; text-align: center;">
+          <span style="color: #94a3b8;">Já adquiriu o livro ou teve o acesso liberado?</span><br>
+          <a href="#" onclick="document.getElementById('paywall-modal').style.display='none'; toggleAuthMode('login'); document.getElementById('registration-modal').style.display='flex'; return false;" style="color: #38bdf8; font-weight: 700; text-decoration: underline; margin-top: 5px; display: inline-block;">
+            Acessar com sua Identidade &rarr;
+          </a>
         </div>
       </div>
     </div>

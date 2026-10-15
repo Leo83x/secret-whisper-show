@@ -126,7 +126,7 @@
 
     async function fetchDashboardData() {
       try {
-        const res = await fetch('/api/admin', {
+        const res = await fetch('/api/admin/', {
           headers: { 'Authorization': 'Bearer ' + adminToken }
         });
         const data = await res.json();
@@ -184,7 +184,7 @@
       if (!confirm('Deseja alterar o status de acesso deste leitor?')) return;
 
       try {
-        const res = await fetch('/api/admin?action=' + action, {
+        const res = await fetch('/api/admin/?action=' + action, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

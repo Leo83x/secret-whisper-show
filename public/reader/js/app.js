@@ -213,7 +213,23 @@
 
   function renderChapter(idx, isUserNavigation) {
     if (isUserNavigation === undefined) isUserNavigation = true;
+    if (window.currentReaderStatus !== 'paid') {
+      const cachedStatus = localStorage.getItem('ush_reader_status');
+      if (cachedStatus === 'paid') {
+        window.currentReaderStatus = 'paid';
+      }
+    }
+
     if (idx >= 3 && window.currentReaderStatus !== 'paid') {
+        if (typeof checkReaderAccess === 'function') {
+          checkReaderAccess().then(function() {
+            if (window.currentReaderStatus === 'paid') {
+              const modal = document.getElementById('paywall-modal');
+              if (modal) modal.style.display = 'none';
+              renderChapter(idx, isUserNavigation);
+            }
+          });
+        }
         const paywallModal = document.getElementById('paywall-modal');
         if (paywallModal) paywallModal.style.display = 'flex';
         return;
@@ -509,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function() { var mNav = document.g
 // SISTEMA DE IDENTIDADE DE LEITOR, PAYWALL E CORRENTE
 // =========================================================
 let isLoginMode = false;
-window.currentReaderStatus = 'free';
+window.currentReaderStatus = localStorage.getItem('ush_reader_status') || 'free';
 window.currentReaderCode = '';
 
 function toggleAuthMode(overrideMode) {
@@ -575,7 +591,7 @@ async function handleReaderRegistration(e) {
 
   try {
     const urlRef = new URLSearchParams(window.location.search).get('ref');
-    const res = await fetch('/api/register', {
+    const res = await fetch('/api/register/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name || 'Leitor', email: email, phone: phone, ref: urlRef })
@@ -585,6 +601,8 @@ async function handleReaderRegistration(e) {
     if (data.success && data.reader) {
       localStorage.setItem('ush_token', data.reader.access_token);
       localStorage.setItem('ush_name', data.reader.name);
+      localStorage.setItem('ush_reader_status', data.reader.status || 'free');
+      window.currentReaderStatus = data.reader.status || 'free';
       
       const modal = document.getElementById('registration-modal');
       if (modal) modal.style.display = 'none';
@@ -625,32 +643,36 @@ async function checkReaderAccess() {
   if (modal) modal.style.display = 'none';
 
   try {
-    const res = await fetch('/api/get-reader-profile?token=' + encodeURIComponent(token));
+    const res = await fetch('/api/get-reader-profile/?token=' + encodeURIComponent(token));
     const data = await res.json();
 
-    if (data.success && data.reader) {
-      window.currentReaderStatus = data.reader.status || 'free';
-      window.currentReaderCode = data.reader.referral_code || '';
+    const reader = data.reader || data.profile;
+    if (data.success && reader) {
+      const status = reader.status || 'free';
+      window.currentReaderStatus = status;
+      localStorage.setItem('ush_reader_status', status);
+      window.currentReaderCode = reader.referral_code || reader.referralCode || '';
 
       const nameEl = document.getElementById('profile-reader-name');
       const emailEl = document.getElementById('profile-reader-email');
       const badgeEl = document.getElementById('profile-status-badge');
       const chainEl = document.getElementById('profile-chain-count');
 
-      if (nameEl) nameEl.innerText = data.reader.name || 'Leitor';
-      if (emailEl) emailEl.innerText = data.reader.email || '--';
-      if (chainEl) chainEl.innerText = data.chainCount || 0;
+      if (nameEl) nameEl.innerText = reader.name || 'Leitor';
+      if (emailEl) emailEl.innerText = reader.email || '--';
+      if (chainEl) chainEl.innerText = (data.profile && data.profile.referralCount) || reader.referralCount || data.chainCount || 0;
       if (badgeEl) {
-        if (data.reader.status === 'paid') {
+        if (status === 'paid') {
           badgeEl.innerText = 'ACESSO COMPLETO';
           badgeEl.style.background = 'rgba(34,197,94,0.15)';
           badgeEl.style.color = '#22c55e';
         } else {
-          badgeEl.innerText = 'DEGUSTA\u00c7\u00c3O';
+          badgeEl.innerText = 'DEGUSTAÇÃO';
           badgeEl.style.background = 'rgba(56,189,248,0.15)';
           badgeEl.style.color = '#38bdf8';
         }
       }
+      return status;
     }
   } catch (e) {
     console.error('Erro ao buscar perfil:', e);
@@ -717,7 +739,7 @@ async function handlePaywallCheckout() {
     btn.disabled = true;
   }
   try {
-    const res = await fetch('/api/create-order', {
+    const res = await fetch('/api/create-order/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: token, payment_method: 'pix', cpf: cpf })

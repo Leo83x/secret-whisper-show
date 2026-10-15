@@ -37,8 +37,19 @@ export default async function handler(req, res) {
       .eq('reader_id', reader.id)
       .maybeSingle();
 
+    const readerObj = {
+      id: reader.id,
+      name: reader.name,
+      email: reader.email,
+      status: reader.status,
+      referral_code: reader.referral_code,
+      referralCode: reader.referral_code,
+      created_at: reader.created_at
+    };
+
     return res.status(200).json({
       success: true,
+      reader: readerObj,
       profile: {
         name: reader.name,
         email: reader.email,
