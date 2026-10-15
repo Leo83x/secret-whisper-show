@@ -100,12 +100,12 @@
           p.style.setProperty('line-height', '1.4', 'important');
           p.style.setProperty('font-style', 'normal', 'important');
         } else {
-          p.style.setProperty('font-family', '"Cormorant Garamond", Georgia, serif', 'important');
+          var bookFont = FONT_MAP[currentFont] || FONT_MAP.serif;
+          p.style.setProperty('font-family', bookFont, 'important');
           p.style.setProperty('font-style', 'italic', 'important');
-          var computedFs = (currentFontSize ? Math.round(currentFontSize * 1.08) : 20);
-          p.style.setProperty('font-size', computedFs + 'px', 'important');
-          p.style.setProperty('line-height', '1.85', 'important');
-          p.style.setProperty('letter-spacing', '0.02em', 'important');
+          p.style.removeProperty('font-size');
+          p.style.removeProperty('line-height');
+          p.style.removeProperty('letter-spacing');
           p.style.setProperty('margin-bottom', '1.2em', 'important');
         }
       });
