@@ -722,14 +722,192 @@ function isValidCPF(cpf) {
   return true;
 }
 
-async function handlePaywallCheckout() {
+function switchPaymentMethod(method) {
+  const pixTab = document.getElementById('tab-pay-pix');
+  const cardTab = document.getElementById('tab-pay-card');
+  const pixSec = document.getElementById('paywall-pix-section');
+  const cardSec = document.getElementById('paywall-card-section');
+
+  if (method === 'pix') {
+    if (pixTab) {
+      pixTab.style.background = '#22c55e';
+      pixTab.style.color = '#0b1120';
+      pixTab.style.fontWeight = '800';
+    }
+    if (cardTab) {
+      cardTab.style.background = 'transparent';
+      cardTab.style.color = '#94a3b8';
+      cardTab.style.fontWeight = '700';
+    }
+    if (pixSec) pixSec.style.display = 'block';
+    if (cardSec) cardSec.style.display = 'none';
+  } else {
+    if (pixTab) {
+      pixTab.style.background = 'transparent';
+      pixTab.style.color = '#94a3b8';
+      pixTab.style.fontWeight = '700';
+    }
+    if (cardTab) {
+      cardTab.style.background = '#38bdf8';
+      cardTab.style.color = '#0b1120';
+      cardTab.style.fontWeight = '800';
+    }
+    if (pixSec) pixSec.style.display = 'none';
+    if (cardSec) cardSec.style.display = 'block';
+  }
+}
+
+async function handlePaywallCheckout(method) {
+  const currentMethod = method || (document.getElementById('paywall-card-section')?.style.display === 'block' ? 'credit_card' : 'pix');
+  const token = localStorage.getItem('ush_token');
+
+  if (!token) {
+    alert('Identidade não encontrada. Por favor, identifique-se novamente.');
+    return;
+  }
+
+  if (currentMethod === 'credit_card') {
+    const cardBtn = document.getElementById('paywall-card-btn');
+    const numInput = document.getElementById('card-number');
+    const holderInput = document.getElementById('card-holder');
+    const expInput = document.getElementById('card-expiry');
+    const cvvInput = document.getElementById('card-cvv');
+    const instSelect = document.getElementById('card-installments');
+    const cpfInput = document.getElementById('card-cpf');
+
+    const number = (numInput?.value || '').replace(/\D/g, '');
+    const holder_name = (holderInput?.value || '').trim();
+    const expiry = (expInput?.value || '').trim();
+    const cvv = (cvvInput?.value || '').replace(/\D/g, '');
+    const installments = instSelect?.value || '1';
+    const cpf = (cpfInput?.value || '').replace(/\D/g, '');
+
+    if (number.length < 13 || number.length > 19) {
+      alert('Por favor, informe um número de cartão válido.');
+      if (numInput) numInput.focus();
+      return;
+    }
+
+    if (holder_name.length < 3) {
+      alert('Por favor, informe o nome impresso no cartão.');
+      if (holderInput) holderInput.focus();
+      return;
+    }
+
+    const expParts = expiry.split('/');
+    if (expParts.length !== 2) {
+      alert('Validade inválida. Utilize o formato MM/AA.');
+      if (expInput) expInput.focus();
+      return;
+    }
+
+    const exp_month = parseInt(expParts[0], 10);
+    let exp_year = parseInt(expParts[1], 10);
+    if (isNaN(exp_month) || exp_month < 1 || exp_month > 12) {
+      alert('Mês de validade inválido.');
+      if (expInput) expInput.focus();
+      return;
+    }
+    if (isNaN(exp_year)) {
+      alert('Ano de validade inválido.');
+      if (expInput) expInput.focus();
+      return;
+    }
+    if (exp_year < 100) exp_year += 2000;
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+    if (exp_year < currentYear || (exp_year === currentYear && exp_month < currentMonth)) {
+      alert('Cartão com data de validade expirada.');
+      if (expInput) expInput.focus();
+      return;
+    }
+
+    if (cvv.length < 3 || cvv.length > 4) {
+      alert('Código de segurança (CVV) inválido.');
+      if (cvvInput) cvvInput.focus();
+      return;
+    }
+
+    if (!isValidCPF(cpf)) {
+      alert('Por favor, informe um CPF válido para o titular do cartão.');
+      if (cpfInput) cpfInput.focus();
+      return;
+    }
+
+    if (cardBtn) {
+      cardBtn.innerText = 'PROCESSANDO PAGAMENTO...';
+      cardBtn.disabled = true;
+    }
+
+    try {
+      const res = await fetch('/api/create-order/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: token,
+          payment_method: 'credit_card',
+          card: {
+            number: number,
+            holder_name: holder_name,
+            exp_month: exp_month,
+            exp_year: exp_year,
+            cvv: cvv,
+            installments: installments,
+            cpf: cpf
+          }
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success && data.paid) {
+        window.currentReaderStatus = 'paid';
+        const card = document.querySelector('#paywall-modal .reader-modal-card');
+        if (card) {
+          card.innerHTML = `
+            <div style="text-align:center; padding:1.5rem 0.5rem;">
+              <div style="font-size:3rem; margin-bottom:1rem;">🎉</div>
+              <h3 style="color:#22c55e; font-size:1.4rem; margin-bottom:0.8rem; font-weight:800;">PAGAMENTO APROVADO!</h3>
+              <p style="font-size:0.95rem; color:#e2e8f0; margin-bottom:1.5rem; line-height:1.5;">
+                Seu acesso completo ao manuscrito e aos 15 capítulos foi <strong>liberado com sucesso</strong>.
+              </p>
+              <button onclick="document.getElementById('paywall-modal').style.display='none'; checkReaderAccess();" style="width:100%; padding:0.95rem; background:#22c55e; color:#0b1120; font-weight:800; border:none; border-radius:10px; cursor:pointer; font-size:1rem;">
+                📖 CONTINUAR LENDO AGORA
+              </button>
+            </div>
+          `;
+        }
+        await checkReaderAccess();
+      } else if (res.ok && data.success && data.pending) {
+        alert(data.message || 'Transação em análise pela operadora de cartão.');
+        if (cardBtn) {
+          cardBtn.disabled = false;
+          cardBtn.innerText = '💳 PAGAR COM CARTÃO (R$ 49)';
+        }
+      } else {
+        alert(data.error || 'Não foi possível autorizar o cartão. Verifique os dados ou tente outro cartão.');
+        if (cardBtn) {
+          cardBtn.disabled = false;
+          cardBtn.innerText = '💳 PAGAR COM CARTÃO (R$ 49)';
+        }
+      }
+    } catch (err) {
+      alert('Erro de conexão ao processar o cartão. Verifique sua conexão e tente novamente.');
+      if (cardBtn) {
+        cardBtn.disabled = false;
+        cardBtn.innerText = '💳 PAGAR COM CARTÃO (R$ 49)';
+      }
+    }
+    return;
+  }
+
+  // Fluxo PIX
   const btn = document.getElementById('paywall-buy-btn');
   const cpfInput = document.getElementById('paywall-cpf-input');
-  const token = localStorage.getItem('ush_token');
   const cpf = cpfInput ? cpfInput.value.trim() : '';
 
   if (!isValidCPF(cpf)) {
-    alert('Por favor, informe um CPF válido (11 digitos) para a emissão do PIX.');
+    alert('Por favor, informe um CPF válido (11 dígitos) para a emissão do PIX.');
     if (cpfInput) cpfInput.focus();
     return;
   }
@@ -738,6 +916,7 @@ async function handlePaywallCheckout() {
     btn.innerText = 'GERANDO PIX...';
     btn.disabled = true;
   }
+
   try {
     const res = await fetch('/api/create-order/', {
       method: 'POST',
@@ -760,7 +939,7 @@ async function handlePaywallCheckout() {
           <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:1rem;">Após a confirmação do pagamento, seu acesso será liberado automaticamente.<br><span style="font-size:0.75rem; color:#38bdf8;">Favorecido PIX: <strong>LTL EMPREENDIMENTOS</strong></span></p>
           ${pixUrl ? `<img style="width:180px; height:180px; margin:0 auto 1rem auto; border-radius:12px; border:2px solid #38bdf8; display:block;" src="${pixUrl}" alt="QR Code PIX" />` : ''}
           <div style="background:#15213b; padding:0.8rem; border-radius:8px; border:1px solid rgba(256,256,256,0.1); margin-bottom:1rem; word-break:break-all; font-size:0.75rem; color:#e2e8f0; max-height:80px; overflow-y:auto; text-align:left;">
-            ${pixCode || 'Código PIX indisponível.try_again'}
+            ${pixCode || 'Código PIX indisponível.'}
           </div>
           <button id="copy-pix-btn" style="width:100%; padding:0.85rem; background:#38bdf8; color:#0f172a; font-weight:800; border:none; border-radius:8px; cursor:pointer;">
             📋 COPIAR CÓDIGO PIX
@@ -788,20 +967,64 @@ async function handlePaywallCheckout() {
       alert(data.error || 'Erro ao gerar PIX. Verifique o CPF e tente novamente.');
       if (btn) {
         btn.disabled = false;
-        btn.innerText = 'GERAR CÓDIGO PIX (R$ 49)';
+        btn.innerText = '⚡ GERAR CÓDIGO PIX (R$ 49)';
       }
     }
   } catch (err) {
     alert('Erro de conexão ao gerar checkout PIX.');
     if (btn) {
       btn.disabled = false;
-      btn.innerText = 'GERAR CÓDIGO PIX (R$ 49)';
+      btn.innerText = '⚡ GERAR CÓDIGO PIX (R$ 49)';
     }
   }
 }
 
-  document.addEventListener('DOMContentLoaded', function() {
+function setupPaymentFormatters() {
+  const cardNum = document.getElementById('card-number');
+  if (cardNum) {
+    cardNum.addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '').substring(0, 16);
+      v = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+      e.target.value = v;
+    });
+  }
+
+  const cardExp = document.getElementById('card-expiry');
+  if (cardExp) {
+    cardExp.addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '').substring(0, 4);
+      if (v.length >= 3) {
+        v = v.substring(0, 2) + '/' + v.substring(2);
+      }
+      e.target.value = v;
+    });
+  }
+
+  const formatCpfInput = function(e) {
+    let v = e.target.value.replace(/\D/g, '').substring(0, 11);
+    if (v.length > 9) {
+      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+    } else if (v.length > 6) {
+      v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    } else if (v.length > 3) {
+      v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+    }
+    e.target.value = v;
+  };
+
+  const cardCpf = document.getElementById('card-cpf');
+  if (cardCpf) cardCpf.addEventListener('input', formatCpfInput);
+
+  const pixCpf = document.getElementById('paywall-cpf-input');
+  if (pixCpf) pixCpf.addEventListener('input', formatCpfInput);
+}
+
+window.switchPaymentMethod = switchPaymentMethod;
+window.handlePaywallCheckout = handlePaywallCheckout;
+
+document.addEventListener('DOMContentLoaded', function() {
   checkReaderAccess();
+  setupPaymentFormatters();
 });
 
 

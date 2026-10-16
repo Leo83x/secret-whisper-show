@@ -38,7 +38,7 @@
     <meta name="apple-mobile-web-app-title" content="O Último Segredo">
     <meta name="application-name" content="O Último Segredo">
     <meta name="theme-color" content="#070b14">
-    <link rel="stylesheet" href="/reader/css/style.css?v=20261015.5">
+    <link rel="stylesheet" href="/reader/css/style.css?v=20261015.6">
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -623,8 +623,7 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
                         <button id="copy-ref-btn" onclick="copyReferralLink()" class="profile-copy-btn">📋 COPIAR LINK DE INDICAÇÃO</button>
                     </div>
 
-                    <a href="https://www.instagram.com/oultimosegredodahumanidade" target="_blank" rel="noopener noreferrer" <button onclick="checkReaderAccess().then(() => alert('Status atualizado: ' + (window.currentReaderStatus === 'paid' ? 'ACESSO COMPLETO LIBERADO!' : 'Em degustação')))" class="profile-sync-btn" style="width:100%; padding:0.6rem; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#38bdf8; font-size:0.75rem; font-weight:700; margin-bottom:0.6rem; cursor:pointer;">🔄 SINCRONIZAR ACESSO</button>
-                    class="profile-insta-btn">🍵 SUPORTE NO INSTAGRAM</a>
+                    <a href="https://www.instagram.com/oultimosegredodahumanidade" target="_blank" rel="noopener noreferrer" class="profile-insta-btn">☕ SUPORTE NO INSTAGRAM</a>
                     <button onclick="logoutReader()" class="profile-logout-btn">🪪 SAIR DA IDENTIDADE</button>
                 </div>
             </div>
@@ -661,8 +660,8 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
         </div>
     </div>
 
-    <script src="/reader/js/chapters.js?v=20261015.5"></script>
-    <script src="/reader/js/app.js?v=20261015.5"></script>
+    <script src="/reader/js/chapters.js?v=20261015.6"></script>
+    <script src="/reader/js/app.js?v=20261015.6"></script>
 
   
     
@@ -718,12 +717,68 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
           </div>
         </div>
 
-        <div style="margin-bottom:1.2rem; text-align:left;">
-          <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px; font-weight:700;">CPF do Leitor (OBRIGATÓRIO PARA PIX):</label>
-          <input type="text" id="paywall-cpf-input" placeholder="000.000.000-00" style="width:100%; padding:0.7rem; background:#15213b; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-size:0.95rem;" />
+        <!-- ABAS DE SELECAO: PIX OU CARTAO -->
+        <div style="display:flex; gap:8px; margin-bottom:1.2rem; background:#15213b; padding:4px; border-radius:10px; border:1px solid rgba(56,189,248,0.2);">
+          <button type="button" id="tab-pay-pix" onclick="switchPaymentMethod('pix')" style="flex:1; padding:0.65rem 0.5rem; background:#22c55e; color:#0b1120; font-weight:800; font-size:0.8rem; border:none; border-radius:8px; cursor:pointer; transition:all 0.2s;">
+            ⚡ PIX (Imediato)
+          </button>
+          <button type="button" id="tab-pay-card" onclick="switchPaymentMethod('card')" style="flex:1; padding:0.65rem 0.5rem; background:transparent; color:#94a3b8; font-weight:700; font-size:0.8rem; border:none; border-radius:8px; cursor:pointer; transition:all 0.2s;">
+            💳 Cartão de Crédito
+          </button>
         </div>
 
-        <button onclick="handlePaywallCheckout()" id="paywall-buy-btn" style="width:100%; padding:0.95rem; background:#22c55e; border:none; border-radius:10px; color:#fff; font-weight:800; cursor:pointer; margin-bottom:0.8rem;">GERAR CÓDIGO PIX (R$ 49)</button>
+        <!-- SEÇÃO PIX -->
+        <div id="paywall-pix-section">
+          <div style="margin-bottom:1.2rem; text-align:left;">
+            <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px; font-weight:700;">CPF do Titular (Obrigatório para PIX):</label>
+            <input type="text" id="paywall-cpf-input" placeholder="000.000.000-00" style="width:100%; padding:0.75rem 1rem; background:#15213b; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-size:0.95rem;" />
+          </div>
+          <button onclick="handlePaywallCheckout('pix')" id="paywall-buy-btn" style="width:100%; padding:0.95rem; background:#22c55e; border:none; border-radius:10px; color:#0b1120; font-weight:800; cursor:pointer; margin-bottom:0.8rem; font-size:0.95rem;">
+            ⚡ GERAR CÓDIGO PIX (R$ 49)
+          </button>
+        </div>
+
+        <!-- SEÇÃO CARTÃO DE CRÉDITO -->
+        <div id="paywall-card-section" style="display:none; text-align:left;">
+          <div style="margin-bottom:0.9rem;">
+            <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px; font-weight:700;">Número do Cartão:</label>
+            <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19" style="width:100%; padding:0.7rem 0.9rem; background:#15213b; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-size:0.9rem;" />
+          </div>
+
+          <div style="margin-bottom:0.9rem;">
+            <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px; font-weight:700;">Nome Impresso no Cartão:</label>
+            <input type="text" id="card-holder" placeholder="Ex: BRUNO G CASTRO" style="width:100%; padding:0.7rem 0.9rem; background:#15213b; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-size:0.9rem; text-transform:uppercase;" />
+          </div>
+
+          <div style="display:flex; gap:10px; margin-bottom:0.9rem;">
+            <div style="flex:1;">
+              <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px; font-weight:700;">Validade:</label>
+              <input type="text" id="card-expiry" placeholder="MM/AA" maxlength="5" style="width:100%; padding:0.7rem 0.9rem; background:#15213b; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-size:0.9rem; text-align:center;" />
+            </div>
+            <div style="flex:1;">
+              <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px; font-weight:700;">CVV:</label>
+              <input type="text" id="card-cvv" placeholder="123" maxlength="4" style="width:100%; padding:0.7rem 0.9rem; background:#15213b; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-size:0.9rem; text-align:center;" />
+            </div>
+          </div>
+
+          <div style="margin-bottom:0.9rem;">
+            <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px; font-weight:700;">Parcelamento:</label>
+            <select id="card-installments" style="width:100%; padding:0.7rem 0.9rem; background:#15213b; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-size:0.88rem;">
+              <option value="1">1x de R$ 49,00 (à vista)</option>
+              <option value="2">2x de R$ 25,50</option>
+              <option value="3">3x de R$ 17,30</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:1.1rem;">
+            <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:4px; font-weight:700;">CPF do Titular:</label>
+            <input type="text" id="card-cpf" placeholder="000.000.000-00" style="width:100%; padding:0.7rem 0.9rem; background:#15213b; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-size:0.9rem;" />
+          </div>
+
+          <button onclick="handlePaywallCheckout('credit_card')" id="paywall-card-btn" style="width:100%; padding:0.95rem; background:#38bdf8; border:none; border-radius:10px; color:#0b1120; font-weight:800; cursor:pointer; margin-bottom:0.8rem; font-size:0.95rem;">
+            💳 PAGAR COM CARTÃO (R$ 49)
+          </button>
+        </div>
         <div style="font-size:0.7rem; color:#64748b; margin-top:0.6rem; line-height:1.4; text-align:center;">
           🔒 Processado com segurança pelo Pagar.me &middot; Obra Registrada nº 312254601
         </div>
