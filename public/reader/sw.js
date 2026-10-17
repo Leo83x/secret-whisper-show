@@ -4,7 +4,7 @@
    Finalidade: Zero risco de cache preso + Leitura Offline segura
    ========================================================================== */
 
-const CACHE_NAME = 'ush-reader-v2.20';
+const CACHE_NAME = 'ush-reader-v2.21';
 
 // Recursos essenciais para permitir leitura no modo avião / offline
 const PRECACHE_ASSETS = [
