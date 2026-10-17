@@ -660,8 +660,8 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
         </div>
     </div>
 
-    <script src="/reader/js/chapters.js?v=20261016.1"></script>
-    <script src="/reader/js/app.js?v=20261016.1"></script>
+    <script src="/reader/js/chapters.js?v=20261017.1"></script>
+    <script src="/reader/js/app.js?v=20261017.1"></script>
 
   
     
@@ -794,54 +794,192 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
 
 
     <!-- PWA SERVICE WORKER & INSTALL LOGIC -->
+    <style>
+      @keyframes slideUpBanner {
+        from { transform: translate(-50%, 120%); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+      }
+      #pwa-floating-banner.show-banner {
+        display: block !important;
+        animation: slideUpBanner 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+    </style>
+
     <script>
       (function() {
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+        // 1. Registro do Service Worker
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/reader/sw.js?v=2.16', { scope: '/reader/' })
+            navigator.serviceWorker.register('/reader/sw.js?v=2.22', { scope: '/reader/' })
               .then(function(reg) {
                 console.log('[PWA] Service Worker ativo:', reg.scope);
               })
               .catch(function(err) {
-                console.warn('[PWA] Service Worker ignorado:', err);
+                console.warn('[PWA] Service Worker erro:', err);
               });
           });
         }
 
+        // Se já estiver rodando instalado como App (standalone), não precisa exibir banner
+        if (isStandalone) {
+          console.log('[PWA] Executando em modo Standalone');
+          return;
+        }
+
         var deferredPrompt = null;
+        var banner = null;
+        var settingsGroup = null;
+
+        function isDismissedRecently() {
+          var dismissedAt = localStorage.getItem('ush_pwa_banner_dismissed');
+          if (!dismissedAt) return false;
+          var diffHours = (Date.now() - parseInt(dismissedAt, 10)) / (1000 * 60 * 60);
+          return diffHours < 48; // Não exibir se fechou nas últimas 48h
+        }
+
+        function showBanner() {
+          if (isStandalone || isDismissedRecently()) return;
+          if (banner) {
+            banner.classList.add('show-banner');
+          }
+        }
+
+        function dismissBanner() {
+          if (banner) {
+            banner.classList.remove('show-banner');
+            banner.style.display = 'none';
+          }
+          localStorage.setItem('ush_pwa_banner_dismissed', Date.now().toString());
+        }
+
+        function showIOSModal() {
+          var modal = document.getElementById('ios-pwa-modal');
+          if (modal) modal.style.display = 'flex';
+        }
+
+        function closeIOSModal() {
+          var modal = document.getElementById('ios-pwa-modal');
+          if (modal) modal.style.display = 'none';
+        }
+
+        function triggerInstall() {
+          if (isIOS) {
+            if (banner) {
+              banner.classList.remove('show-banner');
+              banner.style.display = 'none';
+            }
+            showIOSModal();
+            return;
+          }
+
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function(choice) {
+              if (choice.outcome === 'accepted') {
+                console.log('[PWA] Usuário aceitou instalar o app');
+                if (banner) {
+                  banner.classList.remove('show-banner');
+                  banner.style.display = 'none';
+                }
+                if (settingsGroup) settingsGroup.style.display = 'none';
+                localStorage.setItem('ush_pwa_installed', 'true');
+              }
+              deferredPrompt = null;
+            });
+          } else {
+            alert('Para fixar o livro:\n\n1. Toque no menu (⋮) ou ícone de opções do seu navegador\n2. Selecione "Instalar aplicativo" ou "Adicionar à tela inicial"');
+          }
+        }
+
+        // Captura o evento nativo do Android/Chrome
         window.addEventListener('beforeinstallprompt', function(e) {
           e.preventDefault();
           deferredPrompt = e;
-          var group = document.getElementById('pwa-install-group');
-          if (group) group.style.display = 'block';
+          console.log('[PWA] beforeinstallprompt capturado com sucesso');
+          showBanner();
+          if (settingsGroup) settingsGroup.style.display = 'block';
+        });
+
+        // Evento disparado quando o app é instalado com sucesso
+        window.addEventListener('appinstalled', function() {
+          console.log('[PWA] Aplicativo instalado!');
+          if (banner) {
+            banner.classList.remove('show-banner');
+            banner.style.display = 'none';
+          }
+          if (settingsGroup) settingsGroup.style.display = 'none';
+          localStorage.setItem('ush_pwa_installed', 'true');
+          deferredPrompt = null;
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-          var btn = document.getElementById('btn-pwa-install');
-          if (btn) {
-            btn.addEventListener('click', function() {
-              if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(function(choice) {
-                  if (choice.outcome === 'accepted') {
-                    console.log('[PWA] Usuário aceitou instalar o livro');
-                    var group = document.getElementById('pwa-install-group');
-                    if (group) group.style.display = 'none';
-                  }
-                  deferredPrompt = null;
-                });
-              } else {
-                alert('Para adicionar à tela inicial no iPhone ou navegador:
+          banner = document.getElementById('pwa-floating-banner');
+          settingsGroup = document.getElementById('pwa-install-group');
 
-1. Toque no ícone Compartilhar (ou no menu do navegador)
-2. Selecione "Adicionar à Tela de Início"');
-              }
-            });
+          // No menu lateral, deixa disponível caso o leitor queira instalar depois
+          if (settingsGroup && !isStandalone) {
+            settingsGroup.style.display = 'block';
           }
+
+          // Botão no banner flutuante
+          var btnFloating = document.getElementById('btn-floating-install');
+          if (btnFloating) {
+            btnFloating.addEventListener('click', triggerInstall);
+          }
+
+          // Botão de fechar banner flutuante
+          var btnCloseBanner = document.getElementById('btn-close-pwa-banner');
+          if (btnCloseBanner) {
+            btnCloseBanner.addEventListener('click', dismissBanner);
+          }
+
+          // Botão dentro da gaveta de configurações
+          var btnSettings = document.getElementById('btn-pwa-install');
+          if (btnSettings) {
+            btnSettings.addEventListener('click', triggerInstall);
+          }
+
+          // Botões do Modal iOS
+          var btnCloseIos = document.getElementById('btn-close-ios-modal');
+          if (btnCloseIos) btnCloseIos.addEventListener('click', closeIOSModal);
+
+          var btnConfirmIos = document.getElementById('btn-confirm-ios-modal');
+          if (btnConfirmIos) btnConfirmIos.addEventListener('click', closeIOSModal);
+
+          var backdropIos = document.getElementById('ios-pwa-backdrop');
+          if (backdropIos) backdropIos.addEventListener('click', closeIOSModal);
+
+          // Exibe o banner suavemente após 2.5 segundos para novos visitantes
+          setTimeout(function() {
+            showBanner();
+          }, 2500);
         });
       })();
     </script>
 
+    <!-- ===== BANNER FLUTUANTE DE INSTALAÇÃO PWA ===== -->
+    <div id="pwa-floating-banner" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:calc(100% - 28px); max-width:440px; background:#0f172a; border:1px solid rgba(201,169,98,0.45); border-radius:14px; box-shadow:0 12px 36px rgba(0,0,0,0.75); z-index:9990; padding:10px 14px; backdrop-filter:blur(12px); box-sizing:border-box;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+                <img src="/reader/icons/icon-192.png" alt="O Último Segredo" style="width:40px; height:40px; border-radius:9px; border:1px solid rgba(201,169,98,0.3); flex-shrink:0;" />
+                <div style="min-width:0;">
+                    <h4 style="margin:0; font-size:0.84rem; font-weight:700; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Instalar o Aplicativo</h4>
+                    <p style="margin:2px 0 0 0; font-size:0.72rem; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Leitura offline &amp; tela cheia</p>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                <button id="btn-floating-install" style="padding:7px 14px; background:linear-gradient(135deg, #c9a962, #a38238); color:#0b1120; font-weight:800; font-size:0.75rem; border:none; border-radius:8px; cursor:pointer; letter-spacing:0.02em;">
+                    INSTALAR
+                </button>
+                <button id="btn-close-pwa-banner" aria-label="Fechar" style="background:transparent; border:none; color:#64748b; font-size:1.2rem; cursor:pointer; padding:2px 6px; line-height:1;">
+                    &times;
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- ===== ESCUDO DE TELA ANTI-PRINT / ANTI-CAPTURA ===== -->
     <div id="reader-screen-shield" class="screen-shield-overlay" style="display:none;" aria-hidden="true">
