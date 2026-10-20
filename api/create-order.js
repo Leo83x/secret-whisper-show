@@ -168,23 +168,27 @@ export default async function handler(req, res) {
     }
 
         // Dispara evento InitiateCheckout para a Meta Conversion API
-    sendMetaConversionEvent({
-      eventName: 'InitiateCheckout',
-      eventId: `checkout_${pagarmeData.id}`,
-      eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
-      userData: {
-        email: reader.email,
-        phone: reader.phone || rawPhone,
-        name: (card && card.holder_name) || reader.name,
-        external_id: reader.access_token
-      },
-      customData: {
-        currency: 'BRL',
-        value: 29.90,
-        content_name: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio + E-reader'
-      },
-      req
-    }).catch(e => console.error('Meta CAPI InitiateCheckout error:', e));
+    try {
+      await sendMetaConversionEvent({
+        eventName: 'InitiateCheckout',
+        eventId: `checkout_${pagarmeData.id}`,
+        eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
+        userData: {
+          email: reader.email,
+          phone: reader.phone || rawPhone,
+          name: (card && card.holder_name) || reader.name,
+          external_id: reader.access_token
+        },
+        customData: {
+          currency: 'BRL',
+          value: 29.90,
+          content_name: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio + E-reader'
+        },
+        req
+      });
+    } catch (e) {
+      console.error('Meta CAPI InitiateCheckout error:', e);
+    }
 
     const charge = (pagarmeData.charges && pagarmeData.charges[0]) || {};
     const tx = charge.last_transaction || {};
@@ -228,25 +232,29 @@ export default async function handler(req, res) {
           .eq('id', reader.id);
 
                 // Dispara Purchase imediatamente para cartao aprovado
-        sendMetaConversionEvent({
-          eventName: 'Purchase',
-          eventId: `order_${pagarmeData.id}`,
-          eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
-          userData: {
-            email: reader.email,
-            phone: reader.phone || rawPhone,
-            name: (card && card.holder_name) || reader.name,
-            external_id: reader.access_token
-          },
-          customData: {
-            currency: 'BRL',
-            value: 29.90,
-            content_name: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio + E-reader',
-            content_type: 'product',
-            order_id: String(pagarmeData.id)
-          },
-          req
-        }).catch(e => console.error('Meta CAPI Card Purchase error:', e));
+        try {
+          await sendMetaConversionEvent({
+            eventName: 'Purchase',
+            eventId: `order_${pagarmeData.id}`,
+            eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
+            userData: {
+              email: reader.email,
+              phone: reader.phone || rawPhone,
+              name: (card && card.holder_name) || reader.name,
+              external_id: reader.access_token
+            },
+            customData: {
+              currency: 'BRL',
+              value: 29.90,
+              content_name: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio + E-reader',
+              content_type: 'product',
+              order_id: String(pagarmeData.id)
+            },
+            req
+          });
+        } catch (e) {
+          console.error('Meta CAPI Card Purchase error:', e);
+        }
 
         return res.status(200).json({
           success: true,

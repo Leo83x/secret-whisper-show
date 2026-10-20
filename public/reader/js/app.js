@@ -627,7 +627,9 @@ async function handleReaderRegistration(e) {
       const modal = document.getElementById('registration-modal');
       if (modal) modal.style.display = 'none';
 
-      window.location.href = '/reader/?token=' + data.reader.access_token;
+      setTimeout(() => {
+        window.location.href = '/reader/?token=' + encodeURIComponent(data.reader.access_token);
+      }, 350);
     } else {
       alert(data.error || 'Erro ao processar acesso. Tente novamente.');
       if (btn) {
@@ -648,6 +650,12 @@ async function checkReaderAccess() {
   const urlParams = new URLSearchParams(window.location.search);
   const tokenFromUrl = urlParams.get('token');
   if (tokenFromUrl) {
+    if (window.fbq && !sessionStorage.getItem('ush_lead_tracked_' + tokenFromUrl)) {
+      sessionStorage.setItem('ush_lead_tracked_' + tokenFromUrl, '1');
+      window.fbq('track', 'Lead', {
+        content_name: 'Degustacao E-reader'
+      }, { eventID: 'lead_' + tokenFromUrl });
+    }
     localStorage.setItem('ush_token', tokenFromUrl);
     window.history.replaceState({}, document.title, window.location.pathname);
   }

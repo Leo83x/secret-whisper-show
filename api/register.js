@@ -69,10 +69,31 @@ export default async function handler(req, res) {
     }
 
     if (Array.isArray(checkData) && checkData.length > 0) {
+      const existingReader = checkData[0];
+      try {
+        await sendMetaConversionEvent({
+          eventName: 'Lead',
+          eventId: `lead_${existingReader.access_token || Date.now()}`,
+          eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
+          userData: {
+            email: cleanEmail,
+            phone: cleanPhone || existingReader.phone,
+            name: existingReader.name || cleanName,
+            external_id: existingReader.access_token
+          },
+          customData: {
+            content_name: 'Acesso Degustacao E-reader'
+          },
+          req
+        });
+      } catch (e) {
+        console.error('Meta CAPI Lead error (existing):', e);
+      }
+
       return res.status(200).json({
         success: true,
-        reader: checkData[0],
-        message: 'Leitor já cadastrado'
+        reader: existingReader,
+        message: 'Leitor ja cadastrado'
       });
     }
 
@@ -130,22 +151,26 @@ export default async function handler(req, res) {
       });
     }
 
-        // Dispara evento Lead para a Meta Conversion API
-    sendMetaConversionEvent({
-      eventName: 'Lead',
-      eventId: `lead_${newReader.access_token}`,
-      eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
-      userData: {
-        email: cleanEmail,
-        phone: cleanPhone,
-        name: cleanName,
-        external_id: newReader.access_token
-      },
-      customData: {
-        content_name: 'Cadastro Degustacao E-reader'
-      },
-      req
-    }).catch(e => console.error('Meta CAPI Lead error:', e));
+    // Dispara evento Lead para a Meta Conversion API com await garantido
+    try {
+      await sendMetaConversionEvent({
+        eventName: 'Lead',
+        eventId: `lead_${newReader.access_token}`,
+        eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
+        userData: {
+          email: cleanEmail,
+          phone: cleanPhone,
+          name: cleanName,
+          external_id: newReader.access_token
+        },
+        customData: {
+          content_name: 'Cadastro Degustacao E-reader'
+        },
+        req
+      });
+    } catch (e) {
+      console.error('Meta CAPI Lead error (new):', e);
+    }
 
     return res.status(200).json({
       success: true,
