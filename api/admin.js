@@ -80,7 +80,7 @@ export default async function handler(req, res) {
     const totalReaders = safeReaders.length;
     const paidReaders = safeReaders.filter(r => r.status === 'paid').length;
     const freeReaders = safeReaders.filter(r => r.status !== 'paid').length;
-    const totalRevenue = paidReaders * 49;
+    const totalRevenue = paidReaders * 29.90;
 
     const referralMap = {};
     safeReaders.forEach(r => {

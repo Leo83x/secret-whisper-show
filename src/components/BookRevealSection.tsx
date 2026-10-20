@@ -55,9 +55,17 @@ const BookRevealSection = () => {
 
             {/* Bloco de Preço */}
             <div className="mb-8 p-5 rounded-2xl bg-card/60 border border-gold/30 max-w-md mx-auto lg:mx-0 shadow-lg">
-              <div className="flex items-baseline justify-between mb-2">
-                <span className="text-xs uppercase font-semibold text-gold tracking-wider">Acesso Vitalício Completo</span>
-                <span className="text-2xl sm:text-3xl font-extrabold text-foreground font-display">R$ 49,00</span>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex flex-col text-left">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold/15 text-gold text-[10px] sm:text-[11px] font-bold border border-gold/30 uppercase tracking-wider mb-1 w-fit">
+                    ⚡ Oferta de Lançamento
+                  </span>
+                  <span className="text-xs uppercase font-semibold text-muted-foreground tracking-wider">Acesso Vitalício Completo</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-muted-foreground line-through block">De R$ 49,90</span>
+                  <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-display">R$ 29,90</span>
+                </div>
               </div>
               <ul className="text-xs text-muted-foreground space-y-1.5 text-left">
                 <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-400" /> E-reader nativo sem necessidade de aplicativo</li>

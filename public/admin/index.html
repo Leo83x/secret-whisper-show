@@ -165,7 +165,7 @@
         tr.innerHTML = `
           <td><strong>${r.name}</strong></td>
           <td>${r.email}<br><span style="color:var(--tx2); font-size:0.75rem;">${r.phone || 'Sem WhatsApp'}</span></td>
-          <td><span class="badge ${isPaid ? 'badge-paid' : 'badge-free'}">${isPaid ? 'CONFIRMADO (R$49)' : 'DEGUSTAÇÃO'}</span></td>
+          <td><span class="badge ${isPaid ? 'badge-paid' : 'badge-free'}">${isPaid ? 'CONFIRMADO (R$ 29,90)' : 'DEGUSTAÇÃO'}</span></td>
           <td><strong style="color:var(--acc);">${r.referrals_count || 0}</strong> leitores</td>
           <td><code style="font-size:0.75rem;">${r.referral_code}</code>${r.referred_by ? `<br><span style="font-size:0.7rem; color:var(--tx2);">Veio por: ${r.referred_by}</span>` : ''}</td>
           <td>${dateStr}</td>

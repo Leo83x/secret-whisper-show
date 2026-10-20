@@ -887,20 +887,20 @@ async function handlePaywallCheckout(method) {
         alert(data.message || 'Transação em análise pela operadora de cartão.');
         if (cardBtn) {
           cardBtn.disabled = false;
-          cardBtn.innerText = '💳 PAGAR COM CARTÃO (R$ 49)';
+          cardBtn.innerText = '💳 PAGAR COM CARTÃO (R$ 29,90)';
         }
       } else {
         alert(data.error || 'Não foi possível autorizar o cartão. Verifique os dados ou tente outro cartão.');
         if (cardBtn) {
           cardBtn.disabled = false;
-          cardBtn.innerText = '💳 PAGAR COM CARTÃO (R$ 49)';
+          cardBtn.innerText = '💳 PAGAR COM CARTÃO (R$ 29,90)';
         }
       }
     } catch (err) {
       alert('Erro de conexão ao processar o cartão. Verifique sua conexão e tente novamente.');
       if (cardBtn) {
         cardBtn.disabled = false;
-        cardBtn.innerText = '💳 PAGAR COM CARTÃO (R$ 49)';
+        cardBtn.innerText = '💳 PAGAR COM CARTÃO (R$ 29,90)';
       }
     }
     return;
@@ -972,14 +972,14 @@ async function handlePaywallCheckout(method) {
       alert(data.error || 'Erro ao gerar PIX. Verifique o CPF e tente novamente.');
       if (btn) {
         btn.disabled = false;
-        btn.innerText = '⚡ GERAR CÓDIGO PIX (R$ 49)';
+        btn.innerText = '⚡ GERAR CÓDIGO PIX (R$ 29,90)';
       }
     }
   } catch (err) {
     alert('Erro de conexão ao gerar checkout PIX.');
     if (btn) {
       btn.disabled = false;
-      btn.innerText = '⚡ GERAR CÓDIGO PIX (R$ 49)';
+      btn.innerText = '⚡ GERAR CÓDIGO PIX (R$ 29,90)';
     }
   }
 }

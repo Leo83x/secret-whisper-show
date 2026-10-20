@@ -68,8 +68,8 @@ export default async function handler(req, res) {
     const orderPayload = {
       items: [
         {
-          amount: 4900,
-          description: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio + E-reader',
+          amount: 2990,
+          description: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio + E-reader (Oferta de Lancamento)',
           quantity: 1
         }
       ],

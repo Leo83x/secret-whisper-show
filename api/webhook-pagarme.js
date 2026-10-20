@@ -76,7 +76,7 @@ export default async function handler(req, res) {
                       },
                       custom_data: {
                         currency: 'BRL',
-                        value: 49.00
+                        value: orderData.amount ? (orderData.amount / 100) : 29.90
                       }
                     }
                   ]
