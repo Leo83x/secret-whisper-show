@@ -11,29 +11,48 @@ export default async function handler(req, res) {
 
   // GET: Healthcheck / Diagnostic or Test Event trigger
   if (req.method === 'GET') {
-    const { test, code, event } = req.query || {};
+    const { test, code, test_event_code, event } = req.query || {};
+    const testCode = code || test_event_code || null;
+    const shouldTest = test === 'true' || Boolean(testCode);
 
-    if (test === 'true') {
+    if (shouldTest) {
+      const eventName = event || 'Purchase';
+      const customData = {
+        source: 'meta_capi_test_ping'
+      };
+
+      if (eventName === 'Purchase' || eventName === 'InitiateCheckout') {
+        customData.currency = 'BRL';
+        customData.value = 29.90;
+        customData.content_name = 'O Ultimo Segredo da Humanidade - Acesso Vitalicio';
+      } else if (eventName === 'Lead') {
+        customData.content_name = 'Cadastro Degustacao E-reader';
+      }
+
       const testResult = await sendMetaConversionEvent({
-        eventName: event || 'PageView',
-        eventId: 'test_' + Date.now(),
+        eventName: eventName,
+        eventId: 'test_' + eventName.toLowerCase() + '_' + Date.now(),
         eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
         userData: {
-          email: 'diagnostic@test.com',
-          name: 'Meta CAPI Diagnostic'
+          email: 'diagnostic.test@ultimosegredo.com.br',
+          phone: '21996982886',
+          name: 'Leitor Teste Meta CAPI'
         },
-        customData: {
-          source: 'diagnostic_ping'
-        },
+        customData: customData,
         req,
-        testEventCode: code || null
+        testEventCode: testCode
       });
 
       return res.status(200).json({
-        service: 'Meta Conversions API Diagnostic',
+        success: testResult.success !== false,
+        service: 'Meta Conversions API Test Trigger',
         pixelId: META_PIXEL_ID,
-        tokenConfigured: !!META_CONVERSION_TOKEN,
-        testResult
+        eventSent: eventName,
+        testEventCode: testCode,
+        metaResponse: testResult.data || testResult.error,
+        instruction: testCode 
+          ? 'Evento enviado! Abra a aba Testar Eventos no Gerenciador de Eventos da Meta para visualizar.'
+          : 'Evento enviado em modo producao. Para ver na aba de teste, passe ?code=SEU_CODIGO'
       });
     }
 
@@ -41,7 +60,12 @@ export default async function handler(req, res) {
       service: 'Meta Conversions API Endpoint',
       status: 'active',
       pixelId: META_PIXEL_ID,
-      tokenConfigured: !!META_CONVERSION_TOKEN
+      tokenConfigured: !!META_CONVERSION_TOKEN,
+      usage: {
+        testPurchase: '/api/meta-event/?code=TEST42141',
+        testLead: '/api/meta-event/?code=TEST42141&event=Lead',
+        testInitiateCheckout: '/api/meta-event/?code=TEST42141&event=InitiateCheckout'
+      }
     });
   }
 
@@ -54,7 +78,8 @@ export default async function handler(req, res) {
         eventSourceUrl,
         userData = {},
         customData = {},
-        testEventCode
+        testEventCode,
+        code
       } = req.body || {};
 
       const result = await sendMetaConversionEvent({
@@ -64,7 +89,7 @@ export default async function handler(req, res) {
         userData,
         customData,
         req,
-        testEventCode
+        testEventCode: testEventCode || code || null
       });
 
       return res.status(200).json(result);
