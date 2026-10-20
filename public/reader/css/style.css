@@ -4130,3 +4130,51 @@ body[data-font] #content-wrapper .historical-narrative > p:nth-of-type(3) {
   }
   }
 }
+
+/* Spacing / Quebra de cena natural para leitura menos densa */
+.chapter-body p:not(.chaptermeta) + p.chaptermeta {
+  margin-top: 2.6rem !important;
+  margin-bottom: 0.6rem !important;
+  padding-top: 0.6rem !important;
+  position: relative;
+}
+
+.chapter-body p:not(.chaptermeta) + p.chaptermeta::before {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 1px;
+  background: var(--acc, #c9a962);
+  opacity: 0.35;
+  margin-bottom: 1.2rem;
+}
+
+.chapter-body p.chaptermeta + p:not(.chaptermeta) {
+  margin-top: 1.1rem !important;
+}
+
+.chapter-body > p.chaptermeta:first-child,
+.chapter-body > p.chaptermeta:first-of-type {
+  margin-top: 0 !important;
+}
+
+.chapter-body > p.chaptermeta:first-child::before,
+.chapter-body > p.chaptermeta:first-of-type::before {
+  display: none !important;
+}
+
+/* Proteção definitiva para narrativa histórica: parágrafos a partir do 4º são 100% texto de leitura */
+#content-wrapper .historical-narrative > p:nth-of-type(n+4),
+body #content-wrapper .historical-narrative > p:nth-of-type(n+4),
+body[data-font] #content-wrapper .historical-narrative > p:nth-of-type(n+4) {
+  font-family: inherit !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  text-transform: none !important;
+  color: var(--tx) !important;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  letter-spacing: normal !important;
+  line-height: var(--lh) !important;
+  margin-bottom: 1.25em !important;
+}

@@ -61,7 +61,7 @@
       box.style.setProperty('position', 'relative', 'important');
       box.style.setProperty('margin', '2.2rem 0 2.8rem', 'important');
       box.style.setProperty('padding', '1.4rem 1.2rem 1.4rem 1.5rem', 'important');
-      box.style.setProperty('border-left', '4px solid #c9a962', 'important');
+      box.style.setProperty('border-left', '4px solid var(--acc, #c9a962)', 'important');
       box.style.setProperty('background', 'rgba(201, 169, 98, 0.055)', 'important');
       box.style.setProperty('border-radius', '0 10px 10px 0', 'important');
       box.style.setProperty('box-shadow', 'inset 0 0 22px rgba(201, 169, 98, 0.035)', 'important');
@@ -73,7 +73,7 @@
           p.style.setProperty('font-size', '0.78rem', 'important');
           p.style.setProperty('letter-spacing', '0.22em', 'important');
           p.style.setProperty('text-transform', 'uppercase', 'important');
-          p.style.setProperty('color', '#c9a962', 'important');
+          p.style.setProperty('color', 'var(--acc, #c9a962)', 'important');
           p.style.setProperty('margin-bottom', '0.4rem', 'important');
           p.style.setProperty('font-style', 'normal', 'important');
           p.style.setProperty('font-weight', '700', 'important');
@@ -83,7 +83,7 @@
           p.style.setProperty('font-weight', '700', 'important');
           p.style.setProperty('letter-spacing', '0.12em', 'important');
           p.style.setProperty('text-transform', 'uppercase', 'important');
-          p.style.setProperty('color', '#c9a962', 'important');
+          p.style.setProperty('color', 'var(--acc, #c9a962)', 'important');
           p.style.setProperty('margin-bottom', '0.35rem', 'important');
           p.style.setProperty('line-height', '1.3', 'important');
           p.style.setProperty('font-style', 'normal', 'important');
@@ -93,7 +93,7 @@
           p.style.setProperty('font-weight', '600', 'important');
           p.style.setProperty('letter-spacing', '0.1em', 'important');
           p.style.setProperty('text-transform', 'uppercase', 'important');
-          p.style.setProperty('color', '#94a3b8', 'important');
+          p.style.setProperty('color', 'var(--tx2, #94a3b8)', 'important');
           p.style.setProperty('padding-bottom', '0.85rem', 'important');
           p.style.setProperty('border-bottom', '1px dashed rgba(201, 169, 98, 0.35)', 'important');
           p.style.setProperty('margin-bottom', '1.35rem', 'important');
@@ -103,10 +103,15 @@
           var bookFont = FONT_MAP[currentFont] || FONT_MAP.serif;
           p.style.setProperty('font-family', bookFont, 'important');
           p.style.setProperty('font-style', 'italic', 'important');
+          p.style.setProperty('font-weight', '400', 'important');
+          p.style.setProperty('text-transform', 'none', 'important');
+          p.style.setProperty('color', 'var(--tx)', 'important');
+          p.style.setProperty('border-bottom', 'none', 'important');
+          p.style.setProperty('padding-bottom', '0', 'important');
           p.style.removeProperty('font-size');
           p.style.removeProperty('line-height');
           p.style.removeProperty('letter-spacing');
-          p.style.setProperty('margin-bottom', '1.2em', 'important');
+          p.style.setProperty('margin-bottom', '1.25em', 'important');
         }
       });
     });
