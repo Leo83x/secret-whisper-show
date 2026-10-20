@@ -1,3 +1,4 @@
+import { sendMetaConversionEvent } from './lib/meta-conversions.js';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ydezgyxfggplxapargdq.supabase.co';
@@ -166,6 +167,25 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Erro Pagar.me: ' + (errDetail || JSON.stringify(pagarmeData)) });
     }
 
+        // Dispara evento InitiateCheckout para a Meta Conversion API
+    sendMetaConversionEvent({
+      eventName: 'InitiateCheckout',
+      eventId: `checkout_${pagarmeData.id}`,
+      eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
+      userData: {
+        email: reader.email,
+        phone: reader.phone || rawPhone,
+        name: (card && card.holder_name) || reader.name,
+        external_id: reader.access_token
+      },
+      customData: {
+        currency: 'BRL',
+        value: 29.90,
+        content_name: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio + E-reader'
+      },
+      req
+    }).catch(e => console.error('Meta CAPI InitiateCheckout error:', e));
+
     const charge = (pagarmeData.charges && pagarmeData.charges[0]) || {};
     const tx = charge.last_transaction || {};
 
@@ -206,6 +226,27 @@ export default async function handler(req, res) {
             status: 'paid'
           })
           .eq('id', reader.id);
+
+                // Dispara Purchase imediatamente para cartao aprovado
+        sendMetaConversionEvent({
+          eventName: 'Purchase',
+          eventId: `order_${pagarmeData.id}`,
+          eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
+          userData: {
+            email: reader.email,
+            phone: reader.phone || rawPhone,
+            name: (card && card.holder_name) || reader.name,
+            external_id: reader.access_token
+          },
+          customData: {
+            currency: 'BRL',
+            value: 29.90,
+            content_name: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio + E-reader',
+            content_type: 'product',
+            order_id: String(pagarmeData.id)
+          },
+          req
+        }).catch(e => console.error('Meta CAPI Card Purchase error:', e));
 
         return res.status(200).json({
           success: true,

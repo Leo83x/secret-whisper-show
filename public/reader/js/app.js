@@ -236,7 +236,17 @@
           });
         }
         const paywallModal = document.getElementById('paywall-modal');
-        if (paywallModal) paywallModal.style.display = 'flex';
+        if (paywallModal) {
+          paywallModal.style.display = 'flex';
+          if (window.fbq && !window._initiatedCheckoutTracked) {
+            window._initiatedCheckoutTracked = true;
+            window.fbq('track', 'InitiateCheckout', {
+              content_name: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio',
+              currency: 'BRL',
+              value: 29.90
+            });
+          }
+        }
         return;
     }
     if (typeof BOOK === 'undefined' || !BOOK.chapters[idx]) return;
@@ -604,6 +614,11 @@ async function handleReaderRegistration(e) {
     const data = await res.json();
 
     if (data.success && data.reader) {
+      if (window.fbq) {
+        window.fbq('track', 'Lead', {
+          content_name: 'Degustacao E-reader'
+        }, { eventID: 'lead_' + data.reader.access_token });
+      }
       localStorage.setItem('ush_token', data.reader.access_token);
       localStorage.setItem('ush_name', data.reader.name);
       localStorage.setItem('ush_reader_status', data.reader.status || 'free');
@@ -867,6 +882,13 @@ async function handlePaywallCheckout(method) {
 
       if (res.ok && data.success && data.paid) {
         window.currentReaderStatus = 'paid';
+        if (window.fbq) {
+          window.fbq('track', 'Purchase', {
+            currency: 'BRL',
+            value: 29.90,
+            content_name: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio'
+          }, { eventID: 'order_' + (data.orderId || '') });
+        }
         const card = document.querySelector('#paywall-modal .reader-modal-card');
         if (card) {
           card.innerHTML = `
@@ -930,6 +952,13 @@ async function handlePaywallCheckout(method) {
     });
     const data = await res.json();
     if (data.success) {
+      if (window.fbq) {
+        window.fbq('track', 'AddPaymentInfo', {
+          content_name: 'PIX Gerado - O Ultimo Segredo da Humanidade',
+          currency: 'BRL',
+          value: 29.90
+        });
+      }
       const card = document.querySelector('#paywall-modal .reader-modal-card');
       const pixCode = data.pixQrCode || (data.pix && data.pix.qr_code) || '';
       const pixUrl = data.pixQrCodeUrl || (data.pix && data.pix.qr_code_url) || '';

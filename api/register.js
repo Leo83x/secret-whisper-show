@@ -1,3 +1,4 @@
+import { sendMetaConversionEvent } from './lib/meta-conversions.js';
 // Endpoint Serverless compatível com Vercel Node Runtime
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -128,6 +129,23 @@ export default async function handler(req, res) {
         }])
       });
     }
+
+        // Dispara evento Lead para a Meta Conversion API
+    sendMetaConversionEvent({
+      eventName: 'Lead',
+      eventId: `lead_${newReader.access_token}`,
+      eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
+      userData: {
+        email: cleanEmail,
+        phone: cleanPhone,
+        name: cleanName,
+        external_id: newReader.access_token
+      },
+      customData: {
+        content_name: 'Cadastro Degustacao E-reader'
+      },
+      req
+    }).catch(e => console.error('Meta CAPI Lead error:', e));
 
     return res.status(200).json({
       success: true,

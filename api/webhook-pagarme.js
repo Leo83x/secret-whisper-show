@@ -1,9 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
+import { sendMetaConversionEvent } from './lib/meta-conversions.js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ydezgyxfggplxapargdq.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
-const META_PIXEL_ID = process.env.META_PIXEL_ID || '29098135723126727';
-const META_CONVERSION_TOKEN = process.env.META_CONVERSION_API_TOKEN;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -17,7 +16,7 @@ export default async function handler(req, res) {
     const eventType = payload.type || payload.event;
     const orderData = payload.data || {};
 
-    // Verifica se é um evento de pagamento confirmado (order.paid ou charge.paid)
+    // Verifica se e um evento de pagamento confirmado (order.paid ou charge.paid)
     const isPaid = eventType === 'order.paid' || eventType === 'charge.paid' || (orderData.status === 'paid');
 
     if (isPaid) {
@@ -43,7 +42,7 @@ export default async function handler(req, res) {
             .update({ status: 'paid' })
             .eq('id', reader.id);
 
-          // 2. Registra na tabela da Corrente se o leitor veio por indicação
+          // 2. Registra na tabela da Corrente se o leitor veio por indicacao
           if (reader.referred_by) {
             const { data: referrer } = await supabase
               .from('readers')
@@ -59,33 +58,26 @@ export default async function handler(req, res) {
           }
 
           // 3. Dispara o evento Purchase para a Meta Conversion API (Server-side)
-          if (META_CONVERSION_TOKEN) {
-            try {
-              await fetch(`https://graph.facebook.com/v18.0/${META_PIXEL_ID}/events?access_token=${META_CONVERSION_TOKEN}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  data: [
-                    {
-                      event_name: 'Purchase',
-                      event_time: Math.floor(Date.now() / 1000),
-                      action_source: 'website',
-                      user_data: {
-                        em: [Buffer.from(reader.email.trim().toLowerCase()).toString('hex')],
-                        fn: [Buffer.from(reader.name.trim().toLowerCase()).toString('hex')]
-                      },
-                      custom_data: {
-                        currency: 'BRL',
-                        value: orderData.amount ? (orderData.amount / 100) : 29.90
-                      }
-                    }
-                  ]
-                })
-              });
-            } catch (convErr) {
-              console.error('Meta Conv API Error:', convErr);
-            }
-          }
+          const amountCharged = orderData.amount ? (orderData.amount / 100) : 29.90;
+          await sendMetaConversionEvent({
+            eventName: 'Purchase',
+            eventId: `order_${orderId}`,
+            eventSourceUrl: 'https://ultimosegredo.com.br/reader/',
+            userData: {
+              email: reader.email,
+              phone: reader.phone,
+              name: reader.name,
+              external_id: reader.access_token
+            },
+            customData: {
+              currency: 'BRL',
+              value: amountCharged,
+              content_name: 'O Ultimo Segredo da Humanidade - Acesso Vitalicio + E-reader',
+              content_type: 'product',
+              order_id: String(orderId)
+            },
+            req
+          });
         }
       }
     }
