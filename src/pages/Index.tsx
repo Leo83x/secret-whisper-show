@@ -3,6 +3,7 @@ import ParticleBackground from "@/components/ParticleBackground";
 import HeroSection from "@/components/HeroSection";
 import SynopsisSection from "@/components/SynopsisSection";
 import BookRevealSection from "@/components/BookRevealSection";
+import FreeTasteOfferSection from "@/components/FreeTasteOfferSection";
 import FooterSection from "@/components/FooterSection";
 import BackgroundMusic from "@/components/BackgroundMusic";
 import IntroBridgeSection from "@/components/IntroBridgeSection";
@@ -21,6 +22,7 @@ const Index = () => {
         <HeroSection onOpenRegister={() => setIsRegisterOpen(true)} />
         <SynopsisSection onOpenRegister={() => setIsRegisterOpen(true)} />
         <BookRevealSection onOpenRegister={() => setIsRegisterOpen(true)} />
+        <FreeTasteOfferSection onOpenRegister={() => setIsRegisterOpen(true)} />
         <FooterSection />
       </div>
 
