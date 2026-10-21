@@ -1,14 +1,22 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import bookCover from "/capa_ush.jpg";
-import { Moon, Type, BookMarked, ArrowRight, Sparkles, Check } from "lucide-react";
+import { Moon, Type, BookMarked, ArrowRight, Sparkles, Check, ShieldCheck, Clock } from "lucide-react";
 
-const BookRevealSection = () => {
+interface BookRevealSectionProps {
+  onOpenRegister?: () => void;
+}
+
+const BookRevealSection = ({ onOpenRegister }: BookRevealSectionProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const handleStartReading = () => {
-    window.location.href = '/reader/';
+    if (onOpenRegister) {
+      onOpenRegister();
+    } else {
+      window.location.href = '/reader/';
+    }
   };
 
   return (
@@ -45,7 +53,7 @@ const BookRevealSection = () => {
               <Sparkles className="w-3.5 h-3.5" /> Leitura Digital Imersiva
             </span>
 
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4 leading-tight">
               Uma experiência feita para a sua mente
             </h2>
 
@@ -53,28 +61,65 @@ const BookRevealSection = () => {
               Leia em qualquer dispositivo com nosso e-reader nativo. Sem distração, com temas personalizados e navegação direta pelos capítulos.
             </p>
 
-            {/* Bloco de Preço */}
-            <div className="mb-8 p-5 rounded-2xl bg-card/60 border border-gold/30 max-w-md mx-auto lg:mx-0 shadow-lg">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex flex-col text-left">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold/15 text-gold text-[10px] sm:text-[11px] font-bold border border-gold/30 uppercase tracking-wider mb-1 w-fit">
-                    ⚡ Oferta de Lançamento
-                  </span>
-                  <span className="text-xs uppercase font-semibold text-muted-foreground tracking-wider">Acesso Vitalício Completo</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs text-muted-foreground line-through block">De R$ 49,90</span>
-                  <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-display">R$ 29,90</span>
-                </div>
+            {/* Bloco de Degustação Gratuita & Preço com Escassez de Lançamento */}
+            <div className="mb-8 p-6 rounded-3xl bg-[#0d1527]/90 border border-gold/40 max-w-lg mx-auto lg:mx-0 shadow-[0_0_40px_rgba(0,0,0,0.6)] backdrop-blur-sm text-left">
+              
+              {/* Badge Degustação 100% Gratuita */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-bold border border-emerald-500/30 uppercase tracking-wider">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Degustação 100% Gratuita
+                </span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-gold/90 bg-gold/10 px-2.5 py-0.5 rounded-full border border-gold/20">
+                  <Clock className="w-3 h-3" /> Lançamento Oficial
+                </span>
               </div>
-              <ul className="text-xs text-muted-foreground space-y-1.5 text-left">
-                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-400" /> E-reader nativo sem necessidade de aplicativo</li>
-                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-400" /> Atualizações de capítulos e dossiês históricos</li>
-                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-400" /> Degustação gratuita liberada agora</li>
+
+              {/* Promessa de Risco Zero */}
+              <h3 className="text-lg sm:text-xl font-bold text-white font-display mb-2">
+                Você só paga se a história te prender.
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-light mb-4">
+                Inicie a leitura dos primeiros capítulos gratuitamente agora mesmo. Sinta o ritmo e a profundidade da obra sem colocar cartão de crédito. Você só decide se quer desbloquear o restante depois de degustar.
+              </p>
+
+              {/* Caixa de Preço Travado com Escassez */}
+              <div className="p-4 rounded-2xl bg-black/40 border border-gold/25 mb-4">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] uppercase font-bold text-gold tracking-wider">
+                      Valor Travado na Sua Conta
+                    </span>
+                    <span className="text-xs text-slate-300 font-light">Acesso Vitalício Completo (22 Capítulos)</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs text-slate-400 line-through block">De R$ 49,90</span>
+                    <span className="text-2xl sm:text-3xl font-black text-emerald-400 font-display">R$ 29,90</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-amber-300/90 font-medium pt-1">
+                  ⚡ Preço especial de lançamento: garanta R$ 20,00 de desconto ao iniciar sua degustação hoje.
+                </p>
+              </div>
+
+              {/* Bullets de Confiança */}
+              <ul className="text-xs text-slate-300 space-y-2 mb-2">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span><strong>Zero cobrança imediata:</strong> leia os primeiros capítulos sem cartão.</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>E-reader no navegador: abra em segundos no celular ou PC.</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Dossiês históricos e atualizações inclusas no acesso.</span>
+                </li>
               </ul>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 text-left">
+            {/* Recursos do E-reader */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 text-left">
               <div className="p-4 rounded-xl bg-card/40 border border-border/30">
                 <Moon className="w-5 h-5 text-gold mb-2" />
                 <h4 className="text-sm font-semibold text-foreground mb-1">Modo Noturno</h4>
@@ -92,17 +137,22 @@ const BookRevealSection = () => {
               </div>
             </div>
 
-            {/* Botão CTA Dourado Nobre #c9a962 */}
-            <motion.button
-              onClick={handleStartReading}
-              className="relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-extrabold tracking-wider rounded-xl shadow-[0_0_25px_rgba(201,169,98,0.35)] hover:shadow-[0_0_35px_rgba(201,169,98,0.55)] transition-all duration-300 text-sm uppercase group"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
-              <span>INICIAR LEITURA</span>
-              <ArrowRight className="w-4 h-4 text-slate-950 group-hover:translate-x-1.5 transition-transform" />
-            </motion.button>
+            {/* Botão CTA Principal Dourado Nobre */}
+            <div className="flex flex-col items-center lg:items-start gap-2.5">
+              <motion.button
+                onClick={handleStartReading}
+                className="relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 sm:px-10 py-4 bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-extrabold tracking-wider rounded-xl shadow-[0_0_30px_rgba(201,169,98,0.4)] hover:shadow-[0_0_40px_rgba(201,169,98,0.6)] transition-all duration-300 text-sm sm:text-base uppercase group cursor-pointer"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
+                <span>GARANTIR VALOR & DEGUSTAR GRÁTIS</span>
+                <ArrowRight className="w-5 h-5 text-slate-950 group-hover:translate-x-1.5 transition-transform" />
+              </motion.button>
+              <p className="text-xs text-muted-foreground font-light">
+                Toque para iniciar a leitura gratuita no e-reader oficial
+              </p>
+            </div>
           </motion.div>
         </div>
       </div>

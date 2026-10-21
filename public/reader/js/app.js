@@ -437,6 +437,16 @@
     }
 
     // Botão Iniciar Leitura
+        // Botão / Badge direto para entrar no leitor imersivo
+    const btnCoverHint = $('btn-cover-hint');
+    if (btnCoverHint) {
+      btnCoverHint.addEventListener('click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        openBookAndStart();
+      });
+    }
+
     if (dom.btnStart) {
       dom.btnStart.addEventListener('click', function (e) {
         e.stopPropagation();

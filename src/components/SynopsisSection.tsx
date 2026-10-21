@@ -11,6 +11,10 @@ import turing from "@/assets/characters/turing.png";
 import mandela from "@/assets/characters/mandela.png";
 import jobs from "@/assets/characters/jobs.png";
 
+interface SynopsisSectionProps {
+  onOpenRegister?: () => void;
+}
+
 const characters = [
   { name: "Salomão", image: salomao, era: "970 a.C." },
   { name: "Alexandre", image: alexandre, era: "356 a.C." },
@@ -58,12 +62,12 @@ const CharacterCard = ({ name, image, era, index }: { name: string; image: strin
   </motion.div>
 );
 
-const SynopsisSection = () => {
+const SynopsisSection = ({ onOpenRegister }: SynopsisSectionProps) => {
   return (
     <section className="relative py-24 px-6 overflow-visible touch-pan-y">
       <div className="max-w-4xl mx-auto space-y-28">
 
-        {/* PARTE A: O PADRÃO OCULTO (REDUZIDO E DIRETO) */}
+        {/* PARTE A: O PADRÃO OCULTO */}
         <AnimatedSection className="text-center space-y-6">
           <div className="space-y-4 text-lg md:text-2xl text-muted-foreground font-light leading-relaxed">
             <p>Reis, imperadores e mentes brilhantes moldaram o destino de milhões.</p>
@@ -74,7 +78,7 @@ const SynopsisSection = () => {
           </p>
         </AnimatedSection>
 
-        {/* PARTE B: OS MECANISMOS HUMANOS (CONDENSADO COM DESTAQUES EM CYAN) */}
+        {/* PARTE B: OS MECANISMOS HUMANOS */}
         <AnimatedSection className="text-center space-y-8">
           <p className="text-xl md:text-2xl text-muted-foreground">
             Separadas por séculos, escolhas idênticas continuam se repetindo.
@@ -105,7 +109,7 @@ const SynopsisSection = () => {
           </div>
         </AnimatedSection>
 
-        {/* PARTE C: GALERIA DE PERSONAGENS (INTATA) */}
+        {/* PARTE C: GALERIA DE PERSONAGENS */}
         <AnimatedSection>
           <div className="space-y-12 text-center">
             <p className="text-lg md:text-xl text-muted-foreground font-light">
@@ -119,7 +123,7 @@ const SynopsisSection = () => {
           </div>
         </AnimatedSection>
 
-        {/* PARTE D: MISTÉRIO E CONEXÃO COM O FUTURO (MISTERIOSO E DIRETO) */}
+        {/* PARTE D: MISTÉRIO E CONEXÃO COM O FUTURO */}
         <AnimatedSection className="bg-secondary/30 rounded-3xl p-8 md:p-14 border border-gold/10 relative overflow-visible">
           <div className="absolute -top-20 -right-20 w-40 h-40 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-cyan/10 rounded-full blur-3xl pointer-events-none" />
@@ -137,7 +141,7 @@ const SynopsisSection = () => {
           </div>
         </AnimatedSection>
 
-        {/* PARTE E: FRASE DE IMPACTO FINAL */}
+        {/* PARTE E: FRASE DE IMPACTO FINAL & CTA */}
         <AnimatedSection className="text-center py-12 space-y-8">
           <p className="text-xl md:text-2xl text-muted-foreground">
             O verdadeiro segredo nunca foi sobre eles.
@@ -156,6 +160,21 @@ const SynopsisSection = () => {
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-light">
             Sobre aquilo que fazemos quando acreditamos estar escolhendo livremente.
           </p>
+
+          <div className="pt-6 flex flex-col items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={onOpenRegister}
+              className="relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 sm:px-10 py-4 bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-extrabold tracking-wider rounded-xl shadow-[0_0_30px_rgba(201,169,98,0.4)] hover:shadow-[0_0_40px_rgba(201,169,98,0.6)] transition-all duration-300 text-sm sm:text-base uppercase group cursor-pointer"
+            >
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
+              <span>LER OS PRIMEIROS CAPÍTULOS GRÁTIS</span>
+              <span className="text-base group-hover:translate-x-1 transition-transform">➔</span>
+            </button>
+            <p className="text-xs text-muted-foreground/80 font-light">
+              Deguste a narrativa no leitor oficial antes de tomar qualquer decisão.
+            </p>
+          </div>
         </AnimatedSection>
 
       </div>
