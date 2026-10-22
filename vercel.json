@@ -7,5 +7,15 @@
       "destination": "/reader/",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/edicao-especial",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/edicao-especial/",
+      "destination": "/index.html"
+    }
   ]
 }

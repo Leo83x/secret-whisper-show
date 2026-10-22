@@ -40,19 +40,62 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { token, payment_method, cpf, card } = req.body || {};
-    if (!token) {
-      return res.status(400).json({ error: 'Token de leitor obrigatorio' });
+    const { token, name, email, phone, ref, payment_method, cpf, card } = req.body || {};
+
+    let reader = null;
+
+    if (token) {
+      const { data, error } = await supabase
+        .from('readers')
+        .select('*')
+        .eq('access_token', token)
+        .maybeSingle();
+      if (data) reader = data;
     }
 
-    const { data: reader, error } = await supabase
-      .from('readers')
-      .select('*')
-      .eq('access_token', token)
-      .maybeSingle();
+    if (!reader && email) {
+      const cleanEmail = String(email).trim().toLowerCase();
+      const cleanName = String(name || (card && card.holder_name) || 'Leitor VIP').trim();
+      const cleanPhone = String(phone || '').replace(/\D/g, '');
 
-    if (error || !reader) {
-      return res.status(404).json({ error: 'Leitor nao encontrado' });
+      // Verifica se o leitor ja existe por email
+      const { data: existing } = await supabase
+        .from('readers')
+        .select('*')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+
+      if (existing) {
+        reader = existing;
+      } else {
+        // Cria novo leitor direto no checkout de venda direta
+        const firstPart = cleanName.split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '').substring(0, 8) || 'LEITOR';
+        const newRefCode = 'USH-' + firstPart + '-' + Math.floor(1000 + Math.random() * 9000);
+        const newAccessToken = 'TK_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+
+        const { data: newReader, error: createErr } = await supabase
+          .from('readers')
+          .insert([{
+            name: cleanName,
+            email: cleanEmail,
+            phone: cleanPhone || '21996982886',
+            access_token: newAccessToken,
+            referral_code: newRefCode,
+            referred_by: ref || null,
+            status: 'pending'
+          }])
+          .select()
+          .single();
+
+        if (createErr || !newReader) {
+          return res.status(500).json({ error: 'Erro ao registrar sua conta de leitor: ' + (createErr?.message || 'Tente novamente') });
+        }
+        reader = newReader;
+      }
+    }
+
+    if (!reader) {
+      return res.status(400).json({ error: 'Por favor, informe seu nome e e-mail para receber o acesso.' });
     }
 
     const cleanCpf = (cpf || (card && card.cpf) || reader.cpf || '').replace(/\D/g, '');
@@ -214,7 +257,8 @@ export default async function handler(req, res) {
         success: true,
         orderId: pagarmeData.id,
         pixQrCode: tx.qr_code,
-        pixQrCodeUrl: tx.qr_code_url
+        pixQrCodeUrl: tx.qr_code_url,
+        accessToken: reader.access_token
       });
     } else {
       // Cartao de Credito - Checar status da cobranca
@@ -260,6 +304,7 @@ export default async function handler(req, res) {
           success: true,
           paid: true,
           orderId: pagarmeData.id,
+          accessToken: reader.access_token,
           message: 'Pagamento aprovado com sucesso! Seu acesso ao livro está liberado.'
         });
       } else if (chargeStatus === 'failed') {
