@@ -34,6 +34,17 @@
     
     <!-- PWA MANIFEST & ICONS -->
     <link rel="manifest" href="/reader/manifest.json">
+    <!-- CAPTURA IMEDIATA DO EVENTO DE INSTALAÇÃO PWA (ANDROID / CHROME) -->
+    <script>
+      window.ushDeferredInstallPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.ushDeferredInstallPrompt = e;
+        console.log('[PWA] beforeinstallprompt capturado com sucesso no HEAD!');
+        window.dispatchEvent(new CustomEvent('ush-pwa-ready'));
+      });
+    </script>
+
     <link rel="apple-touch-icon" sizes="180x180" href="/reader/icons/apple-touch-icon.png">
     <meta name="apple-mobile-web-app-title" content="O Último Segredo">
     <meta name="application-name" content="O Último Segredo">
@@ -892,15 +903,13 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
 
         // 1. Registro do Service Worker
         if ('serviceWorker' in navigator) {
-          window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/reader/sw.js?v=2.23', { scope: '/reader/' })
-              .then(function(reg) {
-                console.log('[PWA] Service Worker ativo:', reg.scope);
-              })
-              .catch(function(err) {
-                console.warn('[PWA] Service Worker erro:', err);
-              });
-          });
+          navigator.serviceWorker.register('/reader/sw.js?v=2.33', { scope: '/reader/' })
+            .then(function(reg) {
+              console.log('[PWA] Service Worker ativo:', reg.scope);
+            })
+            .catch(function(err) {
+              console.warn('[PWA] Service Worker erro:', err);
+            });
         }
 
         // Se já estiver rodando instalado como App (standalone), não precisa exibir banner
@@ -909,7 +918,6 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
           return;
         }
 
-        var deferredPrompt = null;
         var banner = null;
         var settingsGroup = null;
 
@@ -945,6 +953,16 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
           if (modal) modal.style.display = 'none';
         }
 
+        function showAndroidModal() {
+          var modal = document.getElementById('android-pwa-modal');
+          if (modal) modal.style.display = 'flex';
+        }
+
+        function closeAndroidModal() {
+          var modal = document.getElementById('android-pwa-modal');
+          if (modal) modal.style.display = 'none';
+        }
+
         function triggerInstall() {
           if (isIOS) {
             if (banner) {
@@ -955,30 +973,41 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
             return;
           }
 
-          if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function(choice) {
+          // No Android / Desktop: Checa se temos o evento nativo capturado
+          var promptEvent = window.ushDeferredInstallPrompt;
+          if (promptEvent) {
+            promptEvent.prompt();
+            promptEvent.userChoice.then(function(choice) {
               if (choice.outcome === 'accepted') {
-                console.log('[PWA] Usuário aceitou instalar o app');
-                if (banner) {
-                  banner.classList.remove('show-banner');
-                  banner.style.display = 'none';
-                }
+                console.log('[PWA] Usuário aceitou instalar o app nativo');
+                dismissBanner();
                 if (settingsGroup) settingsGroup.style.display = 'none';
                 localStorage.setItem('ush_pwa_installed', 'true');
               }
-              deferredPrompt = null;
+              window.ushDeferredInstallPrompt = null;
             });
-          } else {
-            alert('Para fixar o livro:\n\n1. Toque no menu (⋮) ou ícone de opções do seu navegador\n2. Selecione "Instalar aplicativo" ou "Adicionar à tela inicial"');
+            return;
           }
+
+          // Se estiver no Android em aba anônima (onde o Chrome bloqueia o prompt automático nativo)
+          if (banner) {
+            banner.classList.remove('show-banner');
+            banner.style.display = 'none';
+          }
+          showAndroidModal();
         }
 
-        // Captura o evento nativo do Android/Chrome
+        // Listener nativo caso capture após o load
         window.addEventListener('beforeinstallprompt', function(e) {
           e.preventDefault();
-          deferredPrompt = e;
-          console.log('[PWA] beforeinstallprompt capturado com sucesso');
+          window.ushDeferredInstallPrompt = e;
+          console.log('[PWA] beforeinstallprompt recebido');
+          showBanner();
+          if (settingsGroup) settingsGroup.style.display = 'block';
+        });
+
+        // Quando o HEAD já tiver capturado o evento antes do DOM estar pronto
+        window.addEventListener('ush-pwa-ready', function() {
           showBanner();
           if (settingsGroup) settingsGroup.style.display = 'block';
         });
@@ -986,13 +1015,10 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
         // Evento disparado quando o app é instalado com sucesso
         window.addEventListener('appinstalled', function() {
           console.log('[PWA] Aplicativo instalado!');
-          if (banner) {
-            banner.classList.remove('show-banner');
-            banner.style.display = 'none';
-          }
+          dismissBanner();
           if (settingsGroup) settingsGroup.style.display = 'none';
           localStorage.setItem('ush_pwa_installed', 'true');
-          deferredPrompt = null;
+          window.ushDeferredInstallPrompt = null;
         });
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1002,6 +1028,11 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
           // No menu lateral, deixa disponível caso o leitor queira instalar depois
           if (settingsGroup && !isStandalone) {
             settingsGroup.style.display = 'block';
+          }
+
+          // Se o evento nativo já estiver disponível no HEAD, exibe o banner
+          if (window.ushDeferredInstallPrompt) {
+            showBanner();
           }
 
           // Botão no banner flutuante
@@ -1032,10 +1063,22 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
           var backdropIos = document.getElementById('ios-pwa-backdrop');
           if (backdropIos) backdropIos.addEventListener('click', closeIOSModal);
 
-          // Exibe o banner suavemente após 2.5 segundos para novos visitantes
-          setTimeout(function() {
-            showBanner();
-          }, 2500);
+          // Botões do Modal Android (Guia Anônima / Fallback)
+          var btnCloseAndroid = document.getElementById('btn-close-android-modal');
+          if (btnCloseAndroid) btnCloseAndroid.addEventListener('click', closeAndroidModal);
+
+          var btnConfirmAndroid = document.getElementById('btn-confirm-android-modal');
+          if (btnConfirmAndroid) btnConfirmAndroid.addEventListener('click', closeAndroidModal);
+
+          var backdropAndroid = document.getElementById('android-pwa-backdrop');
+          if (backdropAndroid) backdropAndroid.addEventListener('click', closeAndroidModal);
+
+          // No iOS, exibe o banner após 2.5s pois o Safari não dispara beforeinstallprompt
+          if (isIOS) {
+            setTimeout(function() {
+              showBanner();
+            }, 2500);
+          }
         });
       })();
     </script>
@@ -1099,6 +1142,37 @@ src="https://www.facebook.com/tr?id=29098135723126727&ev=PageView&noscript=1"
             <button class="ios-confirm-btn" id="btn-confirm-ios-modal">Entendi, vou adicionar</button>
         </div>
     </div>
+
+    <!-- ===== MODAL GUIA DE INSTALAÇÃO NO ANDROID (GUIA ANÔNIMA / FALLBACK) ===== -->
+    <div id="android-pwa-modal" class="ios-install-modal" style="display:none;" aria-modal="true" role="dialog">
+        <div class="ios-install-backdrop" id="android-pwa-backdrop"></div>
+        <div class="ios-install-card">
+            <button class="ios-install-close" id="btn-close-android-modal" aria-label="Fechar">&times;</button>
+            <div class="ios-install-header">
+                <img src="/reader/icons/icon-192.png" alt="O Último Segredo" class="ios-app-icon" />
+                <div>
+                    <h3 class="ios-title">Instalar Livro no Android</h3>
+                    <p class="ios-subtitle" style="color:#eab308; font-weight:600;">Navegação Anônima Detectada</p>
+                </div>
+            </div>
+            <div class="ios-steps-list">
+                <div class="ios-step-item">
+                    <span class="ios-step-num" style="background:#38bdf8; color:#0f172a;">1</span>
+                    <p>O Android protege sua privacidade e bloqueia a janela nativa em abas anônimas. Para instalar com 1 clique, abra o site em uma <strong>aba normal</strong> do navegador.</p>
+                </div>
+                <div class="ios-step-item">
+                    <span class="ios-step-num">2</span>
+                    <p>Ou, para fixar a partir desta aba: toque no menu de 3 pontos <span class="ios-icon-box">⋮</span> no topo do Chrome.</p>
+                </div>
+                <div class="ios-step-item">
+                    <span class="ios-step-num">3</span>
+                    <p>Selecione <strong>Instalar aplicativo</strong> (ou <strong>Adicionar à tela inicial</strong>).</p>
+                </div>
+            </div>
+            <button class="ios-confirm-btn" id="btn-confirm-android-modal">Entendi</button>
+        </div>
+    </div>
+
 
 </body>
 </html>
