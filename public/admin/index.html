@@ -13,12 +13,13 @@
       --tx2: #94a3b8;
       --acc: #38bdf8;
       --green: #22c55e;
+      --amber: #f59e0b;
       --red: #ef4444;
       --border: rgba(56, 189, 248, 0.2);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     body { background: var(--bg); color: var(--tx); padding: 2rem; min-height: 100vh; }
-    .container { max-width: 1100px; margin: 0 auto; }
+    .container { max-width: 1250px; margin: 0 auto; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
     h1 { font-size: 1.5rem; color: #fff; font-weight: 700; }
     
@@ -30,21 +31,27 @@
 
     /* DASHBOARD */
     #dashboard { display: none; }
-    .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
     .card-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
-    .card-stat .label { font-size: 0.75rem; color: var(--tx2); text-transform: uppercase; letter-spacing: 0.1em; }
-    .card-stat .value { font-size: 1.8rem; font-weight: 800; color: #fff; margin-top: 4px; }
+    .card-stat .label { font-size: 0.72rem; color: var(--tx2); text-transform: uppercase; letter-spacing: 0.08em; }
+    .card-stat .value { font-size: 1.75rem; font-weight: 800; color: #fff; margin-top: 4px; }
 
     /* TABLE */
-    .table-container { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
-    th { background: var(--bg3); padding: 1rem; color: var(--tx2); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
-    td { padding: 1rem; border-top: 1px solid var(--border); }
+    .table-container { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem; min-width: 1000px; }
+    th { background: var(--bg3); padding: 1rem; color: var(--tx2); font-weight: 600; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; }
+    td { padding: 0.9rem 1rem; border-top: 1px solid var(--border); vertical-align: middle; }
     tr:hover { background: rgba(56, 189, 248, 0.03); }
-    .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.72rem; font-family: monospace; font-weight: 700; display: inline-block; }
+    
+    .badge { padding: 4px 9px; border-radius: 12px; font-size: 0.72rem; font-family: monospace; font-weight: 700; display: inline-block; white-space: nowrap; }
     .badge-paid { background: rgba(34, 197, 94, 0.15); color: var(--green); border: 1px solid rgba(34, 197, 94, 0.3); }
     .badge-free { background: rgba(56, 189, 248, 0.15); color: var(--acc); border: 1px solid rgba(56, 189, 248, 0.3); }
-    .btn-action { padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
+    .badge-reading { background: rgba(147, 51, 234, 0.18); color: #c084fc; border: 1px solid rgba(147, 51, 234, 0.35); }
+    .badge-block { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .badge-fire { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45); font-weight: 800; }
+    .badge-muted { background: rgba(148, 163, 184, 0.1); color: #64748b; border: 1px solid rgba(148, 163, 184, 0.2); }
+    
+    .btn-action { padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; white-space: nowrap; }
     .btn-grant { background: var(--green); color: #fff; }
     .btn-revoke { background: var(--red); color: #fff; }
   </style>
@@ -61,11 +68,14 @@
   <!-- DASHBOARD ADMIN -->
   <div id="dashboard" class="container">
     <div class="header">
-      <h1>Painel Admin — Leitores & Vendas</h1>
-      
       <div>
-        <input type="text" id="search-input" placeholder="🔍 Buscar leitor por nome ou e-mail..." oninput="filterReaders()" style="width:280px; margin-bottom:0;">
-        <button id="refresh-btn" onclick="fetchDashboardData()" style="background:rgba(56,189,248,0.15); color:var(--acc); border:1px solid rgba(56,189,248,0.3); padding:0.6rem 1rem; font-size:0.8rem; margin-left:10px; cursor:pointer;">🔄 ATUALIZAR DADOS</button>
+        <h1>Painel Admin — Leitores, Progresso & Vendas</h1>
+        <p style="font-size:0.78rem; color:var(--tx2); margin-top:3px;">Monitoramento em tempo real de leitores em degustação e conversões</p>
+      </div>
+      
+      <div style="display:flex; align-items:center;">
+        <input type="text" id="search-input" placeholder="🔍 Buscar por nome, e-mail ou capítulo..." oninput="filterReaders()" style="width:280px; margin-bottom:0;">
+        <button id="refresh-btn" onclick="fetchDashboardData()" style="background:rgba(56,189,248,0.15); color:var(--acc); border:1px solid rgba(56,189,248,0.3); padding:0.6rem 1rem; font-size:0.8rem; margin-left:10px; cursor:pointer;">🔄 ATUALIZAR</button>
         <button onclick="logoutAdmin()" style="background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:0.6rem 1rem; font-size:0.8rem; margin-left:10px;">SAIR</button>
       </div>
 
@@ -78,7 +88,7 @@
         <div class="value" id="stat-total">0</div>
       </div>
       <div class="card-stat">
-        <div class="label">Leitores Confirmados (Pagos)</div>
+        <div class="label">Leitores Pagos</div>
         <div class="value" style="color:var(--green);" id="stat-paid">0</div>
       </div>
       <div class="card-stat">
@@ -86,7 +96,11 @@
         <div class="value" style="color:var(--acc);" id="stat-free">0</div>
       </div>
       <div class="card-stat">
-        <div class="label">Faturamento Estimado</div>
+        <div class="label">Clicaram em Comprar</div>
+        <div class="value" style="color:var(--amber);" id="stat-clicked-buy">0</div>
+      </div>
+      <div class="card-stat">
+        <div class="label">Faturamento Total</div>
         <div class="value" style="color:#eab308;" id="stat-revenue">R$ 0,00</div>
       </div>
     </div>
@@ -99,10 +113,12 @@
             <th>Leitor</th>
             <th>E-mail / WhatsApp</th>
             <th>Status</th>
-            <th>Corrente (Indicados)</th>
+            <th>Último Lido</th>
+            <th>Clicou Comprar?</th>
+            <th>Corrente</th>
             <th>Código / Ref</th>
             <th>Cadastro</th>
-            <th>Ações de Suporte</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody id="readers-tbody">
@@ -145,6 +161,7 @@
         document.getElementById('stat-total').innerText = data.stats.totalReaders;
         document.getElementById('stat-paid').innerText = data.stats.paidReaders;
         document.getElementById('stat-free').innerText = data.stats.freeReaders;
+        document.getElementById('stat-clicked-buy').innerText = data.stats.clickedBuyCount || 0;
         document.getElementById('stat-revenue').innerText = 'R$ ' + (data.stats.totalRevenue || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2});
 
         renderTable(allReaders);
@@ -157,22 +174,44 @@
       const tbody = document.getElementById('readers-tbody');
       tbody.innerHTML = '';
 
+      if (readers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:2rem; color:var(--tx2);">Nenhum leitor encontrado.</td></tr>';
+        return;
+      }
+
       readers.forEach(r => {
         const tr = document.createElement('tr');
         const isPaid = r.status === 'paid';
         const dateStr = new Date(r.created_at).toLocaleDateString('pt-BR');
 
+        // Badge do último capítulo lido
+        const chNum = r.ultimo_capitulo_num;
+        let chBadgeClass = 'badge-muted';
+        if (chNum >= 3) chBadgeClass = 'badge-block';
+        else if (chNum > 0) chBadgeClass = 'badge-reading';
+        else if (chNum === 0) chBadgeClass = 'badge-free';
+
+        const lastChapterLabel = r.ultimo_capitulo_lido || 'Não iniciado';
+        const lastChapterHtml = `<span class="badge ${chBadgeClass}">${lastChapterLabel}</span>`;
+
+        // Badge de clicou em comprar
+        const clickedBuyHtml = r.clicou_comprar
+          ? `<span class="badge badge-fire" title="${r.clicou_comprar_em ? 'Clicou em ' + new Date(r.clicou_comprar_em).toLocaleString('pt-BR') : 'Clicou para comprar'}">🔥 SIM</span>`
+          : `<span class="badge badge-muted">NÃO</span>`;
+
         tr.innerHTML = `
           <td><strong>${r.name}</strong></td>
           <td>${r.email}<br><span style="color:var(--tx2); font-size:0.75rem;">${r.phone || 'Sem WhatsApp'}</span></td>
-          <td><span class="badge ${isPaid ? 'badge-paid' : 'badge-free'}">${isPaid ? 'CONFIRMADO (R$ 29,90)' : 'DEGUSTAÇÃO'}</span></td>
+          <td><span class="badge ${isPaid ? 'badge-paid' : 'badge-free'}">${isPaid ? 'PAGO (R$ 29,90)' : 'DEGUSTAÇÃO'}</span></td>
+          <td>${lastChapterHtml}</td>
+          <td>${clickedBuyHtml}</td>
           <td><strong style="color:var(--acc);">${r.referrals_count || 0}</strong> leitores</td>
           <td><code style="font-size:0.75rem;">${r.referral_code}</code>${r.referred_by ? `<br><span style="font-size:0.7rem; color:var(--tx2);">Veio por: ${r.referred_by}</span>` : ''}</td>
           <td>${dateStr}</td>
           <td>
             ${isPaid 
-              ? `<button class="btn-action btn-revoke" onclick="toggleAccess('${r.id}', 'revoke-access')">Revogar Acesso</button>`
-              : `<button class="btn-action btn-grant" onclick="toggleAccess('${r.id}', 'grant-access')">⚡ Liberar Acesso</button>`
+              ? `<button class="btn-action btn-revoke" onclick="toggleAccess('${r.id}', 'revoke-access')">Revogar</button>`
+              : `<button class="btn-action btn-grant" onclick="toggleAccess('${r.id}', 'grant-access')">⚡ Liberar</button>`
             }
           </td>
         `;
@@ -207,9 +246,13 @@
     function filterReaders() {
       const q = document.getElementById('search-input').value.toLowerCase().trim();
       const filtered = allReaders.filter(r => 
-        r.name.toLowerCase().includes(q) || 
-        r.email.toLowerCase().includes(q) ||
-        r.referral_code.toLowerCase().includes(q)
+        (r.name && r.name.toLowerCase().includes(q)) || 
+        (r.email && r.email.toLowerCase().includes(q)) ||
+        (r.referral_code && r.referral_code.toLowerCase().includes(q)) ||
+        (r.ultimo_capitulo_lido && r.ultimo_capitulo_lido.toLowerCase().includes(q)) ||
+        (q === 'sim' && r.clicou_comprar) ||
+        (q === 'não' && !r.clicou_comprar) ||
+        (q === 'nao' && !r.clicou_comprar)
       );
       renderTable(filtered);
     }
@@ -221,6 +264,6 @@
       document.getElementById('login-box').style.display = 'block';
     }
 
-</script>
+  </script>
 </body>
 </html>

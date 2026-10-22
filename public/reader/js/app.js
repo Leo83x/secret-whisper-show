@@ -216,7 +216,48 @@
     }
   }
 
-  function renderChapter(idx, isUserNavigation) {
+    /* ── RASTREAMENTO DE PROGRESO DE LEITURA & INTENÇÃO DE COMPRA ── */
+  let trackProgressTimer = null;
+  function trackReadingProgress(chapterIdx, clickedBuy) {
+    try {
+      const token = localStorage.getItem('ush_token');
+      if (!token) return;
+
+      const chIdx = (chapterIdx !== undefined && chapterIdx !== null) ? chapterIdx : currentIdx;
+      let chTitle = '';
+      if (typeof BOOK !== 'undefined' && BOOK.chapters && BOOK.chapters[chIdx]) {
+        chTitle = BOOK.chapters[chIdx].title || ('Capítulo ' + chIdx);
+      }
+
+      const payload = {
+        token: token,
+        last_chapter: chIdx,
+        last_chapter_title: chTitle,
+        clicked_buy: clickedBuy === true
+      };
+
+      if (clickedBuy) {
+        // Envio imediato ao interagir com compra
+        fetch('/api/track-progress/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).catch(function() {});
+      } else {
+        // Debounce de 1.5s para navegação de leitura
+        clearTimeout(trackProgressTimer);
+        trackProgressTimer = setTimeout(function() {
+          fetch('/api/track-progress/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }).catch(function() {});
+        }, 1500);
+      }
+    } catch(e) {}
+  }
+
+function renderChapter(idx, isUserNavigation) {
     if (isUserNavigation === undefined) isUserNavigation = true;
     if (window.currentReaderStatus !== 'paid') {
       const cachedStatus = localStorage.getItem('ush_reader_status');
@@ -235,6 +276,7 @@
             }
           });
         }
+        trackReadingProgress(idx, true);
         const paywallModal = document.getElementById('paywall-modal');
         if (paywallModal) {
           paywallModal.style.display = 'flex';
@@ -251,6 +293,7 @@
     }
     if (typeof BOOK === 'undefined' || !BOOK.chapters[idx]) return;
     currentIdx = idx;
+    trackReadingProgress(idx, false);
 
     if (isUserNavigation) {
       saveCurrentBookmark(idx, true);
@@ -796,6 +839,7 @@ function switchPaymentMethod(method) {
 }
 
 async function handlePaywallCheckout(method) {
+  trackReadingProgress(currentIdx, true);
   const currentMethod = method || (document.getElementById('paywall-card-section')?.style.display === 'block' ? 'credit_card' : 'pix');
   const token = localStorage.getItem('ush_token');
 

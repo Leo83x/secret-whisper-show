@@ -55,8 +55,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // Chamada REST nativa para listar leitores
-    const restRes = await fetch(`${SUPABASE_URL}/rest/v1/readers?select=*&order=created_at.desc`, {
+    // Chamada REST nativa para listar leitores COM dados de progresso e intencao de compra
+    const restRes = await fetch(`${SUPABASE_URL}/rest/v1/readers?select=*,reader_traits(*)&order=created_at.desc`, {
       method: 'GET',
       headers: {
         'apikey': SUPABASE_KEY,
@@ -70,7 +70,7 @@ export default async function handler(req, res) {
     if (!restRes.ok) {
       return res.status(200).json({
         success: false,
-        stats: { totalReaders: 0, paidReaders: 0, freeReaders: 0, totalRevenue: 0 },
+        stats: { totalReaders: 0, paidReaders: 0, freeReaders: 0, totalRevenue: 0, clickedBuyCount: 0 },
         readers: [],
         error: `Supabase retornou erro (${restRes.status}). Verifique se o projeto esta ativo.`
       });
@@ -89,10 +89,37 @@ export default async function handler(req, res) {
       }
     });
 
-    const readersWithChain = safeReaders.map(r => ({
-      ...r,
-      referrals_count: referralMap[r.referral_code] || 0
-    }));
+    let clickedBuyTotal = 0;
+
+    const readersWithChain = safeReaders.map(r => {
+      const traits = Array.isArray(r.reader_traits) && r.reader_traits.length > 0 ? r.reader_traits[0] : null;
+      const progress = traits && traits.reading_progress ? traits.reading_progress : null;
+
+      let lastChapter = 'Não iniciado';
+      let lastChapterNum = -1;
+      if (progress && progress.last_chapter !== undefined && progress.last_chapter !== null) {
+        lastChapterNum = progress.last_chapter;
+        if (progress.last_chapter === 0) {
+          lastChapter = 'Prólogo';
+        } else if (progress.last_chapter_title) {
+          lastChapter = progress.last_chapter_title;
+        } else {
+          lastChapter = `Capítulo ${progress.last_chapter}`;
+        }
+      }
+
+      const clickedBuy = progress ? progress.clicked_buy === true : false;
+      if (clickedBuy) clickedBuyTotal++;
+
+      return {
+        ...r,
+        referrals_count: referralMap[r.referral_code] || 0,
+        ultimo_capitulo_lido: lastChapter,
+        ultimo_capitulo_num: lastChapterNum,
+        clicou_comprar: clickedBuy,
+        clicou_comprar_em: progress?.clicked_buy_at || null
+      };
+    });
 
     return res.status(200).json({
       success: true,
@@ -100,7 +127,8 @@ export default async function handler(req, res) {
         totalReaders,
         paidReaders,
         freeReaders,
-        totalRevenue
+        totalRevenue,
+        clickedBuyCount: clickedBuyTotal
       },
       readers: readersWithChain
     });
@@ -108,7 +136,7 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(200).json({
       success: false,
-      stats: { totalReaders: 0, paidReaders: 0, freeReaders: 0, totalRevenue: 0 },
+      stats: { totalReaders: 0, paidReaders: 0, freeReaders: 0, totalRevenue: 0, clickedBuyCount: 0 },
       readers: [],
       error: `Falha ao conectar com o banco Supabase: ${err.message || String(err)}. Verifique se o projeto no Supabase nao esta pausado por inatividade.`
     });
