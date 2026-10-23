@@ -320,7 +320,7 @@ export const SpecialCheckoutSection = () => {
 
         {/* Cabeçalho */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-bold font-mono tracking-wider uppercase border border-emerald-500/30">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-bold font-mono tracking-wider uppercase border border-emerald-500/30">
             <Sparkles className="w-3.5 h-3.5" /> ACESSO DEFINITIVO // OFERTA DE LANÇAMENTO
           </span>
 
@@ -334,7 +334,7 @@ export const SpecialCheckoutSection = () => {
 
           {/* Barra de Escassez Real - Lote de Lançamento */}
           <div className="pt-2 max-w-xl mx-auto">
-            <div className="p-3.5 rounded-2xl bg-[#0e172a]/90 border border-gold/30 shadow-lg space-y-2">
+            <div className="p-4 rounded-2xl bg-[#0e172a]/95 border border-gold/40 shadow-xl space-y-2">
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="flex items-center gap-1.5 text-gold font-bold">
                   <Flame className="w-4 h-4 text-amber-400 animate-pulse" />
@@ -342,14 +342,14 @@ export const SpecialCheckoutSection = () => {
                 </span>
                 <span className="text-amber-300 font-bold">84% PREENCHIDO</span>
               </div>
-              <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+              <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
                 <div 
                   className="h-full bg-gradient-to-r from-amber-500 via-gold to-emerald-400 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(201,169,98,0.6)]"
                   style={{ width: "84%" }}
                 />
               </div>
-              <p className="text-[11px] text-slate-400 leading-tight">
-                Ao encerrar o lote promocional, o acesso passará para o valor oficial de <strong>R$ 49,90</strong> e os 4 Dossiês Históricos serão vendidos separadamente.
+              <p className="text-xs text-slate-300 leading-tight">
+                Ao encerrar o lote promocional, o acesso passará para o valor oficial de <strong className="text-white">R$ 49,90</strong> e os 4 Dossiês Históricos serão vendidos separadamente.
               </p>
             </div>
           </div>
@@ -359,7 +359,7 @@ export const SpecialCheckoutSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Coluna Esquerda: Resumo de Entrega */}
-          <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-[#0b1222]/90 border border-gold/30 shadow-2xl space-y-6">
+          <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-[#0b1222]/95 border border-gold/30 shadow-2xl space-y-6">
             <div className="space-y-2 pb-6 border-b border-white/10">
               <span className="text-xs font-mono font-bold text-gold uppercase tracking-widest block">
                 PACOTE DIGITAL COMPLETO
@@ -393,7 +393,7 @@ export const SpecialCheckoutSection = () => {
               </li>
             </ul>
 
-            <div className="p-4 rounded-2xl bg-black/50 border border-gold/25 space-y-1 text-center">
+            <div className="p-4 rounded-2xl bg-black/60 border border-gold/30 space-y-1 text-center">
               <span className="text-xs text-slate-400 line-through block">De R$ 49,90</span>
               <div className="flex items-baseline justify-center gap-2">
                 <span className="text-3xl sm:text-4xl font-black text-emerald-400 font-display">R$ 29,90</span>
@@ -405,12 +405,12 @@ export const SpecialCheckoutSection = () => {
             </div>
 
             {/* Selo Garantia Incondicional de 7 Dias */}
-            <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-300 text-xs space-y-1">
-              <div className="flex items-center gap-2 font-bold text-emerald-400">
+            <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs space-y-1.5 shadow-md">
+              <div className="flex items-center gap-2 font-bold text-emerald-400 text-sm">
                 <RotateCcw className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>Garantia de Leitura: 7 Dias Incondicionais</span>
               </div>
-              <p className="text-[11px] text-emerald-200/80 leading-relaxed font-light">
+              <p className="text-xs text-emerald-200/90 leading-relaxed font-normal">
                 Se você abrir os primeiros capítulos e sentir que a história não é para você, devolvemos 100% do seu PIX com um único e-mail. Risco zero.
               </p>
             </div>
@@ -474,12 +474,12 @@ export const SpecialCheckoutSection = () => {
                       type="text"
                       readOnly
                       value={pixData.qrCode}
-                      className="w-full text-xs font-mono p-3 bg-[#15213b] border border-slate-700 rounded-xl text-slate-300 select-all"
+                      className="w-full text-xs font-mono p-3.5 bg-[#15213b] border border-slate-700 rounded-xl text-slate-300 select-all"
                     />
                     <button
                       type="button"
                       onClick={copyPixCode}
-                      className="px-4 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors shrink-0"
+                      className="px-5 py-3.5 min-h-[48px] bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs sm:text-sm flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer shadow-md"
                     >
                       {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       <span>{copied ? "Copiado!" : "Copiar"}</span>
@@ -487,7 +487,7 @@ export const SpecialCheckoutSection = () => {
                   </div>
                 </div>
 
-                <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-400 flex items-center justify-center gap-2">
+                <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-400 flex items-center justify-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin shrink-0" />
                   <span>Aguardando confirmação bancária em tempo real... Você será redirecionado automaticamente.</span>
                 </div>
@@ -502,45 +502,45 @@ export const SpecialCheckoutSection = () => {
               </div>
             ) : (
               /* FORMULÁRIO DE CHECKOUT */
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 
-                {/* Seletor de Método */}
-                <div className="grid grid-cols-2 gap-3">
+                {/* Seletor de Método (Botões mais altos e generosos) */}
+                <div className="grid grid-cols-2 gap-3.5">
                   <button
                     type="button"
                     onClick={() => setMethod("pix")}
-                    className={`flex items-center justify-center gap-2 p-3.5 rounded-2xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                    className={`flex items-center justify-center gap-2.5 py-4 px-4 min-h-[58px] rounded-2xl border text-sm sm:text-base font-bold transition-all cursor-pointer ${
                       method === "pix"
-                        ? "bg-emerald-500/15 border-emerald-400 text-emerald-300 shadow-[0_0_20px_rgba(52,211,153,0.2)]"
+                        ? "bg-emerald-500/20 border-emerald-400 text-emerald-300 shadow-[0_0_20px_rgba(52,211,153,0.25)] scale-[1.02]"
                         : "bg-[#131b2e] border-slate-800 text-slate-400 hover:text-white"
                     }`}
                   >
-                    <QrCode className="w-4 h-4" />
+                    <QrCode className="w-5 h-5 text-emerald-400" />
                     <span>PIX Instantâneo</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setMethod("card")}
-                    className={`flex items-center justify-center gap-2 p-3.5 rounded-2xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                    className={`flex items-center justify-center gap-2.5 py-4 px-4 min-h-[58px] rounded-2xl border text-sm sm:text-base font-bold transition-all cursor-pointer ${
                       method === "card"
-                        ? "bg-sky-500/15 border-sky-400 text-sky-300 shadow-[0_0_20px_rgba(56,189,248,0.2)]"
+                        ? "bg-sky-500/20 border-sky-400 text-sky-300 shadow-[0_0_20px_rgba(56,189,248,0.25)] scale-[1.02]"
                         : "bg-[#131b2e] border-slate-800 text-slate-400 hover:text-white"
                     }`}
                   >
-                    <CreditCard className="w-4 h-4" />
+                    <CreditCard className="w-5 h-5 text-sky-400" />
                     <span>Cartão de Crédito</span>
                   </button>
                 </div>
 
                 {/* Dados Pessoais para Recebimento */}
-                <div className="space-y-3.5 pt-2">
-                  <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+                <div className="space-y-4 pt-1">
+                  <span className="text-xs font-mono text-slate-400 uppercase tracking-wider block">
                     Dados do Titular para Acesso
                   </span>
 
                   <div>
-                    <label className="text-xs text-slate-300 block mb-1">Nome Completo</label>
+                    <label className="text-xs text-slate-300 block mb-1 font-medium">Nome Completo</label>
                     <input
                       type="text"
                       required
@@ -551,13 +551,13 @@ export const SpecialCheckoutSection = () => {
                         setName(e.target.value);
                         handleCheckoutInitiated();
                       }}
-                      className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
+                      className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs text-slate-300 block mb-1">Seu Melhor E-mail</label>
+                      <label className="text-xs text-slate-300 block mb-1 font-medium">Seu Melhor E-mail</label>
                       <input
                         type="email"
                         required
@@ -566,12 +566,12 @@ export const SpecialCheckoutSection = () => {
                         onFocus={handleCheckoutInitiated}
                         onBlur={handlePhoneBlur}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
+                        className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs text-slate-300 block mb-1">WhatsApp / Celular</label>
+                      <label className="text-xs text-slate-300 block mb-1 font-medium">WhatsApp / Celular</label>
                       <input
                         type="tel"
                         required
@@ -580,15 +580,15 @@ export const SpecialCheckoutSection = () => {
                         value={phone}
                         onBlur={handlePhoneBlur}
                         onChange={handlePhoneChange}
-                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
+                        className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                       />
                     </div>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-xs text-slate-300">CPF do Titular</label>
-                      <span className="text-[10px] text-slate-400 font-light">Exigência do Banco Central para PIX/Cartão seguro</span>
+                      <label className="text-xs text-slate-300 font-medium">CPF do Titular</label>
+                      <span className="text-[11px] text-slate-400 font-light">Exigência do Banco Central para PIX/Cartão seguro</span>
                     </div>
                     <input
                       type="text"
@@ -597,20 +597,20 @@ export const SpecialCheckoutSection = () => {
                       placeholder="000.000.000-00"
                       value={cpf}
                       onChange={handleCpfChange}
-                      className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
+                      className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                     />
                   </div>
                 </div>
 
                 {/* Campos do Cartão (se selecionado) */}
                 {method === "card" && (
-                  <div className="space-y-3.5 pt-2 border-t border-white/10 animate-in fade-in">
-                    <span className="text-[11px] font-mono text-sky-400 uppercase tracking-wider block">
+                  <div className="space-y-4 pt-2 border-t border-white/10 animate-in fade-in">
+                    <span className="text-xs font-mono text-sky-400 uppercase tracking-wider block">
                       Dados do Cartão de Crédito
                     </span>
 
                     <div>
-                      <label className="text-xs text-slate-300 block mb-1">Número do Cartão</label>
+                      <label className="text-xs text-slate-300 block mb-1 font-medium">Número do Cartão</label>
                       <input
                         type="text"
                         required
@@ -618,25 +618,25 @@ export const SpecialCheckoutSection = () => {
                         placeholder="0000 0000 0000 0000"
                         value={cardNumber}
                         onChange={handleCardNumberChange}
-                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
+                        className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs text-slate-300 block mb-1">Nome Impresso no Cartão</label>
+                      <label className="text-xs text-slate-300 block mb-1 font-medium">Nome Impresso no Cartão</label>
                       <input
                         type="text"
                         required
                         placeholder="COMO ESTÁ NO CARTÃO"
                         value={cardHolder}
                         onChange={(e) => setCardHolder(e.target.value)}
-                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 uppercase focus:outline-none focus:border-sky-400"
+                        className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 uppercase focus:outline-none focus:border-sky-400"
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3.5">
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-xs text-slate-300 block mb-1">Validade (MM/AA)</label>
+                        <label className="text-xs text-slate-300 block mb-1 font-medium">Validade (MM/AA)</label>
                         <input
                           type="text"
                           required
@@ -644,12 +644,12 @@ export const SpecialCheckoutSection = () => {
                           placeholder="MM/AA"
                           value={cardExpiry}
                           onChange={handleExpiryChange}
-                          className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
+                          className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
                         />
                       </div>
 
                       <div>
-                        <label className="text-xs text-slate-300 block mb-1">CVV (3 ou 4 dígitos)</label>
+                        <label className="text-xs text-slate-300 block mb-1 font-medium">CVV (3 ou 4 dígitos)</label>
                         <input
                           type="text"
                           required
@@ -658,17 +658,17 @@ export const SpecialCheckoutSection = () => {
                           maxLength={4}
                           value={cardCvv}
                           onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ""))}
-                          className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
+                          className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-xs text-slate-300 block mb-1">Opção de Parcelamento</label>
+                      <label className="text-xs text-slate-300 block mb-1 font-medium">Opção de Parcelamento</label>
                       <select
                         value={installments}
                         onChange={(e) => setInstallments(e.target.value)}
-                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-sky-400"
+                        className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-sky-400"
                       >
                         <option value="1">1x de R$ 29,90 sem juros</option>
                         <option value="2">2x de R$ 14,95 sem juros</option>
@@ -680,37 +680,37 @@ export const SpecialCheckoutSection = () => {
 
                 {/* Mensagem de Erro */}
                 {error && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-300">
+                  <div className="p-3.5 bg-red-500/15 border border-red-500/40 rounded-xl text-xs sm:text-sm text-red-300">
                     {error}
                   </div>
                 )}
 
-                {/* Botão de Envio */}
+                {/* Botão de Envio (SUBSTANCIALMENTE MAIS ALTO E DESTACADO) */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4.5 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-emerald-400 text-slate-950 font-black tracking-wider rounded-2xl shadow-[0_0_35px_rgba(52,211,153,0.4)] transition-all duration-300 text-sm sm:text-base uppercase flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full min-h-[64px] sm:min-h-[72px] py-5 sm:py-6 px-6 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-emerald-400 text-slate-950 font-black tracking-wider rounded-2xl shadow-[0_0_40px_rgba(52,211,153,0.45)] hover:shadow-[0_0_55px_rgba(52,211,153,0.65)] active:scale-[0.99] transition-all duration-300 text-base sm:text-lg uppercase flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-6 h-6 animate-spin" />
                       <span>Processando Acesso Imediato...</span>
                     </>
                   ) : method === "pix" ? (
                     <>
-                      <QrCode className="w-5 h-5" />
+                      <QrCode className="w-6 h-6" />
                       <span>GERAR CÓDIGO PIX (R$ 29,90)</span>
                     </>
                   ) : (
                     <>
-                      <Lock className="w-5 h-5" />
+                      <Lock className="w-6 h-6" />
                       <span>PAGAR R$ 29,90 COM CARTÃO</span>
                     </>
                   )}
                 </button>
 
-                <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1">
-                  <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                <div className="flex items-center justify-center gap-2 text-xs text-slate-400 pt-1">
+                  <Clock className="w-4 h-4 text-emerald-400" />
                   <span>Liberação automática no mesmo segundo pelo Pagar.me</span>
                 </div>
               </form>

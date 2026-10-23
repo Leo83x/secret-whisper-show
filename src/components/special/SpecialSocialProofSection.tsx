@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Star, Quote, Sparkles, BookOpen, CheckCircle } from "lucide-react";
+import { Star, Quote, BookOpen, CheckCircle } from "lucide-react";
 
 export const SpecialSocialProofSection = () => {
   const testimonials = [
@@ -12,7 +12,7 @@ export const SpecialSocialProofSection = () => {
     {
       name: "Helena R.",
       role: "Engenheira de Sistemas & Leitora Beta",
-      text: "A transição entre a Faria Lima e os bastidores de Turing em Bletchley Park é genial. A sensação de folhear os dossiês e ver os trechos desclassificados direto no app é outro nível de imersão literária.",
+      text: "A transição entre a Faria Lima e os bastidores de Turing em Bletchley Park é genial. A sensação de folhear os dossiês e ver os documentos históricos direto no app é outro nível de imersão literária.",
       rating: 5
     },
     {
@@ -69,14 +69,14 @@ export const SpecialSocialProofSection = () => {
                   <Quote className="w-5 h-5 text-slate-600" />
                 </div>
 
-                <p className="text-xs sm:text-sm text-slate-200 font-serif leading-relaxed italic">
+                <p className="text-sm text-slate-100 font-sans font-normal leading-relaxed">
                   "{item.text}"
                 </p>
               </div>
 
               <div className="pt-3 border-t border-white/5 flex items-center justify-between">
                 <div>
-                  <h5 className="font-display font-bold text-sm text-white flex items-center gap-1.5">
+                  <h5 className="font-sans font-bold text-sm text-white flex items-center gap-1.5">
                     <span>{item.name}</span>
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
                   </h5>
@@ -87,18 +87,18 @@ export const SpecialSocialProofSection = () => {
           ))}
         </div>
 
-        {/* Amostra da Escrita (Box de Citação Cinematográfica) */}
-        <div className="p-7 sm:p-10 rounded-3xl bg-gradient-to-r from-[#0c1424] via-[#111c33] to-[#0c1424] border border-gold/30 shadow-2xl relative overflow-hidden text-center space-y-4">
-          <div className="flex items-center justify-center gap-2 text-gold font-mono text-xs uppercase tracking-widest">
+        {/* Amostra da Escrita (Box de Citação Cinematográfica - Fonte Sans Clara) */}
+        <div className="p-7 sm:p-10 rounded-3xl bg-gradient-to-r from-[#0c1424] via-[#111c33] to-[#0c1424] border border-gold/40 shadow-2xl relative overflow-hidden text-center space-y-4">
+          <div className="flex items-center justify-center gap-2 text-gold font-mono text-xs uppercase tracking-widest font-bold">
             <BookOpen className="w-4 h-4 text-gold" />
             <span>AMOSTRA DE ESCRITA // PRÓLOGO OFICIAL</span>
           </div>
 
-          <blockquote className="max-w-3xl mx-auto font-serif text-base sm:text-lg md:text-xl text-slate-100 italic leading-relaxed">
+          <blockquote className="max-w-3xl mx-auto font-sans text-base sm:text-lg md:text-xl text-slate-100 font-medium leading-relaxed tracking-normal">
             "A humanidade sempre precisou acreditar no caos. Talvez porque o acaso seja a única explicação que nos isenta de culpa. Mas quando os mesmos erros e os mesmos medos se repetem a cada três séculos com precisão matemática, o acaso deixa de ser acidente — e passa a ser uma assinatura."
           </blockquote>
 
-          <span className="text-xs font-mono text-slate-400 block pt-1">
+          <span className="text-xs font-mono text-gold/90 font-medium block pt-1">
             — Trecho de <em>O Observador</em>, Abertura de <strong>O Último Segredo da Humanidade</strong>
           </span>
         </div>

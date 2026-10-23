@@ -4,14 +4,13 @@ import {
   Moon, 
   Sun, 
   BookOpen, 
-  Type, 
   Bookmark, 
   ShieldCheck, 
   Sparkles, 
   Check, 
-  MapPin, 
   Users, 
-  FileText 
+  FileText,
+  Pointer
 } from "lucide-react";
 
 export const SpecialReaderShowcaseSection = () => {
@@ -59,14 +58,14 @@ export const SpecialReaderShowcaseSection = () => {
   };
 
   return (
-    <section className="relative py-28 px-4 sm:px-6 overflow-visible bg-[#050811]/70 border-y border-white/5">
-      <div className="max-w-6xl mx-auto space-y-16">
+    <section className="relative py-24 px-4 sm:px-6 overflow-visible bg-[#050811]/70 border-y border-white/5">
+      <div className="max-w-6xl mx-auto space-y-12">
         
         {/* Cabeçalho */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <span className="text-xs font-mono tracking-[0.25em] text-gold uppercase bg-gold/10 px-3.5 py-1.5 rounded-full border border-gold/25 inline-flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5" />
-            TECNOLOGIA EXCLUSIVA // TESTE O LEITOR AQUI
+            TECNOLOGIA EXCLUSIVA // NADA DE PDF COMUM
           </span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
             Uma plataforma desenhada para prender a sua atenção.
@@ -110,6 +109,26 @@ export const SpecialReaderShowcaseSection = () => {
           {/* Widget Interativo Central (O Celular com controles reais) */}
           <div className="lg:col-span-6 flex flex-col items-center">
             
+            {/* CHAMADA DE TESTE EM DESTAQUE (BEM VISÍVEL EM CIMA DO MOCKUP) */}
+            <motion.div 
+              className="w-full max-w-md mx-auto mb-5 text-center"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-gold/30 to-amber-500/20 border-2 border-gold/70 shadow-[0_0_30px_rgba(201,169,98,0.4)] space-y-1.5">
+                <div className="flex items-center justify-center gap-2 text-gold font-bold text-sm sm:text-base tracking-wide uppercase">
+                  <Pointer className="w-4 h-4 text-amber-300 animate-bounce" />
+                  <span>TESTE O LEITOR AQUI EM TEMPO REAL:</span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-100 font-medium leading-snug">
+                  Toque nos botões <strong className="text-gold underline">[Escuro]</strong>, <strong className="text-amber-200 underline">[Sépia]</strong> ou <strong className="text-white underline">[Claro]</strong> e <strong className="text-gold">[A-]</strong> <strong className="text-gold">[A+]</strong> para ver a tela do celular mudar na hora!
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Smartphone Mockup */}
             <motion.div 
               className="w-full max-w-md rounded-[34px] p-3 sm:p-3.5 bg-gradient-to-b from-slate-700 via-slate-900 to-black border border-gold/40 shadow-[0_0_60px_rgba(0,0,0,0.9)]"
               initial={{ opacity: 0, y: 20 }}
@@ -121,7 +140,7 @@ export const SpecialReaderShowcaseSection = () => {
               <div className={`rounded-[26px] overflow-hidden ${currentTheme.cardBg} border ${currentTheme.borderColor} transition-colors duration-300 flex flex-col shadow-inner`}>
                 
                 {/* Barra do Celular (Notch e Controles do E-Reader) */}
-                <div className={`px-4 py-3 ${currentTheme.headerBg} transition-colors duration-300 space-y-2.5`}>
+                <div className={`px-4 py-3.5 ${currentTheme.headerBg} transition-colors duration-300 space-y-2.5`}>
                   
                   {/* Top: Notch + Progresso */}
                   <div className="flex items-center justify-between">
@@ -144,65 +163,65 @@ export const SpecialReaderShowcaseSection = () => {
                   <div className="flex items-center justify-between gap-1 pt-1">
                     
                     {/* Botões de Tema */}
-                    <div className="flex items-center gap-1 bg-black/30 p-1 rounded-xl border border-white/5">
+                    <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 shadow-inner">
                       <button
                         type="button"
                         onClick={() => setTheme("dark")}
-                        className={`px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-all cursor-pointer ${
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                           theme === "dark" 
-                            ? "bg-gold text-slate-950 font-bold shadow-sm" 
+                            ? "bg-gold text-slate-950 font-black shadow-md scale-105" 
                             : "text-slate-300 hover:text-white"
                         }`}
                         title="Modo Noturno sem reflexos"
                       >
-                        <Moon className="w-3 h-3" />
-                        <span className="hidden sm:inline">Escuro</span>
+                        <Moon className="w-3.5 h-3.5" />
+                        <span>Escuro</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setTheme("sepia")}
-                        className={`px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-all cursor-pointer ${
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                           theme === "sepia" 
-                            ? "bg-[#d4be92] text-slate-950 font-bold shadow-sm" 
+                            ? "bg-[#d4be92] text-slate-950 font-black shadow-md scale-105" 
                             : "text-slate-300 hover:text-white"
                         }`}
                         title="Modo Sépia de papel envelhecido"
                       >
-                        <BookOpen className="w-3 h-3" />
-                        <span className="hidden sm:inline">Sépia</span>
+                        <BookOpen className="w-3.5 h-3.5" />
+                        <span>Sépia</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setTheme("light")}
-                        className={`px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-all cursor-pointer ${
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                           theme === "light" 
-                            ? "bg-white text-slate-950 font-bold shadow-sm" 
+                            ? "bg-white text-slate-950 font-black shadow-md scale-105" 
                             : "text-slate-300 hover:text-white"
                         }`}
                         title="Modo Claro clássico"
                       >
-                        <Sun className="w-3 h-3" />
-                        <span className="hidden sm:inline">Claro</span>
+                        <Sun className="w-3.5 h-3.5" />
+                        <span>Claro</span>
                       </button>
                     </div>
 
                     {/* Botões de Fonte */}
-                    <div className="flex items-center gap-1 bg-black/30 p-1 rounded-xl border border-white/5">
+                    <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 shadow-inner">
                       <button
                         type="button"
                         onClick={handleDecreaseFont}
-                        className="px-2 py-1 rounded-lg text-[11px] font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-black text-slate-200 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
                         title="Diminuir tamanho da fonte"
                       >
                         A-
                       </button>
-                      <span className="text-[10px] font-mono text-slate-400 px-1">{fontSize}px</span>
+                      <span className="text-[11px] font-mono text-gold font-bold px-1">{fontSize}px</span>
                       <button
                         type="button"
                         onClick={handleIncreaseFont}
-                        className="px-2 py-1 rounded-lg text-[11px] font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-black text-slate-200 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
                         title="Aumentar tamanho da fonte"
                       >
                         A+
@@ -225,14 +244,14 @@ export const SpecialReaderShowcaseSection = () => {
                     </h3>
 
                     <p 
-                      className={`font-serif leading-relaxed ${currentTheme.textColor} transition-all duration-200`}
+                      className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200`}
                       style={{ fontSize: `${fontSize}px` }}
                     >
                       O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria.
                     </p>
 
                     <p 
-                      className={`font-serif leading-relaxed ${currentTheme.textColor} transition-all duration-200`}
+                      className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200`}
                       style={{ fontSize: `${fontSize}px` }}
                     >
                       Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações bancárias...
@@ -240,7 +259,7 @@ export const SpecialReaderShowcaseSection = () => {
 
                     {/* Frase Grifada em Destaque */}
                     <div className="pt-1">
-                      <span className={`font-serif italic leading-relaxed text-sm block ${currentTheme.highlight}`}>
+                      <span className={`leading-relaxed text-sm block ${currentTheme.highlight}`}>
                         "E foi no silêncio da sala de operações da Faria Lima que Caio percebeu que uma pergunta podia ser mais perigosa do que uma resposta."
                       </span>
                     </div>
@@ -256,12 +275,6 @@ export const SpecialReaderShowcaseSection = () => {
 
               </div>
             </motion.div>
-
-            {/* Aviso Interativo */}
-            <p className="text-xs text-gold/80 font-mono text-center mt-4 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-gold animate-pulse" />
-              Toque nos botões acima para ver o tema e o tamanho do texto mudarem agora.
-            </p>
 
           </div>
 

@@ -78,7 +78,7 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
 
         {/* Botão de Ação Direta (Sem formulário, scroll direto ao checkout) */}
         <motion.div
-          className="flex flex-col items-center justify-center gap-3.5"
+          className="flex flex-col items-center justify-center gap-4"
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1 }}
@@ -86,7 +86,7 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
           <button
             type="button"
             onClick={handleCtaClick}
-            className="relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 sm:px-12 py-4.5 sm:py-5 bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-black tracking-wider rounded-2xl shadow-[0_0_40px_rgba(201,169,98,0.5)] hover:shadow-[0_0_55px_rgba(201,169,98,0.7)] transition-all duration-300 text-sm sm:text-base uppercase group cursor-pointer"
+            className="relative overflow-hidden inline-flex items-center justify-center gap-3.5 px-8 sm:px-14 min-h-[64px] sm:min-h-[72px] py-5 sm:py-6 bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-black tracking-wider rounded-2xl shadow-[0_0_40px_rgba(201,169,98,0.5)] hover:shadow-[0_0_55px_rgba(201,169,98,0.7)] active:scale-[0.99] transition-all duration-300 text-base sm:text-lg uppercase group cursor-pointer"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
             <Zap className="w-5 h-5 fill-slate-950 text-slate-950" />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Zap, ArrowRight } from "lucide-react";
+import { Zap } from "lucide-react";
 
 interface SpecialStickyCtaProps {
   onCtaClick: () => void;
@@ -37,13 +37,13 @@ export const SpecialStickyCta = ({ onCtaClick }: SpecialStickyCtaProps) => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:hidden animate-in slide-in-from-bottom duration-300">
-      <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-[#090f1e]/95 backdrop-blur-xl border border-gold/40 shadow-[0_-5px_25px_rgba(0,0,0,0.8)]">
+      <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#090f1e]/95 backdrop-blur-xl border border-gold/40 shadow-[0_-5px_25px_rgba(0,0,0,0.8)]">
         <div className="flex flex-col">
           <span className="text-[10px] font-mono font-bold text-gold uppercase tracking-wider">
             Obra + 4 Dossiês
           </span>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-base font-black text-emerald-400 font-display">R$ 29,90</span>
+            <span className="text-lg font-black text-emerald-400 font-display">R$ 29,90</span>
             <span className="text-[10px] text-slate-400">à vista</span>
           </div>
         </div>
@@ -62,9 +62,9 @@ export const SpecialStickyCta = ({ onCtaClick }: SpecialStickyCtaProps) => {
             }
             onCtaClick();
           }}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(201,169,98,0.4)] cursor-pointer active:scale-95 transition-transform"
+          className="flex items-center gap-2 px-5 py-3.5 min-h-[48px] rounded-xl bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(201,169,98,0.4)] cursor-pointer active:scale-95 transition-transform"
         >
-          <Zap className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />
+          <Zap className="w-4 h-4 fill-slate-950 text-slate-950" />
           <span>Desbloquear ⚡</span>
         </button>
       </div>

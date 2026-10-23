@@ -34,7 +34,7 @@ export const SpecialPlotManifestoSection = () => {
 
         {/* PARTE A: O MANIFESTO DA TRAMA */}
         <div className="text-center space-y-6 max-w-3xl mx-auto">
-          <span className="text-xs font-mono tracking-[0.25em] text-cyan uppercase bg-cyan/10 px-3.5 py-1 rounded-full border border-cyan/25">
+          <span className="text-xs font-mono tracking-[0.25em] text-cyan uppercase bg-cyan/10 px-3.5 py-1.5 rounded-full border border-cyan/25">
             O MANIFESTO // FARIA LIMA, SÃO PAULO
           </span>
 
@@ -51,9 +51,9 @@ export const SpecialPlotManifestoSection = () => {
             </p>
           </div>
 
-          <div className="pt-4 p-5 rounded-2xl bg-[#0f172a]/80 border border-gold/30 text-left sm:text-center">
-            <p className="text-sm sm:text-base text-gold font-serif italic">
-              "Não são os acontecimentos que se repetem. São os mecanismos humanos por trás deles: Ambição, Medo, Vaidade, Convicção e o eterno desejo de controle."
+          <div className="pt-2 p-6 rounded-2xl bg-[#0f172a]/95 border border-gold/40 text-center shadow-lg">
+            <p className="text-base sm:text-lg text-slate-100 font-sans font-medium leading-relaxed">
+              "Não são os acontecimentos que se repetem. São os <strong className="text-gold font-bold">mecanismos humanos</strong> por trás deles: <span className="text-amber-200 font-semibold">Ambição, Medo, Vaidade, Convicção</span> e o eterno desejo de controle."
             </p>
           </div>
         </div>
@@ -90,7 +90,7 @@ export const SpecialPlotManifestoSection = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-serif font-bold text-sm sm:text-base text-foreground group-hover:text-gold transition-colors">
+                  <h4 className="font-sans font-bold text-sm sm:text-base text-foreground group-hover:text-gold transition-colors">
                     {char.name}
                   </h4>
                   <span className="text-[11px] font-mono text-cyan block">{char.era}</span>
