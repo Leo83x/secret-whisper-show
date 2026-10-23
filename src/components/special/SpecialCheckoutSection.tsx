@@ -1,5 +1,19 @@
-import { useState } from "react";
-import { Check, ShieldCheck, Lock, QrCode, CreditCard, Loader2, ArrowRight, Sparkles, Copy, CheckCircle2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { 
+  Check, 
+  ShieldCheck, 
+  Lock, 
+  QrCode, 
+  CreditCard, 
+  Loader2, 
+  ArrowRight, 
+  Sparkles, 
+  Copy, 
+  CheckCircle2, 
+  Flame,
+  Clock,
+  RotateCcw
+} from "lucide-react";
 
 export const SpecialCheckoutSection = () => {
   const [method, setMethod] = useState<"pix" | "card">("pix");
@@ -20,6 +34,106 @@ export const SpecialCheckoutSection = () => {
   const [error, setError] = useState<string | null>(null);
   const [pixData, setPixData] = useState<{ qrCode: string; qrCodeUrl?: string; orderId?: string; accessToken?: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  // Tracking flags
+  const hasTrackedCheckout = useRef(false);
+  const hasTrackedLead = useRef(false);
+  const hasRecordedAbandonment = useRef(false);
+
+  // Evento InitiateCheckout ao focar nos primeiros campos
+  const handleCheckoutInitiated = () => {
+    if (!hasTrackedCheckout.current) {
+      hasTrackedCheckout.current = true;
+      if (typeof (window as any).fbq === "function") {
+        try {
+          (window as any).fbq("track", "InitiateCheckout", {
+            content_name: "Edicao Especial - Formulario Checkout",
+            currency: "BRL",
+            value: 29.90
+          });
+        } catch (e) {}
+      }
+    }
+  };
+
+  // Captura silenciosa de Lead e Carrinho Abandonado ao preencher WhatsApp
+  const handlePhoneBlur = async () => {
+    const cleanPhone = phone.replace(/\D/g, "");
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Dispara Lead no Pixel se temos email e telefone válidos
+    if (!hasTrackedLead.current && cleanEmail.includes("@") && cleanPhone.length >= 10) {
+      hasTrackedLead.current = true;
+      if (typeof (window as any).fbq === "function") {
+        try {
+          (window as any).fbq("track", "Lead", {
+            content_name: "Edicao Especial - Pre-Checkout",
+            currency: "BRL",
+            value: 29.90
+          });
+        } catch (e) {}
+      }
+    }
+
+    // Salva carrinho abandonado no Supabase para recuperação no Admin via WhatsApp
+    if (!hasRecordedAbandonment.current && cleanEmail.includes("@") && cleanPhone.length >= 10) {
+      try {
+        const urlRef = new URLSearchParams(window.location.search).get("ref");
+        await fetch("/api/abandoned-cart/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name.trim() || "Interessado Edição Especial",
+            email: cleanEmail,
+            phone: cleanPhone,
+            ref: urlRef
+          })
+        });
+        hasRecordedAbandonment.current = true;
+      } catch (err) {
+        // Silencioso em caso de erro de rede
+      }
+    }
+  };
+
+  // Polling automático para verificar pagamento do PIX
+  useEffect(() => {
+    if (!pixData?.accessToken || paymentSuccess) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/get-reader-profile/?token=${encodeURIComponent(pixData.accessToken!)}`);
+        if (res.ok) {
+          const profile = await res.json();
+          if (profile && profile.status === "paid") {
+            setPaymentSuccess(true);
+            clearInterval(interval);
+
+            localStorage.setItem("ush_token", pixData.accessToken!);
+            localStorage.setItem("ush_name", name.trim() || profile.name || "Leitor");
+            localStorage.setItem("ush_reader_status", "paid");
+
+            if (typeof (window as any).fbq === "function") {
+              try {
+                (window as any).fbq("track", "Purchase", {
+                  content_name: "O Ultimo Segredo da Humanidade - Edicao Especial",
+                  currency: "BRL",
+                  value: 29.90
+                }, { eventID: `order_${pixData.orderId}` });
+              } catch (e) {}
+            }
+
+            setTimeout(() => {
+              window.location.href = `/reader/?token=${encodeURIComponent(pixData.accessToken!)}`;
+            }, 1800);
+          }
+        }
+      } catch (e) {}
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [pixData, paymentSuccess, name]);
 
   // Masks
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,10 +195,24 @@ export const SpecialCheckoutSection = () => {
 
     try {
       const urlRef = new URLSearchParams(window.location.search).get("ref");
+      const cleanPhone = phone.replace(/\D/g, "");
+
+      // Garante registro de carrinho abandonado antes de prosseguir
+      fetch("/api/abandoned-cart/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          phone: cleanPhone,
+          ref: urlRef
+        })
+      }).catch(() => {});
+
       const bodyPayload: any = {
         name: name.trim(),
         email: email.trim().toLowerCase(),
-        phone: phone.replace(/\D/g, ""),
+        phone: cleanPhone,
         cpf: cleanCpf,
         payment_method: method === "card" ? "credit_card" : "pix",
         ref: urlRef
@@ -131,6 +259,7 @@ export const SpecialCheckoutSection = () => {
 
       // Se for Cartão aprovado
       if (data.paid && data.accessToken) {
+        setPaymentSuccess(true);
         localStorage.setItem("ush_token", data.accessToken);
         localStorage.setItem("ush_name", name.trim());
         localStorage.setItem("ush_reader_status", "paid");
@@ -145,7 +274,9 @@ export const SpecialCheckoutSection = () => {
           } catch(e) {}
         }
 
-        window.location.href = `/reader/?token=${encodeURIComponent(data.accessToken)}`;
+        setTimeout(() => {
+          window.location.href = `/reader/?token=${encodeURIComponent(data.accessToken)}`;
+        }, 1500);
         return;
       }
 
@@ -182,10 +313,10 @@ export const SpecialCheckoutSection = () => {
   };
 
   return (
-    <section id="checkout-section" className="relative py-28 px-4 sm:px-6 overflow-visible">
+    <section id="checkout-section" className="relative py-24 px-4 sm:px-6 overflow-visible">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[550px] bg-gradient-to-r from-gold/15 via-emerald-500/10 to-sky-500/10 rounded-full blur-[160px] pointer-events-none" />
 
-      <div className="max-w-5xl mx-auto relative z-10 space-y-16">
+      <div className="max-w-5xl mx-auto relative z-10 space-y-12">
 
         {/* Cabeçalho */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
@@ -200,6 +331,28 @@ export const SpecialCheckoutSection = () => {
           <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed">
             Sem mensalidades, sem assinaturas escondidas. Um pagamento único garante sua chave vitalícia para todo o universo de O Último Segredo.
           </p>
+
+          {/* Barra de Escassez Real - Lote de Lançamento */}
+          <div className="pt-2 max-w-xl mx-auto">
+            <div className="p-3.5 rounded-2xl bg-[#0e172a]/90 border border-gold/30 shadow-lg space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="flex items-center gap-1.5 text-gold font-bold">
+                  <Flame className="w-4 h-4 text-amber-400 animate-pulse" />
+                  LOTE 01 (R$ 29,90 + 4 DOSSIÊS)
+                </span>
+                <span className="text-amber-300 font-bold">84% PREENCHIDO</span>
+              </div>
+              <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                <div 
+                  className="h-full bg-gradient-to-r from-amber-500 via-gold to-emerald-400 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(201,169,98,0.6)]"
+                  style={{ width: "84%" }}
+                />
+              </div>
+              <p className="text-[11px] text-slate-400 leading-tight">
+                Ao encerrar o lote promocional, o acesso passará para o valor oficial de <strong>R$ 49,90</strong> e os 4 Dossiês Históricos serão vendidos separadamente.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Grade: Resumo do Pacote + Formulário de Pagamento Nativo */}
@@ -220,23 +373,23 @@ export const SpecialCheckoutSection = () => {
             <ul className="space-y-3.5 text-xs sm:text-sm text-slate-200">
               <li className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><strong>22 Capítulos Completos + Epílogo</strong> (texto integral sem cortes).</span>
+                <span><strong>Obra Completa: 21 Capítulos + Prólogo & Epílogo</strong> (23 partes integrais sem cortes).</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><strong>E-Reader Nativo Vitalício</strong> para celular, tablet e computador.</span>
+                <span><strong>E-Reader Nativo Vitalício</strong> para celular, tablet e computador com Modos Escuro, Sépia e Claro.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><strong>4 Dossiês Históricos Secretos</strong> com mapas e relatórios.</span>
+                <span><strong>4 Dossiês Históricos Secretos</strong> com mapas táticos, linhas do tempo e relatórios desclassificados.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><strong>App PWA Oficial</strong> com leitura offline sem precisar baixar em lojas.</span>
+                <span><strong>App PWA Oficial</strong> com leitura offline sem precisar baixar em lojas de aplicativos.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><strong>Chave da Corrente</strong> com passe prioritário no Livro II.</span>
+                <span><strong>Chave da Corrente</strong> com passe prioritário e vantagens garantidas no Livro II.</span>
               </li>
             </ul>
 
@@ -251,7 +404,18 @@ export const SpecialCheckoutSection = () => {
               </span>
             </div>
 
-            <div className="flex items-center justify-center gap-4 text-xs text-slate-400 pt-2 border-t border-white/5">
+            {/* Selo Garantia Incondicional de 7 Dias */}
+            <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-300 text-xs space-y-1">
+              <div className="flex items-center gap-2 font-bold text-emerald-400">
+                <RotateCcw className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>Garantia de Leitura: 7 Dias Incondicionais</span>
+              </div>
+              <p className="text-[11px] text-emerald-200/80 leading-relaxed font-light">
+                Se você abrir os primeiros capítulos e sentir que a história não é para você, devolvemos 100% do seu PIX com um único e-mail. Risco zero.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-center gap-4 text-xs text-slate-400 pt-1 border-t border-white/5">
               <div className="flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 <span>Pagar.me Seguro</span>
@@ -267,7 +431,24 @@ export const SpecialCheckoutSection = () => {
           {/* Coluna Direita: Checkout Nativo */}
           <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-[#0b1120] border border-cyan/30 shadow-[0_0_50px_rgba(0,0,0,0.7)] space-y-6">
             
-            {pixData ? (
+            {paymentSuccess ? (
+              /* ESTADO SUCESSO APROVADO */
+              <div className="text-center space-y-6 py-8 animate-in fade-in zoom-in-95">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400 shadow-[0_0_30px_rgba(34,197,94,0.4)]">
+                  <CheckCircle2 className="w-10 h-10" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="font-display font-bold text-2xl sm:text-3xl text-white">Pagamento Confirmado!</h3>
+                  <p className="text-sm text-slate-300 max-w-md mx-auto">
+                    Seu acesso à obra completa está liberado. Redirecionando para o seu e-reader em instantes...
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-xs text-emerald-400 font-mono">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Carregando sua biblioteca digital...</span>
+                </div>
+              </div>
+            ) : pixData ? (
               /* ESTADO PIX GERADO */
               <div className="text-center space-y-6 py-4 animate-in fade-in">
                 <div className="w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400">
@@ -276,7 +457,7 @@ export const SpecialCheckoutSection = () => {
                 <div className="space-y-1">
                   <h3 className="font-display font-bold text-2xl text-white">Código PIX Gerado!</h3>
                   <p className="text-xs sm:text-sm text-slate-300">
-                    Abra o app do seu banco, copie o código abaixo ou escaneie o QR Code para liberar seu acesso imediatamente.
+                    Abra o app do seu banco, copie o código abaixo ou escaneie o QR Code. Seu acesso é liberado no mesmo segundo do pagamento!
                   </p>
                 </div>
 
@@ -298,238 +479,239 @@ export const SpecialCheckoutSection = () => {
                     <button
                       type="button"
                       onClick={copyPixCode}
-                      className="px-4 py-3 bg-gold hover:bg-gold/80 text-slate-950 font-bold rounded-xl text-xs uppercase flex items-center gap-1.5 shrink-0 transition-all cursor-pointer"
+                      className="px-4 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors shrink-0"
                     >
-                      <Copy className="w-4 h-4" />
+                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       <span>{copied ? "Copiado!" : "Copiar"}</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 space-y-3">
-                  <a
-                    href={`/reader/?token=${encodeURIComponent(pixData.accessToken || "")}`}
-                    className="inline-flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold uppercase text-sm tracking-wider shadow-lg transition-all"
-                  >
-                    <span>JÁ FIZ O PAGAMENTO // ENTRAR NO LIVRO</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
-                  <p className="text-[11px] text-slate-400">
-                    O acesso também foi vinculado ao seu e-mail ({email}).
-                  </p>
+                <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-400 flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                  <span>Aguardando confirmação bancária em tempo real... Você será redirecionado automaticamente.</span>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setPixData(null)}
+                  className="text-xs text-slate-400 hover:text-white underline pt-2"
+                >
+                  Voltar e alterar forma de pagamento
+                </button>
               </div>
             ) : (
               /* FORMULÁRIO DE CHECKOUT */
               <form onSubmit={handleSubmit} className="space-y-5">
-                {error && (
-                  <div className="p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                    <span>⚠️</span>
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                {/* Seleção do Método: PIX ou Cartão */}
-                <div className="flex gap-3 p-1.5 rounded-2xl bg-[#15213b] border border-slate-700">
+                
+                {/* Seletor de Método */}
+                <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setMethod("pix")}
-                    className={`flex-1 py-3 px-4 rounded-xl font-bold text-xs uppercase flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`flex items-center justify-center gap-2 p-3.5 rounded-2xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                       method === "pix"
-                        ? "bg-emerald-500 text-slate-950 shadow-md font-extrabold"
-                        : "text-slate-400 hover:text-white"
+                        ? "bg-emerald-500/15 border-emerald-400 text-emerald-300 shadow-[0_0_20px_rgba(52,211,153,0.2)]"
+                        : "bg-[#131b2e] border-slate-800 text-slate-400 hover:text-white"
                     }`}
                   >
                     <QrCode className="w-4 h-4" />
-                    <span>⚡ PIX (Imediato)</span>
+                    <span>PIX Instantâneo</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setMethod("card")}
-                    className={`flex-1 py-3 px-4 rounded-xl font-bold text-xs uppercase flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`flex items-center justify-center gap-2 p-3.5 rounded-2xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                       method === "card"
-                        ? "bg-sky-500 text-slate-950 shadow-md font-extrabold"
-                        : "text-slate-400 hover:text-white"
+                        ? "bg-sky-500/15 border-sky-400 text-sky-300 shadow-[0_0_20px_rgba(56,189,248,0.2)]"
+                        : "bg-[#131b2e] border-slate-800 text-slate-400 hover:text-white"
                     }`}
                   >
                     <CreditCard className="w-4 h-4" />
-                    <span>💳 Cartão (até 3x R$ 9,96)</span>
+                    <span>Cartão de Crédito</span>
                   </button>
                 </div>
 
-                {/* Dados Pessoais do Comprador */}
-                <div className="space-y-4">
+                {/* Dados Pessoais para Recebimento */}
+                <div className="space-y-3.5 pt-2">
+                  <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+                    Dados do Titular para Acesso
+                  </span>
+
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                      Nome Completo
-                    </label>
+                    <label className="text-xs text-slate-300 block mb-1">Nome Completo</label>
                     <input
                       type="text"
                       required
+                      placeholder="Ex: Carlos Eduardo Silva"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Seu nome"
-                      className="w-full px-4 py-3 bg-[#15213b] border border-slate-700 focus:border-gold rounded-xl text-white text-sm focus:outline-none transition-all placeholder:text-slate-500"
+                      onFocus={handleCheckoutInitiated}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        handleCheckoutInitiated();
+                      }}
+                      className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                        Seu Melhor E-mail
-                      </label>
+                      <label className="text-xs text-slate-300 block mb-1">Seu Melhor E-mail</label>
                       <input
                         type="email"
                         required
+                        placeholder="onde você receberá a chave"
                         value={email}
+                        onFocus={handleCheckoutInitiated}
+                        onBlur={handlePhoneBlur}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Para envio do acesso"
-                        className="w-full px-4 py-3 bg-[#15213b] border border-slate-700 focus:border-gold rounded-xl text-white text-sm focus:outline-none transition-all placeholder:text-slate-500"
+                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                        WhatsApp / Celular
-                      </label>
+                      <label className="text-xs text-slate-300 block mb-1">WhatsApp / Celular</label>
                       <input
                         type="tel"
+                        required
                         inputMode="numeric"
+                        placeholder="(11) 99999-9999"
                         value={phone}
+                        onBlur={handlePhoneBlur}
                         onChange={handlePhoneChange}
-                        placeholder="(00) 00000-0000"
-                        className="w-full px-4 py-3 bg-[#15213b] border border-slate-700 focus:border-gold rounded-xl text-white text-sm focus:outline-none transition-all placeholder:text-slate-500"
+                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                      CPF do Titular <span className="text-[10px] text-cyan normal-case font-normal">(Exigência do Banco Central para emissão segura)</span>
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs text-slate-300">CPF do Titular</label>
+                      <span className="text-[10px] text-slate-400 font-light">Exigência do Banco Central para PIX/Cartão seguro</span>
+                    </div>
                     <input
-                      type="tel"
-                      inputMode="numeric"
+                      type="text"
                       required
+                      inputMode="numeric"
+                      placeholder="000.000.000-00"
                       value={cpf}
                       onChange={handleCpfChange}
-                      placeholder="000.000.000-00"
-                      className="w-full px-4 py-3 bg-[#15213b] border border-slate-700 focus:border-gold rounded-xl text-white text-sm focus:outline-none transition-all placeholder:text-slate-500"
+                      className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                     />
                   </div>
                 </div>
 
-                {/* Campos Específicos de Cartão */}
+                {/* Campos do Cartão (se selecionado) */}
                 {method === "card" && (
-                  <div className="space-y-4 pt-3 border-t border-slate-800">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                        Número do Cartão
-                      </label>
-                      <input
-                        type="tel"
-                        inputMode="numeric"
-                        required
-                        value={cardNumber}
-                        onChange={handleCardNumberChange}
-                        placeholder="0000 0000 0000 0000"
-                        className="w-full px-4 py-3 bg-[#15213b] border border-slate-700 focus:border-sky-400 rounded-xl text-white text-sm focus:outline-none transition-all placeholder:text-slate-500"
-                      />
-                    </div>
+                  <div className="space-y-3.5 pt-2 border-t border-white/10 animate-in fade-in">
+                    <span className="text-[11px] font-mono text-sky-400 uppercase tracking-wider block">
+                      Dados do Cartão de Crédito
+                    </span>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                        Nome Impresso no Cartão
-                      </label>
+                      <label className="text-xs text-slate-300 block mb-1">Número do Cartão</label>
                       <input
                         type="text"
                         required
-                        value={cardHolder}
-                        onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
-                        placeholder="COMO ESTÁ NO CARTÃO"
-                        className="w-full px-4 py-3 bg-[#15213b] border border-slate-700 focus:border-sky-400 rounded-xl text-white text-sm focus:outline-none transition-all placeholder:text-slate-500 uppercase"
+                        inputMode="numeric"
+                        placeholder="0000 0000 0000 0000"
+                        value={cardNumber}
+                        onChange={handleCardNumberChange}
+                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs text-slate-300 block mb-1">Nome Impresso no Cartão</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="COMO ESTÁ NO CARTÃO"
+                        value={cardHolder}
+                        onChange={(e) => setCardHolder(e.target.value)}
+                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 uppercase focus:outline-none focus:border-sky-400"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3.5">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                          Validade
-                        </label>
+                        <label className="text-xs text-slate-300 block mb-1">Validade (MM/AA)</label>
                         <input
-                          type="tel"
-                          inputMode="numeric"
+                          type="text"
                           required
+                          inputMode="numeric"
+                          placeholder="MM/AA"
                           value={cardExpiry}
                           onChange={handleExpiryChange}
-                          placeholder="MM/AA"
-                          className="w-full px-4 py-3 bg-[#15213b] border border-slate-700 focus:border-sky-400 rounded-xl text-white text-sm focus:outline-none transition-all placeholder:text-slate-500 text-center"
+                          className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                          CVV
-                        </label>
+                        <label className="text-xs text-slate-300 block mb-1">CVV (3 ou 4 dígitos)</label>
                         <input
-                          type="tel"
-                          inputMode="numeric"
+                          type="text"
                           required
+                          inputMode="numeric"
+                          placeholder="123"
                           maxLength={4}
                           value={cardCvv}
                           onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ""))}
-                          placeholder="123"
-                          className="w-full px-4 py-3 bg-[#15213b] border border-slate-700 focus:border-sky-400 rounded-xl text-white text-sm focus:outline-none transition-all placeholder:text-slate-500 text-center"
+                          className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                        Parcelamento
-                      </label>
+                      <label className="text-xs text-slate-300 block mb-1">Opção de Parcelamento</label>
                       <select
                         value={installments}
                         onChange={(e) => setInstallments(e.target.value)}
-                        className="w-full px-4 py-3 bg-[#15213b] border border-slate-700 focus:border-sky-400 rounded-xl text-white text-sm focus:outline-none transition-all cursor-pointer"
+                        className="w-full text-sm p-3 bg-[#131c31] border border-slate-700 rounded-xl text-white focus:outline-none focus:border-sky-400"
                       >
-                        <option value="1">1x de R$ 29,90 (à vista)</option>
-                        <option value="2">2x de R$ 14,95</option>
-                        <option value="3">3x de R$ 9,96 (sem juros)</option>
+                        <option value="1">1x de R$ 29,90 sem juros</option>
+                        <option value="2">2x de R$ 14,95 sem juros</option>
+                        <option value="3">3x de R$ 9,96 sem juros (Recomendado)</option>
                       </select>
                     </div>
                   </div>
                 )}
 
-                {/* Botão de Pagamento */}
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className={`relative overflow-hidden w-full py-4.5 px-6 rounded-2xl font-black text-sm sm:text-base tracking-wider uppercase text-slate-950 shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed ${
-                      method === "pix"
-                        ? "bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:brightness-110 shadow-emerald-500/25"
-                        : "bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:brightness-110 shadow-gold/25"
-                    }`}
-                  >
-                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
-                    {loading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin text-slate-950" />
-                        <span>PROCESSANDO COM SEGURANÇA...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>
-                          {method === "pix"
-                            ? "GERAR CÓDIGO PIX (R$ 29,90)"
-                            : `PAGAR COM CARTÃO (${installments}x DE R$ ${(29.9 / parseInt(installments)).toFixed(2).replace(".", ",")})`}
-                        </span>
-                        <ArrowRight className="w-5 h-5 text-slate-950 group-hover:translate-x-1.5 transition-transform" />
-                      </>
-                    )}
-                  </button>
+                {/* Mensagem de Erro */}
+                {error && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-300">
+                    {error}
+                  </div>
+                )}
+
+                {/* Botão de Envio */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-4.5 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-emerald-400 text-slate-950 font-black tracking-wider rounded-2xl shadow-[0_0_35px_rgba(52,211,153,0.4)] transition-all duration-300 text-sm sm:text-base uppercase flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Processando Acesso Imediato...</span>
+                    </>
+                  ) : method === "pix" ? (
+                    <>
+                      <QrCode className="w-5 h-5" />
+                      <span>GERAR CÓDIGO PIX (R$ 29,90)</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-5 h-5" />
+                      <span>PAGAR R$ 29,90 COM CARTÃO</span>
+                    </>
+                  )}
+                </button>
+
+                <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1">
+                  <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Liberação automática no mesmo segundo pelo Pagar.me</span>
                 </div>
               </form>
             )}

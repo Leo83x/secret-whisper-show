@@ -6,6 +6,19 @@ interface SpecialHeroProps {
 }
 
 export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
+  const handleCtaClick = () => {
+    if (typeof (window as any).fbq === "function") {
+      try {
+        (window as any).fbq("track", "InitiateCheckout", {
+          content_name: "Hero CTA - Desbloquear Obra Completa",
+          currency: "BRL",
+          value: 29.90
+        });
+      } catch (e) {}
+    }
+    onCtaClick();
+  };
+
   return (
     <section className="relative min-h-[92vh] flex flex-col items-center justify-center px-4 sm:px-8 pt-16 pb-20 overflow-visible text-center">
       <div className="absolute inset-0 bg-radial-vignette pointer-events-none opacity-80" />
@@ -72,7 +85,7 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
         >
           <button
             type="button"
-            onClick={onCtaClick}
+            onClick={handleCtaClick}
             className="relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 sm:px-12 py-4.5 sm:py-5 bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-black tracking-wider rounded-2xl shadow-[0_0_40px_rgba(201,169,98,0.5)] hover:shadow-[0_0_55px_rgba(201,169,98,0.7)] transition-all duration-300 text-sm sm:text-base uppercase group cursor-pointer"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
@@ -90,7 +103,7 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
             <span>•</span>
             <span>Leitura Vitalícia</span>
             <span>•</span>
-            <span>22 Capítulos + Dossiês</span>
+            <span>21 Capítulos + Prólogo & Epílogo + 4 Dossiês</span>
             <span>•</span>
             <span className="text-emerald-400 font-medium">PIX ou Cartão em 3x</span>
           </div>

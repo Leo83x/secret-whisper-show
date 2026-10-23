@@ -50,6 +50,9 @@
     .badge-block { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
     .badge-fire { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45); font-weight: 800; }
     .badge-muted { background: rgba(148, 163, 184, 0.1); color: #64748b; border: 1px solid rgba(148, 163, 184, 0.2); }
+    .badge-abandoned { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.45); font-weight: 700; }
+    .btn-whatsapp { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: rgba(37, 211, 102, 0.15); color: #25d366; border: 1px solid rgba(37, 211, 102, 0.35); font-size: 0.72rem; font-weight: 600; text-decoration: none; margin-top: 4px; transition: all 0.2s; }
+    .btn-whatsapp:hover { background: rgba(37, 211, 102, 0.3); transform: translateY(-1px); }
     
     .btn-action { padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; white-space: nowrap; }
     .btn-grant { background: var(--green); color: #fff; }
@@ -182,7 +185,24 @@
       readers.forEach(r => {
         const tr = document.createElement('tr');
         const isPaid = r.status === 'paid';
+        const isAbandoned = r.status === 'carrinho_abandonado';
         const dateStr = new Date(r.created_at).toLocaleDateString('pt-BR');
+
+        let statusBadge = '';
+        if (isPaid) {
+          statusBadge = '<span class="badge badge-paid">PAGO (R$ 29,90)</span>';
+        } else if (isAbandoned) {
+          statusBadge = '<span class="badge badge-abandoned">🛒 ABANDONADO (R$ 29,90)</span>';
+        } else {
+          statusBadge = '<span class="badge badge-free">DEGUSTAÇÃO</span>';
+        }
+
+        const cleanPhone = (r.phone || '').replace(/\D/g, '');
+        const firstName = (r.name || 'Leitor').split(' ')[0];
+        const waMsg = encodeURIComponent(`Olá ${firstName}! Vi que você começou a desbloquear a Edição Especial de O Último Segredo da Humanidade. Posso te ajudar a concluir seu acesso?`);
+        const waLink = (cleanPhone.length >= 10 && !isPaid)
+          ? `<br><a href="https://wa.me/55${cleanPhone}?text=${waMsg}" target="_blank" rel="noopener" class="btn-whatsapp">📲 Recuperar WhatsApp</a>`
+          : '';
 
         // Badge do último capítulo lido
         const chNum = r.ultimo_capitulo_num;
@@ -201,8 +221,8 @@
 
         tr.innerHTML = `
           <td><strong>${r.name}</strong></td>
-          <td>${r.email}<br><span style="color:var(--tx2); font-size:0.75rem;">${r.phone || 'Sem WhatsApp'}</span></td>
-          <td><span class="badge ${isPaid ? 'badge-paid' : 'badge-free'}">${isPaid ? 'PAGO (R$ 29,90)' : 'DEGUSTAÇÃO'}</span></td>
+          <td>${r.email}<br><span style="color:var(--tx2); font-size:0.75rem;">${r.phone || 'Sem WhatsApp'}</span>${waLink}</td>
+          <td>${statusBadge}</td>
           <td>${lastChapterHtml}</td>
           <td>${clickedBuyHtml}</td>
           <td><strong style="color:var(--acc);">${r.referrals_count || 0}</strong> leitores</td>

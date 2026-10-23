@@ -1,103 +1,293 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import bookCover from "/capa_ush.jpg";
-import { Moon, Type, Bookmark, ShieldCheck, Smartphone, Laptop } from "lucide-react";
+import { 
+  Moon, 
+  Sun, 
+  BookOpen, 
+  Type, 
+  Bookmark, 
+  ShieldCheck, 
+  Sparkles, 
+  Check, 
+  MapPin, 
+  Users, 
+  FileText 
+} from "lucide-react";
 
 export const SpecialReaderShowcaseSection = () => {
+  const [theme, setTheme] = useState<"dark" | "sepia" | "light">("dark");
+  const [fontSize, setFontSize] = useState<number>(15);
+
+  const themeStyles = {
+    dark: {
+      cardBg: "bg-[#080d1a]",
+      textColor: "text-[#e2e8f0]",
+      subColor: "text-slate-400",
+      borderColor: "border-gold/30",
+      headerBg: "bg-[#0d1527] border-b border-white/10",
+      highlight: "bg-[#c9a962]/20 text-[#f6d88e] px-1 py-0.5 rounded border-b border-gold/40",
+      meta: "text-sky-400"
+    },
+    sepia: {
+      cardBg: "bg-[#f5ecda]",
+      textColor: "text-[#2e2417]",
+      subColor: "text-[#6b583e]",
+      borderColor: "border-[#d4c3a3]",
+      headerBg: "bg-[#e8dcbf] border-b border-[#cfbfa0]",
+      highlight: "bg-[#d8a342]/25 text-[#221708] px-1 py-0.5 rounded border-b border-[#b58327]",
+      meta: "text-[#8a5d1b]"
+    },
+    light: {
+      cardBg: "bg-[#ffffff]",
+      textColor: "text-[#0f172a]",
+      subColor: "text-[#64748b]",
+      borderColor: "border-slate-300",
+      headerBg: "bg-[#f1f5f9] border-b border-slate-200",
+      highlight: "bg-amber-200 text-[#78350f] px-1 py-0.5 rounded border-b border-amber-400",
+      meta: "text-sky-600"
+    }
+  };
+
+  const currentTheme = themeStyles[theme];
+
+  const handleDecreaseFont = () => {
+    setFontSize((prev) => Math.max(13, prev - 1));
+  };
+
+  const handleIncreaseFont = () => {
+    setFontSize((prev) => Math.min(19, prev + 1));
+  };
+
   return (
-    <section className="relative py-28 px-6 overflow-visible bg-[#050811]/60 border-y border-white/5">
+    <section className="relative py-28 px-4 sm:px-6 overflow-visible bg-[#050811]/70 border-y border-white/5">
       <div className="max-w-6xl mx-auto space-y-16">
         
         {/* Cabeçalho */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="text-xs font-mono tracking-[0.25em] text-gold uppercase bg-gold/10 px-3.5 py-1 rounded-full border border-gold/25">
-            TECNOLOGIA EXCLUSIVA // NADA DE PDF COMUM
+          <span className="text-xs font-mono tracking-[0.25em] text-gold uppercase bg-gold/10 px-3.5 py-1.5 rounded-full border border-gold/25 inline-flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5" />
+            TECNOLOGIA EXCLUSIVA // TESTE O LEITOR AQUI
           </span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
-            Uma plataforma de leitura desenhada para prender a sua atenção.
+            Uma plataforma desenhada para prender a sua atenção.
           </h2>
           <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed">
-            Esqueça arquivos soltos de PDF que desconfiguram no celular. Você acessa um leitor digital nativo, construído com foco obsessivo em tipografia, contraste e imersão total.
+            Esqueça arquivos soltos de PDF que quebram no celular. Você acessa um leitor digital nativo, construído com foco obsessivo em tipografia, contraste e imersão total.
           </p>
         </div>
 
-        {/* Grade Visual: Mockup + Recursos */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        {/* Grade: Widget Interativo Central + Telas de Apoio */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
-          {/* Mockup do E-reader */}
-          <div className="lg:col-span-5 flex justify-center">
-            <motion.div
-              className="relative w-full max-w-xs sm:max-w-sm"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9 }}
-            >
-              {/* Moldura de Smartphone Futurista */}
-              <div className="relative rounded-[32px] p-2.5 bg-gradient-to-b from-slate-700 via-slate-900 to-black border border-gold/30 shadow-[0_0_50px_rgba(0,0,0,0.85)]">
-                <div className="rounded-[24px] overflow-hidden bg-[#070b14] border border-white/10 p-3 flex flex-col items-center">
-                  <div className="w-20 h-3 bg-slate-800 rounded-full mb-3 opacity-60" />
-                  
-                  {/* Capa dentro do mockup */}
-                  <img
-                    src={bookCover}
-                    alt="E-reader em execução"
-                    className="w-full h-auto rounded-xl shadow-2xl border border-gold/20 mb-3"
-                  />
-                  
-                  <div className="w-full text-left space-y-1 px-1">
-                    <span className="text-[10px] font-mono text-cyan uppercase tracking-wider block">CAPÍTULO 01 // 19H04</span>
-                    <p className="text-xs font-serif text-slate-200 line-clamp-2 italic">
-                      "Os dados na tela do terminal piscavam em intervalos regulares de dezesseis segundos..."
-                    </p>
-                  </div>
-                </div>
+          {/* Tela Lateral Esquerda (Desktop): Prévia do Dossiê 01 */}
+          <div className="hidden lg:block lg:col-span-3 space-y-4">
+            <div className="p-5 rounded-2xl bg-[#090f1e] border border-gold/25 shadow-xl relative overflow-hidden group hover:border-gold/50 transition-all">
+              <div className="absolute top-2 right-2 px-2 py-0.5 bg-red-500/20 text-red-400 border border-red-500/30 text-[9px] font-mono uppercase tracking-widest rounded rotate-3">
+                CONFIDENCIAL
               </div>
-            </motion.div>
+              <div className="flex items-center gap-2 text-xs font-mono text-gold mb-3">
+                <FileText className="w-4 h-4 text-gold" />
+                <span>DOSSIÊ 01 // 49 A.C.</span>
+              </div>
+              <h4 className="font-display font-bold text-sm text-white mb-1.5">
+                O Rio Rubicão & A Faria Lima
+              </h4>
+              <p className="text-xs text-slate-400 leading-relaxed font-light mb-3">
+                Fragmento tático comparando a decisão de Júlio César com o modelo de liquidez da Strata em 2026.
+              </p>
+              <div className="p-2.5 rounded-xl bg-black/60 border border-white/5 font-mono text-[10px] text-slate-300 flex items-center justify-between">
+                <span>COORD: 44.0833° N</span>
+                <span className="text-emerald-400">DESCLASSIFICADO</span>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-[#0b1325]/60 border border-white/5 text-xs text-slate-400 flex items-start gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <span>Sincronização na nuvem com progresso gravado por linha.</span>
+            </div>
           </div>
 
-          {/* 4 Diferenciais Tecnológicos */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* Widget Interativo Central (O Celular com controles reais) */}
+          <div className="lg:col-span-6 flex flex-col items-center">
             
-            <div className="p-6 rounded-2xl bg-[#0b1222] border border-gold/20 hover:border-gold/40 transition-colors space-y-2.5">
-              <div className="w-10 h-10 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold">
-                <Moon className="w-5 h-5" />
+            <motion.div 
+              className="w-full max-w-md rounded-[34px] p-3 sm:p-3.5 bg-gradient-to-b from-slate-700 via-slate-900 to-black border border-gold/40 shadow-[0_0_60px_rgba(0,0,0,0.9)]"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              {/* Carcaça Interna */}
+              <div className={`rounded-[26px] overflow-hidden ${currentTheme.cardBg} border ${currentTheme.borderColor} transition-colors duration-300 flex flex-col shadow-inner`}>
+                
+                {/* Barra do Celular (Notch e Controles do E-Reader) */}
+                <div className={`px-4 py-3 ${currentTheme.headerBg} transition-colors duration-300 space-y-2.5`}>
+                  
+                  {/* Top: Notch + Progresso */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono tracking-widest text-gold font-bold uppercase flex items-center gap-1.5">
+                      <Bookmark className="w-3 h-3 text-gold" />
+                      14% LIDO // PÁG. 18
+                    </span>
+                    <div className="w-14 h-2.5 bg-slate-800 rounded-full opacity-60" />
+                    <span className={`text-[10px] font-mono ${currentTheme.subColor}`}>
+                      Farol de Leitura
+                    </span>
+                  </div>
+
+                  {/* Barra de Progresso Real */}
+                  <div className="w-full h-1 bg-black/20 rounded-full overflow-hidden">
+                    <div className="w-[14%] h-full bg-gold rounded-full" />
+                  </div>
+
+                  {/* Controles Reais: Temas e Tipografia */}
+                  <div className="flex items-center justify-between gap-1 pt-1">
+                    
+                    {/* Botões de Tema */}
+                    <div className="flex items-center gap-1 bg-black/30 p-1 rounded-xl border border-white/5">
+                      <button
+                        type="button"
+                        onClick={() => setTheme("dark")}
+                        className={`px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-all cursor-pointer ${
+                          theme === "dark" 
+                            ? "bg-gold text-slate-950 font-bold shadow-sm" 
+                            : "text-slate-300 hover:text-white"
+                        }`}
+                        title="Modo Noturno sem reflexos"
+                      >
+                        <Moon className="w-3 h-3" />
+                        <span className="hidden sm:inline">Escuro</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setTheme("sepia")}
+                        className={`px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-all cursor-pointer ${
+                          theme === "sepia" 
+                            ? "bg-[#d4be92] text-slate-950 font-bold shadow-sm" 
+                            : "text-slate-300 hover:text-white"
+                        }`}
+                        title="Modo Sépia de papel envelhecido"
+                      >
+                        <BookOpen className="w-3 h-3" />
+                        <span className="hidden sm:inline">Sépia</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setTheme("light")}
+                        className={`px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-all cursor-pointer ${
+                          theme === "light" 
+                            ? "bg-white text-slate-950 font-bold shadow-sm" 
+                            : "text-slate-300 hover:text-white"
+                        }`}
+                        title="Modo Claro clássico"
+                      >
+                        <Sun className="w-3 h-3" />
+                        <span className="hidden sm:inline">Claro</span>
+                      </button>
+                    </div>
+
+                    {/* Botões de Fonte */}
+                    <div className="flex items-center gap-1 bg-black/30 p-1 rounded-xl border border-white/5">
+                      <button
+                        type="button"
+                        onClick={handleDecreaseFont}
+                        className="px-2 py-1 rounded-lg text-[11px] font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                        title="Diminuir tamanho da fonte"
+                      >
+                        A-
+                      </button>
+                      <span className="text-[10px] font-mono text-slate-400 px-1">{fontSize}px</span>
+                      <button
+                        type="button"
+                        onClick={handleIncreaseFont}
+                        className="px-2 py-1 rounded-lg text-[11px] font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                        title="Aumentar tamanho da fonte"
+                      >
+                        A+
+                      </button>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* Área de Leitura Real (Texto Real do Livro) */}
+                <div className="p-5 sm:p-6 space-y-4 select-none min-h-[320px] flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <p className={`text-[11px] font-mono tracking-widest uppercase ${currentTheme.meta}`}>
+                      SÃO PAULO — FARIA LIMA // 03h42
+                    </p>
+
+                    <h3 className={`font-display font-bold text-lg leading-snug ${currentTheme.textColor}`}>
+                      O Teste Proibido
+                    </h3>
+
+                    <p 
+                      className={`font-serif leading-relaxed ${currentTheme.textColor} transition-all duration-200`}
+                      style={{ fontSize: `${fontSize}px` }}
+                    >
+                      O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria.
+                    </p>
+
+                    <p 
+                      className={`font-serif leading-relaxed ${currentTheme.textColor} transition-all duration-200`}
+                      style={{ fontSize: `${fontSize}px` }}
+                    >
+                      Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações bancárias...
+                    </p>
+
+                    {/* Frase Grifada em Destaque */}
+                    <div className="pt-1">
+                      <span className={`font-serif italic leading-relaxed text-sm block ${currentTheme.highlight}`}>
+                        "E foi no silêncio da sala de operações da Faria Lima que Caio percebeu que uma pergunta podia ser mais perigosa do que uma resposta."
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Rodapé da Tela do Celular */}
+                  <div className={`pt-3 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[10px] font-mono ${currentTheme.subColor}`}>
+                    <span>Capítulo 01</span>
+                    <span>Modo Imersivo Ativo</span>
+                  </div>
+
+                </div>
+
               </div>
-              <h4 className="font-display font-bold text-base text-white">3 Temas Cinematográficos</h4>
-              <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
-                Alterne entre <strong>Modo Escuro</strong> (profundo sem reflexos), <strong>Sépia</strong> (conforto de papel nobre) e <strong>Claro</strong> com apenas um toque.
+            </motion.div>
+
+            {/* Aviso Interativo */}
+            <p className="text-xs text-gold/80 font-mono text-center mt-4 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-gold animate-pulse" />
+              Toque nos botões acima para ver o tema e o tamanho do texto mudarem agora.
+            </p>
+
+          </div>
+
+          {/* Tela Lateral Direita (Desktop): A Corrente de Leitores */}
+          <div className="hidden lg:block lg:col-span-3 space-y-4">
+            <div className="p-5 rounded-2xl bg-[#090f1e] border border-cyan/25 shadow-xl relative overflow-hidden group hover:border-cyan/50 transition-all">
+              <div className="flex items-center gap-2 text-xs font-mono text-cyan mb-3">
+                <Users className="w-4 h-4 text-cyan" />
+                <span>REDE FECHADA // LIVRO II</span>
+              </div>
+              <h4 className="font-display font-bold text-sm text-white mb-1.5">
+                A Corrente de Leitores
+              </h4>
+              <p className="text-xs text-slate-400 leading-relaxed font-light mb-3">
+                Seu link pessoal de indicação fica salvo no painel do e-reader. Cada leitor trazido destrava vantagens exclusivas para o próximo volume.
               </p>
+              <div className="p-2.5 rounded-xl bg-black/60 border border-white/5 font-mono text-[10px] text-cyan flex items-center justify-between">
+                <span>PASSE PRIORITÁRIO</span>
+                <span className="text-emerald-400">ATIVADO</span>
+              </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-[#0b1222] border border-gold/20 hover:border-gold/40 transition-colors space-y-2.5">
-              <div className="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/30 flex items-center justify-center text-cyan">
-                <Type className="w-5 h-5" />
-              </div>
-              <h4 className="font-display font-bold text-base text-white">Tipografia Ajustável</h4>
-              <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
-                Altere o tamanho da fonte, espaçamento de linhas e margens para criar a leitura mais confortável para os seus olhos.
-              </p>
+            <div className="p-4 rounded-xl bg-[#0b1325]/60 border border-white/5 text-xs text-slate-400 flex items-start gap-2.5">
+              <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <span>Instalação instantânea como PWA no Android e iPhone.</span>
             </div>
-
-            <div className="p-6 rounded-2xl bg-[#0b1222] border border-gold/20 hover:border-gold/40 transition-colors space-y-2.5">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                <Bookmark className="w-5 h-5" />
-              </div>
-              <h4 className="font-display font-bold text-base text-white">Marcador de Linha Inteligente</h4>
-              <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
-                O e-reader grava a linha exata onde você parou de ler. Se fechar a aba e voltar depois, ele rola suavemente até o ponto exato.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#0b1222] border border-gold/20 hover:border-gold/40 transition-colors space-y-2.5">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h4 className="font-display font-bold text-base text-white">Zero Instalação Obrigatória</h4>
-              <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
-                Funciona em qualquer navegador moderno no celular, tablet ou PC. Mas se quiser, você pode fixar com 1 clique como App PWA na sua tela inicial.
-              </p>
-            </div>
-
           </div>
 
         </div>

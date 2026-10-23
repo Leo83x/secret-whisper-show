@@ -1,70 +1,154 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { FolderLock, Share2, Award, Zap, BookOpen } from "lucide-react";
+import { FolderLock, Share2, Award, Zap, BookOpen, Paperclip, FileCheck, ShieldAlert, Sparkles } from "lucide-react";
+
+const CensoredText = ({ secret, hint = "toque p/ revelar" }: { secret: string; hint?: string }) => {
+  const [revealed, setRevealed] = useState(false);
+
+  return (
+    <span
+      onClick={() => setRevealed(!revealed)}
+      onMouseEnter={() => setRevealed(true)}
+      onMouseLeave={() => setRevealed(false)}
+      className="inline-block relative cursor-pointer mx-1 transition-all duration-300 align-baseline select-none"
+      title="Passe o mouse ou toque para quebrar a censura"
+    >
+      {revealed ? (
+        <span className="bg-emerald-500/20 text-emerald-300 font-semibold px-1.5 py-0.5 rounded border border-emerald-500/50 animate-in fade-in font-mono text-[11px] shadow-[0_0_10px_rgba(34,197,94,0.3)]">
+          {secret}
+        </span>
+      ) : (
+        <span className="bg-[#0f172a] text-slate-400 hover:text-gold px-2 py-0.5 rounded border border-slate-700 tracking-wider font-mono text-[11px] shadow-inner">
+          <span className="text-slate-200 font-black">██████</span> <span className="text-[9px] text-gold/80 italic font-sans font-light">({hint})</span>
+        </span>
+      )}
+    </span>
+  );
+};
 
 export const SpecialDossiersSection = () => {
   const dossiersList = [
     {
       code: "DOSSIÊ 01",
+      archiveId: "DOC-49BC-RUBICON",
       title: "O Rubicão e o Vale do Silício",
-      desc: "Um estudo comparativo entre o movimento de César em 49 a.C. e a estratégia de ruptura de Steve Jobs no lançamento de 2007."
+      desc: "Um estudo comparativo entre a travessia de César em 49 a.C. e a estratégia de pressão da Apple no lançamento de 2007.",
+      secretClause: "ORDEM DE EXPANSÃO 2026: A trava de liquidez bancária foi copiada do modelo das legiões romanas.",
+      stamp: "DESCLASSIFICADO"
     },
     {
       code: "DOSSIÊ 02",
+      archiveId: "DOC-1815-WATERLOO",
       title: "A Lama de Waterloo & A Hesitação de 1815",
-      desc: "Como um atraso de 3 horas motivado pela chuva na Bélgica alterou o fluxo de capital europeu nos 100 anos seguintes."
+      desc: "Como um atraso de 3 horas motivado pela chuva na Bélgica alterou o fluxo de capital europeu nos 100 anos seguintes.",
+      secretClause: "RELATÓRIO CONFIDENCIAL: A falha logística de Napoleão gerou a primeira compra alavancada da dívida britânica.",
+      stamp: "NÍVEL 4"
     },
     {
       code: "DOSSIÊ 03",
+      archiveId: "DOC-1941-BLETCHLEY",
       title: "As Máquinas de Bletchley Park",
-      desc: "Os relatórios confidenciais que mostram a primeira tentativa de antecipar escolhas estratégicas humanas por algoritmos."
+      desc: "Os relatórios reservados que mostram a primeira tentativa de antecipar escolhas estratégicas humanas por algoritmos.",
+      secretClause: "CÓDIGO BOMBE // ALAN TURING: A máquina não buscava o texto, mas a previsão do medo do operador da Enigma.",
+      stamp: "ARQUIVO SECRETO"
     },
     {
       code: "ARQUIVO 00",
+      archiveId: "DOC-2026-LOCKDOWN",
       title: "O Grande Travamento",
-      desc: "A peça final que liga a trama contemporânea aos centros de inteligência e gabinetes de decisão global."
+      desc: "A peça final que liga a auditoria da Faria Lima aos centros de inteligência e gabinetes de decisão global.",
+      secretClause: "DIRETRIZ FINAL: O modelo preditivo da Strata foi alimentado com variáveis comportamentais desde 1989.",
+      stamp: "CONFIDENCIAL"
     }
   ];
 
   return (
-    <section className="relative py-28 px-6 overflow-visible bg-gradient-to-b from-transparent via-[#0b1120]/70 to-transparent">
+    <section className="relative py-28 px-4 sm:px-6 overflow-visible bg-gradient-to-b from-transparent via-[#080d1a]/80 to-transparent">
       <div className="max-w-6xl mx-auto space-y-20">
 
-        {/* PARTE A: COLEÇÃO DE DOSSIÊS INCLUSOS */}
+        {/* PARTE A: COLEÇÃO DE DOSSIÊS INCLUSOS COMO PASTAS DESCLASSIFICADAS */}
         <div className="space-y-12">
+          
           <div className="text-center max-w-3xl mx-auto space-y-4">
-            <span className="text-xs font-mono tracking-[0.25em] text-gold uppercase bg-gold/10 px-3.5 py-1 rounded-full border border-gold/25">
-              CONTEÚDO EXPANDIDO // INCLUSO NO ACESSO
+            <span className="text-xs font-mono tracking-[0.25em] text-gold uppercase bg-gold/10 px-3.5 py-1.5 rounded-full border border-gold/25 inline-flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-gold" />
+              CONTEÚDO EXPANDIDO // PASTAS DESCLASSIFICADAS
             </span>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
-              Os Dossiês Históricos Confidenciais
+              Os 4 Dossiês Históricos Confidenciais
             </h2>
             <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed">
-              Além dos 22 capítulos da trama principal e do epílogo, você desbloqueia a coleção de dossiês históricos para aprofundar cada descoberta da investigação.
+              Além dos 21 capítulos da trama principal, do prólogo e do epílogo (23 partes integrais), você desbloqueia a coleção de 4 dossiês históricos para investigar cada documento secreto da trama.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
             {dossiersList.map((dossier, idx) => (
               <motion.div
                 key={dossier.code}
-                className="p-6 rounded-2xl bg-[#0f172a] border border-gold/25 hover:border-gold/50 transition-all space-y-3 relative overflow-hidden group shadow-lg"
-                initial={{ opacity: 0, y: 20 }}
+                className="relative rounded-2xl bg-[#0c1424] border border-gold/30 hover:border-gold/60 transition-all duration-300 p-6 sm:p-7 space-y-4 shadow-[0_15px_35px_rgba(0,0,0,0.6)] group overflow-hidden"
+                initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.08 }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-cyan tracking-wider">
-                    {dossier.code}
-                  </span>
-                  <FolderLock className="w-4 h-4 text-gold group-hover:scale-110 transition-transform" />
+                {/* Textura de Fundo & Carimbo de Arquivo Desclassificado */}
+                <div className="absolute top-0 right-0 w-44 h-44 bg-gold/5 rounded-full blur-3xl pointer-events-none" />
+                
+                {/* Clipe Metálico Simulado */}
+                <div className="absolute top-0 left-8 -translate-y-1/2 flex items-center justify-center text-slate-400 group-hover:text-gold transition-colors">
+                  <div className="w-6 h-10 rounded-full border-2 border-slate-500 bg-[#162035] shadow-md group-hover:border-gold transition-colors flex items-center justify-center">
+                    <div className="w-2 h-6 border-l-2 border-slate-600 group-hover:border-gold/70" />
+                  </div>
                 </div>
-                <h4 className="font-display font-bold text-lg text-white group-hover:text-gold transition-colors">
+
+                {/* Carimbo Angular de Classificação */}
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-2 pl-7">
+                    <span className="text-xs font-mono font-bold text-cyan tracking-wider">
+                      {dossier.code}
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-500">
+                      // {dossier.archiveId}
+                    </span>
+                  </div>
+
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded border border-red-500/40 bg-red-500/15 text-red-400 rotate-2 shadow-sm">
+                    {dossier.stamp}
+                  </span>
+                </div>
+
+                {/* Título do Dossiê */}
+                <h4 className="font-display font-bold text-lg sm:text-xl text-white group-hover:text-gold transition-colors">
                   {dossier.title}
                 </h4>
+
+                {/* Descrição */}
                 <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
                   {dossier.desc}
                 </p>
+
+                {/* Cláusula Secreta com Tarja Interativa */}
+                <div className="p-3.5 rounded-xl bg-black/60 border border-white/5 space-y-1 text-xs">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-gold uppercase tracking-wider">
+                    <ShieldAlert className="w-3.5 h-3.5 text-gold" />
+                    <span>Fragmento Censurado:</span>
+                  </div>
+                  <p className="text-slate-300 text-[11px] leading-relaxed pt-0.5">
+                    Trecho de inteligência:
+                    <CensoredText secret={dossier.secretClause} />
+                  </p>
+                </div>
+
+                {/* Rodapé da Pasta */}
+                <div className="pt-1 flex items-center justify-between text-[10px] font-mono text-slate-400 border-t border-white/5">
+                  <span className="flex items-center gap-1">
+                    <FileCheck className="w-3 h-3 text-emerald-400" />
+                    <span>Acesso Total Incluso na Obra</span>
+                  </span>
+                  <span className="text-emerald-400 font-bold">R$ 0,00 EXTRA</span>
+                </div>
+
               </motion.div>
             ))}
           </div>
