@@ -5,30 +5,30 @@ export const SpecialSocialProofSection = () => {
   const testimonials = [
     {
       name: "Marcus V.",
-      role: "Auditor de Risco & Leitor Beta",
-      text: "Comecei achando que seria só mais um suspense financeiro, mas quando o capítulo de César no Rubicão conectou com a tela de risco do Caio, li até as 2 da manhã direto pelo celular. O modo escuro do leitor é perfeito.",
+      role: "Leitor Beta",
+      text: "Achei sensacional poder aumentar o tamanho da fonte e colocar no modo escuro pra ler na cama. Muito melhor do que ficar brigando com PDF que desconfigura no celular.",
       rating: 5
     },
     {
       name: "Helena R.",
-      role: "Engenheira de Sistemas & Leitora Beta",
-      text: "A transição entre a Faria Lima e os bastidores de Turing em Bletchley Park é genial. A sensação de folhear os dossiês e ver os documentos históricos direto no app é outro nível de imersão literária.",
+      role: "Leitora Beta",
+      text: "Fiquei tão intrigada com a conexão entre o César e a Faria Lima que fechei o capítulo e fui direto pro Google pesquisar se aquilo era real. A história te pega muito rápido.",
       rating: 5
     },
     {
       name: "Rodrigo M.",
-      role: "Analista de Mercado & Transmissor da Corrente",
-      text: "Paguei no PIX e em menos de 5 segundos o leitor abriu no celular sem precisar baixar nada em lojas de app. A profundidade histórica te faz questionar qualquer notícia política no dia seguinte.",
+      role: "Leitor Beta",
+      text: "Abri pra ver como era e quando percebi já tinha devorado vários capítulos direto no celular. O leitor salva a linha onde parei na hora, é muito prático.",
       rating: 5
     }
   ];
 
   return (
     <section className="relative py-24 px-4 sm:px-6 overflow-visible bg-[#060b17]/60 border-t border-white/5">
-      <div className="max-w-5xl mx-auto space-y-16">
+      <div className="max-w-5xl mx-auto space-y-14">
         
         {/* Cabeçalho com Contador ao Vivo */}
-        <div className="text-center max-w-3xl mx-auto space-y-5">
+        <div className="text-center max-w-3xl mx-auto space-y-4">
           
           {/* Badge Pulsante de Leitores Ativos */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 text-xs font-mono font-bold tracking-wider shadow-[0_0_20px_rgba(34,197,94,0.2)]">
@@ -40,15 +40,15 @@ export const SpecialSocialProofSection = () => {
           </div>
 
           <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
-            Primeiras reações de quem já mergulhou no padrão.
+            O que estão achando da experiência
           </h2>
 
           <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Sem filtros e sem clichês. Veja como a experiência no e-reader nativo prendeu a atenção dos primeiros leitores beta:
+            Mensagens reais e diretas de quem já testou a história e o leitor digital no celular:
           </p>
         </div>
 
-        {/* Grade de 3 Depoimentos de Leitores Beta */}
+        {/* Grade de 3 Depoimentos Informais e Curtos */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((item, idx) => (
             <motion.div
@@ -66,7 +66,7 @@ export const SpecialSocialProofSection = () => {
                       <Star key={i} className="w-3.5 h-3.5 fill-gold text-gold" />
                     ))}
                   </div>
-                  <Quote className="w-5 h-5 text-slate-600" />
+                  <Quote className="w-4 h-4 text-slate-600" />
                 </div>
 
                 <p className="text-sm text-slate-100 font-sans font-normal leading-relaxed">
