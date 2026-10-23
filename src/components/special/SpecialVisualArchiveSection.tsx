@@ -83,7 +83,7 @@ export const SpecialVisualArchiveSection = () => {
       year: "2026", 
       location: "São Paulo // Faria Lima", 
       title: "A Convergência Final // Caio & Marina", 
-      desc: "A auditoria que revela a mesma equação milenar sendo executada nos terminais do mercado.",
+      desc: "A auditoria que revela a mesma fórmula milenar sendo executada nos terminais do mercado.",
       image: "/reader/assets/chapters/ch04_marina.jpg"
     }
   ];

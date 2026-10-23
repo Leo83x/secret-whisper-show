@@ -66,14 +66,14 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
           </motion.span>
         </h1>
 
-        {/* Frase de Impacto */}
+        {/* Frase de Impacto com "fórmula oculta" em vez de "equação" */}
         <motion.p
           className="text-lg sm:text-xl md:text-2xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed mb-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.8 }}
         >
-          E se os grandes acontecimentos da História respondessem a uma mesma equação que você nunca deveria descobrir?
+          E se os grandes acontecimentos da História respondessem a uma mesma <strong className="text-white font-medium">fórmula oculta</strong> que você nunca deveria descobrir?
         </motion.p>
 
         {/* Botão de Ação Direta (Sem formulário, scroll direto ao checkout) */}

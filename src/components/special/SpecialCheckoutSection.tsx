@@ -360,14 +360,24 @@ export const SpecialCheckoutSection = () => {
           
           {/* Coluna Esquerda: Resumo de Entrega */}
           <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-[#0b1222]/95 border border-gold/30 shadow-2xl space-y-6">
-            <div className="space-y-2 pb-6 border-b border-white/10">
-              <span className="text-xs font-mono font-bold text-gold uppercase tracking-widest block">
-                PACOTE DIGITAL COMPLETO
-              </span>
-              <h3 className="font-display font-bold text-2xl text-white">
-                O Último Segredo da Humanidade
-              </h3>
-              <p className="text-xs text-slate-400">Por Leonardo de Paula — Edição Oficial</p>
+            <div className="flex items-center gap-4 pb-6 border-b border-white/10">
+              <div className="relative shrink-0">
+                <img
+                  src="/capa_ush.jpg"
+                  alt="Capa do Livro"
+                  className="w-20 sm:w-24 h-auto rounded-xl shadow-[0_10px_25px_rgba(0,0,0,0.8)] border border-gold/40"
+                  loading="lazy"
+                />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[11px] font-mono font-bold text-gold uppercase tracking-wider block">
+                  PACOTE DIGITAL COMPLETO
+                </span>
+                <h3 className="font-display font-bold text-xl sm:text-2xl text-white leading-tight">
+                  O Último Segredo da Humanidade
+                </h3>
+                <p className="text-xs text-slate-400">Por Leonardo de Paula — Edição Oficial</p>
+              </div>
             </div>
 
             <ul className="space-y-3.5 text-xs sm:text-sm text-slate-200">
