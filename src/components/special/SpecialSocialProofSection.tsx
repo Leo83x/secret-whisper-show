@@ -39,11 +39,11 @@ export const SpecialSocialProofSection = () => {
             <span>64 LEITORES DESBLOQUEARAM O ACESSO ESTA SEMANA</span>
           </div>
 
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
             Primeiras reações de quem já mergulhou no padrão.
           </h2>
 
-          <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
             Sem filtros e sem clichês. Veja como a experiência no e-reader nativo prendeu a atenção dos primeiros leitores beta:
           </p>
         </div>
@@ -87,19 +87,24 @@ export const SpecialSocialProofSection = () => {
           ))}
         </div>
 
-        {/* Amostra da Escrita (Box de Citação Cinematográfica - Fonte Sans Clara) */}
-        <div className="p-7 sm:p-10 rounded-3xl bg-gradient-to-r from-[#0c1424] via-[#111c33] to-[#0c1424] border border-gold/40 shadow-2xl relative overflow-hidden text-center space-y-4">
+        {/* Amostra da Escrita com Quebra de Linha Suave */}
+        <div className="p-7 sm:p-10 rounded-3xl bg-gradient-to-r from-[#0c1424] via-[#111c33] to-[#0c1424] border border-gold/40 shadow-2xl relative overflow-hidden text-center space-y-5">
           <div className="flex items-center justify-center gap-2 text-gold font-mono text-xs uppercase tracking-widest font-bold">
             <BookOpen className="w-4 h-4 text-gold" />
             <span>AMOSTRA DE ESCRITA // PRÓLOGO OFICIAL</span>
           </div>
 
-          <blockquote className="max-w-3xl mx-auto font-sans text-base sm:text-lg md:text-xl text-slate-100 font-medium leading-relaxed tracking-normal">
-            "A humanidade sempre precisou acreditar no caos. Talvez porque o acaso seja a única explicação que nos isenta de culpa. Mas quando os mesmos erros e os mesmos medos se repetem a cada três séculos com precisão matemática, o acaso deixa de ser acidente — e passa a ser uma assinatura."
+          <blockquote className="max-w-3xl mx-auto font-sans text-base sm:text-lg md:text-xl text-slate-100 font-medium leading-relaxed tracking-normal space-y-3">
+            <p>
+              "A humanidade sempre precisou acreditar no caos. Talvez porque o acaso seja a única explicação que nos isenta de culpa."
+            </p>
+            <p>
+              "Mas quando os mesmos erros e os mesmos medos se repetem a cada três séculos com precisão matemática, o acaso deixa de ser acidente — <span className="text-gold font-bold">e passa a ser uma assinatura</span>."
+            </p>
           </blockquote>
 
-          <span className="text-xs font-mono text-gold/90 font-medium block pt-1">
-            — Trecho de <em>O Observador</em>, Abertura de <strong>O Último Segredo da Humanidade</strong>
+          <span className="text-xs font-mono text-slate-400 font-medium block pt-2">
+            — Trecho de <em>O Observador</em>, Prólogo de <strong>O Último Segredo da Humanidade</strong>
           </span>
         </div>
 

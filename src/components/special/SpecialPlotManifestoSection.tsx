@@ -99,7 +99,7 @@ export const SpecialPlotManifestoSection = () => {
         <div className="space-y-12 pt-6">
           <div className="text-center space-y-3">
             <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
-              3 Mil Anos. 10 Decisões. Uma Única Fórmula Oculta.
+              3 Mil Anos. 10 Decisões. Um Mesmo Padrão Oculto.
             </h3>
             <p className="text-sm sm:text-base text-muted-foreground font-light max-w-2xl mx-auto">
               Cada capítulo histórico desmonta o instante exato em que a mente de um líder foi testada até o limite:

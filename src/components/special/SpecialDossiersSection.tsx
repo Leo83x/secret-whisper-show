@@ -22,10 +22,10 @@ export const SpecialDossiersSection = () => {
       desc: "Os registros de Alan Turing decifrando não apenas códigos militares, mas a previsibilidade das decisões humanas de massa."
     },
     {
-      code: "ARQUIVO 00",
-      tag: "INVESTIGAÇÃO FINAL",
+      code: "DOSSIÊ 04",
+      tag: "INVESTIGAÇÃO FARIA LIMA",
       title: "O Grande Travamento (2026)",
-      desc: "O documento confidencial que Caio e Marina descobrem conectando a auditoria da Faria Lima aos centros de poder global."
+      desc: "O documento confidencial que Caio e Marina descobrem conectando a auditoria da Strata aos centros de poder global."
     }
   ];
 
@@ -41,10 +41,10 @@ export const SpecialDossiersSection = () => {
               <Sparkles className="w-3.5 h-3.5 text-gold" />
               CONTEÚDO EXPANDIDO // 4 DOSSIÊS SECRETOS INCLUSOS
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+            <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
               Os Dossiês Históricos da Obra
             </h2>
-            <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
               Além dos 21 capítulos e do epílogo, você recebe 4 relatórios investigativos exclusivos liberados diretamente dentro do seu e-reader sem nenhum custo extra.
             </p>
           </div>
@@ -72,11 +72,11 @@ export const SpecialDossiersSection = () => {
                     <FileText className="w-4 h-4 text-gold group-hover:scale-110 transition-transform" />
                   </div>
 
-                  <h4 className="font-display font-bold text-lg text-white group-hover:text-gold transition-colors">
+                  <h4 className="font-sans font-bold text-lg sm:text-xl text-white group-hover:text-gold transition-colors">
                     {dossier.title}
                   </h4>
 
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-light">
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                     {dossier.desc}
                   </p>
                 </div>
@@ -102,18 +102,18 @@ export const SpecialDossiersSection = () => {
               <Share2 className="w-3.5 h-3.5" /> A CORRENTE DE LEITORES // UNIVERSO EXPANDIDO
             </span>
 
-            <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-snug">
+            <h3 className="font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold text-white leading-snug">
               Você não apenas lê. Você se torna um transmissor da verdade.
             </h3>
 
-            <p className="text-sm sm:text-base text-slate-300 font-light leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-300 font-normal leading-relaxed">
               Ao desbloquear sua obra completa, você recebe uma <strong>Chave Pessoal de Transmissão</strong> exclusiva. Compartilhar sua chave com outros leitores desbloqueia privilégios reais no ecossistema:
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 text-left">
               <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
                 <Award className="w-5 h-5 text-gold mb-1" />
-                <h5 className="font-bold text-sm text-white">Acesso Antecipado</h5>
+                <h5 className="font-sans font-bold text-sm text-white">Acesso Antecipado</h5>
                 <p className="text-xs text-slate-400 font-light">
                   Prioridade absoluta e gratuita no lançamento oficial de <strong>O Último Segredo — Livro II</strong>.
                 </p>
@@ -121,7 +121,7 @@ export const SpecialDossiersSection = () => {
 
               <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
                 <BookOpen className="w-5 h-5 text-cyan mb-1" />
-                <h5 className="font-bold text-sm text-white">Relatórios Reservados</h5>
+                <h5 className="font-sans font-bold text-sm text-white">Relatórios Reservados</h5>
                 <p className="text-xs text-slate-400 font-light">
                   Análises inéditas e materiais cortados da edição original revelados diretamente no seu leitor.
                 </p>
@@ -129,7 +129,7 @@ export const SpecialDossiersSection = () => {
 
               <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
                 <Zap className="w-5 h-5 text-emerald-400 mb-1" />
-                <h5 className="font-bold text-sm text-white">Comunidade VIP</h5>
+                <h5 className="font-sans font-bold text-sm text-white">Comunidade VIP</h5>
                 <p className="text-xs text-slate-400 font-light">
                   Seu nome inserido na lista histórica de transmissores oficiais que ajudaram a quebrar o silêncio.
                 </p>

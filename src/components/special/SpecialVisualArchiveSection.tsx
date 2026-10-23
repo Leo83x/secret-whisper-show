@@ -83,7 +83,7 @@ export const SpecialVisualArchiveSection = () => {
       year: "2026", 
       location: "São Paulo // Faria Lima", 
       title: "A Convergência Final // Caio & Marina", 
-      desc: "A auditoria que revela a mesma fórmula milenar sendo executada nos terminais do mercado.",
+      desc: "A auditoria que revela o mesmo padrão oculto sendo executado nos terminais do mercado.",
       image: "/reader/assets/chapters/ch04_marina.jpg"
     }
   ];
@@ -98,10 +98,10 @@ export const SpecialVisualArchiveSection = () => {
             <Sparkles className="w-3.5 h-3.5 text-cyan" />
             ACERVO DOCUMENTAL // 3.000 ANOS DE PADRÃO
           </span>
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
             Mais do que ficção: uma investigação rica em arquivos e passagens históricas.
           </h2>
-          <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
             Cada capítulo da obra é sustentado por fatos documentados, arte histórica e análises estratégicas. Conheça os marcos que compõem o universo do livro:
           </p>
         </div>
@@ -142,10 +142,10 @@ export const SpecialVisualArchiveSection = () => {
               {/* Informações Textuais Claras Abaixo da Imagem */}
               <div className="p-5 sm:p-6 space-y-2.5 flex-1 flex flex-col justify-between">
                 <div className="space-y-2">
-                  <h4 className="font-display font-bold text-lg text-white group-hover:text-gold transition-colors leading-snug">
+                  <h4 className="font-sans font-bold text-lg text-white group-hover:text-gold transition-colors leading-snug">
                     {item.title}
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-light">
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                     {item.desc}
                   </p>
                 </div>

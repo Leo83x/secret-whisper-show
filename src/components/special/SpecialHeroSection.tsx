@@ -73,7 +73,7 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.8 }}
         >
-          E se os grandes acontecimentos da História respondessem a uma mesma <strong className="text-white font-medium">fórmula oculta</strong> que você nunca deveria descobrir?
+          E se os grandes acontecimentos da História respondessem a <strong className="text-white font-medium">um mesmo padrão oculto</strong> que você nunca deveria descobrir?
         </motion.p>
 
         {/* Botão de Ação Direta (Sem formulário, scroll direto ao checkout) */}

@@ -324,7 +324,7 @@ export const SpecialCheckoutSection = () => {
             <Sparkles className="w-3.5 h-3.5" /> ACESSO DEFINITIVO // OFERTA DE LANÇAMENTO
           </span>
 
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
             Desbloqueie a obra completa agora mesmo.
           </h2>
 

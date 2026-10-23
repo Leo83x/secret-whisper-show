@@ -67,10 +67,10 @@ export const SpecialReaderShowcaseSection = () => {
             <Sparkles className="w-3.5 h-3.5" />
             TECNOLOGIA EXCLUSIVA // NADA DE PDF COMUM
           </span>
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
             Uma plataforma desenhada para prender a sua atenção.
           </h2>
-          <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
             Esqueça arquivos soltos de PDF que quebram no celular. Você acessa um leitor digital nativo, construído com foco obsessivo em tipografia, contraste e imersão total.
           </p>
         </div>
@@ -88,8 +88,8 @@ export const SpecialReaderShowcaseSection = () => {
                 <FileText className="w-4 h-4 text-gold" />
                 <span>DOSSIÊ 01 // 49 A.C.</span>
               </div>
-              <h4 className="font-display font-bold text-sm text-white mb-1.5">
-                O Rio Rubicão & A Faria Lima
+              <h4 className="font-sans font-bold text-sm text-white mb-1.5">
+                O Rubicão & A Faria Lima
               </h4>
               <p className="text-xs text-slate-400 leading-relaxed font-light mb-3">
                 Fragmento tático comparando a decisão de Júlio César com o modelo de liquidez da Strata em 2026.
@@ -139,8 +139,8 @@ export const SpecialReaderShowcaseSection = () => {
               {/* Carcaça Interna */}
               <div className={`rounded-[26px] overflow-hidden ${currentTheme.cardBg} border ${currentTheme.borderColor} transition-colors duration-300 flex flex-col shadow-inner`}>
                 
-                {/* Barra do Celular (Notch e Controles do E-Reader) */}
-                <div className={`px-4 py-3.5 ${currentTheme.headerBg} transition-colors duration-300 space-y-2.5`}>
+                {/* Barra do Celular (Notch e Controles do E-Reader - 100% responsivos) */}
+                <div className={`px-3.5 sm:px-4 py-3.5 ${currentTheme.headerBg} transition-colors duration-300 space-y-2.5`}>
                   
                   {/* Top: Notch + Progresso */}
                   <div className="flex items-center justify-between">
@@ -148,7 +148,7 @@ export const SpecialReaderShowcaseSection = () => {
                       <Bookmark className="w-3 h-3 text-gold" />
                       14% LIDO // PÁG. 18
                     </span>
-                    <div className="w-14 h-2.5 bg-slate-800 rounded-full opacity-60" />
+                    <div className="w-12 sm:w-14 h-2.5 bg-slate-800 rounded-full opacity-60" />
                     <span className={`text-[10px] font-mono ${currentTheme.subColor}`}>
                       Farol de Leitura
                     </span>
@@ -159,69 +159,70 @@ export const SpecialReaderShowcaseSection = () => {
                     <div className="w-[14%] h-full bg-gold rounded-full" />
                   </div>
 
-                  {/* Controles Reais: Temas e Tipografia */}
-                  <div className="flex items-center justify-between gap-1 pt-1">
+                  {/* Controles Reais: Temas e Tipografia (Ajustados para caber perfeitamente no Mobile) */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1">
                     
                     {/* Botões de Tema */}
-                    <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 shadow-inner">
+                    <div className="grid grid-cols-3 gap-1 w-full sm:w-auto bg-black/40 p-1 rounded-xl border border-white/10 shadow-inner">
                       <button
                         type="button"
                         onClick={() => setTheme("dark")}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                        className={`px-2 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                           theme === "dark" 
-                            ? "bg-gold text-slate-950 font-black shadow-md scale-105" 
+                            ? "bg-gold text-slate-950 font-black shadow-md" 
                             : "text-slate-300 hover:text-white"
                         }`}
                         title="Modo Noturno sem reflexos"
                       >
-                        <Moon className="w-3.5 h-3.5" />
+                        <Moon className="w-3 h-3 shrink-0" />
                         <span>Escuro</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setTheme("sepia")}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                        className={`px-2 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                           theme === "sepia" 
-                            ? "bg-[#d4be92] text-slate-950 font-black shadow-md scale-105" 
+                            ? "bg-[#d4be92] text-slate-950 font-black shadow-md" 
                             : "text-slate-300 hover:text-white"
                         }`}
                         title="Modo Sépia de papel envelhecido"
                       >
-                        <BookOpen className="w-3.5 h-3.5" />
+                        <BookOpen className="w-3 h-3 shrink-0" />
                         <span>Sépia</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setTheme("light")}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                        className={`px-2 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                           theme === "light" 
-                            ? "bg-white text-slate-950 font-black shadow-md scale-105" 
+                            ? "bg-white text-slate-950 font-black shadow-md" 
                             : "text-slate-300 hover:text-white"
                         }`}
                         title="Modo Claro clássico"
                       >
-                        <Sun className="w-3.5 h-3.5" />
+                        <Sun className="w-3 h-3 shrink-0" />
                         <span>Claro</span>
                       </button>
                     </div>
 
-                    {/* Botões de Fonte */}
-                    <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 shadow-inner">
+                    {/* Botões de Fonte (Agora com espaço amplo no mobile) */}
+                    <div className="flex items-center justify-center gap-1.5 w-full sm:w-auto bg-black/40 py-1 px-3 rounded-xl border border-white/10 shadow-inner">
+                      <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mr-0.5">Fonte:</span>
                       <button
                         type="button"
                         onClick={handleDecreaseFont}
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-black text-slate-200 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
+                        className="w-7 h-7 rounded-lg text-xs font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center"
                         title="Diminuir tamanho da fonte"
                       >
                         A-
                       </button>
-                      <span className="text-[11px] font-mono text-gold font-bold px-1">{fontSize}px</span>
+                      <span className="text-xs font-mono text-gold font-bold px-1 min-w-[28px] text-center">{fontSize}px</span>
                       <button
                         type="button"
                         onClick={handleIncreaseFont}
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-black text-slate-200 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
+                        className="w-7 h-7 rounded-lg text-xs font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center"
                         title="Aumentar tamanho da fonte"
                       >
                         A+
@@ -239,7 +240,7 @@ export const SpecialReaderShowcaseSection = () => {
                       SÃO PAULO — FARIA LIMA // 03h42
                     </p>
 
-                    <h3 className={`font-display font-bold text-lg leading-snug ${currentTheme.textColor}`}>
+                    <h3 className={`font-sans font-bold text-lg leading-snug ${currentTheme.textColor}`}>
                       O Teste Proibido
                     </h3>
 
@@ -285,7 +286,7 @@ export const SpecialReaderShowcaseSection = () => {
                 <Users className="w-4 h-4 text-cyan" />
                 <span>REDE FECHADA // LIVRO II</span>
               </div>
-              <h4 className="font-display font-bold text-sm text-white mb-1.5">
+              <h4 className="font-sans font-bold text-sm text-white mb-1.5">
                 A Corrente de Leitores
               </h4>
               <p className="text-xs text-slate-400 leading-relaxed font-light mb-3">
