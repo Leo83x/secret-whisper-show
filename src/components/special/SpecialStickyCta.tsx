@@ -50,18 +50,7 @@ export const SpecialStickyCta = ({ onCtaClick }: SpecialStickyCtaProps) => {
 
         <button
           type="button"
-          onClick={() => {
-            if (typeof (window as any).fbq === "function") {
-              try {
-                (window as any).fbq("track", "InitiateCheckout", {
-                  content_name: "Sticky Mobile CTA",
-                  currency: "BRL",
-                  value: 29.90
-                });
-              } catch(e) {}
-            }
-            onCtaClick();
-          }}
+          onClick={onCtaClick}
           className="flex items-center gap-2 px-5 py-3.5 min-h-[48px] rounded-xl bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(201,169,98,0.4)] cursor-pointer active:scale-95 transition-transform"
         >
           <Zap className="w-4 h-4 fill-slate-950 text-slate-950" />

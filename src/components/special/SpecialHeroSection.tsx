@@ -6,19 +6,6 @@ interface SpecialHeroProps {
 }
 
 export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
-  const handleCtaClick = () => {
-    if (typeof (window as any).fbq === "function") {
-      try {
-        (window as any).fbq("track", "InitiateCheckout", {
-          content_name: "Hero CTA - Desbloquear Obra Completa",
-          currency: "BRL",
-          value: 29.90
-        });
-      } catch (e) {}
-    }
-    onCtaClick();
-  };
-
   return (
     <section className="relative min-h-[92vh] flex flex-col items-center justify-center px-4 sm:px-8 pt-16 pb-20 overflow-visible text-center">
       <div className="absolute inset-0 bg-radial-vignette pointer-events-none opacity-80" />
@@ -66,7 +53,7 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
           </motion.span>
         </h1>
 
-        {/* Frase de Impacto com "fórmula oculta" em vez de "equação" */}
+        {/* Frase de Impacto */}
         <motion.p
           className="text-lg sm:text-xl md:text-2xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed mb-10"
           initial={{ opacity: 0, y: 20 }}
@@ -76,7 +63,7 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
           E se os grandes acontecimentos da História respondessem a <strong className="text-white font-medium">um mesmo padrão oculto</strong> que você nunca deveria descobrir?
         </motion.p>
 
-        {/* Botão de Ação Direta (Sem formulário, scroll direto ao checkout) */}
+        {/* Botão de Ação Direta (Scroll direto ao checkout - SEM falso InitiateCheckout) */}
         <motion.div
           className="flex flex-col items-center justify-center gap-4"
           initial={{ opacity: 0, y: 25 }}
@@ -85,7 +72,7 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
         >
           <button
             type="button"
-            onClick={handleCtaClick}
+            onClick={onCtaClick}
             className="relative overflow-hidden inline-flex items-center justify-center gap-3.5 px-8 sm:px-14 min-h-[64px] sm:min-h-[72px] py-5 sm:py-6 bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-black tracking-wider rounded-2xl shadow-[0_0_40px_rgba(201,169,98,0.5)] hover:shadow-[0_0_55px_rgba(201,169,98,0.7)] active:scale-[0.99] transition-all duration-300 text-base sm:text-lg uppercase group cursor-pointer"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />

@@ -6,7 +6,6 @@ import {
   QrCode, 
   CreditCard, 
   Loader2, 
-  ArrowRight, 
   Sparkles, 
   Copy, 
   CheckCircle2, 
@@ -37,65 +36,64 @@ export const SpecialCheckoutSection = () => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   // Tracking flags
-  const hasTrackedCheckout = useRef(false);
   const hasTrackedLead = useRef(false);
   const hasRecordedAbandonment = useRef(false);
 
-  // Evento InitiateCheckout ao focar nos primeiros campos
-  const handleCheckoutInitiated = () => {
-    if (!hasTrackedCheckout.current) {
-      hasTrackedCheckout.current = true;
-      if (typeof (window as any).fbq === "function") {
-        try {
-          (window as any).fbq("track", "InitiateCheckout", {
-            content_name: "Edicao Especial - Formulario Checkout",
-            currency: "BRL",
-            value: 29.90
-          });
-        } catch (e) {}
-      }
-    }
-  };
-
-  // Captura silenciosa de Lead e Carrinho Abandonado ao preencher WhatsApp
-  const handlePhoneBlur = async () => {
+  // Captura silenciosa de Lead e Contato no Admin (Checkout Iniciado)
+  const captureContact = async () => {
     const cleanPhone = phone.replace(/\D/g, "");
     const cleanEmail = email.trim().toLowerCase();
 
-    // Dispara Lead no Pixel se temos email e telefone válidos
-    if (!hasTrackedLead.current && cleanEmail.includes("@") && cleanPhone.length >= 10) {
-      hasTrackedLead.current = true;
-      if (typeof (window as any).fbq === "function") {
-        try {
-          (window as any).fbq("track", "Lead", {
-            content_name: "Edicao Especial - Pre-Checkout",
-            currency: "BRL",
-            value: 29.90
-          });
-        } catch (e) {}
+    // Se temos email e telefone válidos (mínimo 10 dígitos)
+    if (cleanEmail.includes("@") && cleanEmail.includes(".") && cleanPhone.length >= 10) {
+      
+      // Dispara evento Lead no Meta Pixel se ainda não disparou
+      if (!hasTrackedLead.current) {
+        hasTrackedLead.current = true;
+        if (typeof (window as any).fbq === "function") {
+          try {
+            (window as any).fbq("track", "Lead", {
+              content_name: "Edicao Especial - Pre-Checkout",
+              currency: "BRL",
+              value: 29.90
+            });
+          } catch (e) {}
+        }
       }
-    }
 
-    // Salva carrinho abandonado no Supabase para recuperação no Admin via WhatsApp
-    if (!hasRecordedAbandonment.current && cleanEmail.includes("@") && cleanPhone.length >= 10) {
-      try {
-        const urlRef = new URLSearchParams(window.location.search).get("ref");
-        await fetch("/api/abandoned-cart/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name.trim() || "Interessado Edição Especial",
-            email: cleanEmail,
-            phone: cleanPhone,
-            ref: urlRef
-          })
-        });
+      // Salva silenciosamente no Supabase para aparecer no Admin com a tag "Checkout Iniciado"
+      if (!hasRecordedAbandonment.current) {
         hasRecordedAbandonment.current = true;
-      } catch (err) {
-        // Silencioso em caso de erro de rede
+        try {
+          const urlRef = new URLSearchParams(window.location.search).get("ref");
+          await fetch("/api/abandoned-cart/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: name.trim() || "Interessado Edição Especial",
+              email: cleanEmail,
+              phone: cleanPhone,
+              ref: urlRef
+            })
+          });
+        } catch (err) {
+          // Silencioso em caso de erro de rede
+        }
       }
     }
   };
+
+  // Auto-captura com debounce enquanto o usuário digita (garante salvar mesmo sem onBlur se fechar a aba)
+  useEffect(() => {
+    const cleanPhone = phone.replace(/\D/g, "");
+    const cleanEmail = email.trim().toLowerCase();
+    if (cleanEmail.includes("@") && cleanEmail.includes(".") && cleanPhone.length >= 10 && !hasRecordedAbandonment.current) {
+      const timer = setTimeout(() => {
+        captureContact();
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [email, phone, name]);
 
   // Polling automático para verificar pagamento do PIX
   useEffect(() => {
@@ -191,13 +189,26 @@ export const SpecialCheckoutSection = () => {
       return;
     }
 
+    const cleanPhone = phone.replace(/\D/g, "");
+
+    // DISPARO DO INITIATECHECKOUT REAL (Ação 1)
+    // Ocorre EXATAMENTE quando o usuário preencheu os dados completos e clicou para pagar
+    if (typeof (window as any).fbq === "function") {
+      try {
+        (window as any).fbq("track", "InitiateCheckout", {
+          content_name: "Edicao Especial - Finalizacao de Compra",
+          currency: "BRL",
+          value: 29.90
+        });
+      } catch (e) {}
+    }
+
     setLoading(true);
 
     try {
       const urlRef = new URLSearchParams(window.location.search).get("ref");
-      const cleanPhone = phone.replace(/\D/g, "");
 
-      // Garante registro de carrinho abandonado antes de prosseguir
+      // Garante registro de checkout iniciado no Supabase
       fetch("/api/abandoned-cart/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -292,16 +303,6 @@ export const SpecialCheckoutSection = () => {
         if (data.accessToken) {
           localStorage.setItem("ush_token", data.accessToken);
           localStorage.setItem("ush_name", name.trim());
-        }
-
-        if (typeof (window as any).fbq === "function") {
-          try {
-            (window as any).fbq("track", "InitiateCheckout", {
-              content_name: "O Ultimo Segredo da Humanidade - Edicao Especial PIX",
-              currency: "BRL",
-              value: 29.90
-            }, { eventID: `checkout_${data.orderId}` });
-          } catch(e) {}
         }
 
         setLoading(false);
@@ -514,7 +515,7 @@ export const SpecialCheckoutSection = () => {
               /* FORMULÁRIO DE CHECKOUT */
               <form onSubmit={handleSubmit} className="space-y-6">
                 
-                {/* Seletor de Método (Botões mais altos e generosos) */}
+                {/* Seletor de Método */}
                 <div className="grid grid-cols-2 gap-3.5">
                   <button
                     type="button"
@@ -556,11 +557,8 @@ export const SpecialCheckoutSection = () => {
                       required
                       placeholder="Ex: Carlos Eduardo Silva"
                       value={name}
-                      onFocus={handleCheckoutInitiated}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        handleCheckoutInitiated();
-                      }}
+                      onBlur={captureContact}
+                      onChange={(e) => setName(e.target.value)}
                       className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                     />
                   </div>
@@ -573,8 +571,7 @@ export const SpecialCheckoutSection = () => {
                         required
                         placeholder="onde você receberá a chave"
                         value={email}
-                        onFocus={handleCheckoutInitiated}
-                        onBlur={handlePhoneBlur}
+                        onBlur={captureContact}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                       />
@@ -588,7 +585,7 @@ export const SpecialCheckoutSection = () => {
                         inputMode="numeric"
                         placeholder="(11) 99999-9999"
                         value={phone}
-                        onBlur={handlePhoneBlur}
+                        onBlur={captureContact}
                         onChange={handlePhoneChange}
                         className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                       />
@@ -606,6 +603,7 @@ export const SpecialCheckoutSection = () => {
                       inputMode="numeric"
                       placeholder="000.000.000-00"
                       value={cpf}
+                      onBlur={captureContact}
                       onChange={handleCpfChange}
                       className="w-full text-sm p-3.5 bg-[#131c31] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold"
                     />
@@ -695,7 +693,7 @@ export const SpecialCheckoutSection = () => {
                   </div>
                 )}
 
-                {/* Botão de Envio (SUBSTANCIALMENTE MAIS ALTO E DESTACADO) */}
+                {/* Botão de Envio */}
                 <button
                   type="submit"
                   disabled={loading}
