@@ -31,7 +31,6 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
-  const [isHighlighted, setIsHighlighted] = useState<boolean>(true);
 
   // Exibe toast temporário de confirmação de toque
   const triggerToast = (msg: string) => {
@@ -105,11 +104,6 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
     triggerToast(!isBookmarked ? "Página salva na nuvem!" : "Marcador removido");
   };
 
-  const handleToggleHighlight = () => {
-    setIsHighlighted(!isHighlighted);
-    triggerToast(!isHighlighted ? "Trecho grifado em dourado!" : "Grifo removido");
-  };
-
   // Trava o scroll do body quando o modal estiver aberto no mobile
   useEffect(() => {
     if (isModalOpen) {
@@ -166,17 +160,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
               Mude para <strong className="text-gold">🌙 Escuro</strong>, <strong className="text-amber-200">📜 Sépia</strong> ou <strong className="text-white">☀️ Claro</strong> e ajuste a letra. A interface responde na hora!
             </p>
 
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(true)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] bg-gradient-to-r from-gold via-amber-300 to-gold hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider rounded-2xl shadow-[0_0_25px_rgba(201,169,98,0.55)] active:scale-95 transition-all cursor-pointer group"
-              >
-                <Smartphone className="w-4 h-4 text-slate-950 group-hover:scale-110 transition-transform" />
-                <span>EXPANDIR SIMULADOR EM TELA CHEIA</span>
-                <Maximize2 className="w-3.5 h-3.5 text-slate-950 opacity-90 stroke-[2.5]" />
-              </button>
-            </div>
+
           </div>
         </motion.div>
 
@@ -417,19 +401,12 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações bancárias que não deveriam conter nada além de rotina contábil...
                       </p>
 
-                      {/* Frase Grifada Interativa (Toque para testar) */}
-                      <div className="pt-1.5 cursor-pointer" onClick={handleToggleHighlight}>
-                        <span 
-                          className={`leading-relaxed text-base block transition-all font-sans ${
-                            isHighlighted ? currentTheme.highlight : `${currentTheme.textColor} opacity-90`
-                          }`}
-                        >
-                          "E foi no silêncio da sala de operações da Faria Lima que Caio percebeu que uma pergunta podia ser mais perigosa do que uma resposta."
-                        </span>
-                        <span className={`block text-[10px] font-mono mt-1 ${currentTheme.subColor}`}>
-                          👆 Toque no trecho acima para testar o marcador dourado
-                        </span>
-                      </div>
+                      <p 
+                        className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
+                        style={{ fontSize: `${fontSize}px` }}
+                      >
+                        E foi no silêncio da sala de operações da Faria Lima que Caio percebeu que uma pergunta podia ser mais perigosa do que uma resposta.
+                      </p>
                     </div>
 
                     {/* Rodapé da Tela do Celular */}
@@ -631,12 +608,9 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações bancárias que não deveriam conter nada além de rotina contábil. Mas quando cruzou as séries temporais com registros históricos restritos, uma correlação gráfica impossível se formou.
                   </p>
 
-                  {/* Frase Grifada no Modal */}
-                  <div className="p-4 rounded-xl border border-gold/40 bg-gold/15 my-4">
-                    <p className={`font-semibold ${currentTheme.textColor}`}>
-                      "Não eram coincidências estatísticas. Eram as mesmas assinaturas comportamentais de líderes que derrubaram impérios há três mil anos sendo replicadas com precisão milimétrica nos gabinetes de hoje."
-                    </p>
-                  </div>
+                  <p>
+                    "Não eram coincidências estatísticas. Eram as mesmas assinaturas comportamentais de líderes que derrubaram impérios há três mil anos sendo replicadas com precisão milimétrica nos gabinetes de hoje."
+                  </p>
 
                   <p>
                     Ele recostou-se na cadeira de couro preto. As mãos começavam a suar frio. Havia dez decisões registradas na História que nunca foram compreendidas pelos livros didáticos tradicionais. E todas elas convergiam para o mesmo ponto cego.

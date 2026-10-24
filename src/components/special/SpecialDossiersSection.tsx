@@ -82,9 +82,7 @@ export const SpecialDossiersSection = () => {
                     </span>
                   </div>
 
-                  <div className="absolute top-3 right-3 px-2 py-0.5 rounded bg-red-950/80 border border-red-500/40 text-[9px] font-mono uppercase tracking-widest text-red-300">
-                    DESCLASSIFICADO
-                  </div>
+
                 </div>
 
                 {/* Conteúdo Conciso */}
@@ -101,12 +99,7 @@ export const SpecialDossiersSection = () => {
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono">
-                    <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                      <span>Incluso na Edição</span>
-                    </span>
-                  </div>
+
                 </div>
               </motion.div>
             ))}
