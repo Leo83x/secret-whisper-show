@@ -26,7 +26,7 @@ interface SpecialReaderShowcaseProps {
 
 export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowcaseProps) => {
   const [theme, setTheme] = useState<"dark" | "sepia" | "light">("dark");
-  const [fontSize, setFontSize] = useState<number>(15);
+  const [fontSize, setFontSize] = useState<number>(16);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -84,13 +84,13 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
   const currentTheme = themeStyles[theme];
 
   const handleDecreaseFont = () => {
-    const next = Math.max(13, fontSize - 1);
+    const next = Math.max(14, fontSize - 1);
     setFontSize(next);
     triggerToast(`Fonte reduzida para ${next}px`);
   };
 
   const handleIncreaseFont = () => {
-    const next = Math.min(19, fontSize + 1);
+    const next = Math.min(22, fontSize + 1);
     setFontSize(next);
     triggerToast(`Fonte aumentada para ${next}px`);
   };
@@ -132,8 +132,8 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             <Sparkles className="w-3.5 h-3.5 text-gold" />
             TECNOLOGIA EXCLUSIVA // NADA DE PDF COMUM
           </span>
-          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">
-            Uma plataforma desenhada para prender a sua atenção.
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
+            Uma experiência de leitura imersiva, feita para você.
           </h2>
           <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
             Esqueça arquivos soltos de PDF que quebram no celular. Você acessa um leitor digital nativo, construído com foco obsessivo em tipografia, contraste e imersão total.
@@ -144,41 +144,37 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
         {/* PRINT 3 RESOLVIDO: BANNER DE ALTO CONTRASTE E DESTAQUE   */}
         {/* ======================================================== */}
         <motion.div 
-          className="w-full max-w-2xl mx-auto text-center"
+          className="w-full max-w-xl mx-auto text-center"
           initial={{ opacity: 0, scale: 0.96 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <div className="relative p-5 sm:p-7 rounded-3xl bg-gradient-to-br from-[#0e172e] via-[#142347] to-[#0a1020] border-2 border-gold shadow-[0_0_45px_rgba(201,169,98,0.45)] space-y-3.5 overflow-hidden">
-            {/* Feixe sutil de luz no topo */}
-            <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gold/20 blur-2xl rounded-full pointer-events-none" />
-
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs uppercase tracking-wider shadow-md animate-pulse">
-                <Zap className="w-3.5 h-3.5 fill-slate-950" />
-                SIMULADOR INTERATIVO AO VIVO
+          <div className="relative p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#0e172e] via-[#142347] to-[#0a1020] border-2 border-gold shadow-[0_0_35px_rgba(201,169,98,0.4)] space-y-2.5 overflow-hidden">
+            <div className="flex items-center justify-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[11px] sm:text-xs uppercase tracking-wider shadow-md animate-pulse">
+                <Zap className="w-3 h-3 fill-slate-950" />
+                SIMULADOR INTERATIVO
               </span>
             </div>
 
-            <h3 className="font-sans text-lg sm:text-2xl font-black text-white tracking-tight leading-snug">
-              TOQUE NOS BOTÕES DO CELULAR ABAIXO PARA TESTAR:
+            <h3 className="font-sans text-base sm:text-xl font-bold text-white tracking-tight leading-snug">
+              TOQUE NOS BOTÕES DO CELULAR PARA TESTAR:
             </h3>
 
-            <p className="text-sm sm:text-base text-slate-200 font-normal leading-relaxed max-w-xl mx-auto">
-              Alterne entre os modos <strong className="text-gold bg-gold/20 px-2 py-0.5 rounded-lg border border-gold/40">🌙 Escuro</strong>, <strong className="text-amber-200 bg-amber-400/20 px-2 py-0.5 rounded-lg border border-amber-300/40">📜 Sépia</strong> ou <strong className="text-white bg-white/20 px-2 py-0.5 rounded-lg border border-white/40">☀️ Claro</strong> e ajuste a letra em tempo real. Veja a tela mudar na hora!
+            <p className="text-xs sm:text-sm text-slate-200 font-normal leading-relaxed">
+              Mude para <strong className="text-gold">🌙 Escuro</strong>, <strong className="text-amber-200">📜 Sépia</strong> ou <strong className="text-white">☀️ Claro</strong> e ajuste a letra. A interface responde na hora!
             </p>
 
-            {/* Botão de Destaque para abrir em Tela Cheia no Celular (Ideal para tráfego do Instagram) */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="pt-1">
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-[#c9a962] via-[#e8cd8a] to-[#c9a962] hover:from-[#dcb86f] hover:to-[#dcb86f] text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl shadow-[0_0_25px_rgba(201,169,98,0.5)] active:scale-95 transition-all cursor-pointer group"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#c9a962] via-[#e8cd8a] to-[#c9a962] hover:from-[#dcb86f] text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-md active:scale-95 transition-all cursor-pointer"
               >
-                <Smartphone className="w-4 h-4 text-slate-950 group-hover:scale-110 transition-transform" />
-                <span>Abrir Simulador em Tela Cheia no Celular</span>
-                <Maximize2 className="w-3.5 h-3.5 text-slate-950 opacity-80" />
+                <Smartphone className="w-3.5 h-3.5" />
+                <span>Abrir Simulador em Tela Cheia</span>
+                <Maximize2 className="w-3 h-3 opacity-80" />
               </button>
             </div>
           </div>
@@ -200,7 +196,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
               <h4 className="font-sans font-bold text-sm text-white mb-1.5">
                 O Rubicão & A Faria Lima
               </h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-light mb-3">
+              <p className="text-sm text-slate-300 leading-relaxed font-normal mb-3">
                 Fragmento tático comparando a decisão de Júlio César com o modelo de liquidez da Strata em 2026.
               </p>
               <div className="p-2.5 rounded-xl bg-black/60 border border-white/5 font-mono text-[10px] text-slate-300 flex items-center justify-between">
@@ -221,7 +217,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
           <div className="lg:col-span-6 flex flex-col items-center">
             
             <motion.div 
-              className="relative w-full max-w-[380px] sm:max-w-[400px]"
+              className="relative w-full max-w-[390px] sm:max-w-[420px]"
               initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -399,11 +395,11 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                   {/* ÁREA DE LEITURA REAL DA OBRA (COM PARÁGRAFOS ESPAÇADOS E TRECHO GRIFADO) */}
                   <div className="p-5 sm:p-6 space-y-4 min-h-[340px] flex flex-col justify-between">
                     <div className="space-y-3">
-                      <p className={`text-[11px] font-mono tracking-widest uppercase font-semibold ${currentTheme.meta}`}>
+                      <p className={`text-xs font-mono tracking-widest uppercase font-bold ${currentTheme.meta}`}>
                         SÃO PAULO — FARIA LIMA // 03h42
                       </p>
 
-                      <h4 className={`font-sans font-bold text-lg leading-snug ${currentTheme.textColor}`}>
+                      <h4 className={`font-sans font-bold text-xl leading-snug ${currentTheme.textColor}`}>
                         O Teste Proibido
                       </h4>
 
@@ -424,7 +420,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                       {/* Frase Grifada Interativa (Toque para testar) */}
                       <div className="pt-1.5 cursor-pointer" onClick={handleToggleHighlight}>
                         <span 
-                          className={`leading-relaxed text-sm block transition-all font-serif ${
+                          className={`leading-relaxed text-base block transition-all font-serif ${
                             isHighlighted ? currentTheme.highlight : `${currentTheme.textColor} opacity-90`
                           }`}
                         >
@@ -462,17 +458,17 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
               <div className="p-2.5 rounded-xl bg-card/40 border border-white/5">
                 <Moon className="w-4 h-4 text-gold mx-auto mb-1" />
                 <span className="block text-[10px] sm:text-xs font-bold text-white">Zero Cansaço</span>
-                <span className="text-[9px] text-slate-400">Modo noturno</span>
+                <span className="text-[10px] text-slate-400">Modo noturno</span>
               </div>
               <div className="p-2.5 rounded-xl bg-card/40 border border-white/5">
                 <Smartphone className="w-4 h-4 text-cyan mx-auto mb-1" />
                 <span className="block text-[10px] sm:text-xs font-bold text-white">App PWA</span>
-                <span className="text-[9px] text-slate-400">Sem baixar nada</span>
+                <span className="text-[10px] text-slate-400">Sem baixar nada</span>
               </div>
               <div className="p-2.5 rounded-xl bg-card/40 border border-white/5">
                 <Bookmark className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
                 <span className="block text-[10px] sm:text-xs font-bold text-white">Nuvem Real</span>
-                <span className="text-[9px] text-slate-400">Salva onde parou</span>
+                <span className="text-[10px] text-slate-400">Salva onde parou</span>
               </div>
             </div>
 
@@ -488,7 +484,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
               <h4 className="font-sans font-bold text-sm text-white mb-1.5">
                 A Corrente de Leitores
               </h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-light mb-3">
+              <p className="text-sm text-slate-300 leading-relaxed font-normal mb-3">
                 Seu link pessoal de indicação fica salvo no painel do e-reader. Cada leitor trazido destrava vantagens exclusivas para o próximo volume.
               </p>
               <div className="p-2.5 rounded-xl bg-black/60 border border-white/5 font-mono text-[10px] text-cyan flex items-center justify-between">

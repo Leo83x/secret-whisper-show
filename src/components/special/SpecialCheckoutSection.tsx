@@ -325,7 +325,7 @@ export const SpecialCheckoutSection = () => {
             <Sparkles className="w-3.5 h-3.5" /> ACESSO DEFINITIVO // OFERTA DE LANÇAMENTO
           </span>
 
-          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
             Desbloqueie a obra completa agora mesmo.
           </h2>
 
@@ -349,7 +349,7 @@ export const SpecialCheckoutSection = () => {
                   style={{ width: "84%" }}
                 />
               </div>
-              <p className="text-xs text-slate-300 leading-tight">
+              <p className="text-sm text-slate-200 leading-relaxed">
                 Ao encerrar o lote promocional, o acesso passará para o valor oficial de <strong className="text-white">R$ 49,90</strong> e os 4 Dossiês Históricos serão vendidos separadamente.
               </p>
             </div>
@@ -496,6 +496,23 @@ export const SpecialCheckoutSection = () => {
                       <span>{copied ? "Copiado!" : "Copiar"}</span>
                     </button>
                   </div>
+                </div>
+
+                {/* INFORMAÇÕES DO FAVORECIDO PIX (TRANSPARÊNCIA TOTAL) */}
+                <div className="p-4 rounded-2xl bg-[#0f172a] border border-gold/40 text-center space-y-1.5 max-w-md mx-auto shadow-lg">
+                  <div className="flex items-center justify-center gap-1.5 text-xs text-slate-300 font-mono">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <span>DADOS DO FAVORECIDO NO SEU BANCO:</span>
+                  </div>
+                  <p className="text-sm sm:text-base text-white font-medium">
+                    Favorecido: <strong className="text-gold font-bold">LTL EMPREENDIMENTOS</strong>
+                  </p>
+                  <p className="text-xs text-slate-300">
+                    Processado com segurança via <strong className="text-white">Pagar.me / Stone Co.</strong>
+                  </p>
+                  <p className="text-[11px] text-slate-400 font-light">
+                    (Detentora dos direitos comerciais da obra • CNPJ na Nota Fiscal)
+                  </p>
                 </div>
 
                 <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-400 flex items-center justify-center gap-2">
@@ -690,6 +707,14 @@ export const SpecialCheckoutSection = () => {
                 {error && (
                   <div className="p-3.5 bg-red-500/15 border border-red-500/40 rounded-xl text-xs sm:text-sm text-red-300">
                     {error}
+                  </div>
+                )}
+
+                {method === "pix" && (
+                  <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-700/60 text-center">
+                    <p className="text-xs text-slate-300">
+                      ℹ️ Favorecido do PIX no seu banco: <strong className="text-white">LTL EMPREENDIMENTOS</strong> (via Pagar.me)
+                    </p>
                   </div>
                 )}
 

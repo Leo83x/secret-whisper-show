@@ -98,7 +98,7 @@ export const SpecialVisualArchiveSection = () => {
             <Sparkles className="w-3.5 h-3.5 text-cyan" />
             ACERVO DOCUMENTAL // 3.000 ANOS DE PADRÃO
           </span>
-          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
             Mais do que ficção: uma investigação rica em arquivos e passagens históricas.
           </h2>
           <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
@@ -145,7 +145,7 @@ export const SpecialVisualArchiveSection = () => {
                   <h4 className="font-sans font-bold text-lg text-white group-hover:text-gold transition-colors leading-snug">
                     {item.title}
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal">
                     {item.desc}
                   </p>
                 </div>

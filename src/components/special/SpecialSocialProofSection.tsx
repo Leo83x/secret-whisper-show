@@ -39,7 +39,7 @@ export const SpecialSocialProofSection = () => {
             <span>64 LEITORES DESBLOQUEARAM O ACESSO ESTA SEMANA</span>
           </div>
 
-          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
+          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
             O que estão achando da experiência
           </h2>
 
@@ -69,7 +69,7 @@ export const SpecialSocialProofSection = () => {
                   <Quote className="w-4 h-4 text-slate-600" />
                 </div>
 
-                <p className="text-sm text-slate-100 font-sans font-normal leading-relaxed">
+                <p className="text-sm sm:text-base text-slate-100 font-sans font-normal leading-relaxed">
                   "{item.text}"
                 </p>
               </div>
