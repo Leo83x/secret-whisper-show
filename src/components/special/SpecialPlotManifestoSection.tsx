@@ -73,7 +73,7 @@ export const SpecialPlotManifestoSection = () => {
               O MANIFESTO // FARIA LIMA, SÃO PAULO
             </span>
 
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+            <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">
               Em uma sala espelhada da Faria Lima, algo não fecha na conta da História.
             </h2>
 
@@ -98,7 +98,7 @@ export const SpecialPlotManifestoSection = () => {
         {/* PARTE B: GALERIA DOS 10 PROTAGONISTAS ATRAVÉS DAS ERAS */}
         <div className="space-y-12 pt-6">
           <div className="text-center space-y-3">
-            <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
+            <h3 className="font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
               3 Mil Anos. 10 Decisões. Um Mesmo Padrão Oculto.
             </h3>
             <p className="text-sm sm:text-base text-muted-foreground font-light max-w-2xl mx-auto">

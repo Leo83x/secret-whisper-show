@@ -27,7 +27,7 @@ const SpecialEditionLanding = () => {
       <div className="relative z-10">
         <SpecialHeroSection onCtaClick={scrollToCheckout} />
         <SpecialPlotManifestoSection />
-        <SpecialReaderShowcaseSection />
+        <SpecialReaderShowcaseSection onCtaClick={scrollToCheckout} />
         <SpecialVisualArchiveSection />
         <SpecialDossiersSection />
         <SpecialSocialProofSection />
