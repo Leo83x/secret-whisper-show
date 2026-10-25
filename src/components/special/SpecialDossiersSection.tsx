@@ -8,28 +8,28 @@ export const SpecialDossiersSection = () => {
       title: "O Rubicão e o Vale do Silício",
       subtitle: "Júlio César (49 a.C.) vs. Steve Jobs (2007)",
       desc: "O paralelo definitivo entre a travessia sem volta de César e a jogada de pressão do iPhone.",
-      image: "/dossiers/dossier_01_rubicon.jpg"
+      image: "/dossiers/dossier_01_rubicon.webp"
     },
     {
       code: "DOSSIÊ 02",
       title: "A Lama de Waterloo",
       subtitle: "Napoleão Bonaparte // Bélgica, 1815",
       desc: "Como a hesitação de 3 horas gerou a primeira grande redistribuição de capital moderno.",
-      image: "/dossiers/dossier_02_waterloo.jpg"
+      image: "/dossiers/dossier_02_waterloo.webp"
     },
     {
       code: "DOSSIÊ 03",
       title: "As Máquinas de Bletchley",
       subtitle: "Alan Turing // Inglaterra, 1941",
       desc: "Os registros que decifraram a previsibilidade matemática das decisões humanas em massa.",
-      image: "/dossiers/dossier_03_bletchley.jpg"
+      image: "/dossiers/dossier_03_bletchley.webp"
     },
     {
       code: "DOSSIÊ 04",
       title: "O Grande Travamento",
       subtitle: "Auditoria Strata // Faria Lima, 2026",
       desc: "O documento confidencial que conecta as operações financeiras aos centros de poder global.",
-      image: "/dossiers/dossier_04_travamento.jpg"
+      image: "/dossiers/dossier_04_travamento.webp"
     }
   ];
 
@@ -71,6 +71,8 @@ export const SpecialDossiersSection = () => {
                     alt={dossier.title}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 brightness-95"
                     loading="lazy"
+                    width="640"
+                    height="480"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#090f1e] via-[#090f1e]/30 to-transparent" />
                   

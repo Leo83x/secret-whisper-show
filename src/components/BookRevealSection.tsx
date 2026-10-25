@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import bookCover from "/capa_ush.jpg";
+import bookCover from "/capa_ush.webp";
 import { Moon, Type, BookMarked, ArrowRight, Sparkles } from "lucide-react";
 
 interface BookRevealSectionProps {

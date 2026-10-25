@@ -49,42 +49,42 @@ export const SpecialVisualArchiveSection = () => {
       location: "Jerusalém", 
       title: "O Arquivo Fundacional // Salomão", 
       desc: "A primeira codificação de governança e controle dinástico sob as ordens do templo.",
-      image: "/reader/assets/chapters/ch21_salomao.jpg"
+      image: "/reader/assets/chapters/ch21_salomao.webp"
     },
     { 
       year: "326 A.C.", 
       location: "Rio Hífasis, Índia", 
       title: "A Recusa do Exército // Alexandre", 
       desc: "O instante em que a maior expansão militar da Antiguidade encontrou seu limite psicológico.",
-      image: "/reader/assets/chapters/ch07_alexandre.jpg"
+      image: "/reader/assets/chapters/ch07_alexandre.webp"
     },
     { 
       year: "49 A.C.", 
       location: "Rio Rubicão, Gália", 
       title: "A Sorte Está Lançada // Júlio César", 
       desc: "A travessia proibida da fronteira que desafiou o Senado romano e redefiniu o poder imperial.",
-      image: "/reader/assets/chapters/ch02_julio_cesar.jpg"
+      image: "/reader/assets/chapters/ch02_julio_cesar.webp"
     },
     { 
       year: "1815", 
       location: "Waterloo, Bélgica", 
       title: "A Névoa e o Erro // Napoleão", 
       desc: "A hesitação matinal de 3 horas que colapsou a cavalaria francesa e reescreveu a Europa.",
-      image: "/reader/assets/chapters/ch11_napoleao.jpg"
+      image: "/reader/assets/chapters/ch11_napoleao.webp"
     },
     { 
       year: "1941", 
       location: "Bletchley Park, UK", 
       title: "A Máquina e a Mente // Alan Turing", 
       desc: "Os fundamentos da computação moderna concebidos para antecipar as decisões humanas de guerra.",
-      image: "/reader/assets/chapters/ch13_turing.jpg"
+      image: "/reader/assets/chapters/ch13_turing.webp"
     },
     { 
       year: "2026", 
       location: "São Paulo // Faria Lima", 
       title: "A Convergência Final // Caio & Marina", 
       desc: "A auditoria que revela o mesmo padrão oculto sendo executado nos terminais do mercado.",
-      image: "/reader/assets/chapters/ch04_marina.jpg"
+      image: "/reader/assets/chapters/ch04_marina.webp"
     }
   ];
 
@@ -124,6 +124,8 @@ export const SpecialVisualArchiveSection = () => {
                   alt={item.title}
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out brightness-95 contrast-105"
                   loading="lazy"
+                  width="640"
+                  height="400"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#090f1e] via-[#090f1e]/20 to-transparent" />
                 

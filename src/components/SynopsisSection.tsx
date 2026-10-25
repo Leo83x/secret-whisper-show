@@ -1,15 +1,15 @@
 import { motion } from "framer-motion";
 
-import salomao from "@/assets/characters/salomao.png";
-import alexandre from "@/assets/characters/alexandre.png";
-import cleopatra from "@/assets/characters/cleopatra.png";
-import joanaDarc from "@/assets/characters/joana_darc.png";
-import daVinci from "@/assets/characters/da_vinci.png";
-import julioCesar from "@/assets/characters/julio_cesar.png";
-import napoleao from "@/assets/characters/napoleao.png";
-import turing from "@/assets/characters/turing.png";
-import mandela from "@/assets/characters/mandela.png";
-import jobs from "@/assets/characters/jobs.png";
+import salomao from "@/assets/characters/salomao.webp";
+import alexandre from "@/assets/characters/alexandre.webp";
+import cleopatra from "@/assets/characters/cleopatra.webp";
+import joanaDarc from "@/assets/characters/joana_darc.webp";
+import daVinci from "@/assets/characters/da_vinci.webp";
+import julioCesar from "@/assets/characters/julio_cesar.webp";
+import napoleao from "@/assets/characters/napoleao.webp";
+import turing from "@/assets/characters/turing.webp";
+import mandela from "@/assets/characters/mandela.webp";
+import jobs from "@/assets/characters/jobs.webp";
 
 interface SynopsisSectionProps {
   onOpenRegister?: () => void;

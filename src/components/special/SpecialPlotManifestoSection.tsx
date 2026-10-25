@@ -1,16 +1,16 @@
 import { motion } from "framer-motion";
-import bookCover from "/capa_ush.jpg";
+import bookCover from "/capa_ush.webp";
 
-import salomao from "@/assets/characters/salomao.png";
-import alexandre from "@/assets/characters/alexandre.png";
-import cleopatra from "@/assets/characters/cleopatra.png";
-import joanaDarc from "@/assets/characters/joana_darc.png";
-import daVinci from "@/assets/characters/da_vinci.png";
-import julioCesar from "@/assets/characters/julio_cesar.png";
-import napoleao from "@/assets/characters/napoleao.png";
-import turing from "@/assets/characters/turing.png";
-import mandela from "@/assets/characters/mandela.png";
-import jobs from "@/assets/characters/jobs.png";
+import salomao from "@/assets/characters/salomao.webp";
+import alexandre from "@/assets/characters/alexandre.webp";
+import cleopatra from "@/assets/characters/cleopatra.webp";
+import joanaDarc from "@/assets/characters/joana_darc.webp";
+import daVinci from "@/assets/characters/da_vinci.webp";
+import julioCesar from "@/assets/characters/julio_cesar.webp";
+import napoleao from "@/assets/characters/napoleao.webp";
+import turing from "@/assets/characters/turing.webp";
+import mandela from "@/assets/characters/mandela.webp";
+import jobs from "@/assets/characters/jobs.webp";
 
 const characters = [
   { name: "Salomão", image: salomao, era: "970 a.C.", role: "O Limite da Sabedoria" },
@@ -54,7 +54,7 @@ export const SpecialPlotManifestoSection = () => {
                   src={bookCover}
                   alt="Capa do livro O Último Segredo da Humanidade"
                   className="w-full h-auto object-cover block"
-                  loading="lazy"
+                  loading="eager" width="320" height="480"
                 />
               </div>
 
@@ -122,6 +122,8 @@ export const SpecialPlotManifestoSection = () => {
                     alt={char.name}
                     className="w-full h-full object-cover object-top rounded-full bg-[#0b1120]"
                     loading="lazy"
+                    width="96"
+                    height="96"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>

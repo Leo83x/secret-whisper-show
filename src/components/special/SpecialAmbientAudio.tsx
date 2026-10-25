@@ -3,10 +3,11 @@ import { Volume2, Music } from "lucide-react";
 
 export const SpecialAmbientAudio = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const videoId = "XYKUeZQbMF0"; // Trilha épica cinematográfica
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&enablejsapi=1&playsinline=1`;
+  const videoId = "XYKUeZQbMF0";
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&enablejsapi=1&playsinline=1`;
 
   const command = (func: string) => {
     iframeRef.current?.contentWindow?.postMessage(
@@ -16,12 +17,16 @@ export const SpecialAmbientAudio = () => {
   };
 
   const toggleMusic = () => {
+    if (!hasStarted) {
+      setHasStarted(true);
+      setIsPlaying(true);
+      return;
+    }
+
     if (isPlaying) {
-      command("mute");
       command("pauseVideo");
       setIsPlaying(false);
     } else {
-      command("unMute");
       command("playVideo");
       setIsPlaying(true);
     }
@@ -29,21 +34,23 @@ export const SpecialAmbientAudio = () => {
 
   return (
     <>
-      {/* Hidden YouTube player */}
-      <div
-        aria-hidden
-        className="fixed -z-50 opacity-0 pointer-events-none w-px h-px overflow-hidden"
-      >
-        <iframe
-          ref={iframeRef}
-          width="560"
-          height="315"
-          src={embedUrl}
-          title="Trilha sonora"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        />
-      </div>
+      {/* YouTube player ONLY mounted on explicit user click - ZERO initial network overhead */}
+      {hasStarted && (
+        <div
+          aria-hidden
+          className="fixed -z-50 opacity-0 pointer-events-none w-px h-px overflow-hidden"
+        >
+          <iframe
+            ref={iframeRef}
+            width="560"
+            height="315"
+            src={embedUrl}
+            title="Trilha sonora"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          />
+        </div>
+      )}
 
       {/* Botão flutuante compacto e discreto no topo */}
       <div className="fixed top-4 right-4 z-40 hidden sm:block animate-in fade-in">

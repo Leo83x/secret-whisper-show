@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, ShieldCheck, Zap } from "lucide-react";
 
 interface SpecialHeroProps {
@@ -12,64 +11,34 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="relative z-10 max-w-4xl mx-auto w-full px-2">
-        {/* Top Badge */}
-        <motion.div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs sm:text-sm font-semibold tracking-widest uppercase mb-8 shadow-[0_0_20px_rgba(201,169,98,0.2)]"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
+        {/* Top Badge - Imediatamente visível */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs sm:text-sm font-semibold tracking-widest uppercase mb-8 shadow-[0_0_20px_rgba(201,169,98,0.2)]">
           <Sparkles className="w-3.5 h-3.5 text-gold" />
           <span>Edição Especial Digital // Acesso Vitalício</span>
-        </motion.div>
+        </div>
 
-        {/* Título Monumental */}
+        {/* Título Monumental - Renderização imediata para LCP / FCP instantâneo */}
         <h1 className="font-display font-bold leading-none mb-8 flex flex-col items-center justify-center space-y-2">
-          <motion.span
-            className="block text-foreground tracking-normal text-2xl sm:text-4xl md:text-5xl lg:text-6xl"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.2 }}
-          >
+          <span className="block text-foreground tracking-normal text-2xl sm:text-4xl md:text-5xl lg:text-6xl">
             O ÚLTIMO
-          </motion.span>
+          </span>
 
-          <motion.span
-            className="block bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(56,189,248,0.45)] text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.3, delay: 0.4 }}
-          >
+          <span className="block bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(56,189,248,0.45)] text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black">
             SEGREDO
-          </motion.span>
+          </span>
 
-          <motion.span
-            className="block text-foreground tracking-normal text-2xl sm:text-4xl md:text-5xl lg:text-6xl"
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.6 }}
-          >
+          <span className="block text-foreground tracking-normal text-2xl sm:text-4xl md:text-5xl lg:text-6xl">
             DA HUMANIDADE
-          </motion.span>
+          </span>
         </h1>
 
-        {/* Frase de Impacto */}
-        <motion.p
-          className="text-lg sm:text-xl md:text-2xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.8 }}
-        >
+        {/* Frase de Impacto - Elemento LCP instantâneo */}
+        <p className="text-lg sm:text-xl md:text-2xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed mb-10">
           E se os grandes acontecimentos da História respondessem a <strong className="text-white font-medium">um mesmo padrão oculto</strong> que você nunca deveria descobrir?
-        </motion.p>
+        </p>
 
-        {/* Botão de Ação Direta (Scroll direto ao checkout - SEM falso InitiateCheckout) */}
-        <motion.div
-          className="flex flex-col items-center justify-center gap-4"
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1 }}
-        >
+        {/* Botão de Ação Direta */}
+        <div className="flex flex-col items-center justify-center gap-4">
           <button
             type="button"
             onClick={onCtaClick}
@@ -94,7 +63,7 @@ export const SpecialHeroSection = ({ onCtaClick }: SpecialHeroProps) => {
             <span>•</span>
             <span className="text-emerald-400 font-medium">PIX ou Cartão em 3x</span>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -364,7 +364,7 @@ export const SpecialCheckoutSection = () => {
             <div className="flex items-center gap-4 pb-6 border-b border-white/10">
               <div className="relative shrink-0">
                 <img
-                  src="/capa_ush.jpg"
+                  src="/capa_ush.webp"
                   alt="Capa do Livro"
                   className="w-20 sm:w-24 h-auto rounded-xl shadow-[0_10px_25px_rgba(0,0,0,0.8)] border border-gold/40"
                   loading="lazy"
