@@ -117,7 +117,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
   }, [isModalOpen]);
 
   return (
-    <section className="relative py-20 sm:py-28 px-4 sm:px-6 overflow-visible bg-[#050811]/80 border-y border-white/10">
+    <section id="reader-simulator-section" className="relative py-16 sm:py-24 px-4 sm:px-6 overflow-visible bg-[#050811]/80 border-y border-white/10">
       <div className="max-w-6xl mx-auto space-y-12">
         
         {/* Cabeçalho da Seção */}
@@ -380,7 +380,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                   <div className="p-5 sm:p-6 space-y-4 min-h-[340px] flex flex-col justify-between">
                     <div className="space-y-3">
                       <p className={`text-xs font-mono tracking-widest uppercase font-bold ${currentTheme.meta}`}>
-                        SÃO PAULO — FARIA LIMA // 03h42
+                        PRÓLOGO // FARIA LIMA, SÃO PAULO — 03h42
                       </p>
 
                       <h4 className={`font-sans font-bold text-xl leading-snug ${currentTheme.textColor}`}>
@@ -391,22 +391,42 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
-                        O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria.
+                        O décimo sexto andar estava quase vazio. Diante de dois monitores, Caio Avelar cruzava relatórios bancários da Strata com registros históricos restritos — até que uma correlação impossível travou a tela.
                       </p>
 
                       <p 
                         className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
-                        Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações bancárias que não deveriam conter nada além de rotina contábil...
+                        As mesmas assinaturas matemáticas que antecederam o colapso de impérios há três mil anos estavam sendo executadas, linha por linha, nos terminais financeiros daquela madrugada.
                       </p>
 
                       <p 
                         className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
-                        E foi no silêncio da sala de operações da Faria Lima que Caio percebeu que uma pergunta podia ser mais perigosa do que uma resposta.
+                        Nesse exato instante, o celular pessoal de Caio vibrou sobre a mesa. Uma mensagem de número oculto brilhava na tela: <span className={currentTheme.highlight}>"Você não deveria ter cruzado os vetores. Saia do prédio agora."</span>
                       </p>
+
+                      {/* Cliffhanger: Gatilho de Continuação Dentro da Tela do Leitor */}
+                      <div className="pt-2">
+                        <div className="p-3.5 rounded-2xl bg-gradient-to-b from-slate-900/95 to-black/95 border border-gold/50 text-center space-y-2 shadow-lg">
+                          <span className="inline-block text-[10px] font-mono font-bold text-gold uppercase tracking-widest">
+                            🔒 FIM DA AMOSTRA GRATUITA // PÁG. 2 DE 240
+                          </span>
+                          <p className="text-xs text-slate-200 leading-snug">
+                            O que Caio encontra no arquivo oculto da Strata muda tudo. Continue lendo agora no seu celular:
+                          </p>
+                          <button
+                            type="button"
+                            onClick={onCtaClick}
+                            className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                          >
+                            <Zap className="w-3.5 h-3.5 fill-slate-950" />
+                            <span>Destravar Livro Completo (R$ 29,90)</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Rodapé da Tela do Celular */}

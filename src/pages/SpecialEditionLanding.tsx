@@ -4,7 +4,6 @@ import FooterSection from "@/components/FooterSection";
 import { SpecialHeroSection } from "@/components/special/SpecialHeroSection";
 import { SpecialPlotManifestoSection } from "@/components/special/SpecialPlotManifestoSection";
 import { SpecialReaderShowcaseSection } from "@/components/special/SpecialReaderShowcaseSection";
-import { SpecialVisualArchiveSection } from "@/components/special/SpecialVisualArchiveSection";
 import { SpecialDossiersSection } from "@/components/special/SpecialDossiersSection";
 import { SpecialSocialProofSection } from "@/components/special/SpecialSocialProofSection";
 import { SpecialCheckoutSection } from "@/components/special/SpecialCheckoutSection";
@@ -19,16 +18,25 @@ const SpecialEditionLanding = () => {
     }
   };
 
+  const scrollToSimulator = () => {
+    const el = document.getElementById("reader-simulator-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <main className="relative min-h-screen bg-background overflow-x-hidden">
       <ParticleBackground />
       <SpecialAmbientAudio />
 
       <div className="relative z-10">
-        <SpecialHeroSection onCtaClick={scrollToCheckout} />
+        <SpecialHeroSection
+          onCtaClick={scrollToCheckout}
+          onReadSampleClick={scrollToSimulator}
+        />
         <SpecialPlotManifestoSection />
         <SpecialReaderShowcaseSection onCtaClick={scrollToCheckout} />
-        <SpecialVisualArchiveSection />
         <SpecialDossiersSection />
         <SpecialSocialProofSection />
         <SpecialCheckoutSection />
