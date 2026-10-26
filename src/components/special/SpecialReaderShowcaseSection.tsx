@@ -49,7 +49,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-slate-400",
       borderColor: "border-gold/30",
       headerBg: "bg-[#0d1527] border-b border-white/10",
-      highlight: "bg-[#c9a962]/20 text-[#f6d88e] px-3 py-2 rounded-xl border-l-2 border-gold block my-2.5 font-medium",
+      figureBg: "bg-[#0d1527] border-gold/30",
       meta: "text-gold",
       accent: "#c9a962"
     },
@@ -61,7 +61,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-[#6b583e]",
       borderColor: "border-[#d4c3a3]",
       headerBg: "bg-[#e8dcbf] border-b border-[#cfbfa0]",
-      highlight: "bg-[#d8a342]/25 text-[#1f1406] px-3 py-2 rounded-xl border-l-2 border-[#8a5d1b] block my-2.5 font-semibold",
+      figureBg: "bg-[#e8dcbf] border-[#c5b28f]",
       meta: "text-[#8a5d1b]",
       accent: "#d8a342"
     },
@@ -73,7 +73,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-[#64748b]",
       borderColor: "border-slate-300",
       headerBg: "bg-[#f1f5f9] border-b border-slate-200",
-      highlight: "bg-amber-100/90 text-[#78350f] px-3 py-2 rounded-xl border-l-2 border-amber-500 block my-2.5 font-medium",
+      figureBg: "bg-[#f8fafc] border-slate-300",
       meta: "text-amber-700",
       accent: "#f59e0b"
     }
@@ -128,7 +128,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             Uma experiência de leitura imersiva, feita para você.
           </h2>
           <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Esqueça arquivos de PDF que quebram no celular. Experimente abaixo um trecho real do capítulo de <strong className="text-gold">Júlio César no Rubicão</strong> diretamente no simulador do leitor:
+            Esqueça arquivos de PDF que quebram no celular. Experimente abaixo um trecho ilustrado do capítulo de <strong className="text-gold">Júlio César no Rubicão</strong> diretamente no simulador do leitor:
           </p>
         </div>
 
@@ -176,11 +176,11 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
           </div>
 
           {/* ======================================================== */}
-          {/* MOCKUP DO CELULAR LIMPO, DIRETO E IMERSIVO               */}
+          {/* MOCKUP DO CELULAR LIMPO, DIRETO E COM IMAGEM DO CAPÍTULO */}
           {/* ======================================================== */}
           <div className="lg:col-span-6 flex flex-col items-center">
             
-            <div className="relative w-full max-w-[400px] sm:max-w-[430px]">
+            <div className="relative w-full max-w-[405px] sm:max-w-[435px]">
               
               {/* Moldura Externa de Titânio do Celular */}
               <div className="relative rounded-[44px] sm:rounded-[50px] p-2 sm:p-3 bg-gradient-to-b from-slate-600 via-slate-800 to-slate-950 border-2 border-slate-500/50 shadow-[0_25px_65px_-15px_rgba(0,0,0,0.95),0_0_40px_rgba(201,169,98,0.25)]">
@@ -324,15 +324,42 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
                   </div>
 
-                  {/* ÁREA DE LEITURA PROFUNDA E CONTÍNUA: JÚLIO CÉSAR NO RUBICÃO */}
-                  <div className="p-5 sm:p-6 space-y-4 min-h-[380px] flex flex-col justify-between">
-                    <div className="space-y-3.5 text-left">
-                      <p className={`text-xs font-mono tracking-widest uppercase font-bold ${currentTheme.meta}`}>
-                        ARQUIVO 02 // RIO RUBICÃO, ROMA — 49 A.C.
-                      </p>
+                  {/* ÁREA DE LEITURA CONTÍNUA COM IMAGEM OFICIAL DO CAPÍTULO E SEM MARCADOR AMARELO */}
+                  <div className="p-4 sm:p-6 space-y-4 flex flex-col justify-between">
+                    <div className="space-y-4 text-left">
+                      
+                      {/* Card Ilustrado Oficial do E-Reader (Júlio César no Rubicão) */}
+                      <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-lg`}>
+                        <div className="px-3 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/20">
+                          <span className={`text-[10px] font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
+                            ARQUIVO HISTÓRICO // CAPÍTULO 02
+                          </span>
+                          <span className={`text-[10px] font-mono ${currentTheme.subColor}`}>
+                            49 a.C.
+                          </span>
+                        </div>
+                        <div className="relative w-full h-44 sm:h-48 overflow-hidden bg-black">
+                          <img
+                            src="/reader/assets/chapters/ch02_julio_cesar.webp"
+                            alt="Júlio César às margens do Rubicão"
+                            className="w-full h-full object-cover object-center"
+                            loading="lazy"
+                            width="640"
+                            height="400"
+                          />
+                        </div>
+                        <div className="px-3.5 py-2 flex items-center justify-between">
+                          <span className={`text-xs font-sans font-bold ${currentTheme.textColor}`}>
+                            JÚLIO CÉSAR
+                          </span>
+                          <span className={`text-[11px] font-mono ${currentTheme.subColor}`}>
+                            A travessia do Rubicão // Roma
+                          </span>
+                        </div>
+                      </div>
 
-                      <h4 className={`font-sans font-bold text-xl leading-snug ${currentTheme.textColor}`}>
-                        Júlio César: A Travessia sem Volta
+                      <h4 className={`font-sans font-bold text-xl leading-snug pt-1 ${currentTheme.textColor}`}>
+                        A Travessia sem Volta
                       </h4>
 
                       <p 
@@ -356,28 +383,35 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         O escrivão de serviço via o que os discursos posteriores esconderiam: o homem prestes a mudar a história do mundo estava decidindo às cegas, cercado por relatos desencontrados e prazos que se fechavam hora a hora.
                       </p>
 
-                      <div 
-                        className={`leading-relaxed transition-all duration-200 font-sans ${currentTheme.highlight}`}
+                      <p 
+                        className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
                         — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
-                      </div>
+                      </p>
 
-                      {/* FECHAMENTO NARRATIVO + BOTÃO DE DESBLOQUEIO */}
+                      <p 
+                        className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
+                        style={{ fontSize: `${fontSize}px` }}
+                      >
+                        César caminhou até a beira do barranco e entrou na água gelada. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível.
+                      </p>
+
+                      {/* CARD DE FECHAMENTO COM FONTE LEGÍVEL NO CELULAR */}
                       <div className="pt-2">
-                        <div className="p-4 rounded-2xl bg-gradient-to-b from-[#0c1428] to-[#070b16] border border-gold/50 text-center space-y-2.5 shadow-xl">
-                          <span className="inline-block text-[10px] font-mono font-bold text-gold uppercase tracking-widest">
+                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-[#0e1830] to-[#080d1a] border border-gold/50 text-center space-y-3 shadow-xl">
+                          <span className="inline-block text-xs sm:text-sm font-mono font-bold text-gold uppercase tracking-wider">
                             ⚡ O MESMO PADRÃO ATRAVÉS DOS SÉCULOS
                           </span>
-                          <p className="text-xs text-slate-200 leading-relaxed">
-                            Séculos depois, esse mesmo cerco invisível de pressão e risco se repetiria na lama de <strong className="text-white">Waterloo (1815)</strong>, nas máquinas de <strong className="text-white">Alan Turing (1941)</strong> e nos bastidores de <strong className="text-white">Steve Jobs (2007)</strong>.
+                          <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-normal">
+                            Depois que César atravessou o rio, tudo pareceu um plano genial. Antes da travessia, era o mesmo cerco invisível de pressão e risco que séculos depois cercaria <strong className="text-white">Napoleão em Waterloo (1815)</strong>, <strong className="text-white">Alan Turing (1941)</strong> e <strong className="text-white">Steve Jobs (2007)</strong>.
                           </p>
                           <button
                             type="button"
                             onClick={onCtaClick}
-                            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(201,169,98,0.4)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(201,169,98,0.4)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
                           >
-                            <Zap className="w-3.5 h-3.5 fill-slate-950" />
+                            <Zap className="w-4 h-4 fill-slate-950 shrink-0" />
                             <span>Destravar Obra Completa • R$ 29,90</span>
                           </button>
                         </div>
@@ -385,8 +419,8 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     </div>
 
                     {/* Rodapé da Tela do Celular */}
-                    <div className={`pt-2.5 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[10px] font-mono ${currentTheme.subColor}`}>
-                      <span>21 Capítulos + 4 Dossiês</span>
+                    <div className={`pt-2.5 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[11px] font-mono ${currentTheme.subColor}`}>
+                      <span>21 Capítulos Ilustrados + 4 Dossiês</span>
                       <span className="flex items-center gap-1 text-gold font-bold">
                         <Sparkles className="w-3 h-3" /> Modo Imersivo
                       </span>
@@ -455,7 +489,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       </div>
 
       {/* ======================================================== */}
-      {/* MODAL EM TELA CHEIA LIMPO E PROFUNDO                     */}
+      {/* MODAL EM TELA CHEIA COM O MESMO CONTEÚDO E ILUSTRAÇÃO    */}
       {/* ======================================================== */}
       <AnimatePresence>
         {isModalOpen && (
@@ -561,45 +595,67 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             <div className={`flex-1 overflow-y-auto p-6 sm:p-10 ${currentTheme.cardBg} transition-colors duration-300`}>
               <div className="max-w-2xl mx-auto space-y-5 text-left">
                 
-                <div className="space-y-1">
-                  <p className={`text-xs font-mono tracking-widest uppercase font-semibold ${currentTheme.meta}`}>
-                    ARQUIVO 02 // RIO RUBICÃO, ROMA — 49 A.C.
-                  </p>
-                  <h2 className={`font-sans font-bold text-2xl sm:text-3xl ${currentTheme.textColor}`}>
-                    Júlio César: A Travessia sem Volta
-                  </h2>
+                {/* Card Ilustrado Oficial do E-Reader no Modal */}
+                <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-lg`}>
+                  <div className="px-4 py-2 flex items-center justify-between border-b border-white/10 bg-black/20">
+                    <span className={`text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
+                      ARQUIVO HISTÓRICO // CAPÍTULO 02
+                    </span>
+                    <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                      49 a.C.
+                    </span>
+                  </div>
+                  <div className="relative w-full h-56 sm:h-64 overflow-hidden bg-black">
+                    <img
+                      src="/reader/assets/chapters/ch02_julio_cesar.webp"
+                      alt="Júlio César às margens do Rubicão"
+                      className="w-full h-full object-cover object-center"
+                      loading="lazy"
+                      width="640"
+                      height="400"
+                    />
+                  </div>
+                  <div className="px-4 py-2.5 flex items-center justify-between">
+                    <span className={`text-sm font-sans font-bold ${currentTheme.textColor}`}>
+                      JÚLIO CÉSAR
+                    </span>
+                    <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                      A travessia do Rubicão // Roma
+                    </span>
+                  </div>
                 </div>
+
+                <h2 className={`font-sans font-bold text-2xl sm:text-3xl pt-2 ${currentTheme.textColor}`}>
+                  A Travessia sem Volta
+                </h2>
 
                 <div 
                   className={`space-y-4 leading-relaxed font-sans ${currentTheme.textColor}`}
                   style={{ fontSize: `${fontSize}px` }}
                 >
                   <p>
-                    O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. O rio era estreito e raso, pequeno demais para carregar a fronteira que passaria a representar nos séculos seguintes. Do outro lado daquele curso d'água começava o território administrativo da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
+                    O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado daquele curso d'água começava o território administrativo da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
                   </p>
                   <p>
-                    A poucos passos do general, protegido sob o toldo de uma tenda de campanha, o intendente-chefe do exército conferia as tábuas de cera à luz de uma lamparina de azeite. Enquanto os comandantes olhavam para Roma, o trabalho daquele funcionário era medir o que sustentava os homens de pé: rações de trigo para apenas nove dias, soldos atrasados desde o outono na Gália e carroças de suprimento retidas pelo gelo nos passos do norte.
+                    A poucos passos do general, protegido sob o toldo de uma tenda de campanha, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono na Gália e carroças de suprimento retidas pelo gelo nos passos do norte.
                   </p>
                   <p>
-                    Os emissários do Senado haviam bloqueado a liberação de crédito e grãos para as legiões da fronteira. Se César aguardasse parado na margem esperando uma saída política, o inverno consumiria as reservas antes de qualquer resposta.
+                    O escrivão de serviço via o que os discursos posteriores esconderiam: o homem prestes a mudar a história do mundo estava decidindo às cegas, cercado por relatos desencontrados e prazos que se fechavam hora a hora.
                   </p>
                   <p>
-                    Na entrada da tenda de intendência, o escrivão de serviço baixou o estilete sobre a cera e registrou o horário da chegada do cavaleiro e a divergência dos relatos. Ele via o que os discursos posteriores esconderiam: o comandante de um exército prestes a mudar a história do mundo estava decidindo às cegas, cercado por números desencontrados e prazos que se fechavam hora a hora.
-                  </p>
-                  <div className={currentTheme.highlight}>
                     — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
-                  </div>
+                  </p>
                   <p>
-                    César caminhou até a beira do barranco e entrou na água gelada. As primeiras fileiras de soldados desceram logo atrás, levantando espuma e barro na correnteza rasa. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível.
+                    César caminhou até a beira do barranco e entrou na água gelada. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível.
                   </p>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-[#0a1122] border border-gold/50 text-center space-y-2.5 mt-6">
-                  <span className="text-xs font-mono text-gold font-bold uppercase tracking-widest block">
-                    ⚡ O FIO INVISÍVEL DA OBRA
+                <div className="p-5 rounded-2xl bg-[#0e1830] border border-gold/50 text-center space-y-3 mt-6">
+                  <span className="text-xs sm:text-sm font-mono text-gold font-bold uppercase tracking-wider block">
+                    ⚡ O MESMO PADRÃO ATRAVÉS DOS SÉCULOS
                   </span>
-                  <p className="text-sm text-slate-200 leading-relaxed">
-                    Depois que César atravessou o rio, tudo pareceu um plano genial. Antes da travessia, era o mesmo cerco invisível de pressão que séculos depois cercaria Napoleão em Waterloo, Alan Turing em Bletchley Park e Steve Jobs em São Francisco.
+                  <p className="text-sm sm:text-base text-slate-100 leading-relaxed">
+                    Depois que César atravessou o rio, tudo pareceu um plano genial. Antes da travessia, era o mesmo cerco invisível de pressão e risco que séculos depois cercaria Napoleão em Waterloo (1815), Alan Turing (1941) e Steve Jobs (2007).
                   </p>
                 </div>
 
