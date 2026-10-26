@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Moon, 
@@ -32,6 +32,41 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
+  // Refs para trava única de eventos do Meta Pixel por sessão
+  const hasTrackedAdjust = useRef<boolean>(false);
+  const hasTrackedFullscreen = useRef<boolean>(false);
+  const hasTrackedCompleteRead = useRef<boolean>(false);
+  const endOfSampleRef = useRef<HTMLDivElement | null>(null);
+
+  // Helper seguro para eventos personalizados do Meta Pixel
+  const fireCustomPixel = (eventName: string, params?: Record<string, any>) => {
+    if (typeof window !== "undefined" && typeof (window as any).fbq === "function") {
+      try {
+        if (params) {
+          (window as any).fbq("trackCustom", eventName, params);
+        } else {
+          (window as any).fbq("trackCustom", eventName);
+        }
+      } catch (e) {}
+    }
+  };
+
+  const trackReaderAdjustOnce = () => {
+    if (!hasTrackedAdjust.current) {
+      hasTrackedAdjust.current = true;
+      fireCustomPixel("EngajouSimulador", { acao: "ajustou_leitor" });
+    }
+  };
+
+  const openFullscreenModal = () => {
+    setIsModalOpen(true);
+    setHasInteracted(true);
+    if (!hasTrackedFullscreen.current) {
+      hasTrackedFullscreen.current = true;
+      fireCustomPixel("EngajouSimulador", { acao: "abriu_tela_cheia" });
+    }
+  };
+
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
     setHasInteracted(true);
@@ -52,6 +87,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       figureBg: "bg-[#0d1527] border-gold/30",
       dividerLine: "border-gold/30",
       dividerBadge: "bg-[#0f192f] text-gold border-gold/40",
+      fadeGradient: "from-transparent via-[#080d1a]/90 to-[#080d1a]",
       meta: "text-gold",
       accent: "#c9a962"
     },
@@ -66,6 +102,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       figureBg: "bg-[#e8dcbf] border-[#c5b28f]",
       dividerLine: "border-[#b59e7a]",
       dividerBadge: "bg-[#e5d6b8] text-[#6b4814] border-[#b59e7a]",
+      fadeGradient: "from-transparent via-[#f5ecda]/90 to-[#f5ecda]",
       meta: "text-[#8a5d1b]",
       accent: "#d8a342"
     },
@@ -80,6 +117,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       figureBg: "bg-[#f8fafc] border-slate-300",
       dividerLine: "border-slate-300",
       dividerBadge: "bg-slate-100 text-amber-800 border-amber-400/60",
+      fadeGradient: "from-transparent via-white/90 to-white",
       meta: "text-amber-700",
       accent: "#f59e0b"
     }
@@ -90,22 +128,26 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
   const handleDecreaseFont = () => {
     const next = Math.max(14, fontSize - 1);
     setFontSize(next);
+    trackReaderAdjustOnce();
     triggerToast(`Fonte reduzida para ${next}px`);
   };
 
   const handleIncreaseFont = () => {
     const next = Math.min(22, fontSize + 1);
     setFontSize(next);
+    trackReaderAdjustOnce();
     triggerToast(`Fonte aumentada para ${next}px`);
   };
 
   const handleThemeChange = (newTheme: "dark" | "sepia" | "light") => {
     setTheme(newTheme);
+    trackReaderAdjustOnce();
     triggerToast(`Tema ${themeStyles[newTheme].name} ativado!`);
   };
 
   const handleToggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
+    trackReaderAdjustOnce();
     triggerToast(!isBookmarked ? "Página salva na nuvem!" : "Marcador removido");
   };
 
@@ -120,107 +162,25 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
     };
   }, [isModalOpen]);
 
-  // Conteúdo unificado de "Corte Duplo Cinematográfico" (Passado: Rubicão ➔ Presente: Caio)
-  const renderReadingContent = (isFullModal: boolean) => (
-    <div className="space-y-4 text-left">
-      {/* Card Ilustrado Oficial do E-Reader (Júlio César no Rubicão) */}
-      <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-lg`}>
-        <div className="px-3.5 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/20">
-          <span className={`text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
-            49 A.C. — MARGENS DO RIO RUBICÃO
-          </span>
-          <span className={`text-[10px] font-mono ${currentTheme.subColor}`}>
-            Arquivo 02
-          </span>
-        </div>
-        <div className={`relative w-full ${isFullModal ? "h-52 sm:h-64" : "h-44 sm:h-48"} overflow-hidden bg-black`}>
-          <img
-            src="/reader/assets/chapters/ch02_julio_cesar.webp"
-            alt="Júlio César às margens do Rubicão"
-            className="w-full h-full object-cover object-center"
-            loading="lazy"
-            width="640"
-            height="400"
-          />
-        </div>
-        <div className="px-3.5 py-2 flex items-center justify-between">
-          <span className={`text-xs sm:text-sm font-sans font-bold ${currentTheme.textColor}`}>
-            JÚLIO CÉSAR
-          </span>
-          <span className={`text-[11px] font-mono ${currentTheme.subColor}`}>
-            A travessia do Rubicão // Roma
-          </span>
-        </div>
-      </div>
+  // IntersectionObserver para disparar LeuAmostraCompleta quando o leitor chega ao final da amostra
+  useEffect(() => {
+    if (!isModalOpen || !endOfSampleRef.current) return;
 
-      {/* PARTE 1: O PASSADO (O GANCHO HISTÓRICO) */}
-      <h4 className={`font-sans font-bold ${isFullModal ? "text-2xl sm:text-3xl" : "text-xl"} leading-snug pt-1 ${currentTheme.textColor}`}>
-        A Travessia sem Volta
-      </h4>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasTrackedCompleteRead.current) {
+            hasTrackedCompleteRead.current = true;
+            fireCustomPixel("LeuAmostraCompleta");
+          }
+        });
+      },
+      { threshold: 0.55 }
+    );
 
-      <div
-        className={`space-y-4 leading-relaxed font-sans transition-all duration-200 ${currentTheme.textColor}`}
-        style={{ fontSize: `${fontSize}px` }}
-      >
-        <p>
-          O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado começava o território da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
-        </p>
-
-        <p>
-          Sob o toldo da tenda, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte. César não tinha semanas para negociar. Tinha horas.
-        </p>
-
-        <p>
-          — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
-        </p>
-
-        {/* DIVISOR VISUAL DE TRANSIÇÃO TEMPORAL: PASSADO ➔ PRESENTE */}
-        <div className="py-2 flex items-center gap-3">
-          <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
-          <span className={`px-3 py-1 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
-            • • • DIAS ATUAIS — SÃO PAULO • • •
-          </span>
-          <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
-        </div>
-
-        {/* PARTE 2: A QUEBRA PARA O PRESENTE (A INVESTIGAÇÃO DE CAIO + CLIFFHANGER) */}
-        <p>
-          Dois mil anos depois, o brilho frio de três monitores iluminava o rosto de Caio na madrugada silenciosa. Na tela central, o relatório logístico do Rubicão acabava de ser cruzado com os registros de Waterloo em 1815, de Bletchley Park em 1941 e de uma sala de conselho em São Francisco em 2007.
-        </p>
-
-        <p>
-          Caio recuou na cadeira, sentindo um frio percorrer a espinha. Não era coincidência. Os mesmos números, o mesmo estrangulamento de tempo e a mesma sequência de cinco movimentos estavam lá — como se alguém não apenas observasse as grandes rupturas da humanidade por milênios, mas soubesse exatamente quando a próxima iria acontecer.
-        </p>
-
-        <p className="font-semibold">
-          Foi quando o alerta de segurança do seu terminal disparou. Ele não era o único olhando para aqueles arquivos...
-        </p>
-      </div>
-
-      {/* CARD DE FECHAMENTO (DENTRO DO SCROLL, NO FINAL DA LEITURA) */}
-      <div className="pt-3 pb-2">
-        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-[#0e1830] to-[#080d1a] border border-gold/50 text-center space-y-3 shadow-xl">
-          <span className="inline-block text-xs sm:text-sm font-mono font-bold text-gold uppercase tracking-wider">
-            🔒 FIM DA AMOSTRA // O QUE CAIO DESCOBRIU?
-          </span>
-          <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-normal">
-            Continue a leitura agora mesmo. Desbloqueie os <strong className="text-white">21 capítulos ilustrados + Prólogo & Epílogo + 4 Dossiês Confidenciais</strong> por apenas R$ 29,90.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              if (isFullModal) setIsModalOpen(false);
-              if (onCtaClick) onCtaClick();
-            }}
-            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(201,169,98,0.4)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
-          >
-            <Zap className="w-4 h-4 fill-slate-950 shrink-0" />
-            <span>Destravar Livro Completo + 4 Dossiês • R$ 29,90</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    observer.observe(endOfSampleRef.current);
+    return () => observer.disconnect();
+  }, [isModalOpen]);
 
   return (
     <section id="reader-simulator-section" className="relative py-20 sm:py-26 px-4 sm:px-6 overflow-visible bg-[#050811]/80 border-y border-white/10">
@@ -236,7 +196,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             Uma experiência de leitura imersiva, feita para você.
           </h2>
           <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Esqueça arquivos de PDF que quebram no celular. Leia abaixo um trecho conectando <strong className="text-gold">Júlio César em 49 a.C.</strong> à investigação nos dias atuais diretamente no simulador:
+            Esqueça arquivos de PDF que quebram no celular. Experimente abaixo um trecho conectando <strong className="text-gold">Júlio César em 49 a.C.</strong> à investigação nos dias atuais diretamente no simulador:
           </p>
         </div>
 
@@ -284,7 +244,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
           </div>
 
           {/* ======================================================== */}
-          {/* MOCKUP DO CELULAR COM CORTE DUPLO (PASSADO ➔ PRESENTE)   */}
+          {/* MOCKUP DO CELULAR COM PRÉVIA IMEDIATA + GATILHO DE LEITURA */}
           {/* ======================================================== */}
           <div className="lg:col-span-6 flex flex-col items-center">
             
@@ -333,7 +293,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                       </div>
                     </div>
 
-                    {/* Barra de Progresso + Botão Expandir */}
+                    {/* Barra de Progresso + Botão Tela Cheia */}
                     <div className="flex items-center justify-between pt-1">
                       <button
                         type="button"
@@ -346,11 +306,11 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
                       <button
                         type="button"
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={openFullscreenModal}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[11px] uppercase tracking-wider shadow-[0_0_15px_rgba(201,169,98,0.45)] active:scale-95 transition-all cursor-pointer hover:brightness-110"
                       >
                         <Maximize2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>EXPANDIR LEITOR</span>
+                        <span>TELA CHEIA</span>
                       </button>
                     </div>
 
@@ -432,16 +392,86 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
                   </div>
 
-                  {/* ÁREA DE LEITURA DO MOCKUP */}
+                  {/* ÁREA DE LEITURA VISÍVEL NO MOCKUP (2 PARÁGRAFOS + FADE-OUT PARA TELA CHEIA) */}
                   <div className="p-4 sm:p-6 space-y-4 flex flex-col justify-between">
-                    {renderReadingContent(false)}
+                    <div className="space-y-3.5 text-left relative">
+                      {/* Card Ilustrado Oficial do E-Reader (Júlio César no Rubicão) */}
+                      <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-lg`}>
+                        <div className="px-3.5 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/20">
+                          <span className={`text-[10px] font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
+                            49 A.C. — MARGENS DO RIO RUBICÃO
+                          </span>
+                          <span className={`text-[10px] font-mono ${currentTheme.subColor}`}>
+                            Arquivo 02
+                          </span>
+                        </div>
+                        <div className="relative w-full h-44 sm:h-48 overflow-hidden bg-black">
+                          <img
+                            src="/reader/assets/chapters/ch02_julio_cesar.webp"
+                            alt="Júlio César às margens do Rubicão"
+                            className="w-full h-full object-cover object-center"
+                            loading="lazy"
+                            width="640"
+                            height="400"
+                          />
+                        </div>
+                        <div className="px-3.5 py-2 flex items-center justify-between">
+                          <span className={`text-xs font-sans font-bold ${currentTheme.textColor}`}>
+                            JÚLIO CÉSAR
+                          </span>
+                          <span className={`text-[11px] font-mono ${currentTheme.subColor}`}>
+                            A travessia do Rubicão // Roma
+                          </span>
+                        </div>
+                      </div>
+
+                      <h4 className={`font-sans font-bold text-xl leading-snug pt-1 ${currentTheme.textColor}`}>
+                        A Travessia sem Volta
+                      </h4>
+
+                      <div
+                        className={`space-y-3.5 leading-relaxed font-sans transition-all duration-200 ${currentTheme.textColor}`}
+                        style={{ fontSize: `${fontSize}px` }}
+                      >
+                        <p>
+                          O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado começava o território da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
+                        </p>
+
+                        <p>
+                          Sob o toldo da tenda, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte. César não tinha semanas para negociar. Tinha horas.
+                        </p>
+
+                        {/* Início do 3º parágrafo com Fade-Out suave */}
+                        <div className="relative pt-1">
+                          <p className="opacity-60 select-none">
+                            Os emissários do Senado haviam bloqueado a liberação de crédito e grãos para as legiões da fronteira. Na entrada da tenda, o escrivão de serviço registrava cada mensageiro atrasado...
+                          </p>
+
+                          {/* Sombreado (Fade-out) + Botão Centralizado de Continuar Lendo */}
+                          <div className={`absolute inset-x-0 bottom-0 pt-10 pb-1 bg-gradient-to-b ${currentTheme.fadeGradient} flex flex-col items-center justify-end`}>
+                            <button
+                              type="button"
+                              onClick={openFullscreenModal}
+                              className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_10px_30px_rgba(201,169,98,0.5)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+                            >
+                              <BookOpen className="w-4 h-4 stroke-[2.5] text-slate-950 shrink-0" />
+                              <span>Continuar lendo amostra em Tela Cheia</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Rodapé da Tela do Celular */}
-                    <div className={`pt-2.5 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[11px] font-mono ${currentTheme.subColor}`}>
-                      <span>21 Capítulos Ilustrados + 4 Dossiês</span>
-                      <span className="flex items-center gap-1 text-gold font-bold">
-                        <Sparkles className="w-3 h-3" /> Modo Imersivo
-                      </span>
+                    <div className={`pt-3 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[11px] font-mono ${currentTheme.subColor}`}>
+                      <span>Passado (49 a.C.) ➔ Presente</span>
+                      <button
+                        type="button"
+                        onClick={openFullscreenModal}
+                        className="flex items-center gap-1 text-gold font-bold hover:underline cursor-pointer"
+                      >
+                        <Maximize2 className="w-3 h-3" /> Abrir Leitura
+                      </button>
                     </div>
                   </div>
 
@@ -507,7 +537,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       </div>
 
       {/* ===================================================================== */}
-      {/* MODAL EM TELA CHEIA OTIMIZADO (85% DE ÁREA LIVRE + Z-[100] SEM COLISÃO) */}
+      {/* MODAL EM TELA CHEIA: CENA DENSA DO RUBICÃO + CORTE PARA O PRESENTE    */}
       {/* ===================================================================== */}
       <AnimatePresence>
         {isModalOpen && (
@@ -595,10 +625,123 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
               </div>
             </div>
 
-            {/* Área de Leitura Livre (85% da tela útil, sem rodapé fixo roubando espaço) */}
+            {/* Área de Leitura Livre (85% da tela útil) */}
             <div className={`flex-1 overflow-y-auto px-5 py-6 sm:p-10 ${currentTheme.cardBg} transition-colors duration-300`}>
-              <div className="max-w-2xl mx-auto pb-8">
-                {renderReadingContent(true)}
+              <div className="max-w-2xl mx-auto pb-10 space-y-4 text-left">
+                
+                {/* Card Ilustrado Oficial do E-Reader */}
+                <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-lg`}>
+                  <div className="px-3.5 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/20">
+                    <span className={`text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
+                      49 A.C. — MARGENS DO RIO RUBICÃO
+                    </span>
+                    <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                      Arquivo 02
+                    </span>
+                  </div>
+                  <div className="relative w-full h-52 sm:h-64 overflow-hidden bg-black">
+                    <img
+                      src="/reader/assets/chapters/ch02_julio_cesar.webp"
+                      alt="Júlio César às margens do Rubicão"
+                      className="w-full h-full object-cover object-center"
+                      loading="lazy"
+                      width="640"
+                      height="400"
+                    />
+                  </div>
+                  <div className="px-3.5 py-2 flex items-center justify-between">
+                    <span className={`text-sm font-sans font-bold ${currentTheme.textColor}`}>
+                      JÚLIO CÉSAR
+                    </span>
+                    <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                      A travessia do Rubicão // Roma
+                    </span>
+                  </div>
+                </div>
+
+                {/* PARTE 1: O PASSADO (COM A TENSÃO PSICOLÓGICA E O CONFLITO ANTES DA ORDEM) */}
+                <h2 className={`font-sans font-bold text-2xl sm:text-3xl leading-snug pt-1 ${currentTheme.textColor}`}>
+                  A Travessia sem Volta
+                </h2>
+
+                <div
+                  className={`space-y-4 leading-relaxed font-sans transition-all duration-200 ${currentTheme.textColor}`}
+                  style={{ fontSize: `${fontSize}px` }}
+                >
+                  <p>
+                    O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado começava o território da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
+                  </p>
+
+                  <p>
+                    Sob o toldo da tenda, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte. César não tinha semanas para negociar. Tinha horas.
+                  </p>
+
+                  <p>
+                    Os emissários do Senado haviam bloqueado a liberação de crédito e grãos para as legiões da fronteira. Na entrada da tenda, o escrivão de serviço registrava cada cavaleiro atrasado que chegava do sul: ninguém sabia o número real das tropas de Pompeu em Roma, mas todos sabiam que o inverno consumiria as reservas antes de qualquer resposta política.
+                  </p>
+
+                  <p>
+                    Um dos legados mais velhos aproximou-se de César na barranca escura. Lembrou que atravessar o rio com as insígnias erguidas encerraria qualquer retorno jurídico — e sugeriu recuar até Ravena para tentar uma última embaixada aos cônsules.
+                  </p>
+
+                  <p>
+                    César encarou a água barrenta por um instante antes de responder:
+                  </p>
+
+                  <p>
+                    — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
+                  </p>
+
+                  <p>
+                    César caminhou até a beira do barranco e entrou na água gelada. As primeiras fileiras de soldados desceram logo atrás, levantando espuma e barro na correnteza rasa. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível.
+                  </p>
+
+                  {/* DIVISOR VISUAL DE TRANSIÇÃO TEMPORAL: PASSADO ➔ PRESENTE */}
+                  <div className="py-3 flex items-center gap-3">
+                    <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
+                    <span className={`px-3 py-1 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
+                      • • • DIAS ATUAIS — SÃO PAULO • • •
+                    </span>
+                    <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
+                  </div>
+
+                  {/* PARTE 2: A QUEBRA PARA O PRESENTE (A INVESTIGAÇÃO DE CAIO + CLIFFHANGER) */}
+                  <p>
+                    Dois mil anos depois, o brilho frio de três monitores iluminava o rosto de Caio na madrugada silenciosa. Na tela central, o relatório logístico do Rubicão acabava de ser cruzado com os registros de Waterloo em 1815, de Bletchley Park em 1941 e de uma sala de conselho em São Francisco em 2007.
+                  </p>
+
+                  <p>
+                    Caio recuou na cadeira, sentindo um frio percorrer a espinha. Não era coincidência. Os mesmos números, o mesmo estrangulamento de tempo e a mesma sequência de cinco movimentos estavam lá — como se alguém não apenas observasse as grandes rupturas da humanidade por milênios, mas soubesse exatamente quando a próxima iria acontecer.
+                  </p>
+
+                  <p className="font-semibold">
+                    Foi quando o alerta de segurança do seu terminal disparou. Ele não era o único olhando para aqueles arquivos...
+                  </p>
+                </div>
+
+                {/* CARD DE FECHAMENTO OBSERVADO PELO INTERSECTION OBSERVER (LeuAmostraCompleta) */}
+                <div ref={endOfSampleRef} className="pt-4 pb-2">
+                  <div className="p-5 rounded-2xl bg-gradient-to-b from-[#0e1830] to-[#080d1a] border border-gold/50 text-center space-y-3.5 shadow-xl">
+                    <span className="inline-block text-xs sm:text-sm font-mono font-bold text-gold uppercase tracking-wider">
+                      🔒 FIM DA AMOSTRA // O QUE CAIO DESCOBRIU?
+                    </span>
+                    <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-normal">
+                      Continue a leitura agora mesmo. Desbloqueie os <strong className="text-white">21 capítulos ilustrados + Prólogo & Epílogo + 4 Dossiês Confidenciais</strong> por apenas R$ 29,90.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsModalOpen(false);
+                        if (onCtaClick) onCtaClick();
+                      }}
+                      className="w-full py-4 px-5 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(201,169,98,0.45)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Zap className="w-4 h-4 fill-slate-950 shrink-0" />
+                      <span>Destravar Livro Completo + 4 Dossiês • R$ 29,90</span>
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </div>
 
