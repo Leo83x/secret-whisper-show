@@ -49,7 +49,7 @@ export const SpecialDossiersSection = () => {
               Os Dossiês Históricos da Obra
             </h2>
             <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-              Além dos 21 capítulos e do epílogo, você recebe 4 relatórios investigativos ilustrados com mapas táticos e documentos desclassificados, liberados diretamente no seu leitor.
+              Além dos 21 capítulos e do epílogo, você recebe 4 relatórios investigativos ilustrados com mapas táticos e documentos confidenciais, liberados diretamente no seu leitor.
             </p>
           </div>
 

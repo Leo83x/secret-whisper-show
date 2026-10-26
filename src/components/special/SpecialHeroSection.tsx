@@ -1,4 +1,4 @@
-import { Sparkles, ArrowRight, BookOpen, FolderLock, Smartphone, Zap } from "lucide-react";
+import { ArrowRight, BookOpen, FolderLock, Smartphone, Zap } from "lucide-react";
 
 interface SpecialHeroProps {
   onCtaClick: () => void;
@@ -7,27 +7,21 @@ interface SpecialHeroProps {
 
 export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHeroProps) => {
   return (
-    <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 sm:px-8 pt-8 pb-16 overflow-visible text-center">
+    <section className="relative min-h-[88vh] flex flex-col items-center justify-center px-4 sm:px-8 pt-10 pb-16 overflow-visible text-center">
       <div className="absolute inset-0 bg-radial-vignette pointer-events-none opacity-80" />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="relative z-10 max-w-5xl mx-auto w-full px-2">
-        {/* Top Badge alinhado ao anúncio */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gold/10 border border-gold/30 text-gold text-[11px] sm:text-xs font-semibold tracking-widest uppercase mb-5 shadow-[0_0_20px_rgba(201,169,98,0.2)]">
-          <Sparkles className="w-3.5 h-3.5 text-gold" />
-          <span>Edição Especial Digital // Preço de Lançamento</span>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center text-center lg:text-left">
-          {/* Coluna Esquerda: Gancho do Anúncio + Capa Mobile + 3 Pilares + CTAs */}
+          {/* Coluna Esquerda: Pergunta Principal Limpa + Título + 3 Pilares + CTAs */}
           <div className="lg:col-span-7 flex flex-col items-center lg:items-start">
-            {/* Pergunta Exata do Topo da Arte (Print 4) */}
-            <p className="text-xs sm:text-sm font-mono font-bold text-gold uppercase tracking-widest mb-2">
-              E SE AS GRANDES DECISÕES DA HISTÓRIA RESPONDEM A UM PADRÃO OCULTO?
+            {/* Pergunta Principal sem tag competindo acima */}
+            <p className="text-xs sm:text-sm md:text-base font-sans font-bold text-gold uppercase tracking-wider mb-3 max-w-xl">
+              E se as grandes decisões da História respondem a um padrão oculto?
             </p>
 
             {/* Título Monumental - Renderização imediata para LCP */}
-            <h1 className="font-display font-bold leading-none mb-4 flex flex-col items-center lg:items-start justify-center space-y-1">
+            <h1 className="font-display font-bold leading-none mb-5 flex flex-col items-center lg:items-start justify-center space-y-1">
               <span className="block text-foreground tracking-normal text-2xl sm:text-4xl md:text-5xl">
                 O ÚLTIMO
               </span>
@@ -41,12 +35,12 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
               </span>
             </h1>
 
-            {/* Subtítulo Exato da Arte (Print 4) */}
-            <p className="text-base sm:text-lg text-slate-200 font-normal max-w-xl leading-relaxed mb-5">
+            {/* Subtítulo Narrativo Fiel ao Anúncio */}
+            <p className="text-base sm:text-lg text-slate-200 font-normal max-w-xl leading-relaxed mb-6">
               Uma investigação que atravessa séculos — de <strong className="text-white font-semibold">Júlio César, Cleópatra e Napoleão</strong> a <strong className="text-white font-semibold">Alan Turing e Steve Jobs</strong> — e conecta o passado aos bastidores do poder no presente.
             </p>
 
-            {/* Bloco Visual Mobile: Capa + Os 3 Ícones do Anúncio Lado a Lado */}
+            {/* Bloco Visual: Capa (no mobile) + Os 3 Ícones do Anúncio */}
             <div className="w-full max-w-md lg:max-w-xl mb-6 p-3.5 sm:p-4 rounded-2xl bg-[#091022]/90 border border-gold/35 shadow-xl flex items-center gap-4 text-left">
               <div className="lg:hidden shrink-0 w-24 sm:w-28 rounded-xl overflow-hidden border border-gold/50 shadow-lg bg-[#070b14]">
                 <img
@@ -124,7 +118,7 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                   className="inline-flex items-center gap-2 text-xs sm:text-sm text-gold hover:text-amber-300 font-semibold py-1.5 px-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
                 >
                   <BookOpen className="w-4 h-4 text-gold" />
-                  <span>Ler trecho real de Júlio César no Simulador Interativo ↓</span>
+                  <span>Ler trecho no Simulador Interativo ↓</span>
                 </button>
               )}
             </div>

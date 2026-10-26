@@ -449,7 +449,7 @@ export const SpecialCheckoutSection = () => {
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><strong>4 Dossiês Históricos Secretos</strong> com mapas táticos e relatórios desclassificados.</span>
+                <span><strong>4 Dossiês Históricos Secretos</strong> com mapas táticos e relatórios confidenciais.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />

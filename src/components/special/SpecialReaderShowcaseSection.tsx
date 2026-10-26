@@ -24,62 +24,9 @@ interface SpecialReaderShowcaseProps {
   onCtaClick?: () => void;
 }
 
-type LeaderKey = "cesar" | "napoleao" | "jobs";
-
-const HISTORICAL_EXCERPTS: Record<LeaderKey, {
-  tabLabel: string;
-  eraBadge: string;
-  title: string;
-  p1: string;
-  p2: string;
-  p3: string;
-  highlightQuote: string;
-  convergenceNote: string;
-  fullExtra1: string;
-  fullExtra2: string;
-}> = {
-  cesar: {
-    tabLabel: "Júlio César (49 a.C.)",
-    eraBadge: "ARQUIVO 02 // RIO RUBICÃO, ROMA — 49 A.C.",
-    title: "A Travessia do Rubicão",
-    p1: "O frio de janeiro ainda pesava no ar quando a vanguarda de Júlio César chegou às margens do Rubicão. Do outro lado daquele curso d'água começava o território da Itália, onde a lei do Senado proibia qualquer general de entrar em armas.",
-    p2: "A poucos passos de César, sob o toldo de uma tenda de campanha, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte.",
-    p3: "O escrivão de serviço via o que os discursos posteriores esconderiam: o comandante de um exército prestes a mudar a história do mundo estava decidindo às cegas, cercado por números desencontrados e prazos que se fechavam hora a hora.",
-    highlightQuote: "— E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.",
-    convergenceNote: "Depois que César atravessou o rio, tudo pareceu um plano genial. Antes da travessia, eram as mesmas 5 variáveis matemáticas (Pressão, Informação Incompleta, Alternativas Reduzidas, Decisão e Consequência) que séculos depois cercariam Napoleão, Alan Turing e Steve Jobs.",
-    fullExtra1: "Os emissários do Senado haviam bloqueado a liberação de crédito e grãos para as legiões da fronteira. Se César aguardasse parado na margem esperando autorização jurídica, o inverno consumiria as reservas antes de qualquer resposta de Roma.",
-    fullExtra2: "Para a tropa, existia apenas a espera pela próxima ordem. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível."
-  },
-  napoleao: {
-    tabLabel: "Napoleão (1815)",
-    eraBadge: "ARQUIVO 06 // WATERLOO, BÉLGICA — JUNHO DE 1815",
-    title: "A Lama de Waterloo",
-    p1: "A chuva torrencial da madrugada tinha transformado os campos da Bélgica num pântano pesado. Os soldados franceses estavam exaustos da marcha forçada, e os cavalos da artilharia atolavam até os jarretes na lama das estradas.",
-    p2: "Na tenda de comando, Napoleão recebia despachos contraditórios: um batedor garantia que o exército prussiano recuava para leste; outro alertava que colunas inimigas marchavam muito mais perto do flanco francês do que o previsto.",
-    p3: "Napoleão consultou o relógio de bolso. O solo precisava secar para que as rodas dos canhões pudessem manobrar sem afundar — mas cada hora de espera encurtava a distância do inimigo invisível na neblina.",
-    highlightQuote: "— O verdadeiro obstáculo daquela manhã ia além do exército adversário: era a fricção do tempo e a informação que chegava atrasada demais.",
-    convergenceNote: "Em 1815, a hesitação logística de 3 horas colapsou um império e provocou a maior transferência de capital da Europa moderna — repetindo exatamente a mesma equação de 5 variáveis vista em 49 a.C.",
-    fullExtra1: "Numa mesa dobrável ao fundo da tenda, o oficial encarregado do livro de ordens anotava o horário de saída de cada estafeta a cavalo e o dobro de tempo que as mensagens levavam para vencer os atoleiros.",
-    fullExtra2: "Quando os primeiros canhões finalmente dispararam ao meio-dia, o relógio invisível da logística já havia selado o destino da batalha."
-  },
-  jobs: {
-    tabLabel: "Steve Jobs (2007)",
-    eraBadge: "ARQUIVO 09 // SÃO FRANCISCO — 09 DE JANEIRO DE 2007",
-    title: "O Palco sob Risco Total",
-    p1: "O auditório principal do Moscone Center já estava lotado muito antes de os refletores acenderem. Atrás da cortina pesada, porém, o clima passava longe da certeza absoluta que o mundo veria minutos depois.",
-    p2: "Sentado num canto escuro dos bastidores, um engenheiro de telemetria acompanhava a oscilação da antena portátil instalada às pressas e anotava cada queda de pacote causada pelos transmissores da imprensa no salão.",
-    p3: "O protótipo do iPhone ainda sofria quedas de memória se duas funções fossem abertas fora da ordem exata. Se qualquer uma das sete engrenagens falhasse no palco, a apresentação desabaria ao vivo em transmissão mundial.",
-    highlightQuote: "— Não havia plano B. O roteiro foi desenhado sobre um fio de navalha onde a execução precisava parecer mágica enquanto a retaguarda segurava o colapso.",
-    convergenceNote: "De Júlio César no Rubicão a Steve Jobs em São Francisco, o livro revela como o mesmo funil matemático de pressão e risco governa as decisões que mudam o mundo.",
-    fullExtra1: "A poucos metros da cortina, Steve Jobs segurava um dos aparelhos de demonstração, olhando para o monitor de apoio enquanto os engenheiros alinhavam a sequência exata de cliques que não derrubava o sistema.",
-    fullExtra2: "A história registrou o triunfo inevitável. Os arquivos técnicos daquela manhã registraram um líder caminhando sobre o mesmo abismo de incerteza dos generais da Antiguidade."
-  }
-};
-
 export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowcaseProps) => {
   const [theme, setTheme] = useState<"dark" | "sepia" | "light">("dark");
   const [fontSize, setFontSize] = useState<number>(16);
-  const [activeLeader, setActiveLeader] = useState<LeaderKey>("cesar");
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -102,7 +49,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-slate-400",
       borderColor: "border-gold/30",
       headerBg: "bg-[#0d1527] border-b border-white/10",
-      highlight: "bg-[#c9a962]/20 text-[#f6d88e] px-2.5 py-1.5 rounded-lg border-l-2 border-gold block my-2 font-medium",
+      highlight: "bg-[#c9a962]/20 text-[#f6d88e] px-3 py-2 rounded-xl border-l-2 border-gold block my-2.5 font-medium",
       meta: "text-gold",
       accent: "#c9a962"
     },
@@ -114,7 +61,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-[#6b583e]",
       borderColor: "border-[#d4c3a3]",
       headerBg: "bg-[#e8dcbf] border-b border-[#cfbfa0]",
-      highlight: "bg-[#d8a342]/25 text-[#1f1406] px-2.5 py-1.5 rounded-lg border-l-2 border-[#8a5d1b] block my-2 font-semibold",
+      highlight: "bg-[#d8a342]/25 text-[#1f1406] px-3 py-2 rounded-xl border-l-2 border-[#8a5d1b] block my-2.5 font-semibold",
       meta: "text-[#8a5d1b]",
       accent: "#d8a342"
     },
@@ -126,14 +73,13 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-[#64748b]",
       borderColor: "border-slate-300",
       headerBg: "bg-[#f1f5f9] border-b border-slate-200",
-      highlight: "bg-amber-100/90 text-[#78350f] px-2.5 py-1.5 rounded-lg border-l-2 border-amber-500 block my-2 font-medium",
+      highlight: "bg-amber-100/90 text-[#78350f] px-3 py-2 rounded-xl border-l-2 border-amber-500 block my-2.5 font-medium",
       meta: "text-amber-700",
       accent: "#f59e0b"
     }
   };
 
   const currentTheme = themeStyles[theme];
-  const currentExcerpt = HISTORICAL_EXCERPTS[activeLeader];
 
   const handleDecreaseFont = () => {
     const next = Math.max(14, fontSize - 1);
@@ -150,11 +96,6 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
   const handleThemeChange = (newTheme: "dark" | "sepia" | "light") => {
     setTheme(newTheme);
     triggerToast(`Tema ${themeStyles[newTheme].name} ativado!`);
-  };
-
-  const handleLeaderChange = (leader: LeaderKey) => {
-    setActiveLeader(leader);
-    triggerToast(`Lendo arquivo: ${HISTORICAL_EXCERPTS[leader].tabLabel}`);
   };
 
   const handleToggleBookmark = () => {
@@ -174,32 +115,31 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
   }, [isModalOpen]);
 
   return (
-    <section id="reader-simulator-section" className="relative py-16 sm:py-24 px-4 sm:px-6 overflow-visible bg-[#050811]/80 border-y border-white/10">
+    <section id="reader-simulator-section" className="relative py-20 sm:py-26 px-4 sm:px-6 overflow-visible bg-[#050811]/80 border-y border-white/10">
       <div className="max-w-6xl mx-auto space-y-10">
         
         {/* Cabeçalho da Seção */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <span className="text-xs font-mono tracking-[0.25em] text-gold uppercase bg-gold/10 px-4 py-1.5 rounded-full border border-gold/30 inline-flex items-center gap-2 shadow-[0_0_15px_rgba(201,169,98,0.2)]">
             <Sparkles className="w-3.5 h-3.5 text-gold" />
-            DEGUSTAÇÃO INTERATIVA // LEIA UM TRECHO REAL AGORA
+            TECNOLOGIA EXCLUSIVA // LEITOR DIGITAL INTERATIVO
           </span>
           <h2 className="font-sans text-2xl sm:text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
             Uma experiência de leitura imersiva, feita para você.
           </h2>
-          <p className="text-sm sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Teste abaixo a plataforma exclusiva de leitura e leia os bastidores de <strong className="text-gold">Júlio César no Rubicão</strong>, <strong className="text-gold">Napoleão em Waterloo</strong> ou <strong className="text-gold">Steve Jobs em 2007</strong>:
+          <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
+            Esqueça arquivos de PDF que quebram no celular. Experimente abaixo um trecho real do capítulo de <strong className="text-gold">Júlio César no Rubicão</strong> diretamente no simulador do leitor:
           </p>
         </div>
 
-        {/* Banner de Instrução Rápida */}
+        {/* Instrução Direta e Limpa */}
         <div className="w-full max-w-xl mx-auto text-center">
-          <div className="relative p-3.5 sm:p-4 rounded-2xl bg-gradient-to-br from-[#0e172e] via-[#142347] to-[#0a1020] border border-gold/70 shadow-[0_0_25px_rgba(201,169,98,0.3)] space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[10px] sm:text-xs uppercase tracking-wider">
-              <Zap className="w-3 h-3 fill-slate-950" />
-              SIMULADOR DO LEITOR DIGITAL
-            </span>
+          <div className="relative p-4 rounded-2xl bg-gradient-to-br from-[#0e172e] via-[#142347] to-[#0a1020] border border-gold/70 shadow-[0_0_25px_rgba(201,169,98,0.3)] space-y-1.5">
+            <h3 className="font-sans text-sm sm:text-base font-bold text-white tracking-tight uppercase">
+              TOQUE NOS BOTÕES DO CELULAR PARA TESTAR:
+            </h3>
             <p className="text-xs sm:text-sm text-slate-200 font-normal leading-relaxed">
-              Alterne entre os líderes históricos abaixo e teste os modos <strong className="text-gold">🌙 Escuro</strong>, <strong className="text-amber-200">📜 Sépia</strong> ou <strong className="text-white">☀️ Claro</strong>:
+              Alterne entre <strong className="text-gold">🌙 Escuro</strong>, <strong className="text-amber-200">📜 Sépia</strong> ou <strong className="text-white">☀️ Claro</strong> e ajuste o tamanho da letra (<strong className="text-gold">A- / A+</strong>) em tempo real.
             </p>
           </div>
         </div>
@@ -221,7 +161,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                 O Rubicão & O Vale do Silício
               </h4>
               <p className="text-sm text-slate-300 leading-relaxed font-normal mb-3">
-                Paralelo completo entre a decisão de Júlio César em 49 a.C. e o lançamento de Steve Jobs em 2007.
+                Paralelo completo entre a travessia sem volta de Júlio César em 49 a.C. e a jogada decisiva de Steve Jobs em 2007.
               </p>
               <div className="p-2.5 rounded-xl bg-black/60 border border-white/5 font-mono text-[10px] text-slate-300 flex items-center justify-between">
                 <span>COORD: 44.0833° N</span>
@@ -236,7 +176,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
           </div>
 
           {/* ======================================================== */}
-          {/* MOCKUP DO CELULAR ULTRA-REALISTA COM OS TRECHOS HISTÓRICOS */}
+          {/* MOCKUP DO CELULAR LIMPO, DIRETO E IMERSIVO               */}
           {/* ======================================================== */}
           <div className="lg:col-span-6 flex flex-col items-center">
             
@@ -270,7 +210,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                   </AnimatePresence>
 
                   {/* BARRA SUPERIOR DO CELULAR */}
-                  <div className={`px-3.5 sm:px-4 pt-3 pb-2.5 ${currentTheme.headerBg} transition-colors duration-300`}>
+                  <div className={`px-4 pt-3 pb-2.5 ${currentTheme.headerBg} transition-colors duration-300`}>
                     
                     {/* Status Bar (Hora + Dynamic Island + Bateria) */}
                     <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-2">
@@ -286,52 +226,37 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     </div>
 
                     {/* Barra de Progresso + Botão Expandir */}
-                    <div className="flex items-center justify-between pt-0.5">
+                    <div className="flex items-center justify-between pt-1">
                       <button
                         type="button"
                         onClick={handleToggleBookmark}
-                        className="flex items-center gap-1 text-[10px] font-mono tracking-wider text-gold font-bold uppercase hover:opacity-80 transition-opacity cursor-pointer"
+                        className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider text-gold font-bold uppercase hover:opacity-80 transition-opacity cursor-pointer"
                       >
                         <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "fill-gold text-gold" : "text-gold"}`} />
-                        <span>AMOSTRA OFICIAL</span>
+                        <span>CAPÍTULO 02 // ROMA, 49 A.C.</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[10px] sm:text-[11px] uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[11px] uppercase tracking-wider shadow-[0_0_15px_rgba(201,169,98,0.45)] active:scale-95 transition-all cursor-pointer hover:brightness-110"
                       >
-                        <Maximize2 className="w-3 h-3 stroke-[2.5]" />
-                        <span>TELA CHEIA</span>
+                        <Maximize2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>EXPANDIR LEITOR</span>
                       </button>
                     </div>
 
-                    {/* ======================================================== */}
-                    {/* ABAS DE PERSONAGENS HISTÓRICOS (CÉSAR / NAPOLEÃO / JOBS) */}
-                    {/* ======================================================== */}
-                    <div className="grid grid-cols-3 gap-1 mt-2.5 p-1 rounded-xl bg-black/35 border border-white/10">
-                      {(["cesar", "napoleao", "jobs"] as LeaderKey[]).map((key) => (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => handleLeaderChange(key)}
-                          className={`py-1.5 px-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer truncate ${
-                            activeLeader === key
-                              ? "bg-gold text-slate-950 shadow font-black"
-                              : "text-slate-300 hover:text-white bg-white/5"
-                          }`}
-                        >
-                          {HISTORICAL_EXCERPTS[key].tabLabel}
-                        </button>
-                      ))}
+                    {/* Linha Fina da Barra de Progresso Dourada */}
+                    <div className="w-full h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-gold to-amber-300 w-[18%]" />
                     </div>
 
-                    {/* CONTROLES DE TEMA E FONTE */}
-                    <div className="pt-2 flex items-center justify-between gap-1.5 mt-2 border-t border-white/10">
+                    {/* CONTROLES ESSENCIAIS DO LEITOR (TEMA + TAMANHO DA FONTE) */}
+                    <div className="pt-2.5 flex items-center justify-between gap-2 mt-2 border-t border-white/10">
                       <div className="flex items-center gap-1 p-0.5 bg-black/40 rounded-xl border border-white/10 relative">
                         {!hasInteracted && (
-                          <div className="absolute -top-6 left-2 flex items-center gap-1 text-[9px] font-sans font-black text-gold bg-slate-950 px-2 py-0.5 rounded-full border border-gold/60 shadow-lg animate-bounce pointer-events-none whitespace-nowrap z-30">
-                            <Pointer className="w-2.5 h-2.5 text-gold" />
+                          <div className="absolute -top-7 left-2 flex items-center gap-1 text-[10px] font-sans font-black text-gold bg-slate-950 px-2 py-0.5 rounded-full border border-gold/60 shadow-lg animate-bounce pointer-events-none whitespace-nowrap z-30">
+                            <Pointer className="w-3 h-3 text-gold" />
                             <span>Toque para testar</span>
                           </div>
                         )}
@@ -339,7 +264,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         <button
                           type="button"
                           onClick={() => handleThemeChange("dark")}
-                          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             theme === "dark" 
                               ? "bg-slate-800 text-gold shadow border border-gold/50" 
                               : "text-slate-400 hover:text-white"
@@ -352,7 +277,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         <button
                           type="button"
                           onClick={() => handleThemeChange("sepia")}
-                          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             theme === "sepia" 
                               ? "bg-[#e2d4b5] text-[#3d2b15] shadow border border-[#9b7941]" 
                               : "text-slate-400 hover:text-white"
@@ -365,7 +290,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         <button
                           type="button"
                           onClick={() => handleThemeChange("light")}
-                          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             theme === "light" 
                               ? "bg-white text-slate-900 shadow border border-slate-300" 
                               : "text-slate-400 hover:text-white"
@@ -380,17 +305,17 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         <button
                           type="button"
                           onClick={handleDecreaseFont}
-                          className="w-6 h-6 rounded-lg text-[11px] font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+                          className="w-7 h-7 rounded-lg text-xs font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
                         >
                           A-
                         </button>
-                        <span className="text-[11px] font-mono text-gold font-bold px-1 min-w-[28px] text-center">
-                          {fontSize}
+                        <span className="text-xs font-mono text-gold font-bold px-1 min-w-[30px] text-center">
+                          {fontSize}px
                         </span>
                         <button
                           type="button"
                           onClick={handleIncreaseFont}
-                          className="w-6 h-6 rounded-lg text-[11px] font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+                          className="w-7 h-7 rounded-lg text-xs font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
                         >
                           A+
                         </button>
@@ -399,53 +324,53 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
                   </div>
 
-                  {/* ÁREA DE LEITURA HISTÓRICA REAL */}
-                  <div className="p-4 sm:p-5 space-y-3.5 min-h-[360px] flex flex-col justify-between">
-                    <div className="space-y-2.5 text-left">
-                      <p className={`text-[10px] sm:text-xs font-mono tracking-widest uppercase font-bold ${currentTheme.meta}`}>
-                        {currentExcerpt.eraBadge}
+                  {/* ÁREA DE LEITURA PROFUNDA E CONTÍNUA: JÚLIO CÉSAR NO RUBICÃO */}
+                  <div className="p-5 sm:p-6 space-y-4 min-h-[380px] flex flex-col justify-between">
+                    <div className="space-y-3.5 text-left">
+                      <p className={`text-xs font-mono tracking-widest uppercase font-bold ${currentTheme.meta}`}>
+                        ARQUIVO 02 // RIO RUBICÃO, ROMA — 49 A.C.
                       </p>
 
-                      <h4 className={`font-sans font-bold text-lg sm:text-xl leading-snug ${currentTheme.textColor}`}>
-                        {currentExcerpt.title}
+                      <h4 className={`font-sans font-bold text-xl leading-snug ${currentTheme.textColor}`}>
+                        Júlio César: A Travessia sem Volta
                       </h4>
 
                       <p 
                         className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
-                        {currentExcerpt.p1}
+                        O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado daquele curso d'água começava o território administrativo da Itália, onde a lei do Senado proibia qualquer general de entrar em armas.
                       </p>
 
                       <p 
                         className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
-                        {currentExcerpt.p2}
+                        A poucos passos do comandante, sob o toldo de uma tenda de campanha, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono na Gália e carroças retidas pelo gelo nos passos do norte.
                       </p>
 
                       <p 
                         className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
-                        {currentExcerpt.p3}
+                        O escrivão de serviço via o que os discursos posteriores esconderiam: o homem prestes a mudar a história do mundo estava decidindo às cegas, cercado por relatos desencontrados e prazos que se fechavam hora a hora.
                       </p>
 
                       <div 
                         className={`leading-relaxed transition-all duration-200 font-sans ${currentTheme.highlight}`}
-                        style={{ fontSize: `${Math.max(14, fontSize - 1)}px` }}
+                        style={{ fontSize: `${fontSize}px` }}
                       >
-                        {currentExcerpt.highlightQuote}
+                        — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
                       </div>
 
-                      {/* A CONEXÃO DO PADRÃO OCULTO + BOTÃO DE DESBLOQUEIO DIRETO */}
+                      {/* FECHAMENTO NARRATIVO + BOTÃO DE DESBLOQUEIO */}
                       <div className="pt-2">
-                        <div className="p-3.5 rounded-2xl bg-gradient-to-b from-[#0c1428] to-[#070b16] border border-gold/50 text-center space-y-2.5 shadow-xl">
+                        <div className="p-4 rounded-2xl bg-gradient-to-b from-[#0c1428] to-[#070b16] border border-gold/50 text-center space-y-2.5 shadow-xl">
                           <span className="inline-block text-[10px] font-mono font-bold text-gold uppercase tracking-widest">
-                            ⚡ O MESMO PADRÃO EM 3.000 ANOS DE HISTÓRIA
+                            ⚡ O MESMO PADRÃO ATRAVÉS DOS SÉCULOS
                           </span>
                           <p className="text-xs text-slate-200 leading-relaxed">
-                            {currentExcerpt.convergenceNote}
+                            Séculos depois, esse mesmo cerco invisível de pressão e risco se repetiria na lama de <strong className="text-white">Waterloo (1815)</strong>, nas máquinas de <strong className="text-white">Alan Turing (1941)</strong> e nos bastidores de <strong className="text-white">Steve Jobs (2007)</strong>.
                           </p>
                           <button
                             type="button"
@@ -453,7 +378,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                             className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(201,169,98,0.4)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                           >
                             <Zap className="w-3.5 h-3.5 fill-slate-950" />
-                            <span>Destravar Livro Completo • R$ 29,90</span>
+                            <span>Destravar Obra Completa • R$ 29,90</span>
                           </button>
                         </div>
                       </div>
@@ -463,7 +388,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     <div className={`pt-2.5 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[10px] font-mono ${currentTheme.subColor}`}>
                       <span>21 Capítulos + 4 Dossiês</span>
                       <span className="flex items-center gap-1 text-gold font-bold">
-                        <Sparkles className="w-3 h-3" /> Leitor Oficial
+                        <Sparkles className="w-3 h-3" /> Modo Imersivo
                       </span>
                     </div>
                   </div>
@@ -530,7 +455,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       </div>
 
       {/* ======================================================== */}
-      {/* MODAL EM TELA CHEIA PARA CELULAR / INSTAGRAM ADS         */}
+      {/* MODAL EM TELA CHEIA LIMPO E PROFUNDO                     */}
       {/* ======================================================== */}
       <AnimatePresence>
         {isModalOpen && (
@@ -554,10 +479,10 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
               <div className="text-center">
                 <span className="block text-xs font-mono text-gold font-bold uppercase tracking-wider">
-                  LEITOR DIGITAL // TELA CHEIA
+                  AMOSTRA DO LEITOR // TELA CHEIA
                 </span>
                 <span className="text-[10px] text-slate-400 font-mono">
-                  {currentExcerpt.tabLabel}
+                  Capítulo 02 // Júlio César (49 a.C.)
                 </span>
               </div>
 
@@ -574,25 +499,8 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
               </button>
             </div>
 
-            {/* Barra de Ferramentas e Abas no Modal */}
-            <div className="p-3 bg-black/70 border-b border-white/10 space-y-2 shrink-0">
-              <div className="grid grid-cols-3 gap-1.5 max-w-md mx-auto">
-                {(["cesar", "napoleao", "jobs"] as LeaderKey[]).map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => handleLeaderChange(key)}
-                    className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer truncate ${
-                      activeLeader === key
-                        ? "bg-gold text-slate-950 shadow font-black"
-                        : "text-slate-300 bg-white/5"
-                    }`}
-                  >
-                    {HISTORICAL_EXCERPTS[key].tabLabel}
-                  </button>
-                ))}
-              </div>
-
+            {/* Barra de Ferramentas Limpa no Modal */}
+            <div className="p-3 bg-black/70 border-b border-white/10 shrink-0">
               <div className="flex flex-wrap items-center justify-between gap-2 max-w-2xl mx-auto">
                 <div className="flex items-center gap-1 p-0.5 bg-slate-900 rounded-xl border border-white/10">
                   <button
@@ -655,10 +563,10 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                 
                 <div className="space-y-1">
                   <p className={`text-xs font-mono tracking-widest uppercase font-semibold ${currentTheme.meta}`}>
-                    {currentExcerpt.eraBadge}
+                    ARQUIVO 02 // RIO RUBICÃO, ROMA — 49 A.C.
                   </p>
                   <h2 className={`font-sans font-bold text-2xl sm:text-3xl ${currentTheme.textColor}`}>
-                    {currentExcerpt.title}
+                    Júlio César: A Travessia sem Volta
                   </h2>
                 </div>
 
@@ -666,20 +574,32 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                   className={`space-y-4 leading-relaxed font-sans ${currentTheme.textColor}`}
                   style={{ fontSize: `${fontSize}px` }}
                 >
-                  <p>{currentExcerpt.p1}</p>
-                  <p>{currentExcerpt.p2}</p>
-                  <p>{currentExcerpt.fullExtra1}</p>
-                  <p>{currentExcerpt.p3}</p>
-                  <div className={currentTheme.highlight}>{currentExcerpt.highlightQuote}</div>
-                  <p>{currentExcerpt.fullExtra2}</p>
+                  <p>
+                    O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. O rio era estreito e raso, pequeno demais para carregar a fronteira que passaria a representar nos séculos seguintes. Do outro lado daquele curso d'água começava o território administrativo da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
+                  </p>
+                  <p>
+                    A poucos passos do general, protegido sob o toldo de uma tenda de campanha, o intendente-chefe do exército conferia as tábuas de cera à luz de uma lamparina de azeite. Enquanto os comandantes olhavam para Roma, o trabalho daquele funcionário era medir o que sustentava os homens de pé: rações de trigo para apenas nove dias, soldos atrasados desde o outono na Gália e carroças de suprimento retidas pelo gelo nos passos do norte.
+                  </p>
+                  <p>
+                    Os emissários do Senado haviam bloqueado a liberação de crédito e grãos para as legiões da fronteira. Se César aguardasse parado na margem esperando uma saída política, o inverno consumiria as reservas antes de qualquer resposta.
+                  </p>
+                  <p>
+                    Na entrada da tenda de intendência, o escrivão de serviço baixou o estilete sobre a cera e registrou o horário da chegada do cavaleiro e a divergência dos relatos. Ele via o que os discursos posteriores esconderiam: o comandante de um exército prestes a mudar a história do mundo estava decidindo às cegas, cercado por números desencontrados e prazos que se fechavam hora a hora.
+                  </p>
+                  <div className={currentTheme.highlight}>
+                    — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
+                  </div>
+                  <p>
+                    César caminhou até a beira do barranco e entrou na água gelada. As primeiras fileiras de soldados desceram logo atrás, levantando espuma e barro na correnteza rasa. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível.
+                  </p>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-[#0a1122] border border-gold/50 text-center space-y-3 mt-6">
+                <div className="p-5 rounded-2xl bg-[#0a1122] border border-gold/50 text-center space-y-2.5 mt-6">
                   <span className="text-xs font-mono text-gold font-bold uppercase tracking-widest block">
-                    ⚡ O PADRÃO DAS 5 VARIÁVEIS
+                    ⚡ O FIO INVISÍVEL DA OBRA
                   </span>
                   <p className="text-sm text-slate-200 leading-relaxed">
-                    {currentExcerpt.convergenceNote}
+                    Depois que César atravessou o rio, tudo pareceu um plano genial. Antes da travessia, era o mesmo cerco invisível de pressão que séculos depois cercaria Napoleão em Waterloo, Alan Turing em Bletchley Park e Steve Jobs em São Francisco.
                   </p>
                 </div>
 
@@ -690,10 +610,10 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             <div className="p-4 bg-[#0a1020] border-t border-white/10 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
               <div className="text-center sm:text-left">
                 <span className="text-white font-bold text-sm block">
-                  Desbloqueie os 21 capítulos + 4 Dossiês Ilustrados
+                  Gostou da experiência de leitura imersiva?
                 </span>
                 <span className="text-slate-400 text-xs">
-                  Acesso vitalício imediato por apenas R$ 29,90 (PIX ou Cartão).
+                  Desbloqueie os 21 capítulos + 4 Dossiês Ilustrados por apenas R$ 29,90.
                 </span>
               </div>
 
