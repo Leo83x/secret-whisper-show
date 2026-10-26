@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-
 import salomao from "@/assets/characters/salomao.webp";
 import alexandre from "@/assets/characters/alexandre.webp";
 import cleopatra from "@/assets/characters/cleopatra.webp";
@@ -24,40 +22,65 @@ const characters = [
   { name: "Steve Jobs", image: jobs, era: "2007", role: "Controle" }
 ];
 
+const patternVariables = [
+  { step: "01", label: "Pressão Acumulada" },
+  { step: "02", label: "Informação Incompleta" },
+  { step: "03", label: "Alternativas Reduzidas" },
+  { step: "04", label: "Decisão de Ruptura" },
+  { step: "05", label: "Consequência Irreversível" }
+];
+
 export const SpecialPlotManifestoSection = () => {
   return (
     <section className="relative py-16 sm:py-22 px-4 sm:px-6 overflow-visible">
       <div className="max-w-5xl mx-auto space-y-14 relative z-10">
 
-        {/* PARTE A: O MANIFESTO DA TRAMA DIRETO E ENVOLVENTE */}
-        <div className="max-w-3xl mx-auto text-center space-y-5">
+        {/* PARTE A: A TESE HISTÓRICA E AS 5 VARIÁVEIS DO PADRÃO OCULTO */}
+        <div className="max-w-3xl mx-auto text-center space-y-6">
           <span className="text-xs font-mono tracking-[0.25em] text-cyan uppercase bg-cyan/10 px-3.5 py-1.5 rounded-full border border-cyan/25 inline-block">
-            A PREMISSA // SÃO PAULO, 2026
+            A TESE CENTRAL // 3.000 ANOS DE HISTÓRIA
           </span>
 
           <h2 className="font-sans text-2xl sm:text-4xl font-bold text-white leading-tight tracking-tight">
-            Em uma sala espelhada da Faria Lima, algo não fecha na conta da História.
+            E se a História não fosse tão imprevisível quanto parece?
           </h2>
 
           <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Caio Avelar era pago para enxergar riscos financeiros antes de todo mundo. Mas quando cruzou relatórios de liquidez recente com arquivos históricos restritos, encontrou uma simetria perturbadora: os sinais de uma crise contemporânea seguiam o exato roteiro de momentos decisivos do passado.
+            Depois que um império cai ou uma revolução vence, os livros didáticos transformam tudo em destino ou genialidade. Mas nos arquivos de quem estava na retaguarda — o intendente contando o trigo de <strong className="text-white">Júlio César no Rubicão</strong>, o oficial de ordens na lama de <strong className="text-white">Waterloo</strong>, o engenheiro atrás da cortina com <strong className="text-white">Steve Jobs</strong> — emerge sempre a mesma equação de 5 variáveis:
           </p>
+
+          {/* As 5 Variáveis do Padrão Oculto */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1">
+            {patternVariables.map((v) => (
+              <div
+                key={v.step}
+                className="p-3 rounded-xl bg-[#0b1325] border border-gold/30 flex flex-col items-center justify-center text-center shadow-md"
+              >
+                <span className="text-[10px] font-mono font-bold text-gold uppercase tracking-widest">
+                  VARIÁVEL {v.step}
+                </span>
+                <span className="text-xs sm:text-sm font-bold text-white mt-0.5 leading-snug">
+                  {v.label}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <div className="p-5 sm:p-6 rounded-2xl bg-[#0f172a]/95 border border-gold/40 shadow-xl text-left sm:text-center">
             <p className="text-base sm:text-lg text-slate-100 font-sans font-medium leading-relaxed">
-              "Não são os acontecimentos que se repetem. São os <strong className="text-gold font-bold">mecanismos humanos</strong> por trás deles: <span className="text-amber-200 font-semibold">Ambição, Medo, Vaidade, Convicção</span> e o eterno desejo de controle."
+              "A História tem uma crueldade particular: depois que tudo termina, ela transforma incerteza em sequência. Não são os eventos que se repetem — são os <strong className="text-gold font-bold">mecanismos humanos</strong> quando um líder percebe que ficou sem saída."
             </p>
           </div>
         </div>
 
-        {/* PARTE B: OS 10 PROTAGONISTAS EM GRADE COMPACTA (SEM FADIGA DE SCROLL) */}
+        {/* PARTE B: OS 10 PROTAGONISTAS EM GRADE COMPACTA */}
         <div className="space-y-6">
           <div className="text-center space-y-1.5">
             <h3 className="font-sans text-xl sm:text-2xl font-bold text-white tracking-tight">
-              3 Mil Anos. 10 Decisões. Um Mesmo Padrão Oculto.
+              10 Líderes. 10 Bastidores Reais Desclassificados na Obra:
             </h3>
             <p className="text-xs sm:text-sm text-slate-400 font-normal max-w-xl mx-auto">
-              Cada capítulo mergulha na mente de um líder histórico no instante exato em que tudo estava em jogo:
+              De 970 a.C. aos bastidores do poder no presente, cada capítulo reconstrói o instante exato antes da decisão:
             </p>
           </div>
 

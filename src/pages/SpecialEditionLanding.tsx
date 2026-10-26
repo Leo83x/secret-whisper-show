@@ -10,8 +10,24 @@ import { SpecialCheckoutSection } from "@/components/special/SpecialCheckoutSect
 import { SpecialStickyCta } from "@/components/special/SpecialStickyCta";
 import { SpecialAmbientAudio } from "@/components/special/SpecialAmbientAudio";
 
+export const triggerInitiateCheckoutOnce = () => {
+  if (typeof window !== "undefined" && !(window as any).__ush_ic_fired) {
+    (window as any).__ush_ic_fired = true;
+    if (typeof (window as any).fbq === "function") {
+      try {
+        (window as any).fbq("track", "InitiateCheckout", {
+          content_name: "Edicao Especial - Inicio de Finalizacao",
+          currency: "BRL",
+          value: 29.90
+        });
+      } catch (e) {}
+    }
+  }
+};
+
 const SpecialEditionLanding = () => {
   const scrollToCheckout = () => {
+    triggerInitiateCheckoutOnce();
     const el = document.getElementById("checkout-section");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });

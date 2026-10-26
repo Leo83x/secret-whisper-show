@@ -43,6 +43,22 @@ export const SpecialCheckoutSection = () => {
   const hasTrackedLead = useRef(false);
   const hasRecordedAbandonment = useRef(false);
 
+  // Dispara InitiateCheckout ao iniciar o Passo 1 do Checkout (1x por sessão)
+  const ensureInitiateCheckoutFired = () => {
+    if (typeof window !== "undefined" && !(window as any).__ush_ic_fired) {
+      (window as any).__ush_ic_fired = true;
+      if (typeof (window as any).fbq === "function") {
+        try {
+          (window as any).fbq("track", "InitiateCheckout", {
+            content_name: "Edicao Especial - Inicio de Finalizacao",
+            currency: "BRL",
+            value: 29.90
+          });
+        } catch (e) {}
+      }
+    }
+  };
+
   // Captura silenciosa de Lead e Contato no Admin (Checkout Iniciado)
   const captureContact = async () => {
     const cleanPhone = phone.replace(/\D/g, "");
@@ -193,7 +209,8 @@ export const SpecialCheckoutSection = () => {
       return;
     }
 
-    // Salva o contato imediatamente no Admin e dispara Lead
+    // Garante disparo do InitiateCheckout + salva Lead
+    ensureInitiateCheckoutFired();
     captureContact();
     setStep(2);
   };
@@ -219,17 +236,8 @@ export const SpecialCheckoutSection = () => {
 
     const cleanPhone = phone.replace(/\D/g, "");
 
-    // DISPARO DO INITIATECHECKOUT REAL (Ação 1)
-    // Ocorre EXATAMENTE quando o usuário preencheu os dados completos e clicou para pagar
-    if (typeof (window as any).fbq === "function") {
-      try {
-        (window as any).fbq("track", "InitiateCheckout", {
-          content_name: "Edicao Especial - Finalizacao de Compra",
-          currency: "BRL",
-          value: 29.90
-        });
-      } catch (e) {}
-    }
+    // Garante que InitiateCheckout foi disparado caso o visitante tenha ido direto ao submit
+    ensureInitiateCheckoutFired();
 
     setLoading(true);
 
@@ -596,7 +604,7 @@ export const SpecialCheckoutSection = () => {
 
                 {step === 1 ? (
                   /* PASSO 1: APENAS NOME, E-MAIL E WHATSAPP (ZERO FRICÇÃO DE CPF) */
-                  <form onSubmit={handleContinueStep1} className="space-y-4 animate-in fade-in">
+                  <form onSubmit={handleContinueStep1} onFocus={ensureInitiateCheckoutFired} className="space-y-4 animate-in fade-in">
                     <div className="space-y-1">
                       <h3 className="font-sans font-bold text-lg sm:text-xl text-white">
                         Para onde devemos enviar sua Chave de Leitura?

@@ -24,15 +24,67 @@ interface SpecialReaderShowcaseProps {
   onCtaClick?: () => void;
 }
 
+type LeaderKey = "cesar" | "napoleao" | "jobs";
+
+const HISTORICAL_EXCERPTS: Record<LeaderKey, {
+  tabLabel: string;
+  eraBadge: string;
+  title: string;
+  p1: string;
+  p2: string;
+  p3: string;
+  highlightQuote: string;
+  convergenceNote: string;
+  fullExtra1: string;
+  fullExtra2: string;
+}> = {
+  cesar: {
+    tabLabel: "Júlio César (49 a.C.)",
+    eraBadge: "ARQUIVO 02 // RIO RUBICÃO, ROMA — 49 A.C.",
+    title: "A Travessia do Rubicão",
+    p1: "O frio de janeiro ainda pesava no ar quando a vanguarda de Júlio César chegou às margens do Rubicão. Do outro lado daquele curso d'água começava o território da Itália, onde a lei do Senado proibia qualquer general de entrar em armas.",
+    p2: "A poucos passos de César, sob o toldo de uma tenda de campanha, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte.",
+    p3: "O escrivão de serviço via o que os discursos posteriores esconderiam: o comandante de um exército prestes a mudar a história do mundo estava decidindo às cegas, cercado por números desencontrados e prazos que se fechavam hora a hora.",
+    highlightQuote: "— E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.",
+    convergenceNote: "Depois que César atravessou o rio, tudo pareceu um plano genial. Antes da travessia, eram as mesmas 5 variáveis matemáticas (Pressão, Informação Incompleta, Alternativas Reduzidas, Decisão e Consequência) que séculos depois cercariam Napoleão, Alan Turing e Steve Jobs.",
+    fullExtra1: "Os emissários do Senado haviam bloqueado a liberação de crédito e grãos para as legiões da fronteira. Se César aguardasse parado na margem esperando autorização jurídica, o inverno consumiria as reservas antes de qualquer resposta de Roma.",
+    fullExtra2: "Para a tropa, existia apenas a espera pela próxima ordem. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível."
+  },
+  napoleao: {
+    tabLabel: "Napoleão (1815)",
+    eraBadge: "ARQUIVO 06 // WATERLOO, BÉLGICA — JUNHO DE 1815",
+    title: "A Lama de Waterloo",
+    p1: "A chuva torrencial da madrugada tinha transformado os campos da Bélgica num pântano pesado. Os soldados franceses estavam exaustos da marcha forçada, e os cavalos da artilharia atolavam até os jarretes na lama das estradas.",
+    p2: "Na tenda de comando, Napoleão recebia despachos contraditórios: um batedor garantia que o exército prussiano recuava para leste; outro alertava que colunas inimigas marchavam muito mais perto do flanco francês do que o previsto.",
+    p3: "Napoleão consultou o relógio de bolso. O solo precisava secar para que as rodas dos canhões pudessem manobrar sem afundar — mas cada hora de espera encurtava a distância do inimigo invisível na neblina.",
+    highlightQuote: "— O verdadeiro obstáculo daquela manhã ia além do exército adversário: era a fricção do tempo e a informação que chegava atrasada demais.",
+    convergenceNote: "Em 1815, a hesitação logística de 3 horas colapsou um império e provocou a maior transferência de capital da Europa moderna — repetindo exatamente a mesma equação de 5 variáveis vista em 49 a.C.",
+    fullExtra1: "Numa mesa dobrável ao fundo da tenda, o oficial encarregado do livro de ordens anotava o horário de saída de cada estafeta a cavalo e o dobro de tempo que as mensagens levavam para vencer os atoleiros.",
+    fullExtra2: "Quando os primeiros canhões finalmente dispararam ao meio-dia, o relógio invisível da logística já havia selado o destino da batalha."
+  },
+  jobs: {
+    tabLabel: "Steve Jobs (2007)",
+    eraBadge: "ARQUIVO 09 // SÃO FRANCISCO — 09 DE JANEIRO DE 2007",
+    title: "O Palco sob Risco Total",
+    p1: "O auditório principal do Moscone Center já estava lotado muito antes de os refletores acenderem. Atrás da cortina pesada, porém, o clima passava longe da certeza absoluta que o mundo veria minutos depois.",
+    p2: "Sentado num canto escuro dos bastidores, um engenheiro de telemetria acompanhava a oscilação da antena portátil instalada às pressas e anotava cada queda de pacote causada pelos transmissores da imprensa no salão.",
+    p3: "O protótipo do iPhone ainda sofria quedas de memória se duas funções fossem abertas fora da ordem exata. Se qualquer uma das sete engrenagens falhasse no palco, a apresentação desabaria ao vivo em transmissão mundial.",
+    highlightQuote: "— Não havia plano B. O roteiro foi desenhado sobre um fio de navalha onde a execução precisava parecer mágica enquanto a retaguarda segurava o colapso.",
+    convergenceNote: "De Júlio César no Rubicão a Steve Jobs em São Francisco, o livro revela como o mesmo funil matemático de pressão e risco governa as decisões que mudam o mundo.",
+    fullExtra1: "A poucos metros da cortina, Steve Jobs segurava um dos aparelhos de demonstração, olhando para o monitor de apoio enquanto os engenheiros alinhavam a sequência exata de cliques que não derrubava o sistema.",
+    fullExtra2: "A história registrou o triunfo inevitável. Os arquivos técnicos daquela manhã registraram um líder caminhando sobre o mesmo abismo de incerteza dos generais da Antiguidade."
+  }
+};
+
 export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowcaseProps) => {
   const [theme, setTheme] = useState<"dark" | "sepia" | "light">("dark");
   const [fontSize, setFontSize] = useState<number>(16);
+  const [activeLeader, setActiveLeader] = useState<LeaderKey>("cesar");
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
-  // Exibe toast temporário de confirmação de toque
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
     setHasInteracted(true);
@@ -50,8 +102,8 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-slate-400",
       borderColor: "border-gold/30",
       headerBg: "bg-[#0d1527] border-b border-white/10",
-      highlight: "bg-[#c9a962]/25 text-[#f6d88e] px-1 py-0.5 rounded border-b border-gold/50 shadow-[0_0_15px_rgba(201,169,98,0.25)]",
-      meta: "text-sky-400",
+      highlight: "bg-[#c9a962]/20 text-[#f6d88e] px-2.5 py-1.5 rounded-lg border-l-2 border-gold block my-2 font-medium",
+      meta: "text-gold",
       accent: "#c9a962"
     },
     sepia: {
@@ -62,7 +114,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-[#6b583e]",
       borderColor: "border-[#d4c3a3]",
       headerBg: "bg-[#e8dcbf] border-b border-[#cfbfa0]",
-      highlight: "bg-[#d8a342]/30 text-[#1f1406] px-1 py-0.5 rounded border-b border-[#b58327] font-semibold",
+      highlight: "bg-[#d8a342]/25 text-[#1f1406] px-2.5 py-1.5 rounded-lg border-l-2 border-[#8a5d1b] block my-2 font-semibold",
       meta: "text-[#8a5d1b]",
       accent: "#d8a342"
     },
@@ -74,13 +126,14 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-[#64748b]",
       borderColor: "border-slate-300",
       headerBg: "bg-[#f1f5f9] border-b border-slate-200",
-      highlight: "bg-amber-100 text-[#78350f] px-1 py-0.5 rounded border-b border-amber-300 font-medium",
-      meta: "text-sky-600",
+      highlight: "bg-amber-100/90 text-[#78350f] px-2.5 py-1.5 rounded-lg border-l-2 border-amber-500 block my-2 font-medium",
+      meta: "text-amber-700",
       accent: "#f59e0b"
     }
   };
 
   const currentTheme = themeStyles[theme];
+  const currentExcerpt = HISTORICAL_EXCERPTS[activeLeader];
 
   const handleDecreaseFont = () => {
     const next = Math.max(14, fontSize - 1);
@@ -99,12 +152,16 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
     triggerToast(`Tema ${themeStyles[newTheme].name} ativado!`);
   };
 
+  const handleLeaderChange = (leader: LeaderKey) => {
+    setActiveLeader(leader);
+    triggerToast(`Lendo arquivo: ${HISTORICAL_EXCERPTS[leader].tabLabel}`);
+  };
+
   const handleToggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
     triggerToast(!isBookmarked ? "Página salva na nuvem!" : "Marcador removido");
   };
 
-  // Trava o scroll do body quando o modal estiver aberto no mobile
   useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -118,51 +175,34 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
   return (
     <section id="reader-simulator-section" className="relative py-16 sm:py-24 px-4 sm:px-6 overflow-visible bg-[#050811]/80 border-y border-white/10">
-      <div className="max-w-6xl mx-auto space-y-12">
+      <div className="max-w-6xl mx-auto space-y-10">
         
         {/* Cabeçalho da Seção */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
           <span className="text-xs font-mono tracking-[0.25em] text-gold uppercase bg-gold/10 px-4 py-1.5 rounded-full border border-gold/30 inline-flex items-center gap-2 shadow-[0_0_15px_rgba(201,169,98,0.2)]">
             <Sparkles className="w-3.5 h-3.5 text-gold" />
-            TECNOLOGIA EXCLUSIVA // NADA DE PDF COMUM
+            DEGUSTAÇÃO INTERATIVA // LEIA UM TRECHO REAL AGORA
           </span>
-          <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
+          <h2 className="font-sans text-2xl sm:text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
             Uma experiência de leitura imersiva, feita para você.
           </h2>
-          <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Esqueça arquivos soltos de PDF que quebram no celular. Você acessa um leitor digital nativo, construído com foco obsessivo em tipografia, contraste e imersão total.
+          <p className="text-sm sm:text-lg text-slate-300 font-normal leading-relaxed">
+            Teste abaixo a plataforma exclusiva de leitura e leia os bastidores de <strong className="text-gold">Júlio César no Rubicão</strong>, <strong className="text-gold">Napoleão em Waterloo</strong> ou <strong className="text-gold">Steve Jobs em 2007</strong>:
           </p>
         </div>
 
-        {/* ======================================================== */}
-        {/* PRINT 3 RESOLVIDO: BANNER DE ALTO CONTRASTE E DESTAQUE   */}
-        {/* ======================================================== */}
-        <motion.div 
-          className="w-full max-w-xl mx-auto text-center"
-          initial={{ opacity: 0, scale: 0.96 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="relative p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#0e172e] via-[#142347] to-[#0a1020] border-2 border-gold shadow-[0_0_35px_rgba(201,169,98,0.4)] space-y-2.5 overflow-hidden">
-            <div className="flex items-center justify-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[11px] sm:text-xs uppercase tracking-wider shadow-md animate-pulse">
-                <Zap className="w-3 h-3 fill-slate-950" />
-                SIMULADOR INTERATIVO
-              </span>
-            </div>
-
-            <h3 className="font-sans text-base sm:text-xl font-bold text-white tracking-tight leading-snug">
-              TOQUE NOS BOTÕES DO CELULAR PARA TESTAR:
-            </h3>
-
+        {/* Banner de Instrução Rápida */}
+        <div className="w-full max-w-xl mx-auto text-center">
+          <div className="relative p-3.5 sm:p-4 rounded-2xl bg-gradient-to-br from-[#0e172e] via-[#142347] to-[#0a1020] border border-gold/70 shadow-[0_0_25px_rgba(201,169,98,0.3)] space-y-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[10px] sm:text-xs uppercase tracking-wider">
+              <Zap className="w-3 h-3 fill-slate-950" />
+              SIMULADOR DO LEITOR DIGITAL
+            </span>
             <p className="text-xs sm:text-sm text-slate-200 font-normal leading-relaxed">
-              Mude para <strong className="text-gold">🌙 Escuro</strong>, <strong className="text-amber-200">📜 Sépia</strong> ou <strong className="text-white">☀️ Claro</strong> e ajuste a letra. A interface responde na hora!
+              Alterne entre os líderes históricos abaixo e teste os modos <strong className="text-gold">🌙 Escuro</strong>, <strong className="text-amber-200">📜 Sépia</strong> ou <strong className="text-white">☀️ Claro</strong>:
             </p>
-
-
           </div>
-        </motion.div>
+        </div>
 
         {/* Grade: Widget Interativo Central + Telas de Apoio Desktop */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -178,58 +218,46 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                 <span>DOSSIÊ 01 // 49 A.C.</span>
               </div>
               <h4 className="font-sans font-bold text-sm text-white mb-1.5">
-                O Rubicão & A Faria Lima
+                O Rubicão & O Vale do Silício
               </h4>
               <p className="text-sm text-slate-300 leading-relaxed font-normal mb-3">
-                Fragmento tático comparando a decisão de Júlio César com o modelo de liquidez da Strata em 2026.
+                Paralelo completo entre a decisão de Júlio César em 49 a.C. e o lançamento de Steve Jobs em 2007.
               </p>
               <div className="p-2.5 rounded-xl bg-black/60 border border-white/5 font-mono text-[10px] text-slate-300 flex items-center justify-between">
                 <span>COORD: 44.0833° N</span>
-                <span className="text-emerald-400 font-bold">DESCLASSIFICADO</span>
+                <span className="text-emerald-400 font-bold">INCLUSO</span>
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-[#0b1325]/80 border border-white/10 text-xs text-slate-300 flex items-start gap-2.5">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span>Sincronização na nuvem com progresso gravado por linha.</span>
+              <span>Sincronização automática na nuvem: salva exatamente a linha onde você parou.</span>
             </div>
           </div>
 
           {/* ======================================================== */}
-          {/* MOCKUP DO CELULAR ULTRA-REALISTA (ESTILO IPHONE 16 PRO)  */}
+          {/* MOCKUP DO CELULAR ULTRA-REALISTA COM OS TRECHOS HISTÓRICOS */}
           {/* ======================================================== */}
           <div className="lg:col-span-6 flex flex-col items-center">
             
-            <motion.div 
-              className="relative w-full max-w-[390px] sm:max-w-[420px]"
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-            >
+            <div className="relative w-full max-w-[400px] sm:max-w-[430px]">
               
               {/* Moldura Externa de Titânio do Celular */}
-              <div className="relative rounded-[48px] sm:rounded-[52px] p-2.5 sm:p-3 bg-gradient-to-b from-slate-600 via-slate-800 to-slate-950 border-2 border-slate-500/50 shadow-[0_25px_65px_-15px_rgba(0,0,0,0.95),0_0_40px_rgba(201,169,98,0.25)]">
+              <div className="relative rounded-[44px] sm:rounded-[50px] p-2 sm:p-3 bg-gradient-to-b from-slate-600 via-slate-800 to-slate-950 border-2 border-slate-500/50 shadow-[0_25px_65px_-15px_rgba(0,0,0,0.95),0_0_40px_rgba(201,169,98,0.25)]">
                 
-                {/* Botões Físicos Laterais do Smartphone */}
-                {/* Botão de volume + */}
+                {/* Botões Físicos Laterais */}
                 <div className="absolute -left-[5px] top-28 w-[4px] h-10 bg-slate-500 rounded-l-md border-y border-l border-slate-400/60" />
-                {/* Botão de volume - */}
                 <div className="absolute -left-[5px] top-42 w-[4px] h-10 bg-slate-500 rounded-l-md border-y border-l border-slate-400/60" />
-                {/* Botão lateral de energia / ação */}
                 <div className="absolute -right-[5px] top-32 w-[4px] h-16 bg-slate-500 rounded-r-md border-y border-r border-slate-400/60" />
 
                 {/* Tela do Celular */}
-                <div className={`relative rounded-[40px] sm:rounded-[44px] overflow-hidden ${currentTheme.cardBg} border ${currentTheme.borderColor} transition-colors duration-300 flex flex-col shadow-inner select-none`}>
+                <div className={`relative rounded-[38px] sm:rounded-[42px] overflow-hidden ${currentTheme.cardBg} border ${currentTheme.borderColor} transition-colors duration-300 flex flex-col shadow-inner select-none`}>
                   
-                  {/* Reflexo de Vidro Físico Angulado */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent z-20" />
-
                   {/* Toast Flutuante de Confirmação Tátil */}
                   <AnimatePresence>
                     {toastMessage && (
                       <motion.div 
-                        className="absolute top-16 left-1/2 -translate-x-1/2 z-40 px-3.5 py-1.5 rounded-full bg-slate-950/90 text-white border border-gold/60 text-[11px] font-sans font-bold shadow-2xl flex items-center gap-1.5 whitespace-nowrap"
+                        className="absolute top-16 left-1/2 -translate-x-1/2 z-40 px-3.5 py-1.5 rounded-full bg-slate-950/95 text-white border border-gold/60 text-[11px] font-sans font-bold shadow-2xl flex items-center gap-1.5 whitespace-nowrap"
                         initial={{ opacity: 0, y: -10, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.9 }}
@@ -241,70 +269,69 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     )}
                   </AnimatePresence>
 
-                  {/* BARRA SUPERIOR DO CELULAR: Dynamic Island + Status iOS */}
-                  <div className={`px-4 pt-3 pb-2 ${currentTheme.headerBg} transition-colors duration-300`}>
+                  {/* BARRA SUPERIOR DO CELULAR */}
+                  <div className={`px-3.5 sm:px-4 pt-3 pb-2.5 ${currentTheme.headerBg} transition-colors duration-300`}>
                     
                     {/* Status Bar (Hora + Dynamic Island + Bateria) */}
-                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-300 mb-2">
-                      <span className="w-10 pl-1">03:42</span>
-
-                      {/* DYNAMIC ISLAND */}
-                      <div className="w-24 sm:w-28 h-5 sm:h-5.5 bg-black rounded-full flex items-center justify-end px-2 gap-1.5 shadow-md">
-                        {/* Lente da Câmera com reflexo sutil */}
-                        <div className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center">
-                          <div className="w-1 h-1 rounded-full bg-blue-950" />
-                        </div>
-                        {/* Sensor */}
+                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-2">
+                      <span className="w-10 pl-1">09:41</span>
+                      <div className="w-24 h-5 bg-black rounded-full flex items-center justify-end px-2 gap-1.5 shadow-md">
+                        <div className="w-2 h-2 rounded-full bg-slate-900 border border-slate-800" />
                         <div className="w-1.5 h-1.5 rounded-full bg-slate-900" />
                       </div>
-
-                      <div className="flex items-center gap-1.5 w-10 justify-end pr-1 text-slate-300">
+                      <div className="flex items-center gap-1.5 w-10 justify-end pr-1">
                         <Wifi className="w-3 h-3" />
                         <BatteryCharging className="w-3.5 h-3.5 text-emerald-400" />
                       </div>
                     </div>
 
-                    {/* Barra de Progresso Real do Leitor */}
-                    <div className="flex items-center justify-between pt-1">
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={handleToggleBookmark}
-                          className="flex items-center gap-1 text-[10px] font-mono tracking-widest text-gold font-bold uppercase hover:opacity-80 transition-opacity cursor-pointer"
-                          title="Clique para testar o marcador inteligente"
-                        >
-                          <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "fill-gold text-gold" : "text-gold"}`} />
-                          <span>14% LIDO // PÁG. 18</span>
-                        </button>
-                      </div>
+                    {/* Barra de Progresso + Botão Expandir */}
+                    <div className="flex items-center justify-between pt-0.5">
+                      <button
+                        type="button"
+                        onClick={handleToggleBookmark}
+                        className="flex items-center gap-1 text-[10px] font-mono tracking-wider text-gold font-bold uppercase hover:opacity-80 transition-opacity cursor-pointer"
+                      >
+                        <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "fill-gold text-gold" : "text-gold"}`} />
+                        <span>AMOSTRA OFICIAL</span>
+                      </button>
 
                       <button
                         type="button"
                         onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[11px] sm:text-xs uppercase tracking-wider shadow-[0_0_18px_rgba(201,169,98,0.55)] active:scale-95 transition-all cursor-pointer hover:brightness-110"
-                        title="Abrir leitor em tela cheia no celular"
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[10px] sm:text-[11px] uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer"
                       >
-                        <Maximize2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>EXPANDIR LEITOR</span>
+                        <Maximize2 className="w-3 h-3 stroke-[2.5]" />
+                        <span>TELA CHEIA</span>
                       </button>
                     </div>
 
-                    {/* Linha Fina da Barra de Progresso Dourada */}
-                    <div className="w-full h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-gold to-amber-300 w-[14%]" />
+                    {/* ======================================================== */}
+                    {/* ABAS DE PERSONAGENS HISTÓRICOS (CÉSAR / NAPOLEÃO / JOBS) */}
+                    {/* ======================================================== */}
+                    <div className="grid grid-cols-3 gap-1 mt-2.5 p-1 rounded-xl bg-black/35 border border-white/10">
+                      {(["cesar", "napoleao", "jobs"] as LeaderKey[]).map((key) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => handleLeaderChange(key)}
+                          className={`py-1.5 px-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer truncate ${
+                            activeLeader === key
+                              ? "bg-gold text-slate-950 shadow font-black"
+                              : "text-slate-300 hover:text-white bg-white/5"
+                          }`}
+                        >
+                          {HISTORICAL_EXCERPTS[key].tabLabel}
+                        </button>
+                      ))}
                     </div>
 
-                    {/* ======================================================== */}
-                    {/* CONTROLES REAIS DO E-READER (NADA DE IMAGEM ESTÁTICA)   */}
-                    {/* ======================================================== */}
-                    <div className="pt-2.5 flex flex-wrap items-center justify-between gap-2 border-t border-white/5 mt-2">
-                      
-                      {/* Seletor de Tema (3 Botões Grandes e Táteis) */}
+                    {/* CONTROLES DE TEMA E FONTE */}
+                    <div className="pt-2 flex items-center justify-between gap-1.5 mt-2 border-t border-white/10">
                       <div className="flex items-center gap-1 p-0.5 bg-black/40 rounded-xl border border-white/10 relative">
-                        {/* Indicador animado inicial de toque para o visitante não passar batido */}
                         {!hasInteracted && (
-                          <div className="absolute -top-7 left-3 flex items-center gap-1 text-[10px] font-sans font-black text-gold bg-slate-950 px-2 py-0.5 rounded-full border border-gold/60 shadow-lg animate-bounce pointer-events-none whitespace-nowrap z-30">
-                            <Pointer className="w-3 h-3 text-gold" />
+                          <div className="absolute -top-6 left-2 flex items-center gap-1 text-[9px] font-sans font-black text-gold bg-slate-950 px-2 py-0.5 rounded-full border border-gold/60 shadow-lg animate-bounce pointer-events-none whitespace-nowrap z-30">
+                            <Pointer className="w-2.5 h-2.5 text-gold" />
                             <span>Toque para testar</span>
                           </div>
                         )}
@@ -312,9 +339,9 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         <button
                           type="button"
                           onClick={() => handleThemeChange("dark")}
-                          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                             theme === "dark" 
-                              ? "bg-slate-800 text-gold shadow-md border border-gold/50" 
+                              ? "bg-slate-800 text-gold shadow border border-gold/50" 
                               : "text-slate-400 hover:text-white"
                           }`}
                         >
@@ -325,9 +352,9 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         <button
                           type="button"
                           onClick={() => handleThemeChange("sepia")}
-                          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                             theme === "sepia" 
-                              ? "bg-[#e2d4b5] text-[#3d2b15] shadow-md border border-[#9b7941]" 
+                              ? "bg-[#e2d4b5] text-[#3d2b15] shadow border border-[#9b7941]" 
                               : "text-slate-400 hover:text-white"
                           }`}
                         >
@@ -338,9 +365,9 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         <button
                           type="button"
                           onClick={() => handleThemeChange("light")}
-                          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                             theme === "light" 
-                              ? "bg-white text-slate-900 shadow-md border border-slate-300" 
+                              ? "bg-white text-slate-900 shadow border border-slate-300" 
                               : "text-slate-400 hover:text-white"
                           }`}
                         >
@@ -349,118 +376,120 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         </button>
                       </div>
 
-                      {/* Ajuste de Fonte (A- / 15px / A+) */}
                       <div className="flex items-center gap-1 p-0.5 bg-black/40 rounded-xl border border-white/10">
                         <button
                           type="button"
                           onClick={handleDecreaseFont}
-                          className="w-7 h-7 rounded-lg text-xs font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
-                          title="Diminuir tamanho da fonte"
+                          className="w-6 h-6 rounded-lg text-[11px] font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
                         >
                           A-
                         </button>
-                        <span className="text-xs font-mono text-gold font-bold px-1 min-w-[30px] text-center">
-                          {fontSize}px
+                        <span className="text-[11px] font-mono text-gold font-bold px-1 min-w-[28px] text-center">
+                          {fontSize}
                         </span>
                         <button
                           type="button"
                           onClick={handleIncreaseFont}
-                          className="w-7 h-7 rounded-lg text-xs font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
-                          title="Aumentar tamanho da fonte"
+                          className="w-6 h-6 rounded-lg text-[11px] font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
                         >
                           A+
                         </button>
                       </div>
-
                     </div>
 
                   </div>
 
-                  {/* ÁREA DE LEITURA REAL DA OBRA (COM PARÁGRAFOS ESPAÇADOS E TRECHO GRIFADO) */}
-                  <div className="p-5 sm:p-6 space-y-4 min-h-[340px] flex flex-col justify-between">
-                    <div className="space-y-3">
-                      <p className={`text-xs font-mono tracking-widest uppercase font-bold ${currentTheme.meta}`}>
-                        PRÓLOGO // FARIA LIMA, SÃO PAULO — 03h42
+                  {/* ÁREA DE LEITURA HISTÓRICA REAL */}
+                  <div className="p-4 sm:p-5 space-y-3.5 min-h-[360px] flex flex-col justify-between">
+                    <div className="space-y-2.5 text-left">
+                      <p className={`text-[10px] sm:text-xs font-mono tracking-widest uppercase font-bold ${currentTheme.meta}`}>
+                        {currentExcerpt.eraBadge}
                       </p>
 
-                      <h4 className={`font-sans font-bold text-xl leading-snug ${currentTheme.textColor}`}>
-                        O Teste Proibido
+                      <h4 className={`font-sans font-bold text-lg sm:text-xl leading-snug ${currentTheme.textColor}`}>
+                        {currentExcerpt.title}
                       </h4>
 
                       <p 
                         className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
-                        O décimo sexto andar estava quase vazio. Diante de dois monitores, Caio Avelar cruzava relatórios bancários da Strata com registros históricos restritos — até que uma correlação impossível travou a tela.
+                        {currentExcerpt.p1}
                       </p>
 
                       <p 
                         className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
-                        As mesmas assinaturas matemáticas que antecederam o colapso de impérios há três mil anos estavam sendo executadas, linha por linha, nos terminais financeiros daquela madrugada.
+                        {currentExcerpt.p2}
                       </p>
 
                       <p 
                         className={`leading-relaxed ${currentTheme.textColor} transition-all duration-200 font-sans`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
-                        Nesse exato instante, o celular pessoal de Caio vibrou sobre a mesa. Uma mensagem de número oculto brilhava na tela: <span className={currentTheme.highlight}>"Você não deveria ter cruzado os vetores. Saia do prédio agora."</span>
+                        {currentExcerpt.p3}
                       </p>
 
-                      {/* Cliffhanger: Gatilho de Continuação Dentro da Tela do Leitor */}
+                      <div 
+                        className={`leading-relaxed transition-all duration-200 font-sans ${currentTheme.highlight}`}
+                        style={{ fontSize: `${Math.max(14, fontSize - 1)}px` }}
+                      >
+                        {currentExcerpt.highlightQuote}
+                      </div>
+
+                      {/* A CONEXÃO DO PADRÃO OCULTO + BOTÃO DE DESBLOQUEIO DIRETO */}
                       <div className="pt-2">
-                        <div className="p-3.5 rounded-2xl bg-gradient-to-b from-slate-900/95 to-black/95 border border-gold/50 text-center space-y-2 shadow-lg">
+                        <div className="p-3.5 rounded-2xl bg-gradient-to-b from-[#0c1428] to-[#070b16] border border-gold/50 text-center space-y-2.5 shadow-xl">
                           <span className="inline-block text-[10px] font-mono font-bold text-gold uppercase tracking-widest">
-                            🔒 FIM DA AMOSTRA GRATUITA // PÁG. 2 DE 240
+                            ⚡ O MESMO PADRÃO EM 3.000 ANOS DE HISTÓRIA
                           </span>
-                          <p className="text-xs text-slate-200 leading-snug">
-                            O que Caio encontra no arquivo oculto da Strata muda tudo. Continue lendo agora no seu celular:
+                          <p className="text-xs text-slate-200 leading-relaxed">
+                            {currentExcerpt.convergenceNote}
                           </p>
                           <button
                             type="button"
                             onClick={onCtaClick}
-                            className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(201,169,98,0.4)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                           >
                             <Zap className="w-3.5 h-3.5 fill-slate-950" />
-                            <span>Destravar Livro Completo (R$ 29,90)</span>
+                            <span>Destravar Livro Completo • R$ 29,90</span>
                           </button>
                         </div>
                       </div>
                     </div>
 
                     {/* Rodapé da Tela do Celular */}
-                    <div className={`pt-3 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[10px] font-mono ${currentTheme.subColor}`}>
-                      <span>Capítulo 01 // ~12 min</span>
+                    <div className={`pt-2.5 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[10px] font-mono ${currentTheme.subColor}`}>
+                      <span>21 Capítulos + 4 Dossiês</span>
                       <span className="flex items-center gap-1 text-gold font-bold">
-                        <Sparkles className="w-3 h-3" /> Modo Imersivo
+                        <Sparkles className="w-3 h-3" /> Leitor Oficial
                       </span>
                     </div>
-
                   </div>
 
                   {/* Barra Home Inferior do iPhone */}
                   <div className="pb-2 pt-1 flex justify-center">
-                    <div className="w-28 sm:w-32 h-1 bg-slate-400/40 rounded-full" />
+                    <div className="w-28 h-1 bg-slate-400/40 rounded-full" />
                   </div>
 
                 </div>
 
               </div>
 
-            </motion.div>
+            </div>
 
             {/* 3 Diferenciais Claros Logo Abaixo do Mockup */}
             <div className="w-full max-w-md grid grid-cols-3 gap-2 text-center mt-5">
               <div className="p-2.5 rounded-xl bg-card/40 border border-white/5">
                 <Moon className="w-4 h-4 text-gold mx-auto mb-1" />
                 <span className="block text-[10px] sm:text-xs font-bold text-white">Zero Cansaço</span>
-                <span className="text-[10px] text-slate-400">Modo noturno</span>
+                <span className="text-[10px] text-slate-400">3 Temas Visuais</span>
               </div>
               <div className="p-2.5 rounded-xl bg-card/40 border border-white/5">
                 <Smartphone className="w-4 h-4 text-cyan mx-auto mb-1" />
-                <span className="block text-[10px] sm:text-xs font-bold text-white">App PWA</span>
-                <span className="text-[10px] text-slate-400">Sem baixar nada</span>
+                <span className="block text-[10px] sm:text-xs font-bold text-white">Sem PDF</span>
+                <span className="text-[10px] text-slate-400">Leitura Fluida</span>
               </div>
               <div className="p-2.5 rounded-xl bg-card/40 border border-white/5">
                 <Bookmark className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
@@ -476,13 +505,13 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             <div className="p-5 rounded-2xl bg-[#090f1e] border border-cyan/30 shadow-xl relative overflow-hidden group hover:border-cyan/60 transition-all">
               <div className="flex items-center gap-2 text-xs font-mono text-cyan mb-3">
                 <Users className="w-4 h-4 text-cyan" />
-                <span>REDE FECHADA // LIVRO II</span>
+                <span>EXPANSÃO // LIVRO II</span>
               </div>
               <h4 className="font-sans font-bold text-sm text-white mb-1.5">
                 A Corrente de Leitores
               </h4>
               <p className="text-sm text-slate-300 leading-relaxed font-normal mb-3">
-                Seu link pessoal de indicação fica salvo no painel do e-reader. Cada leitor trazido destrava vantagens exclusivas para o próximo volume.
+                Desbloqueie conteúdos complementares de acordo com seu perfil e condições exclusivas para o Livro II.
               </p>
               <div className="p-2.5 rounded-xl bg-black/60 border border-white/5 font-mono text-[10px] text-cyan flex items-center justify-between">
                 <span>PASSE PRIORITÁRIO</span>
@@ -492,7 +521,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
             <div className="p-4 rounded-xl bg-[#0b1325]/80 border border-white/10 text-xs text-slate-300 flex items-start gap-2.5">
               <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span>Instalação instantânea como PWA no Android e iPhone.</span>
+              <span>Acesso imediato no Android, iPhone, Tablet e Computador.</span>
             </div>
           </div>
 
@@ -512,7 +541,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             exit={{ opacity: 0, y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
-            {/* Topo do Modal: Fechar + Título + CTA Rápido */}
+            {/* Topo do Modal */}
             <div className="p-3 sm:p-4 bg-[#0a1020] border-b border-white/10 flex items-center justify-between gap-2 shrink-0">
               <button
                 type="button"
@@ -525,10 +554,10 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
               <div className="text-center">
                 <span className="block text-xs font-mono text-gold font-bold uppercase tracking-wider">
-                  PRÉVIA DO E-READER
+                  LEITOR DIGITAL // TELA CHEIA
                 </span>
                 <span className="text-[10px] text-slate-400 font-mono">
-                  Capítulo 01 // 14% Concluído
+                  {currentExcerpt.tabLabel}
                 </span>
               </div>
 
@@ -545,106 +574,113 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
               </button>
             </div>
 
-            {/* Barra de Ferramentas Fixa no Modal */}
-            <div className="p-3 bg-black/60 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 shrink-0">
-              {/* Temas */}
-              <div className="flex items-center gap-1 p-0.5 bg-slate-900 rounded-xl border border-white/10">
-                <button
-                  type="button"
-                  onClick={() => handleThemeChange("dark")}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                    theme === "dark" ? "bg-slate-800 text-gold shadow border border-gold/40" : "text-slate-400"
-                  }`}
-                >
-                  <Moon className="w-3.5 h-3.5" />
-                  <span>Escuro</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleThemeChange("sepia")}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                    theme === "sepia" ? "bg-[#e2d4b5] text-[#3d2b15] shadow border border-[#9b7941]" : "text-slate-400"
-                  }`}
-                >
-                  <BookOpen className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Sépia</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleThemeChange("light")}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                    theme === "light" ? "bg-white text-slate-900 shadow border border-slate-300" : "text-slate-400"
-                  }`}
-                >
-                  <Sun className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Claro</span>
-                </button>
+            {/* Barra de Ferramentas e Abas no Modal */}
+            <div className="p-3 bg-black/70 border-b border-white/10 space-y-2 shrink-0">
+              <div className="grid grid-cols-3 gap-1.5 max-w-md mx-auto">
+                {(["cesar", "napoleao", "jobs"] as LeaderKey[]).map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => handleLeaderChange(key)}
+                    className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer truncate ${
+                      activeLeader === key
+                        ? "bg-gold text-slate-950 shadow font-black"
+                        : "text-slate-300 bg-white/5"
+                    }`}
+                  >
+                    {HISTORICAL_EXCERPTS[key].tabLabel}
+                  </button>
+                ))}
               </div>
 
-              {/* Tamanho da Fonte */}
-              <div className="flex items-center gap-1.5 p-0.5 bg-slate-900 rounded-xl border border-white/10">
-                <button
-                  type="button"
-                  onClick={handleDecreaseFont}
-                  className="w-8 h-8 rounded-lg text-xs font-black text-white bg-white/10 flex items-center justify-center active:scale-95"
-                >
-                  A-
-                </button>
-                <span className="text-xs font-mono text-gold font-bold px-1.5 min-w-[32px] text-center">
-                  {fontSize}px
-                </span>
-                <button
-                  type="button"
-                  onClick={handleIncreaseFont}
-                  className="w-8 h-8 rounded-lg text-xs font-black text-white bg-white/10 flex items-center justify-center active:scale-95"
-                >
-                  A+
-                </button>
+              <div className="flex flex-wrap items-center justify-between gap-2 max-w-2xl mx-auto">
+                <div className="flex items-center gap-1 p-0.5 bg-slate-900 rounded-xl border border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => handleThemeChange("dark")}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      theme === "dark" ? "bg-slate-800 text-gold shadow border border-gold/40" : "text-slate-400"
+                    }`}
+                  >
+                    <Moon className="w-3.5 h-3.5" />
+                    <span>Escuro</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleThemeChange("sepia")}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      theme === "sepia" ? "bg-[#e2d4b5] text-[#3d2b15] shadow border border-[#9b7941]" : "text-slate-400"
+                    }`}
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Sépia</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleThemeChange("light")}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      theme === "light" ? "bg-white text-slate-900 shadow border border-slate-300" : "text-slate-400"
+                    }`}
+                  >
+                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Claro</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1.5 p-0.5 bg-slate-900 rounded-xl border border-white/10">
+                  <button
+                    type="button"
+                    onClick={handleDecreaseFont}
+                    className="w-8 h-8 rounded-lg text-xs font-black text-white bg-white/10 flex items-center justify-center active:scale-95"
+                  >
+                    A-
+                  </button>
+                  <span className="text-xs font-mono text-gold font-bold px-1.5 min-w-[32px] text-center">
+                    {fontSize}px
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleIncreaseFont}
+                    className="w-8 h-8 rounded-lg text-xs font-black text-white bg-white/10 flex items-center justify-center active:scale-95"
+                  >
+                    A+
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Conteúdo de Leitura Scrollável em Tela Cheia */}
             <div className={`flex-1 overflow-y-auto p-6 sm:p-10 ${currentTheme.cardBg} transition-colors duration-300`}>
-              <div className="max-w-2xl mx-auto space-y-6">
+              <div className="max-w-2xl mx-auto space-y-5 text-left">
                 
                 <div className="space-y-1">
                   <p className={`text-xs font-mono tracking-widest uppercase font-semibold ${currentTheme.meta}`}>
-                    PRÓLOGO // FARIA LIMA, SÃO PAULO — 03h42
+                    {currentExcerpt.eraBadge}
                   </p>
                   <h2 className={`font-sans font-bold text-2xl sm:text-3xl ${currentTheme.textColor}`}>
-                    O Teste Proibido
+                    {currentExcerpt.title}
                   </h2>
                 </div>
 
                 <div 
-                  className={`space-y-5 leading-relaxed font-sans ${currentTheme.textColor}`}
+                  className={`space-y-4 leading-relaxed font-sans ${currentTheme.textColor}`}
                   style={{ fontSize: `${fontSize}px` }}
                 >
-                  <p>
-                    O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria.
-                  </p>
-
-                  <p>
-                    Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações bancárias que não deveriam conter nada além de rotina contábil. Mas quando cruzou as séries temporais com registros históricos restritos, uma correlação gráfica impossível se formou.
-                  </p>
-
-                  <p>
-                    "Não eram coincidências estatísticas. Eram as mesmas assinaturas comportamentais de líderes que derrubaram impérios há três mil anos sendo replicadas com precisão milimétrica nos gabinetes de hoje."
-                  </p>
-
-                  <p>
-                    Ele recostou-se na cadeira de couro preto. As mãos começavam a suar frio. Havia dez decisões registradas na História que nunca foram compreendidas pelos livros didáticos tradicionais. E todas elas convergiam para o mesmo ponto cego.
-                  </p>
-
-                  <p>
-                    Foi nesse momento que o telefone sobre a mesa vibrou uma única vez. Uma mensagem de número criptografado: <em className="font-semibold">"Você não deveria ter cruzado os vetores."</em>
-                  </p>
+                  <p>{currentExcerpt.p1}</p>
+                  <p>{currentExcerpt.p2}</p>
+                  <p>{currentExcerpt.fullExtra1}</p>
+                  <p>{currentExcerpt.p3}</p>
+                  <div className={currentTheme.highlight}>{currentExcerpt.highlightQuote}</div>
+                  <p>{currentExcerpt.fullExtra2}</p>
                 </div>
 
-                <div className="pt-8 pb-4 text-center">
-                  <span className={`text-xs font-mono ${currentTheme.subColor}`}>
-                    ★ Fim da demonstração do leitor nativo
+                <div className="p-5 rounded-2xl bg-[#0a1122] border border-gold/50 text-center space-y-3 mt-6">
+                  <span className="text-xs font-mono text-gold font-bold uppercase tracking-widest block">
+                    ⚡ O PADRÃO DAS 5 VARIÁVEIS
                   </span>
+                  <p className="text-sm text-slate-200 leading-relaxed">
+                    {currentExcerpt.convergenceNote}
+                  </p>
                 </div>
 
               </div>
@@ -654,10 +690,10 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             <div className="p-4 bg-[#0a1020] border-t border-white/10 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
               <div className="text-center sm:text-left">
                 <span className="text-white font-bold text-sm block">
-                  Gostou da experiência de leitura fluida?
+                  Desbloqueie os 21 capítulos + 4 Dossiês Ilustrados
                 </span>
                 <span className="text-slate-400 text-xs">
-                  Desbloqueie os 22 capítulos completos + Dossiês por apenas R$ 29,90.
+                  Acesso vitalício imediato por apenas R$ 29,90 (PIX ou Cartão).
                 </span>
               </div>
 
@@ -670,7 +706,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-sm uppercase tracking-wider rounded-xl shadow-[0_0_25px_rgba(201,169,98,0.5)] active:scale-95 transition-transform cursor-pointer"
               >
                 <Zap className="w-4 h-4 fill-slate-950" />
-                <span>Desbloquear Obra Completa</span>
+                <span>Desbloquear Obra Completa • R$ 29,90</span>
               </button>
             </div>
 
