@@ -14,7 +14,9 @@ import {
   RotateCcw,
   ArrowRight,
   HelpCircle,
-  Edit3
+  Edit3,
+  MessageCircle,
+  Instagram
 } from "lucide-react";
 
 export const SpecialCheckoutSection = () => {
@@ -352,11 +354,11 @@ export const SpecialCheckoutSection = () => {
   const faqItems = [
     {
       q: "Estou abrindo pelo Instagram. Se eu fechar o app depois de pagar, perco meu livro?",
-      a: "Não! Assim que o pagamento é confirmado, além de abrir o livro na mesma hora na sua tela, nós enviamos seu link de acesso vitalício para o seu E-mail (e suporte via WhatsApp). Você pode ler quando quiser no celular, tablet ou computador."
+      a: "Não! Assim que o pagamento é confirmado, além de abrir o livro na mesma hora na sua tela, você recebe seu link de acesso vitalício por E-mail e conta com nosso suporte direto no WhatsApp (+55 11 92694-9316) para recuperar sua chave quando quiser."
     },
     {
       q: "Preciso baixar algum aplicativo ou ter Kindle para ler?",
-      a: "Não precisa baixar nada nem ocupar espaço no celular. O leitor digital funciona direto no navegador como um aplicativo moderno, com ajuste de tamanho de fonte e modos Escuro, Sépia e Claro."
+      a: "Não precisa baixar nada nem ocupar espaço no celular. O leitor digital funciona direto no navegador como um aplicativo nativo, com leitura fluida, ajuste de fonte e modos Escuro, Sépia e Claro."
     },
     {
       q: "É o livro completo mesmo ou apenas um resumo?",
@@ -364,7 +366,7 @@ export const SpecialCheckoutSection = () => {
     },
     {
       q: "E se eu começar a ler e achar que a história não é para mim?",
-      a: "Você conta com 7 dias de Garantia Incondicional. Se ler os primeiros capítulos e não ficar preso na trama, basta solicitar o reembolso por e-mail e devolvemos 100% do seu PIX."
+      a: "Você conta com 7 dias de Garantia Incondicional. Se ler os primeiros capítulos e sentir que a história não é para você, basta mandar uma mensagem no nosso WhatsApp de suporte (+55 11 92694-9316) e devolvemos 100% do valor pago."
     }
   ];
 
@@ -898,6 +900,58 @@ export const SpecialCheckoutSection = () => {
                 </p>
               </div>
             ))}
+          </div>
+
+          {/* Card de Atendimento Humano no WhatsApp e Instagram */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-[#0c1629] via-[#0f1d33] to-[#0c1629] border border-emerald-500/30 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 text-emerald-400 font-mono text-xs uppercase tracking-wider font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                Atendimento Humano & Suporte ao Leitor
+              </div>
+              <h4 className="font-sans font-bold text-base sm:text-lg text-white">
+                Ficou com alguma dúvida sobre o pagamento ou acesso?
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-300">
+                Fale diretamente com nossa equipe no WhatsApp ou acompanhe os bastidores históricos no Instagram oficial.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto shrink-0">
+              <a
+                href="https://wa.me/5511926949316?text=Ol%C3%A1!%20Estou%20na%20p%C3%A1gina%20do%20livro%20O%20%C3%9Altimo%20Segredo%20da%20Humanidade%20e%20gostaria%20de%20tirar%20uma%20d%C3%BAvida."
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  if (typeof window !== "undefined" && typeof (window as any).fbq === "function") {
+                    try {
+                      (window as any).fbq("trackCustom", "ContatoSuporte", { canal: "whatsapp", origem: "faq" });
+                    } catch (e) {}
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-sans font-bold text-xs sm:text-sm transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+              >
+                <MessageCircle className="w-4 h-4 fill-slate-950/15" />
+                <span>WhatsApp: (11) 92694-9316</span>
+              </a>
+
+              <a
+                href="https://www.instagram.com/oultimosegredodahumanidade"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  if (typeof window !== "undefined" && typeof (window as any).fbq === "function") {
+                    try {
+                      (window as any).fbq("trackCustom", "ContatoSuporte", { canal: "instagram", origem: "faq" });
+                    } catch (e) {}
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-slate-200 font-sans font-semibold text-xs sm:text-sm transition-all"
+              >
+                <Instagram className="w-4 h-4 text-gold" />
+                <span>@oultimosegredodahumanidade</span>
+              </a>
+            </div>
           </div>
         </div>
 

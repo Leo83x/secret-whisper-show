@@ -1,16 +1,28 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { MessageCircle, Instagram } from "lucide-react";
+
+const WHATSAPP_URL =
+  "https://wa.me/5511926949316?text=Ol%C3%A1!%20Estou%20na%20p%C3%A1gina%20do%20livro%20O%20%C3%9Altimo%20Segredo%20da%20Humanidade%20e%20preciso%20de%20suporte.";
+
+const trackSupportClick = (canal: "whatsapp" | "instagram", origem: string) => {
+  if (typeof window !== "undefined" && typeof (window as any).fbq === "function") {
+    try {
+      (window as any).fbq("trackCustom", "ContatoSuporte", { canal, origem });
+    } catch (e) {}
+  }
+};
 
 const FooterSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
   return (
-    <footer ref={ref} className="w-full bg-[#070b14] border-t border-border/30 pt-16 pb-12 px-4 sm:px-6">
+    <footer ref={ref} className="w-full bg-[#070b14] border-t border-border/30 pt-16 pb-24 sm:pb-14 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto text-center">
         {/* Frases Poéticas de Encerramento */}
         <motion.div
-          className="space-y-4 mb-16"
+          className="space-y-4 mb-14"
           initial={{ opacity: 0, y: 15 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
@@ -43,21 +55,36 @@ const FooterSection = () => {
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 font-medium">
-            <span className="text-foreground/90">Registro de Obra: <strong className="font-semibold text-foreground">nº 312254601</strong></span>
+            <span className="text-foreground/90">
+              Registro de Obra: <strong className="font-semibold text-foreground">nº 312254601</strong>
+            </span>
             <span className="hidden sm:inline text-muted-foreground/30">•</span>
-            <a 
-              href="https://www.instagram.com/oultimosegredodahumanidade" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-primary hover:text-primary/80 transition-colors underline underline-offset-4"
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackSupportClick("whatsapp", "rodape")}
+              className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors underline underline-offset-4 font-semibold"
             >
-              Suporte no Instagram
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>Suporte no WhatsApp: +55 11 92694-9316</span>
             </a>
             <span className="hidden sm:inline text-muted-foreground/30">•</span>
-            <a 
-              href="/reader/terms.html" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://www.instagram.com/oultimosegredodahumanidade"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackSupportClick("instagram", "rodape")}
+              className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors underline underline-offset-4"
+            >
+              <Instagram className="w-3.5 h-3.5" />
+              <span>Instagram Oficial (@oultimosegredodahumanidade)</span>
+            </a>
+            <span className="hidden sm:inline text-muted-foreground/30">•</span>
+            <a
+              href="/reader/terms.html"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-primary hover:text-primary/80 transition-colors underline underline-offset-4 font-semibold"
             >
               Termos de Uso & Proteção Autoral (Lei nº 9.610/98)
