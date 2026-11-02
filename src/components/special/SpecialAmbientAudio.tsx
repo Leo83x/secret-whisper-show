@@ -1,9 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Volume2, Music } from "lucide-react";
 
 export const SpecialAmbientAudio = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const videoId = "XYKUeZQbMF0";
@@ -32,6 +33,28 @@ export const SpecialAmbientAudio = () => {
     }
   };
 
+  useEffect(() => {
+    const checkModal = () => {
+      if (typeof document === "undefined") return;
+      const modalOpen = 
+        document.body.getAttribute("data-reader-modal") === "true" ||
+        document.body.style.overflow === "hidden";
+      setIsModalOpen(modalOpen);
+    };
+
+    window.addEventListener("readerModalChange", checkModal);
+    const observer = new MutationObserver(checkModal);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-reader-modal", "style"] });
+
+    return () => {
+      window.removeEventListener("readerModalChange", checkModal);
+      observer.disconnect();
+    };
+  }, []);
+
+  // Se o leitor estiver aberto, esconde o botão para não sobrepor o botão Fechar
+  if (isModalOpen) return null;
+
   return (
     <>
       {/* YouTube player ONLY mounted on explicit user click - ZERO initial network overhead */}
@@ -53,7 +76,7 @@ export const SpecialAmbientAudio = () => {
       )}
 
       {/* Botão flutuante compacto e discreto no topo */}
-      <div className="fixed top-4 right-4 z-40 hidden sm:block animate-in fade-in">
+      <div className="fixed top-4 right-4 z-30 hidden sm:block animate-in fade-in">
         <button
           type="button"
           onClick={toggleMusic}

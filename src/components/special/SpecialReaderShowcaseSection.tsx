@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Moon, 
@@ -10,8 +11,6 @@ import {
   Check, 
   Users, 
   FileText,
-  Pointer,
-  Maximize2,
   X,
   Smartphone,
   Zap,
@@ -30,7 +29,6 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
   // Refs para trava única de eventos do Meta Pixel por sessão
   const hasTrackedAdjust = useRef<boolean>(false);
@@ -60,7 +58,6 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
   const openFullscreenModal = () => {
     setIsModalOpen(true);
-    setHasInteracted(true);
     if (!hasTrackedFullscreen.current) {
       hasTrackedFullscreen.current = true;
       fireCustomPixel("EngajouSimulador", { acao: "abriu_tela_cheia" });
@@ -69,7 +66,6 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
-    setHasInteracted(true);
     setTimeout(() => {
       setToastMessage((current) => (current === msg ? null : current));
     }, 1900);
@@ -87,7 +83,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       figureBg: "bg-[#0d1527] border-gold/30",
       dividerLine: "border-gold/30",
       dividerBadge: "bg-[#0f192f] text-gold border-gold/40",
-      fadeGradient: "from-transparent via-[#080d1a]/90 to-[#080d1a]",
+      fadeGradient: "from-transparent via-[#080d1a]/95 to-[#080d1a]",
       meta: "text-gold",
       accent: "#c9a962"
     },
@@ -102,7 +98,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       figureBg: "bg-[#e8dcbf] border-[#c5b28f]",
       dividerLine: "border-[#b59e7a]",
       dividerBadge: "bg-[#e5d6b8] text-[#6b4814] border-[#b59e7a]",
-      fadeGradient: "from-transparent via-[#f5ecda]/90 to-[#f5ecda]",
+      fadeGradient: "from-transparent via-[#f5ecda]/95 to-[#f5ecda]",
       meta: "text-[#8a5d1b]",
       accent: "#d8a342"
     },
@@ -117,7 +113,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       figureBg: "bg-[#f8fafc] border-slate-300",
       dividerLine: "border-slate-300",
       dividerBadge: "bg-slate-100 text-amber-800 border-amber-400/60",
-      fadeGradient: "from-transparent via-white/90 to-white",
+      fadeGradient: "from-transparent via-white/95 to-white",
       meta: "text-amber-700",
       accent: "#f59e0b"
     }
@@ -151,14 +147,33 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
     triggerToast(!isBookmarked ? "Página salva na nuvem!" : "Marcador removido");
   };
 
+  // Gerenciamento de estado modal: bloqueia scroll, oculta sticky cta/áudio e adiciona ESC shortcut
   useEffect(() => {
+    if (typeof document === "undefined") return;
+
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
+      document.body.setAttribute("data-reader-modal", "true");
+      window.dispatchEvent(new CustomEvent("readerModalChange"));
     } else {
       document.body.style.overflow = "unset";
+      document.body.removeAttribute("data-reader-modal");
+      window.dispatchEvent(new CustomEvent("readerModalChange"));
     }
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsModalOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
     return () => {
       document.body.style.overflow = "unset";
+      document.body.removeAttribute("data-reader-modal");
+      window.dispatchEvent(new CustomEvent("readerModalChange"));
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [isModalOpen]);
 
@@ -199,8 +214,6 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             Esqueça arquivos de PDF que quebram no celular. Teste os modos de leitura: alterne entre <strong className="text-gold">🌙 Escuro</strong>, <strong className="text-amber-200">📜 Sépia</strong> ou <strong className="text-white">☀️ Claro</strong>, ajuste o tamanho da letra (<strong className="text-gold">A- / A+</strong>) e leia abaixo um trecho da obra:
           </p>
         </div>
-
-
 
         {/* Grade: Widget Interativo Central + Telas de Apoio Desktop */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -286,7 +299,6 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     {/* CONTROLES ESSENCIAIS DO LEITOR (TEMA + TAMANHO DA FONTE) */}
                     <div className="pt-1 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1 p-0.5 bg-black/40 rounded-xl border border-white/10">
-
                         <button
                           type="button"
                           onClick={() => handleThemeChange("dark")}
@@ -350,14 +362,14 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
                   </div>
 
-                  {/* ÁREA DE LEITURA VISÍVEL NO MOCKUP: INVESTIGAÇÃO CONTEMPORÂNEA ➔ CONEXÃO HISTÓRICA */}
-                  <div className="p-4 sm:p-6 space-y-4 flex flex-col justify-between">
-                    <div className="space-y-3.5 text-left relative">
-                      {/* Badge de Localização e Horário da Cena Contemporânea */}
-                      <div className={`rounded-xl px-3.5 py-2 border ${currentTheme.figureBg} flex items-center justify-between shadow-md`}>
+                  {/* ÁREA DE LEITURA VISÍVEL NO MOCKUP: INVESTIGAÇÃO CONTEMPORÂNEA COM RITMO REFINADO */}
+                  <div className="p-4 sm:p-5 space-y-3.5 flex flex-col justify-between text-left">
+                    <div className="space-y-3 text-left relative">
+                      {/* Badge de Localização e Horário */}
+                      <div className={`rounded-xl px-3.5 py-1.5 border ${currentTheme.figureBg} flex items-center justify-between shadow-md`}>
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                          <span className={`text-[11px] font-mono font-bold uppercase tracking-wider ${currentTheme.meta}`}>
+                          <span className={`text-[10px] font-mono font-bold uppercase tracking-wider ${currentTheme.meta}`}>
                             SÃO PAULO — FARIA LIMA / 03h42
                           </span>
                         </div>
@@ -366,30 +378,39 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         </span>
                       </div>
 
-                      <h4 className={`font-sans font-bold text-xl leading-snug pt-1 ${currentTheme.textColor}`}>
+                      <h4 className={`font-sans font-bold text-lg sm:text-xl leading-snug pt-0.5 ${currentTheme.textColor}`}>
                         O Teste Proibido
                       </h4>
 
                       <div
-                        className={`space-y-3.5 leading-relaxed font-sans transition-all duration-200 ${currentTheme.textColor}`}
+                        className={`space-y-3 leading-relaxed font-sans transition-all duration-200 ${currentTheme.textColor}`}
                         style={{ fontSize: `${fontSize}px` }}
                       >
                         <p>
-                          O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria. Caio Avelar estava diante de dois monitores, revisando um corte silencioso de crédito em três instituições financeiras.
+                          O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria. Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações que analisava havia quase meia hora.
                         </p>
 
                         <p>
-                          Foi esse incômodo que o fez lembrar do caderno do avô. João Avelar trabalhou décadas no Banco Central. Numa folha amarelada de agosto de 1989, uma frase aparecia destacada: <em>"Procurar o que mudou antes da decisão."</em> Caio alimentou a máquina com a equação do avô. Em segundos, a primeira correspondência que saltou no topo da tela foi: <strong className="text-gold font-mono">49 a.C. (Roma)</strong>.
+                          Naquela semana, três instituições financeiras de médio porte tinham reduzido seus limites de crédito corporativo. Nos painéis principais, os registros de risco continuavam estáveis, mas o custo de financiamento começava a subir nas pontas mais curtas. O que chamava sua atenção era a diferença entre o que os comunicados oficiais diziam e a pressa silenciosa com que aquelas tesourarias estavam recolhendo dinheiro.
                         </p>
 
-                        {/* Início do 3º parágrafo com Fade-Out suave */}
+                        <p>
+                          Foi esse incômodo que o fez lembrar do caderno do avô. João Avelar trabalhou durante décadas no Banco Central. Numa folha antiga de agosto de 1989, uma frase destacada em caneta preta parecia descrever o mesmo movimento:
+                        </p>
+
+                        {/* Citação Isolada do Caderno do Avô */}
+                        <div className="p-3 rounded-xl bg-gold/10 border-l-4 border-gold text-gold font-sans font-semibold text-xs sm:text-sm my-1.5 shadow-sm">
+                          "Procurar o que mudou antes da decisão."
+                        </div>
+
+                        {/* Início do trecho da Strata com Fade-Out suave */}
                         <div className="relative pt-1">
-                          <p className="opacity-60 select-none">
-                            Ele reconheceu a data na hora: a crise da República romana e a travessia do Rubicão. Ao carregar o arquivo confidencial, o sistema não exibiu discursos heroicos, mas os registros do intendente medindo rações de trigo para nove dias e as ordens na lama...
+                          <p className="opacity-55 select-none">
+                            Caio abriu o ambiente de testes da Strata. A empresa mantinha um acervo histórico gigantesco para calibrar modelos de risco. Ele digitou a relação empírica que João anotou, combinando quatro variáveis: pressão, restrição, informação disponível e decisão. Queria ver se aquela estrutura resistia numa escala global...
                           </p>
 
                           {/* Sombreado (Fade-out) + Botão Centralizado de Continuar Lendo */}
-                          <div className={`absolute inset-x-0 bottom-0 pt-10 pb-1 bg-gradient-to-b ${currentTheme.fadeGradient} flex flex-col items-center justify-end`}>
+                          <div className={`absolute inset-x-0 bottom-0 pt-12 pb-1 bg-gradient-to-b ${currentTheme.fadeGradient} flex flex-col items-center justify-end`}>
                             <button
                               type="button"
                               onClick={openFullscreenModal}
@@ -402,7 +423,6 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         </div>
                       </div>
                     </div>
-
 
                   </div>
 
@@ -468,263 +488,322 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       </div>
 
       {/* ===================================================================== */}
-      {/* MODAL EM TELA CHEIA: CENA DENSA DO RUBICÃO + CORTE PARA O PRESENTE    */}
+      {/* MODAL EM TELA CHEIA VIA PORTAL (z-[99999]): IMERSÃO TOTAL SEM RUÍDO   */}
       {/* ===================================================================== */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div 
-            className="fixed inset-0 z-[100] bg-[#060a14] flex flex-col overflow-hidden"
-            initial={{ opacity: 0, y: "100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          >
-            {/* Topo Compacto Unificado (~82px total): Linha 1 fina (44px) + Linha 2 controles */}
-            <div className="bg-[#0a1020] border-b border-white/10 shrink-0">
-              {/* Barra 1: Título na esquerda + Fechar na DIREITA (padrão universal) */}
-              <div className="px-4 py-2.5 flex items-center justify-between gap-3 border-b border-white/5">
-                <span className="text-xs sm:text-sm font-mono text-gold font-bold uppercase tracking-wider truncate">
-                  Capítulo 01 • O Teste Proibido (Amostra Oficial)
-                </span>
-
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 text-white font-bold text-xs hover:bg-white/20 transition-colors cursor-pointer shrink-0 ml-auto shadow-sm active:scale-95"
-                >
-                  <span>Fechar</span>
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Barra 2: Seletores de Tema e Fonte super compactos */}
-              <div className="px-3 py-1.5 bg-black/50 flex items-center justify-between gap-2 max-w-2xl mx-auto">
-                <div className="flex items-center gap-1 p-0.5 bg-slate-900 rounded-lg border border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => handleThemeChange("dark")}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                      theme === "dark" ? "bg-slate-800 text-gold shadow border border-gold/40" : "text-slate-400"
-                    }`}
-                  >
-                    <Moon className="w-3 h-3" />
-                    <span>Escuro</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleThemeChange("sepia")}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                      theme === "sepia" ? "bg-[#e2d4b5] text-[#3d2b15] shadow border border-[#9b7941]" : "text-slate-400"
-                    }`}
-                  >
-                    <BookOpen className="w-3 h-3 text-amber-700" />
-                    <span>Sépia</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleThemeChange("light")}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                      theme === "light" ? "bg-white text-slate-900 shadow border border-slate-300" : "text-slate-400"
-                    }`}
-                  >
-                    <Sun className="w-3 h-3 text-amber-500" />
-                    <span>Claro</span>
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-1 p-0.5 bg-slate-900 rounded-lg border border-white/10">
-                  <button
-                    type="button"
-                    onClick={handleDecreaseFont}
-                    className="w-7 h-7 rounded-md text-xs font-black text-white bg-white/10 flex items-center justify-center active:scale-95"
-                  >
-                    A-
-                  </button>
-                  <span className="text-xs font-mono text-gold font-bold px-1 min-w-[32px] text-center">
-                    {fontSize}px
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
+            <motion.div 
+              className="fixed inset-0 z-[99999] bg-[#060a14] flex flex-col overflow-hidden"
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            >
+              {/* Topo Compacto e Fixo no Topo do Modal */}
+              <div className="bg-[#0a1020] border-b border-white/10 shrink-0 shadow-xl z-50">
+                {/* Barra 1: Título na esquerda + Botão FECHAR DOURADO na DIREITA */}
+                <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3 border-b border-white/5">
+                  <span className="text-xs sm:text-sm font-mono text-gold font-bold uppercase tracking-wider truncate">
+                    Capítulo 01 • O Teste Proibido (Amostra Oficial)
                   </span>
+
                   <button
                     type="button"
-                    onClick={handleIncreaseFont}
-                    className="w-7 h-7 rounded-md text-xs font-black text-white bg-white/10 flex items-center justify-center active:scale-95"
+                    onClick={() => setIsModalOpen(false)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-black text-xs sm:text-sm transition-all cursor-pointer shrink-0 ml-auto shadow-[0_0_15px_rgba(201,169,98,0.4)] active:scale-95"
+                    title="Fechar amostra (Esc)"
                   >
-                    A+
+                    <span>FECHAR</span>
+                    <X className="w-4 h-4 stroke-[3] text-slate-950" />
                   </button>
                 </div>
-              </div>
-            </div>
 
-            {/* Área de Leitura Livre (85% da tela útil) */}
-            <div className={`flex-1 overflow-y-auto px-5 py-6 sm:p-10 ${currentTheme.cardBg} transition-colors duration-300`}>
-              <div className="max-w-2xl mx-auto pb-10 space-y-4 text-left">
-                
-                {/* PARTE 1: NARRATIVA CONTEMPORÂNEA (SÃO PAULO, FARIA LIMA / 03h42) */}
-                <div className={`rounded-xl px-4 py-2 border ${currentTheme.figureBg} flex items-center justify-between shadow-md`}>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className={`text-xs font-mono font-bold uppercase tracking-wider ${currentTheme.meta}`}>
-                      SÃO PAULO — FARIA LIMA / 03h42
-                    </span>
-                  </div>
-                  <span className={`text-xs font-mono ${currentTheme.subColor}`}>
-                    Capítulo 01 // Sala de Auditoria
-                  </span>
-                </div>
-
-                <h2 className={`font-sans font-bold text-2xl sm:text-3xl leading-snug pt-1 ${currentTheme.textColor}`}>
-                  O Teste Proibido
-                </h2>
-
-                <div
-                  className={`space-y-4 leading-relaxed font-sans transition-all duration-200 ${currentTheme.textColor}`}
-                  style={{ fontSize: `${fontSize}px` }}
-                >
-                  <p>
-                    O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria. Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações que analisava havia quase meia hora.
-                  </p>
-
-                  <p>
-                    Naquela semana, três instituições financeiras de médio porte tinham reduzido seus limites de crédito corporativo. Nos painéis principais, os registros de risco continuavam estáveis, mas o custo de financiamento começava a subir nas pontas mais curtas. O que chamava sua atenção era a diferença entre o que os comunicados oficiais diziam e a pressa silenciosa com que aquelas tesourarias estavam recolhendo dinheiro.
-                  </p>
-
-                  <p>
-                    Foi esse incômodo que o fez lembrar do caderno do avô. João Avelar trabalhou durante décadas no Banco Central. Numa folha antiga de agosto de 1989, uma frase destacada em caneta preta parecia descrever o mesmo movimento: <em>"Procurar o que mudou antes da decisão."</em>
-                  </p>
-
-                  <p>
-                    Caio abriu o ambiente de testes da Strata. A empresa mantinha um acervo histórico gigantesco para calibrar modelos de risco. Caio digitou a relação empírica que João anotou, combinando quatro variáveis: pressão, restrição, informação disponível e decisão. Ele queria ver se aquela estrutura resistia numa escala global.
-                  </p>
-
-                  <p>
-                    A barra de leitura avançou na tela. Segundos depois, a primeira correspondência apareceu no topo do terminal: <strong className="text-gold font-mono">326 a.C.</strong> E, logo abaixo, surgiram outras datas em ordem cronológica: <strong className="text-gold font-mono">49 a.C. • 1431 • 1815 • 2007</strong>.
-                  </p>
-
-                  <p>
-                    Caio franziu a testa. A fórmula inserida lidava apenas com variações matemáticas de escassez e incerteza. Ele reconheceu a data romana de cabeça: 49 a.C., a crise da República e a travessia do Rubicão. Para testar se os números faziam sentido fora da tela, Caio desceu ao arquivo físico da Strata para examinar o compêndio de registros de época.
-                  </p>
-
-                  {/* DIVISOR DE TRANSIÇÃO: PRESENTE ➔ ARQUIVO HISTÓRICO EM ITÁLICO */}
-                  <div className="py-4 flex items-center gap-3">
-                    <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
-                    <span className={`px-3 py-1 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
-                      • • • ARQUIVO HISTÓRICO // ROMA, 49 a.C. • • •
-                    </span>
-                    <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
-                  </div>
-
-                  {/* Card Ilustrado Oficial do E-Reader (Júlio César) */}
-                  <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-lg`}>
-                    <div className="px-3.5 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/20">
-                      <span className={`text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
-                        49 A.C. — MARGENS DO RIO RUBICÃO
-                      </span>
-                      <span className={`text-xs font-mono ${currentTheme.subColor}`}>
-                        Arquivo 02 // Intendência
-                      </span>
-                    </div>
-                    <div className="relative w-full h-52 sm:h-64 overflow-hidden bg-black">
-                      <img
-                        src="/reader/assets/chapters/ch02_julio_cesar.webp"
-                        alt="Júlio César às margens do Rubicão"
-                        className="w-full h-full object-cover object-center"
-                        loading="lazy"
-                        width="640"
-                        height="400"
-                      />
-                    </div>
-                    <div className="px-3.5 py-2 flex items-center justify-between">
-                      <span className={`text-sm font-sans font-bold ${currentTheme.textColor}`}>
-                        JÚLIO CÉSAR
-                      </span>
-                      <span className={`text-xs font-mono ${currentTheme.subColor}`}>
-                        A travessia do Rubicão // Roma
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* PARTE 2: A CENA HISTÓRICA DO ARQUIVO */}
-                  <div className="border-l-2 border-gold/40 pl-4 py-1 space-y-3.5 italic text-slate-200">
-                    <p>
-                      O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado daquele curso d'água começava o território da Itália, onde a lei proibia qualquer comandante de entrar em armas.
-                    </p>
-
-                    <p>
-                      A poucos passos do general, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte. César não tinha semanas para negociar. Tinha horas.
-                    </p>
-
-                    <p>
-                      Os emissários do Senado haviam bloqueado o crédito e os grãos. Na entrada da tenda, o escrivão de serviço registrava a chegada dos mensageiros esgotados: ninguém sabia o número real das tropas de Pompeu em Roma, mas todos sabiam que o inverno consumiria o acampamento antes de qualquer acordo.
-                    </p>
-
-                    <p>
-                      Um dos legados mais velhos aproximou-se de César e sugeriu recuar até Ravena para enviar uma última embaixada diplomática. César olhou para a escuridão da outra margem:
-                    </p>
-
-                    <p className="font-semibold text-white not-italic">
-                      — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
-                    </p>
-
-                    <p>
-                      César caminhou até a beira do barranco e entrou na água gelada. As primeiras fileiras desceram logo atrás. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível.
-                    </p>
-                  </div>
-
-                  {/* DIVISOR DE TRANSIÇÃO: ARQUIVO HISTÓRICO ➔ RETORNO AO PRESENTE */}
-                  <div className="py-4 flex items-center gap-3">
-                    <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
-                    <span className={`px-3 py-1 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
-                      • • • DIAS ATUAIS — SÃO PAULO // 05h18 • • •
-                    </span>
-                    <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
-                  </div>
-
-                  {/* PARTE 3: O RETORNO A CAIO E O CLIFFHANGER DA INVESTIGAÇÃO */}
-                  <p>
-                    Caio fechou o livro de Roma. A ocorrência continuava aberta na tela do computador. A máquina deixava de lado os discursos de glória e se concentrava nas condições práticas que alguém na retaguarda — um intendente, um contador de expediente — anotou antes da escolha.
-                  </p>
-
-                  <p>
-                    Ele abriu o caderno do avô e escreveu: <em>"A História tem uma crueldade particular. Depois que tudo termina, ela transforma incerteza em sequência."</em>
-                  </p>
-
-                  <p>
-                    Naquele instante, o computador apitou com um novo arquivo compilado da lista: <strong className="text-gold font-mono">09.01.2007 — SÃO FRANCISCO. Steve Jobs.</strong> E, logo abaixo, um registro em vermelho que não deveria estar ali: a sua consulta acabava de acionar um rastreador de segurança no servidor da Strata.
-                  </p>
-
-                  <p className="font-semibold text-gold">
-                    Ele não era o primeiro a fazer aquela pergunta. E quem controlava a máquina já sabia que ele estava acordado.
-                  </p>
-                </div>
-
-                {/* CARD DE FECHAMENTO OBSERVADO PELO INTERSECTION OBSERVER (LeuAmostraCompleta) */}
-                <div ref={endOfSampleRef} className="pt-4 pb-2">
-                  <div className="p-5 rounded-2xl bg-gradient-to-b from-[#0e1830] to-[#080d1a] border border-gold/50 text-center space-y-3.5 shadow-xl">
-                    <span className="inline-block text-xs sm:text-sm font-mono font-bold text-gold uppercase tracking-wider">
-                      🔒 FIM DA AMOSTRA // O QUE CAIO DESCOBRIU?
-                    </span>
-                    <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-normal">
-                      Continue a leitura agora mesmo. Desbloqueie os <strong className="text-white">21 capítulos ilustrados + Prólogo & Epílogo + 4 Dossiês Confidenciais</strong> por apenas R$ 29,90.
-                    </p>
+                {/* Barra 2: Seletores de Tema e Fonte */}
+                <div className="px-4 py-1.5 bg-black/60 flex items-center justify-between gap-2 max-w-4xl mx-auto">
+                  <div className="flex items-center gap-1 p-0.5 bg-slate-900 rounded-lg border border-white/10">
                     <button
                       type="button"
-                      onClick={() => {
-                        setIsModalOpen(false);
-                        if (onCtaClick) onCtaClick();
-                      }}
-                      className="w-full py-4 px-5 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(201,169,98,0.45)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+                      onClick={() => handleThemeChange("dark")}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        theme === "dark" ? "bg-slate-800 text-gold shadow border border-gold/40" : "text-slate-400"
+                      }`}
                     >
-                      <Zap className="w-4 h-4 fill-slate-950 shrink-0" />
-                      <span>Destravar Livro Completo + 4 Dossiês • R$ 29,90</span>
+                      <Moon className="w-3 h-3" />
+                      <span>Escuro</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleThemeChange("sepia")}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        theme === "sepia" ? "bg-[#e2d4b5] text-[#3d2b15] shadow border border-[#9b7941]" : "text-slate-400"
+                      }`}
+                    >
+                      <BookOpen className="w-3 h-3 text-amber-700" />
+                      <span>Sépia</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleThemeChange("light")}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        theme === "light" ? "bg-white text-slate-900 shadow border border-slate-300" : "text-slate-400"
+                      }`}
+                    >
+                      <Sun className="w-3 h-3 text-amber-500" />
+                      <span>Claro</span>
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-1 p-0.5 bg-slate-900 rounded-lg border border-white/10">
+                    <button
+                      type="button"
+                      onClick={handleDecreaseFont}
+                      className="w-7 h-7 rounded-md text-xs font-black text-white bg-white/10 flex items-center justify-center active:scale-95 cursor-pointer"
+                    >
+                      A-
+                    </button>
+                    <span className="text-xs font-mono text-gold font-bold px-1 min-w-[32px] text-center">
+                      {fontSize}px
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleIncreaseFont}
+                      className="w-7 h-7 rounded-md text-xs font-black text-white bg-white/10 flex items-center justify-center active:scale-95 cursor-pointer"
+                    >
+                      A+
                     </button>
                   </div>
                 </div>
-
               </div>
-            </div>
 
-          </motion.div>
-        )}
-      </AnimatePresence>
+              {/* Área de Leitura Livre */}
+              <div className={`flex-1 overflow-y-auto px-5 py-6 sm:p-10 ${currentTheme.cardBg} transition-colors duration-300`}>
+                <div className="max-w-2xl mx-auto pb-14 space-y-4 text-left">
+                  
+                  {/* PARTE 1: NARRATIVA CONTEMPORÂNEA (SÃO PAULO, FARIA LIMA / 03h42) */}
+                  <div className={`rounded-xl px-4 py-2 border ${currentTheme.figureBg} flex items-center justify-between shadow-md`}>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className={`text-xs font-mono font-bold uppercase tracking-wider ${currentTheme.meta}`}>
+                        SÃO PAULO — FARIA LIMA / 03h42
+                      </span>
+                    </div>
+                    <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                      Capítulo 01 // Sala de Auditoria
+                    </span>
+                  </div>
+
+                  <h2 className={`font-sans font-bold text-2xl sm:text-3xl leading-snug pt-1 ${currentTheme.textColor}`}>
+                    O Teste Proibido
+                  </h2>
+
+                  <div
+                    className={`space-y-4 leading-relaxed font-sans transition-all duration-200 ${currentTheme.textColor}`}
+                    style={{ fontSize: `${fontSize}px` }}
+                  >
+                    <p>
+                      O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria. Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações que analisava havia quase meia hora.
+                    </p>
+
+                    <p>
+                      Naquela semana, três instituições financeiras de médio porte tinham reduzido seus limites de crédito corporativo. Nos painéis principais, os registros de risco continuavam estáveis, mas o custo de financiamento começava a subir nas pontas mais curtas. O que chamava sua atenção era a diferença entre o que os comunicados oficiais diziam e a pressa silenciosa com que aquelas tesourarias estavam recolhendo dinheiro.
+                    </p>
+
+                    <p>
+                      Foi esse incômodo que o fez lembrar do caderno do avô. João Avelar trabalhou durante décadas no Banco Central. Numa folha antiga de agosto de 1989, uma frase destacada em caneta preta parecia descrever o mesmo movimento:
+                    </p>
+
+                    {/* Frase do avô isolada com respiro */}
+                    <div className="p-4 rounded-xl bg-gold/10 border-l-4 border-gold text-gold font-sans font-semibold text-sm sm:text-base my-2 shadow-sm">
+                      "Procurar o que mudou antes da decisão."
+                    </div>
+
+                    <p>
+                      Caio abriu o ambiente de testes da Strata. A empresa mantinha um acervo histórico gigantesco para calibrar modelos de risco. Ele digitou a relação empírica que João anotou, combinando quatro variáveis: pressão, restrição, informação disponível e decisão. Queria ver se aquela estrutura resistia numa escala global.
+                    </p>
+
+                    <p>
+                      A barra de leitura avançou na tela. Segundos depois, a primeira correspondência apareceu no topo do terminal: <strong className="text-gold font-mono">326 a.C.</strong> E, logo abaixo, surgiram outras datas em ordem cronológica:
+                    </p>
+
+                    {/* Datas cronológicas isoladas */}
+                    <div className="p-3 rounded-xl bg-black/60 border border-white/10 font-mono text-center text-gold text-xs sm:text-sm tracking-widest my-2">
+                      49 a.C. • 1431 • 1815 • 2007
+                    </div>
+
+                    <p>
+                      Caio franziu a testa. Ele reconheceu a data romana de cabeça: 49 a.C., a crise da República e a travessia do Rubicão. Para testar se os números faziam sentido fora da tela, Caio desceu ao arquivo físico da Strata para examinar o compêndio de registros de época.
+                    </p>
+
+                    {/* DIVISOR DE TRANSIÇÃO: PRESENTE ➔ ARQUIVO HISTÓRICO */}
+                    <div className="py-5 flex items-center gap-3">
+                      <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
+                      <span className={`px-3.5 py-1.5 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
+                        • • • ARQUIVO HISTÓRICO // ROMA, 49 a.C. • • •
+                      </span>
+                      <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
+                    </div>
+
+                    {/* Card Ilustrado do Arquivo Histórico */}
+                    <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-xl my-4`}>
+                      <div className="px-3.5 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/30">
+                        <span className={`text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
+                          49 A.C. — MARGENS DO RIO RUBICÃO
+                        </span>
+                        <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                          Arquivo 02 // Intendência
+                        </span>
+                      </div>
+                      <div className="relative w-full h-52 sm:h-64 overflow-hidden bg-black">
+                        <img
+                          src="/dossiers/dossier_01_rubicon.webp"
+                          alt="49 A.C. — Margens do Rio Rubicão // Júlio César"
+                          className="w-full h-full object-cover object-center"
+                          loading="lazy"
+                          width="640"
+                          height="400"
+                        />
+                      </div>
+                      <div className="px-3.5 py-2 flex items-center justify-between bg-black/20">
+                        <span className={`text-sm font-sans font-bold ${currentTheme.textColor}`}>
+                          JÚLIO CÉSAR
+                        </span>
+                        <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                          A travessia do Rubicão // Roma
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* PARTE 2: A CENA HISTÓRICA DO ARQUIVO EM ITÁLICO COM FONTE LITERÁRIA */}
+                    <div className="border-l-2 border-gold/50 pl-4 py-2 space-y-3.5 italic text-slate-200">
+                      <p>
+                        O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado começava o território da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
+                      </p>
+
+                      <p>
+                        Sob o toldo da tenda, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte. César não tinha semanas para negociar. Tinha horas.
+                      </p>
+
+                      <p>
+                        Os emissários do Senado haviam bloqueado o crédito e os grãos. Na entrada da tenda, o escrivão de serviço registrava a chegada dos mensageiros esgotados: ninguém sabia o número real das tropas de Pompeu em Roma, mas todos sabiam que o inverno consumiria o acampamento antes de qualquer acordo.
+                      </p>
+
+                      <p>
+                        Um dos legados mais velhos aproximou-se de César e sugeriu recuar até Ravena para enviar uma última embaixada diplomática. César olhou para a escuridão da outra margem:
+                      </p>
+
+                      <p className="font-semibold text-white not-italic py-1 text-base sm:text-lg">
+                        — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
+                      </p>
+
+                      <p>
+                        César caminhou até a beira do barranco e entrou na água gelada. As primeiras fileiras desceram logo atrás. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível.
+                      </p>
+                    </div>
+
+                    {/* DIVISOR DE TRANSIÇÃO: RETORNO AO PRESENTE */}
+                    <div className="py-5 flex items-center gap-3">
+                      <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
+                      <span className={`px-3.5 py-1.5 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
+                        • • • SÃO PAULO — FARIA LIMA // 05h18 • • •
+                      </span>
+                      <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
+                    </div>
+
+                    {/* PARTE 3: O RETORNO A CAIO E O SISTEMA DA STRATA */}
+                    <p>
+                      Caio fechou o livro. Durante alguns segundos, ficou olhando para a capa escura sobre a mesa.
+                    </p>
+
+                    <p>
+                      Depois puxou o celular e voltou para a tela do sistema. A ocorrência de 49 a.C. continuava aberta, listando as variáveis extraídas pelo modelo:
+                    </p>
+
+                    {/* Estrutura das 5 Variáveis Extraídas pelo Modelo */}
+                    <div className={`p-4 rounded-xl border ${currentTheme.figureBg} my-3 space-y-2 font-mono text-xs sm:text-sm shadow-md`}>
+                      <div className="text-gold font-bold mb-1 tracking-wider uppercase text-[11px]">
+                        VARIÁVEIS DO MODELO // ESTRANGULAMENTO DECISÓRIO:
+                      </div>
+                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">PRESSÃO</span></div>
+                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">INFORMAÇÃO INCOMPLETA</span></div>
+                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">ALTERNATIVAS REDUZIDAS</span></div>
+                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">DECISÃO</span></div>
+                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">CONSEQUÊNCIA</span></div>
+                    </div>
+
+                    <p>
+                      A estrutura inteira estava ali. O que chamava a atenção de Caio era o ponto de vista daquela catalogação. A máquina deixava de lado o mérito político de César e se concentrava nas condições práticas que alguém na retaguarda — um intendente, um escrivão, um observador de ofício — anotou antes da travessia.
+                    </p>
+
+                    <p>
+                      Depois que César atravessou o rio, tudo parecia um plano genial e inevitável. Antes da travessia, na lama fria de janeiro, era apenas um homem cercado por informações quebradas e prazos vencidos.
+                    </p>
+
+                    <p>
+                      Caio abriu o caderno do avô e escreveu com firmeza:
+                    </p>
+
+                    {/* Citação reflexiva do avô isolada */}
+                    <div className="p-4 rounded-xl bg-gold/10 border-l-4 border-gold text-gold font-sans font-semibold text-sm sm:text-base my-2 shadow-sm">
+                      "A História tem uma crueldade particular. Depois que tudo termina, ela transforma incerteza em sequência."
+                    </div>
+
+                    <p>
+                      O celular vibrou sobre a mesa com uma atualização do servidor da Strata. A compilação completa da ocorrência de 2007 terminou de carregar:
+                    </p>
+
+                    {/* Terminal Strata: Ocorrência 2007 */}
+                    <div className="p-4 rounded-xl bg-black/80 border border-white/10 font-mono text-xs text-cyan space-y-1 my-3 shadow-md">
+                      <div className="text-slate-400 text-[10px] uppercase tracking-wider">SERVIDOR STRATA // OCORRÊNCIA COMPILADA</div>
+                      <div className="font-bold text-white text-sm">09.01.2007 — SÃO FRANCISCO</div>
+                      <div className="text-gold">EVENTO PÚBLICO // DEPENDÊNCIAS OPERACIONAIS</div>
+                      <div className="text-slate-300">REDE / DISPOSITIVO / OPERADORA / DEMONSTRAÇÃO</div>
+                    </div>
+
+                    <p>
+                      Abriu o sumário do primeiro documento e viu o nome de Steve Jobs. Assim como no arquivo romano, o relatório passava longe do discurso feito no palco. O foco estava nas anotações técnicas de engenharia e nos contratos de rede — o registro de quem estava atrás da cortina medindo o risco de tudo falhar ao vivo.
+                    </p>
+
+                    <p>
+                      Caio olhou para o livro de Roma e depois para o telefone. Duas épocas separadas por vinte séculos apresentavam o mesmo estrangulamento antes da escolha.
+                    </p>
+
+                    <p className="font-medium text-slate-100">
+                      Fechou o caderno, pegou o volume de capa dura e saiu da sala de arquivos em direção ao elevador. Na tela do computador, o dossiê de 2007 já estava esperando.
+                    </p>
+                  </div>
+
+                  {/* CARD DE FECHAMENTO OBSERVADO PELO INTERSECTION OBSERVER (LeuAmostraCompleta) */}
+                  <div ref={endOfSampleRef} className="pt-6 pb-4">
+                    <div className="p-6 rounded-2xl bg-gradient-to-b from-[#0e1830] to-[#080d1a] border border-gold/50 text-center space-y-4 shadow-2xl">
+                      <span className="inline-block text-xs sm:text-sm font-mono font-bold text-gold uppercase tracking-wider">
+                        🔒 FIM DA DEGUSTAÇÃO // CONTINUE A INVESTIGAÇÃO
+                      </span>
+                      <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-normal max-w-lg mx-auto">
+                        Descubra como Caio avança pelos bastidores de Júlio César, Napoleão, Alan Turing e Steve Jobs. Desbloqueie o romance completo agora mesmo:
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsModalOpen(false);
+                          if (onCtaClick) onCtaClick();
+                        }}
+                        className="w-full py-4 px-5 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(201,169,98,0.45)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        <Zap className="w-4 h-4 fill-slate-950 shrink-0" />
+                        <span>Destravar Livro Completo + 4 Dossiês • R$ 29,90</span>
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
     </section>
   );

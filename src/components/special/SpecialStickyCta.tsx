@@ -7,9 +7,29 @@ interface SpecialStickyCtaProps {
 
 export const SpecialStickyCta = ({ onCtaClick }: SpecialStickyCtaProps) => {
   const [visible, setVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    const checkModalState = () => {
+      if (typeof document === "undefined") return;
+      const modalOpen = 
+        document.body.getAttribute("data-reader-modal") === "true" ||
+        document.body.style.overflow === "hidden";
+      setIsModalOpen(modalOpen);
+    };
+
     const handleScroll = () => {
+      // Esconde imediatamente se o leitor estiver aberto
+      if (typeof document !== "undefined") {
+        const modalOpen = 
+          document.body.getAttribute("data-reader-modal") === "true" ||
+          document.body.style.overflow === "hidden";
+        if (modalOpen) {
+          setVisible(false);
+          return;
+        }
+      }
+
       // Aparece após rolar 450px para baixo e se esconde perto do checkout
       const scrollY = window.scrollY;
       const checkoutEl = document.getElementById("checkout-section");
@@ -30,13 +50,23 @@ export const SpecialStickyCta = ({ onCtaClick }: SpecialStickyCtaProps) => {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("readerModalChange", checkModalState);
+
+    const observer = new MutationObserver(checkModalState);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-reader-modal", "style"] });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("readerModalChange", checkModalState);
+      observer.disconnect();
+    };
   }, []);
 
-  if (!visible) return null;
+  // Se o leitor em tela cheia estiver aberto ou a rolagem não atingiu o gatilho, NÃO renderiza
+  if (isModalOpen || !visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 px-3 py-2 sm:hidden animate-in slide-in-from-bottom duration-300">
+    <div className="fixed bottom-0 left-0 right-0 z-40 px-3 py-2 sm:hidden animate-in slide-in-from-bottom duration-300">
       <div className="flex items-center justify-between gap-3 px-3.5 py-2 rounded-xl bg-[#090f1e]/95 backdrop-blur-xl border border-gold/40 shadow-[0_-4px_20px_rgba(0,0,0,0.85)]">
         <div className="flex flex-col">
           <span className="text-[9px] font-mono font-bold text-gold uppercase tracking-wider leading-none mb-0.5">

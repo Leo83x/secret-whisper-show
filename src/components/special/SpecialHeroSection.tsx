@@ -51,6 +51,9 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                   width="112"
                   height="168"
                 />
+                <span className="text-[9px] font-mono font-medium text-slate-300 block text-center py-1 bg-black/60 border-t border-gold/30">
+                  <strong className="text-[#ff9900]">amazon</strong> Kindle & Físico
+                </span>
               </div>
 
               {/* Os 3 Pilares Exatos do Anúncio ADS02_Img */}
@@ -111,16 +114,25 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                 <ArrowRight className="w-5 h-5 text-slate-950 group-hover:translate-x-1 transition-transform shrink-0" />
               </button>
 
-              {onReadSampleClick && (
-                <button
-                  type="button"
-                  onClick={onReadSampleClick}
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm text-gold hover:text-amber-300 font-semibold py-1.5 px-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
-                >
-                  <BookOpen className="w-4 h-4 text-gold" />
-                  <span>Ler trecho no Simulador Interativo ↓</span>
-                </button>
-              )}
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2.5 sm:gap-4 pt-1">
+                {onReadSampleClick && (
+                  <button
+                    type="button"
+                    onClick={onReadSampleClick}
+                    className="inline-flex items-center gap-2 text-xs sm:text-sm text-gold hover:text-amber-300 font-semibold py-1.5 px-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+                  >
+                    <BookOpen className="w-4 h-4 text-gold shrink-0" />
+                    <span>Ler trecho no Simulador Interativo ↓</span>
+                  </button>
+                )}
+
+                {/* Selo Amazon Visível no Mobile e Desktop */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 border border-white/15 text-xs text-slate-300 font-medium shadow-sm">
+                  <span className="font-extrabold text-[#ff9900] tracking-tight">amazon</span>
+                  <span className="text-white/40">•</span>
+                  <span>Também disponível no Kindle & Impresso</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -138,17 +150,12 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                   height="450"
                 />
               </div>
-              <div className="text-center mt-3 space-y-1.5">
-                <div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/85 border border-gold/40 text-[11px] font-mono text-gold tracking-widest uppercase shadow-md">
-                    ✦ ACESSO VITALÍCIO E IMEDIATO
-                  </span>
-                </div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 border border-white/10 text-[10px] text-slate-300">
-                  <span className="font-bold text-[#ff9900]">amazon</span>
+              <div className="text-center mt-3">
+                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/85 border border-white/20 text-xs font-medium text-slate-300 shadow-md">
+                  <span className="font-extrabold text-[#ff9900] tracking-tight">amazon</span>
                   <span className="text-white/40">•</span>
-                  <span>Kindle & Livro Físico</span>
-                </div>
+                  <span>Também disponível no Kindle & Livro Físico</span>
+                </span>
               </div>
             </div>
           </div>
