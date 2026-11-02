@@ -80,12 +80,39 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-slate-400",
       borderColor: "border-gold/30",
       headerBg: "bg-[#0d1527] border-b border-white/10",
+      controlsBg: "bg-black/50 border-white/10",
+      controlBtnInactive: "text-slate-400 hover:text-white",
+      fontStepperBg: "bg-white/10 text-white hover:bg-white/20",
+      fontStepperText: "text-gold font-bold",
       figureBg: "bg-[#0d1527] border-gold/30",
+      figureHeaderBg: "bg-black/40 border-white/10",
       dividerLine: "border-gold/30",
       dividerBadge: "bg-[#0f192f] text-gold border-gold/40",
       fadeGradient: "from-transparent via-[#080d1a]/95 to-[#080d1a]",
       meta: "text-gold",
-      accent: "#c9a962"
+      accent: "#c9a962",
+      accentText: "text-gold font-bold",
+      // Caixas de Citações do Avô
+      quoteBox: "bg-gold/10 border-gold/60 text-gold",
+      // Pílula das datas (49 a.C...)
+      datePill: "bg-black/60 border-white/10 text-gold",
+      // Cena histórica de César
+      historicalBorder: "border-gold/50",
+      historicalText: "text-slate-200",
+      historicalDialogue: "text-white font-bold",
+      // Painel de Variáveis da Strata
+      variablesBox: "bg-[#0d1527] border-gold/30",
+      variablesHeader: "text-gold",
+      variablesBullet: "text-gold",
+      variablesText: "text-slate-200",
+      // Terminal Strata 2007
+      terminalBox: "bg-black/80 border-white/10",
+      terminalHeader: "text-slate-400",
+      terminalTitle: "text-white",
+      terminalEvent: "text-gold",
+      terminalText: "text-slate-300",
+      // Cliffhanger antes do card final
+      cliffhangerText: "text-slate-100 font-semibold"
     },
     sepia: {
       id: "sepia",
@@ -95,27 +122,81 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
       subColor: "text-[#6b583e]",
       borderColor: "border-[#d4c3a3]",
       headerBg: "bg-[#e8dcbf] border-b border-[#cfbfa0]",
-      figureBg: "bg-[#e8dcbf] border-[#c5b28f]",
+      controlsBg: "bg-[#e0d2b4] border-[#cfbfa0]",
+      controlBtnInactive: "text-[#7a6448] hover:text-[#2b2114]",
+      fontStepperBg: "bg-[#ebdcb9] text-[#3d2508] hover:bg-[#dfceaa] border border-[#c5b28f]",
+      fontStepperText: "text-[#78490e] font-bold",
+      figureBg: "bg-[#ebdcb9] border-[#c5b28f]",
+      figureHeaderBg: "bg-[#e2d2ad] border-[#cfbfa0]",
       dividerLine: "border-[#b59e7a]",
-      dividerBadge: "bg-[#e5d6b8] text-[#6b4814] border-[#b59e7a]",
+      dividerBadge: "bg-[#e5d6b8] text-[#5c3a0d] border-[#b59e7a]",
       fadeGradient: "from-transparent via-[#f5ecda]/95 to-[#f5ecda]",
-      meta: "text-[#8a5d1b]",
-      accent: "#d8a342"
+      meta: "text-[#78490e]",
+      accent: "#d8a342",
+      accentText: "text-[#78490e] font-bold",
+      // Caixas de Citações do Avô
+      quoteBox: "bg-[#ebdcb9] border-[#9b7941] text-[#3d2508]",
+      // Pílula das datas (49 a.C...)
+      datePill: "bg-[#ebdcb9] border-[#c5b28f] text-[#5c3a0d]",
+      // Cena histórica de César
+      historicalBorder: "border-[#9b7941]",
+      historicalText: "text-[#2e2315]",
+      historicalDialogue: "text-[#1a1208] font-bold",
+      // Painel de Variáveis da Strata
+      variablesBox: "bg-[#ebdcb9] border-[#c5b28f]",
+      variablesHeader: "text-[#78490e]",
+      variablesBullet: "text-[#78490e]",
+      variablesText: "text-[#2b2114]",
+      // Terminal Strata 2007
+      terminalBox: "bg-[#ebdcb9] border-[#c5b28f]",
+      terminalHeader: "text-[#6b583e]",
+      terminalTitle: "text-[#1a1208]",
+      terminalEvent: "text-[#78490e]",
+      terminalText: "text-[#4a3922]",
+      // Cliffhanger antes do card final
+      cliffhangerText: "text-[#1a1208] font-bold"
     },
     light: {
       id: "light",
       name: "Claro",
       cardBg: "bg-[#ffffff]",
       textColor: "text-[#0f172a]",
-      subColor: "text-[#64748b]",
+      subColor: "text-[#475569]",
       borderColor: "border-slate-300",
       headerBg: "bg-[#f1f5f9] border-b border-slate-200",
+      controlsBg: "bg-slate-200/90 border-slate-300",
+      controlBtnInactive: "text-slate-600 hover:text-slate-950",
+      fontStepperBg: "bg-white text-slate-900 hover:bg-slate-100 border border-slate-300 shadow-sm",
+      fontStepperText: "text-amber-800 font-bold",
       figureBg: "bg-[#f8fafc] border-slate-300",
+      figureHeaderBg: "bg-slate-100 border-slate-200",
       dividerLine: "border-slate-300",
-      dividerBadge: "bg-slate-100 text-amber-800 border-amber-400/60",
+      dividerBadge: "bg-amber-50 text-amber-900 border-amber-300 font-bold",
       fadeGradient: "from-transparent via-white/95 to-white",
-      meta: "text-amber-700",
-      accent: "#f59e0b"
+      meta: "text-amber-800",
+      accent: "#d97706",
+      accentText: "text-amber-800 font-bold",
+      // Caixas de Citações do Avô
+      quoteBox: "bg-amber-50/90 border-amber-600 text-amber-950",
+      // Pílula das datas (49 a.C...)
+      datePill: "bg-amber-50 border-amber-300 text-amber-950",
+      // Cena histórica de César
+      historicalBorder: "border-amber-600",
+      historicalText: "text-slate-900",
+      historicalDialogue: "text-slate-950 font-bold",
+      // Painel de Variáveis da Strata
+      variablesBox: "bg-slate-50 border-slate-300",
+      variablesHeader: "text-amber-800",
+      variablesBullet: "text-amber-800",
+      variablesText: "text-slate-900",
+      // Terminal Strata 2007
+      terminalBox: "bg-slate-100 border-slate-300",
+      terminalHeader: "text-slate-600",
+      terminalTitle: "text-slate-950",
+      terminalEvent: "text-amber-800",
+      terminalText: "text-slate-700",
+      // Cliffhanger antes do card final
+      cliffhangerText: "text-slate-950 font-bold"
     }
   };
 
@@ -298,14 +379,14 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
                     {/* CONTROLES ESSENCIAIS DO LEITOR (TEMA + TAMANHO DA FONTE) */}
                     <div className="pt-1 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-1 p-0.5 bg-black/40 rounded-xl border border-white/10">
+                      <div className={`flex items-center gap-1 p-0.5 rounded-xl border ${currentTheme.controlsBg}`}>
                         <button
                           type="button"
                           onClick={() => handleThemeChange("dark")}
                           className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             theme === "dark" 
                               ? "bg-slate-800 text-gold shadow border border-gold/50" 
-                              : "text-slate-400 hover:text-white"
+                              : currentTheme.controlBtnInactive
                           }`}
                         >
                           <Moon className="w-3 h-3" />
@@ -318,7 +399,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                           className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             theme === "sepia" 
                               ? "bg-[#e2d4b5] text-[#3d2b15] shadow border border-[#9b7941]" 
-                              : "text-slate-400 hover:text-white"
+                              : currentTheme.controlBtnInactive
                           }`}
                         >
                           <BookOpen className="w-3 h-3 text-amber-700" />
@@ -331,7 +412,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                           className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             theme === "light" 
                               ? "bg-white text-slate-900 shadow border border-slate-300" 
-                              : "text-slate-400 hover:text-white"
+                              : currentTheme.controlBtnInactive
                           }`}
                         >
                           <Sun className="w-3 h-3 text-amber-500" />
@@ -339,21 +420,21 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-1 p-0.5 bg-black/40 rounded-xl border border-white/10">
+                      <div className={`flex items-center gap-1 p-0.5 rounded-xl border ${currentTheme.controlsBg}`}>
                         <button
                           type="button"
                           onClick={handleDecreaseFont}
-                          className="w-7 h-7 rounded-lg text-xs font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+                          className={`w-7 h-7 rounded-lg text-xs font-black transition-colors cursor-pointer flex items-center justify-center active:scale-95 ${currentTheme.fontStepperBg}`}
                         >
                           A-
                         </button>
-                        <span className="text-xs font-mono text-gold font-bold px-1 min-w-[30px] text-center">
+                        <span className={`text-xs font-mono px-1 min-w-[30px] text-center ${currentTheme.fontStepperText}`}>
                           {fontSize}px
                         </span>
                         <button
                           type="button"
                           onClick={handleIncreaseFont}
-                          className="w-7 h-7 rounded-lg text-xs font-black text-slate-200 hover:text-white bg-white/5 hover:bg-white/15 transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+                          className={`w-7 h-7 rounded-lg text-xs font-black transition-colors cursor-pointer flex items-center justify-center active:scale-95 ${currentTheme.fontStepperBg}`}
                         >
                           A+
                         </button>
@@ -402,8 +483,8 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                           Foi esse incômodo que o fez lembrar do caderno do avô. João Avelar trabalhou durante décadas no Banco Central. Numa folha antiga de agosto de 1989, uma frase destacada em caneta preta parecia descrever o mesmo movimento:
                         </p>
 
-                        {/* Citação Isolada do Caderno do Avô */}
-                        <div className="p-3 rounded-xl bg-gold/10 border-l-4 border-gold text-gold font-sans font-semibold text-xs sm:text-sm my-1.5 shadow-sm">
+                        {/* Citação Isolada do Caderno do Avô Adaptável ao Tema */}
+                        <div className={`p-3 rounded-xl border-l-4 font-sans font-semibold text-xs sm:text-sm my-1.5 shadow-sm ${currentTheme.quoteBox}`}>
                           "Procurar o que mudou antes da decisão."
                         </div>
 
@@ -524,7 +605,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                 </div>
 
                 {/* Barra 2: Seletores de Tema e Fonte */}
-                <div className="px-4 py-1.5 bg-black/60 flex items-center justify-between gap-2 max-w-4xl mx-auto">
+                <div className="px-4 py-1.5 bg-[#080d1a] border-b border-white/5 flex items-center justify-between gap-2 max-w-4xl mx-auto">
                   <div className="flex items-center gap-1 p-0.5 bg-slate-900 rounded-lg border border-white/10">
                     <button
                       type="button"
@@ -621,8 +702,8 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                       Foi esse incômodo que o fez lembrar do caderno do avô. João Avelar trabalhou durante décadas no Banco Central. Numa folha antiga de agosto de 1989, uma frase destacada em caneta preta parecia descrever o mesmo movimento:
                     </p>
 
-                    {/* Frase do avô isolada com respiro */}
-                    <div className="p-4 rounded-xl bg-gold/10 border-l-4 border-gold text-gold font-sans font-semibold text-sm sm:text-base my-2 shadow-sm">
+                    {/* Frase do avô isolada com respiro adaptável ao tema */}
+                    <div className={`p-4 rounded-xl border-l-4 font-sans font-semibold text-sm sm:text-base my-2 shadow-sm ${currentTheme.quoteBox}`}>
                       "Procurar o que mudou antes da decisão."
                     </div>
 
@@ -631,11 +712,11 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     </p>
 
                     <p>
-                      A barra de leitura avançou na tela. Segundos depois, a primeira correspondência apareceu no topo do terminal: <strong className="text-gold font-mono">326 a.C.</strong> E, logo abaixo, surgiram outras datas em ordem cronológica:
+                      A barra de leitura avançou na tela. Segundos depois, a primeira correspondência apareceu no topo do terminal: <strong className={`font-mono ${currentTheme.accentText}`}>326 a.C.</strong> E, logo abaixo, surgiram outras datas em ordem cronológica:
                     </p>
 
-                    {/* Datas cronológicas isoladas */}
-                    <div className="p-3 rounded-xl bg-black/60 border border-white/10 font-mono text-center text-gold text-xs sm:text-sm tracking-widest my-2">
+                    {/* Datas cronológicas isoladas com contraste adaptável */}
+                    <div className={`p-3 rounded-xl font-mono text-center text-xs sm:text-sm tracking-widest my-2 font-bold shadow-sm ${currentTheme.datePill}`}>
                       49 a.C. • 1431 • 1815 • 2007
                     </div>
 
@@ -654,7 +735,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
                     {/* Card Ilustrado do Arquivo Histórico (Cena do Senado em Roma) */}
                     <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-xl my-4`}>
-                      <div className="px-3.5 py-1.5 flex items-center justify-between gap-2 border-b border-white/10 bg-black/30">
+                      <div className={`px-3.5 py-2 flex items-center justify-between gap-2 border-b ${currentTheme.figureHeaderBg}`}>
                         <span className={`text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider truncate ${currentTheme.meta}`}>
                           49 A.C. — RIO RUBICÃO
                         </span>
@@ -672,7 +753,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                           height="400"
                         />
                       </div>
-                      <div className="px-3.5 py-2 flex items-center justify-between gap-2 bg-black/20">
+                      <div className={`px-3.5 py-2 flex items-center justify-between gap-2 ${currentTheme.figureHeaderBg}`}>
                         <span className={`text-sm font-sans font-bold ${currentTheme.textColor}`}>
                           JÚLIO CÉSAR
                         </span>
@@ -682,8 +763,8 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                       </div>
                     </div>
 
-                    {/* PARTE 2: A CENA HISTÓRICA DO ARQUIVO EM ITÁLICO COM FONTE LITERÁRIA */}
-                    <div className="border-l-2 border-gold/50 pl-4 py-2 space-y-3.5 italic text-slate-200">
+                    {/* PARTE 2: A CENA HISTÓRICA DO ARQUIVO EM ITÁLICO COM ALTO CONTRASTE */}
+                    <div className={`border-l-2 ${currentTheme.historicalBorder} pl-4 py-2 space-y-3.5 italic ${currentTheme.historicalText}`}>
                       <p>
                         O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado começava o território da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
                       </p>
@@ -700,7 +781,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         Um dos legados mais velhos aproximou-se de César e sugeriu recuar até Ravena para enviar uma última embaixada diplomática. César olhou para a escuridão da outra margem:
                       </p>
 
-                      <p className="font-semibold text-white not-italic py-1 text-base sm:text-lg">
+                      <p className={`not-italic py-1 text-base sm:text-lg ${currentTheme.historicalDialogue}`}>
                         — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
                       </p>
 
@@ -728,15 +809,15 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     </p>
 
                     {/* Estrutura das 5 Variáveis Extraídas pelo Modelo */}
-                    <div className={`p-4 rounded-xl border ${currentTheme.figureBg} my-3 space-y-2 font-mono text-xs sm:text-sm shadow-md`}>
-                      <div className="text-gold font-bold mb-1 tracking-wider uppercase text-[11px]">
+                    <div className={`p-4 rounded-xl border ${currentTheme.variablesBox} my-3 space-y-2 font-mono text-xs sm:text-sm shadow-md`}>
+                      <div className={`font-bold mb-1 tracking-wider uppercase text-[11px] ${currentTheme.variablesHeader}`}>
                         VARIÁVEIS DO MODELO // ESTRANGULAMENTO DECISÓRIO:
                       </div>
-                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">PRESSÃO</span></div>
-                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">INFORMAÇÃO INCOMPLETA</span></div>
-                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">ALTERNATIVAS REDUZIDAS</span></div>
-                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">DECISÃO</span></div>
-                      <div className="flex items-center gap-2"><span className="text-gold">●</span> <span className="font-semibold">CONSEQUÊNCIA</span></div>
+                      <div className={`flex items-center gap-2 ${currentTheme.variablesText}`}><span className={currentTheme.variablesBullet}>●</span> <span className="font-semibold">PRESSÃO</span></div>
+                      <div className={`flex items-center gap-2 ${currentTheme.variablesText}`}><span className={currentTheme.variablesBullet}>●</span> <span className="font-semibold">INFORMAÇÃO INCOMPLETA</span></div>
+                      <div className={`flex items-center gap-2 ${currentTheme.variablesText}`}><span className={currentTheme.variablesBullet}>●</span> <span className="font-semibold">ALTERNATIVAS REDUZIDAS</span></div>
+                      <div className={`flex items-center gap-2 ${currentTheme.variablesText}`}><span className={currentTheme.variablesBullet}>●</span> <span className="font-semibold">DECISÃO</span></div>
+                      <div className={`flex items-center gap-2 ${currentTheme.variablesText}`}><span className={currentTheme.variablesBullet}>●</span> <span className="font-semibold">CONSEQUÊNCIA</span></div>
                     </div>
 
                     <p>
@@ -751,8 +832,8 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                       Caio abriu o caderno do avô e escreveu com firmeza:
                     </p>
 
-                    {/* Citação reflexiva do avô isolada */}
-                    <div className="p-4 rounded-xl bg-gold/10 border-l-4 border-gold text-gold font-sans font-semibold text-sm sm:text-base my-2 shadow-sm">
+                    {/* Citação reflexiva do avô isolada adaptável */}
+                    <div className={`p-4 rounded-xl border-l-4 font-sans font-semibold text-sm sm:text-base my-2 shadow-sm ${currentTheme.quoteBox}`}>
                       "A História tem uma crueldade particular. Depois que tudo termina, ela transforma incerteza em sequência."
                     </div>
 
@@ -760,12 +841,12 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                       O celular vibrou sobre a mesa com uma atualização do servidor da Strata. A compilação completa da ocorrência de 2007 terminou de carregar:
                     </p>
 
-                    {/* Terminal Strata: Ocorrência 2007 */}
-                    <div className="p-4 rounded-xl bg-black/80 border border-white/10 font-mono text-xs text-cyan space-y-1 my-3 shadow-md">
-                      <div className="text-slate-400 text-[10px] uppercase tracking-wider">SERVIDOR STRATA // OCORRÊNCIA COMPILADA</div>
-                      <div className="font-bold text-white text-sm">09.01.2007 — SÃO FRANCISCO</div>
-                      <div className="text-gold">EVENTO PÚBLICO // DEPENDÊNCIAS OPERACIONAIS</div>
-                      <div className="text-slate-300">REDE / DISPOSITIVO / OPERADORA / DEMONSTRAÇÃO</div>
+                    {/* Terminal Strata: Ocorrência 2007 Adaptável */}
+                    <div className={`p-4 rounded-xl font-mono text-xs space-y-1 my-3 shadow-md border ${currentTheme.terminalBox}`}>
+                      <div className={`text-[10px] uppercase tracking-wider ${currentTheme.terminalHeader}`}>SERVIDOR STRATA // OCORRÊNCIA COMPILADA</div>
+                      <div className={`font-bold text-sm ${currentTheme.terminalTitle}`}>09.01.2007 — SÃO FRANCISCO</div>
+                      <div className={`font-semibold ${currentTheme.terminalEvent}`}>EVENTO PÚBLICO // DEPENDÊNCIAS OPERACIONAIS</div>
+                      <div className={currentTheme.terminalText}>REDE / DISPOSITIVO / OPERADORA / DEMONSTRAÇÃO</div>
                     </div>
 
                     <p>
@@ -776,7 +857,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                       Caio olhou para o livro de Roma e depois para o telefone. Duas épocas separadas por vinte séculos apresentavam o mesmo estrangulamento antes da escolha.
                     </p>
 
-                    <p className="font-medium text-slate-100">
+                    <p className={currentTheme.cliffhangerText}>
                       Fechou o caderno, pegou o volume de capa dura e saiu da sala de arquivos em direção ao elevador. Na tela do computador, o dossiê de 2007 já estava esperando.
                     </p>
                   </div>
