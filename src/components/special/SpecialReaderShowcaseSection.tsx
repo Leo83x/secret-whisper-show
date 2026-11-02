@@ -391,7 +391,11 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         </p>
 
                         <p>
-                          Naquela semana, três instituições financeiras de médio porte tinham reduzido seus limites de crédito corporativo. Nos painéis principais, os registros de risco continuavam estáveis, mas o custo de financiamento começava a subir nas pontas mais curtas. O que chamava sua atenção era a diferença entre o que os comunicados oficiais diziam e a pressa silenciosa com que aquelas tesourarias estavam recolhendo dinheiro.
+                          Naquela semana, três instituições financeiras de médio porte tinham reduzido seus limites de crédito corporativo. Nos painéis principais, os registros de risco continuavam estáveis, mas o custo de financiamento começava a subir nas pontas mais curtas.
+                        </p>
+
+                        <p>
+                          O que chamava sua atenção era a diferença entre o que os comunicados oficiais diziam e a pressa silenciosa com que aquelas tesourarias estavam recolhendo dinheiro.
                         </p>
 
                         <p>
@@ -606,7 +610,11 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     </p>
 
                     <p>
-                      Naquela semana, três instituições financeiras de médio porte tinham reduzido seus limites de crédito corporativo. Nos painéis principais, os registros de risco continuavam estáveis, mas o custo de financiamento começava a subir nas pontas mais curtas. O que chamava sua atenção era a diferença entre o que os comunicados oficiais diziam e a pressa silenciosa com que aquelas tesourarias estavam recolhendo dinheiro.
+                      Naquela semana, três instituições financeiras de médio porte tinham reduzido seus limites de crédito corporativo. Nos painéis principais, os registros de risco continuavam estáveis, mas o custo de financiamento começava a subir nas pontas mais curtas.
+                    </p>
+
+                    <p>
+                      O que chamava sua atenção era a diferença entre o que os comunicados oficiais diziam e a pressa silenciosa com que aquelas tesourarias estavam recolhendo dinheiro.
                     </p>
 
                     <p>
@@ -638,37 +646,37 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     {/* DIVISOR DE TRANSIÇÃO: PRESENTE ➔ ARQUIVO HISTÓRICO */}
                     <div className="py-5 flex items-center gap-3">
                       <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
-                      <span className={`px-3.5 py-1.5 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
-                        • • • ARQUIVO HISTÓRICO // ROMA, 49 a.C. • • •
+                      <span className={`px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider whitespace-nowrap shrink-0 ${currentTheme.dividerBadge}`}>
+                        • • ARQUIVO HISTÓRICO // ROMA, 49 a.C. • •
                       </span>
                       <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
                     </div>
 
-                    {/* Card Ilustrado do Arquivo Histórico */}
+                    {/* Card Ilustrado do Arquivo Histórico (Cena do Senado em Roma) */}
                     <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-xl my-4`}>
-                      <div className="px-3.5 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/30">
-                        <span className={`text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
-                          49 A.C. — MARGENS DO RIO RUBICÃO
+                      <div className="px-3.5 py-1.5 flex items-center justify-between gap-2 border-b border-white/10 bg-black/30">
+                        <span className={`text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider truncate ${currentTheme.meta}`}>
+                          49 A.C. — RIO RUBICÃO
                         </span>
-                        <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                        <span className={`text-[10px] sm:text-xs font-mono shrink-0 ${currentTheme.subColor}`}>
                           Arquivo 02 // Intendência
                         </span>
                       </div>
                       <div className="relative w-full h-52 sm:h-64 overflow-hidden bg-black">
                         <img
-                          src="/dossiers/dossier_01_rubicon.webp"
-                          alt="49 A.C. — Margens do Rio Rubicão // Júlio César"
+                          src="/reader/assets/chapters/ch02_julio_cesar.webp"
+                          alt="49 A.C. — O Senado em Roma // Júlio César"
                           className="w-full h-full object-cover object-center"
                           loading="lazy"
                           width="640"
                           height="400"
                         />
                       </div>
-                      <div className="px-3.5 py-2 flex items-center justify-between bg-black/20">
+                      <div className="px-3.5 py-2 flex items-center justify-between gap-2 bg-black/20">
                         <span className={`text-sm font-sans font-bold ${currentTheme.textColor}`}>
                           JÚLIO CÉSAR
                         </span>
-                        <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                        <span className={`text-[11px] sm:text-xs font-mono shrink-0 ${currentTheme.subColor}`}>
                           A travessia do Rubicão // Roma
                         </span>
                       </div>
@@ -704,8 +712,8 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                     {/* DIVISOR DE TRANSIÇÃO: RETORNO AO PRESENTE */}
                     <div className="py-5 flex items-center gap-3">
                       <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
-                      <span className={`px-3.5 py-1.5 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
-                        • • • SÃO PAULO — FARIA LIMA // 05h18 • • •
+                      <span className={`px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider whitespace-nowrap shrink-0 ${currentTheme.dividerBadge}`}>
+                        • • SÃO PAULO — FARIA LIMA // 05h18 • •
                       </span>
                       <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
                     </div>

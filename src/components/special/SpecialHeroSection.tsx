@@ -51,9 +51,6 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                   width="112"
                   height="168"
                 />
-                <span className="text-[9px] font-mono font-medium text-slate-300 block text-center py-1 bg-black/60 border-t border-gold/30">
-                  <strong className="text-[#ff9900]">amazon</strong> Kindle & Físico
-                </span>
               </div>
 
               {/* Os 3 Pilares Exatos do Anúncio ADS02_Img */}
