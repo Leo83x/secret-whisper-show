@@ -451,7 +451,7 @@ export const SpecialCheckoutSection = () => {
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><strong>Arquivos Confidenciais Desbloqueáveis:</strong> libere os 4 dossiês ilustrados e relatórios de época conforme participa e avança na trama.</span>
+                <span><strong>Arquivos Confidenciais:</strong> libere os 4 dossiês ilustrados e relatórios de época conforme avança na trama.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />

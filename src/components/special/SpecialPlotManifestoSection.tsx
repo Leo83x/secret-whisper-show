@@ -41,10 +41,10 @@ export const SpecialPlotManifestoSection = () => {
 
           <div className="space-y-4 text-base sm:text-lg text-slate-300 font-normal leading-relaxed text-left sm:text-center">
             <p>
-              Depois que um império cai ou uma revolução vence, os livros oficiais transformam tudo em destino ou genialidade. Mas nos registros silenciosos de quem estava na retaguarda — o intendente contando o trigo de <strong className="text-white">Júlio César no Rubicão</strong>, o oficial anotando os despachos na lama de <strong className="text-white">Waterloo</strong>, o engenheiro atrás da cortina com <strong className="text-white">Steve Jobs</strong> — outra história aparece.
+              Depois que um império cai ou uma revolução vence, os livros oficiais transformam tudo em destino ou genialidade. Mas nos registros silenciosos dos bastidores — de <strong className="text-white">Júlio César no Rubicão</strong> a <strong className="text-white">Waterloo</strong> e ao <strong className="text-white">Vale do Silício</strong> — outra verdade aparece.
             </p>
             <p>
-              Século após século, antes de cada grande ruptura, a mesma engrenagem invisível se fecha: <span className="text-slate-100 font-medium">a pressão acumulada nos bastidores, os relatos desencontrados que chegam tarde demais e o instante solitário em que todas as saídas encolhem até sobrar uma única direção sem volta.</span>
+              Século após século, antes de cada grande ruptura, a mesma engrenagem invisível se fecha: <span className="text-slate-100 font-medium">pressão extrema, informações incompletas e o instante solitário em que resta apenas uma direção sem volta.</span>
             </p>
           </div>
 

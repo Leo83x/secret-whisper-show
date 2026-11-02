@@ -46,10 +46,10 @@ export const SpecialDossiersSection = () => {
               BÔNUS DE LANÇAMENTO // ARQUIVOS DA INVESTIGAÇÃO
             </span>
             <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
-              Os 4 Dossiês Confidenciais da Trama
+              Os 4 Dossiês da Investigação
             </h2>
-            <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-              Conforme avança na leitura da investigação de Caio, você ganha acesso aos 4 relatórios de inteligência que conectam as decisões do passado ao colapso do presente — ilustrados com mapas táticos e transcrições de época liberados como bônus no seu leitor digital.
+            <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto">
+              Relatórios confidenciais ilustrados, liberados diretamente no seu leitor digital conforme você avança pelos capítulos.
             </p>
           </div>
 

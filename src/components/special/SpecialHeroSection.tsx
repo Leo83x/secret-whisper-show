@@ -78,10 +78,10 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                   </div>
                   <div>
                     <span className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide leading-tight">
-                      Arquivos Confidenciais Desbloqueáveis
+                      Arquivos Confidenciais
                     </span>
                     <span className="text-[11px] sm:text-xs text-slate-300 leading-tight block">
-                      Participe da investigação ao longo dos capítulos e libere dossiês ilustrados da trama
+                      Dossiês ilustrados liberados conforme você avança na trama
                     </span>
                   </div>
                 </div>
