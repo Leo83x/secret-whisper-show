@@ -17,7 +17,7 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
           <div className="lg:col-span-7 flex flex-col items-center lg:items-start">
             {/* Pergunta Principal sem tag competindo acima */}
             <p className="text-xs sm:text-sm md:text-base font-sans font-bold text-gold uppercase tracking-wider mb-3 max-w-xl">
-              E se as grandes decisões da História respondem a um padrão oculto?
+              E se as grandes decisões da história respondessem a um padrão oculto?
             </p>
 
             {/* Título Monumental - Renderização imediata para LCP */}
@@ -36,8 +36,8 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
             </h1>
 
             {/* Subtítulo Narrativo Fiel ao Anúncio */}
-            <p className="text-base sm:text-lg text-slate-200 font-normal max-w-xl leading-relaxed mb-6">
-              Uma investigação que atravessa séculos — de <strong className="text-white font-semibold">Júlio César, Cleópatra e Napoleão</strong> a <strong className="text-white font-semibold">Alan Turing e Steve Jobs</strong> — e conecta o passado aos bastidores do poder no presente.
+            <p className="text-base sm:text-lg md:text-xl text-slate-200 font-normal max-w-xl leading-relaxed mb-6">
+              Um thriller de investigação que atravessa séculos — de <strong className="text-white font-semibold">Júlio César e Napoleão</strong> a <strong className="text-white font-semibold">Alan Turing e Steve Jobs</strong> — e conecta o passado aos bastidores do poder financeiro no presente.
             </p>
 
             {/* Bloco Visual: Capa (no mobile) + Os 3 Ícones do Anúncio */}
@@ -75,10 +75,10 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                   </div>
                   <div>
                     <span className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide leading-tight">
-                      Bônus: 4 Dossiês Secretos
+                      Arquivos Confidenciais Desbloqueáveis
                     </span>
                     <span className="text-[11px] sm:text-xs text-slate-300 leading-tight block">
-                      Arquivos e relatórios que aprofundam as descobertas da trama
+                      Participe da investigação ao longo dos capítulos e libere dossiês ilustrados da trama
                     </span>
                   </div>
                 </div>
@@ -138,10 +138,17 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                   height="450"
                 />
               </div>
-              <div className="text-center mt-3">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/85 border border-gold/40 text-[11px] font-mono text-gold tracking-widest uppercase shadow-md">
-                  ★ Acesso Vitalício Imediato • R$ 29,90
-                </span>
+              <div className="text-center mt-3 space-y-1.5">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/85 border border-gold/40 text-[11px] font-mono text-gold tracking-widest uppercase shadow-md">
+                    ✦ ACESSO VITALÍCIO E IMEDIATO
+                  </span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 border border-white/10 text-[10px] text-slate-300">
+                  <span className="font-bold text-[#ff9900]">amazon</span>
+                  <span className="text-white/40">•</span>
+                  <span>Kindle & Livro Físico</span>
+                </div>
               </div>
             </div>
           </div>

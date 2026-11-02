@@ -196,21 +196,11 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             Uma experiência de leitura imersiva, feita para você.
           </h2>
           <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Esqueça arquivos de PDF que quebram no celular. Experimente abaixo um trecho conectando <strong className="text-gold">Júlio César em 49 a.C.</strong> à investigação nos dias atuais diretamente no simulador:
+            Esqueça arquivos de PDF que quebram no celular. Teste os modos de leitura: alterne entre <strong className="text-gold">🌙 Escuro</strong>, <strong className="text-amber-200">📜 Sépia</strong> ou <strong className="text-white">☀️ Claro</strong>, ajuste o tamanho da letra (<strong className="text-gold">A- / A+</strong>) e leia abaixo um trecho da obra:
           </p>
         </div>
 
-        {/* Instrução Direta e Limpa */}
-        <div className="w-full max-w-xl mx-auto text-center">
-          <div className="relative p-4 rounded-2xl bg-gradient-to-br from-[#0e172e] via-[#142347] to-[#0a1020] border border-gold/70 shadow-[0_0_25px_rgba(201,169,98,0.3)] space-y-1.5">
-            <h3 className="font-sans text-sm sm:text-base font-bold text-white tracking-tight uppercase">
-              TOQUE NOS BOTÕES DO CELULAR PARA TESTAR:
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-200 font-normal leading-relaxed">
-              Alterne entre <strong className="text-gold">🌙 Escuro</strong>, <strong className="text-amber-200">📜 Sépia</strong> ou <strong className="text-white">☀️ Claro</strong> e ajuste o tamanho da letra (<strong className="text-gold">A- / A+</strong>) em tempo real.
-            </p>
-          </div>
-        </div>
+
 
         {/* Grade: Widget Interativo Central + Telas de Apoio Desktop */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -293,41 +283,9 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                       </div>
                     </div>
 
-                    {/* Barra de Progresso + Botão Tela Cheia */}
-                    <div className="flex items-center justify-between pt-1">
-                      <button
-                        type="button"
-                        onClick={handleToggleBookmark}
-                        className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider text-gold font-bold uppercase hover:opacity-80 transition-opacity cursor-pointer"
-                      >
-                        <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "fill-gold text-gold" : "text-gold"}`} />
-                        <span>CAP. 02 • JÚLIO CÉSAR</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={openFullscreenModal}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-gold via-amber-300 to-gold text-slate-950 font-black text-[11px] uppercase tracking-wider shadow-[0_0_15px_rgba(201,169,98,0.45)] active:scale-95 transition-all cursor-pointer hover:brightness-110"
-                      >
-                        <Maximize2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>TELA CHEIA</span>
-                      </button>
-                    </div>
-
-                    {/* Linha Fina da Barra de Progresso Dourada */}
-                    <div className="w-full h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-gold to-amber-300 w-[18%]" />
-                    </div>
-
                     {/* CONTROLES ESSENCIAIS DO LEITOR (TEMA + TAMANHO DA FONTE) */}
-                    <div className="pt-2.5 flex items-center justify-between gap-2 mt-2 border-t border-white/10">
-                      <div className="flex items-center gap-1 p-0.5 bg-black/40 rounded-xl border border-white/10 relative">
-                        {!hasInteracted && (
-                          <div className="absolute -top-7 left-2 flex items-center gap-1 text-[10px] font-sans font-black text-gold bg-slate-950 px-2 py-0.5 rounded-full border border-gold/60 shadow-lg animate-bounce pointer-events-none whitespace-nowrap z-30">
-                            <Pointer className="w-3 h-3 text-gold" />
-                            <span>Toque para testar</span>
-                          </div>
-                        )}
+                    <div className="pt-1 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1 p-0.5 bg-black/40 rounded-xl border border-white/10">
 
                         <button
                           type="button"
@@ -445,17 +403,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                       </div>
                     </div>
 
-                    {/* Rodapé da Tela do Celular */}
-                    <div className={`pt-3 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[11px] font-mono ${currentTheme.subColor}`}>
-                      <span>Faria Lima ➔ Conexão Roma (49 a.C.)</span>
-                      <button
-                        type="button"
-                        onClick={openFullscreenModal}
-                        className="flex items-center gap-1 text-gold font-bold hover:underline cursor-pointer"
-                      >
-                        <Maximize2 className="w-3 h-3" /> Abrir Leitura
-                      </button>
-                    </div>
+
                   </div>
 
                   {/* Barra Home Inferior do iPhone */}
@@ -533,22 +481,20 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
           >
             {/* Topo Compacto Unificado (~82px total): Linha 1 fina (44px) + Linha 2 controles */}
             <div className="bg-[#0a1020] border-b border-white/10 shrink-0">
-              {/* Barra 1: Apenas Fechar + Título curto em 1 única linha */}
-              <div className="px-3 py-2 flex items-center justify-between gap-2 border-b border-white/5">
+              {/* Barra 1: Título na esquerda + Fechar na DIREITA (padrão universal) */}
+              <div className="px-4 py-2.5 flex items-center justify-between gap-3 border-b border-white/5">
+                <span className="text-xs sm:text-sm font-mono text-gold font-bold uppercase tracking-wider truncate">
+                  Capítulo 01 • O Teste Proibido (Amostra Oficial)
+                </span>
+
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 text-white font-bold text-xs hover:bg-white/20 transition-colors cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 text-white font-bold text-xs hover:bg-white/20 transition-colors cursor-pointer shrink-0 ml-auto shadow-sm active:scale-95"
                 >
-                  <X className="w-3.5 h-3.5" />
                   <span>Fechar</span>
+                  <X className="w-3.5 h-3.5" />
                 </button>
-
-                <span className="text-xs font-mono text-gold font-bold uppercase tracking-wider truncate">
-                  Cap. 02 • Júlio César (49 a.C.)
-                </span>
-
-                <div className="w-14 shrink-0" />
               </div>
 
               {/* Barra 2: Seletores de Tema e Fonte super compactos */}

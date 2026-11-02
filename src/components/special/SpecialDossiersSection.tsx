@@ -125,30 +125,30 @@ export const SpecialDossiersSection = () => {
               A Corrente conecta você a novos dossiês confidenciais, conteúdos personalizados conforme seu perfil e condições especiais para o <strong>Livro II</strong>.
             </p>
 
-            {/* 3 CARDS RESUMIDOS (DIRETOS E ESCANEÁVEIS) */}
+            {/* 3 CARDS RESUMIDOS (DIRETOS, TEXTOS ENXUTOS E FONTE LEGÍVEL) */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-left">
               
-              <div className="p-4 rounded-xl bg-black/50 border border-white/10 space-y-1.5 hover:border-gold/40 transition-colors">
+              <div className="p-4 sm:p-5 rounded-2xl bg-black/50 border border-white/10 space-y-2 hover:border-gold/40 transition-colors">
                 <FileCheck className="w-5 h-5 text-gold" />
-                <h5 className="font-sans font-bold text-sm text-white">Novos Dossiês</h5>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Arquivos confidenciais e relatórios complementares desbloqueados conforme sua participação.
+                <h5 className="font-sans font-bold text-base text-white">Novos Dossiês</h5>
+                <p className="text-sm text-slate-200 leading-relaxed font-normal">
+                  Arquivos secretos liberados ao longo dos capítulos da trama.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/50 border border-white/10 space-y-1.5 hover:border-gold/40 transition-colors">
+              <div className="p-4 sm:p-5 rounded-2xl bg-black/50 border border-white/10 space-y-2 hover:border-gold/40 transition-colors">
                 <Award className="w-5 h-5 text-amber-400" />
-                <h5 className="font-sans font-bold text-sm text-white">Condições no Livro II</h5>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Acesso prioritário e descontos exclusivos na edição especial do segundo volume da obra.
+                <h5 className="font-sans font-bold text-base text-white">Condições no Livro II</h5>
+                <p className="text-sm text-slate-200 leading-relaxed font-normal">
+                  Acesso prioritário e desconto exclusivo no segundo volume.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/50 border border-white/10 space-y-1.5 hover:border-gold/40 transition-colors">
+              <div className="p-4 sm:p-5 rounded-2xl bg-black/50 border border-white/10 space-y-2 hover:border-gold/40 transition-colors">
                 <Compass className="w-5 h-5 text-cyan" />
-                <h5 className="font-sans font-bold text-sm text-white">Conteúdos por Perfil</h5>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Materiais liberados conforme seus temas favoritos: tecnologia, estratégia ou História.
+                <h5 className="font-sans font-bold text-base text-white">Conteúdos por Perfil</h5>
+                <p className="text-sm text-slate-200 leading-relaxed font-normal">
+                  Materiais extras sobre tecnologia, estratégia e História.
                 </p>
               </div>
 
