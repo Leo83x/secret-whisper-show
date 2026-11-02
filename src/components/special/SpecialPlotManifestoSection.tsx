@@ -62,7 +62,7 @@ export const SpecialPlotManifestoSection = () => {
               3 Mil Anos. 10 Decisões. Os Bastidores Reais Revelados na Obra.
             </h3>
             <p className="text-sm sm:text-base text-slate-400 font-normal max-w-2xl mx-auto">
-              Cada capítulo mergulha na mente e nas circunstâncias ocultas de um líder no instante exato em que tudo estava em jogo:
+              A investigação de Caio no presente se entrelaça a passagens históricas que revelam decisões, circunstâncias e conexões capazes de atravessar os séculos.
             </p>
           </div>
 

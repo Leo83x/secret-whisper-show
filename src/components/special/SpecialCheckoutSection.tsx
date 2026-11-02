@@ -387,7 +387,7 @@ export const SpecialCheckoutSection = () => {
           </h2>
 
           <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Sem mensalidades ou assinaturas. Um pagamento único libera sua chave vitalícia para o livro completo e os 4 Dossiês Confidenciais.
+            Sem mensalidades ou assinaturas. Um pagamento único libera sua chave vitalícia para o romance completo e os 4 Dossiês Confidenciais inclusos como bônus.
           </p>
 
           {/* Barra de Escassez Real - Lote de Lançamento */}
@@ -396,7 +396,7 @@ export const SpecialCheckoutSection = () => {
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="flex items-center gap-1.5 text-gold font-bold">
                   <Flame className="w-4 h-4 text-amber-400 animate-pulse" />
-                  LOTE 01 (R$ 29,90 + 4 DOSSIÊS)
+                  LOTE 01 (LIVRO COMPLETO + 4 DOSSIÊS BÔNUS)
                 </span>
                 <span className="text-amber-300 font-bold">84% PREENCHIDO</span>
               </div>

@@ -61,10 +61,10 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                   </div>
                   <div>
                     <span className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide leading-tight">
-                      Livro Completo
+                      Romance Completo
                     </span>
                     <span className="text-[11px] sm:text-xs text-slate-300 leading-tight block">
-                      Para celulares, tablets e PCs (21 Capítulos + Prólogo & Epílogo)
+                      Techno-thriller de investigação: 21 Capítulos + Prólogo & Epílogo
                     </span>
                   </div>
                 </div>
@@ -75,10 +75,10 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                   </div>
                   <div>
                     <span className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide leading-tight">
-                      4 Dossiês Exclusivos
+                      Bônus: 4 Dossiês Secretos
                     </span>
                     <span className="text-[11px] sm:text-xs text-slate-300 leading-tight block">
-                      Relatórios confidenciais e materiais complementares ilustrados
+                      Arquivos e relatórios que aprofundam as descobertas da trama
                     </span>
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export const SpecialHeroSection = ({ onCtaClick, onReadSampleClick }: SpecialHer
                 className="w-full sm:w-auto relative overflow-hidden inline-flex items-center justify-center gap-3 px-8 sm:px-12 min-h-[62px] sm:min-h-[68px] py-4 bg-gradient-to-r from-[#c9a962] via-[#e5c985] to-[#c9a962] hover:from-[#dfb76c] hover:to-[#dfb76c] text-slate-950 font-black tracking-wider rounded-2xl shadow-[0_0_35px_rgba(201,169,98,0.5)] hover:shadow-[0_0_50px_rgba(201,169,98,0.75)] active:scale-[0.99] transition-all duration-300 text-sm sm:text-base uppercase group cursor-pointer"
               >
                 <Zap className="w-5 h-5 fill-slate-950 text-slate-950 shrink-0" />
-                <span>EDIÇÃO ESPECIAL • R$ 29,90</span>
+                <span>DESBLOQUEAR O LIVRO COMPLETO • R$ 29,90</span>
                 <ArrowRight className="w-5 h-5 text-slate-950 group-hover:translate-x-1 transition-transform shrink-0" />
               </button>
 

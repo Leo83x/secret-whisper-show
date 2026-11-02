@@ -392,41 +392,24 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
                   </div>
 
-                  {/* ÁREA DE LEITURA VISÍVEL NO MOCKUP (2 PARÁGRAFOS + FADE-OUT PARA TELA CHEIA) */}
+                  {/* ÁREA DE LEITURA VISÍVEL NO MOCKUP: INVESTIGAÇÃO CONTEMPORÂNEA ➔ CONEXÃO HISTÓRICA */}
                   <div className="p-4 sm:p-6 space-y-4 flex flex-col justify-between">
                     <div className="space-y-3.5 text-left relative">
-                      {/* Card Ilustrado Oficial do E-Reader (Júlio César no Rubicão) */}
-                      <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-lg`}>
-                        <div className="px-3.5 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/20">
-                          <span className={`text-[10px] font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
-                            49 A.C. — MARGENS DO RIO RUBICÃO
-                          </span>
-                          <span className={`text-[10px] font-mono ${currentTheme.subColor}`}>
-                            Arquivo 02
+                      {/* Badge de Localização e Horário da Cena Contemporânea */}
+                      <div className={`rounded-xl px-3.5 py-2 border ${currentTheme.figureBg} flex items-center justify-between shadow-md`}>
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                          <span className={`text-[11px] font-mono font-bold uppercase tracking-wider ${currentTheme.meta}`}>
+                            SÃO PAULO — FARIA LIMA / 03h42
                           </span>
                         </div>
-                        <div className="relative w-full h-44 sm:h-48 overflow-hidden bg-black">
-                          <img
-                            src="/reader/assets/chapters/ch02_julio_cesar.webp"
-                            alt="Júlio César às margens do Rubicão"
-                            className="w-full h-full object-cover object-center"
-                            loading="lazy"
-                            width="640"
-                            height="400"
-                          />
-                        </div>
-                        <div className="px-3.5 py-2 flex items-center justify-between">
-                          <span className={`text-xs font-sans font-bold ${currentTheme.textColor}`}>
-                            JÚLIO CÉSAR
-                          </span>
-                          <span className={`text-[11px] font-mono ${currentTheme.subColor}`}>
-                            A travessia do Rubicão // Roma
-                          </span>
-                        </div>
+                        <span className={`text-[10px] font-mono ${currentTheme.subColor}`}>
+                          Capítulo 01
+                        </span>
                       </div>
 
                       <h4 className={`font-sans font-bold text-xl leading-snug pt-1 ${currentTheme.textColor}`}>
-                        A Travessia sem Volta
+                        O Teste Proibido
                       </h4>
 
                       <div
@@ -434,17 +417,17 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                         style={{ fontSize: `${fontSize}px` }}
                       >
                         <p>
-                          O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado começava o território da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
+                          O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria. Caio Avelar estava diante de dois monitores, revisando um corte silencioso de crédito em três instituições financeiras.
                         </p>
 
                         <p>
-                          Sob o toldo da tenda, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte. César não tinha semanas para negociar. Tinha horas.
+                          Foi esse incômodo que o fez lembrar do caderno do avô. João Avelar trabalhou décadas no Banco Central. Numa folha amarelada de agosto de 1989, uma frase aparecia destacada: <em>"Procurar o que mudou antes da decisão."</em> Caio alimentou a máquina com a equação do avô. Em segundos, a primeira correspondência que saltou no topo da tela foi: <strong className="text-gold font-mono">49 a.C. (Roma)</strong>.
                         </p>
 
                         {/* Início do 3º parágrafo com Fade-Out suave */}
                         <div className="relative pt-1">
                           <p className="opacity-60 select-none">
-                            Os emissários do Senado haviam bloqueado a liberação de crédito e grãos para as legiões da fronteira. Na entrada da tenda, o escrivão de serviço registrava cada mensageiro atrasado...
+                            Ele reconheceu a data na hora: a crise da República romana e a travessia do Rubicão. Ao carregar o arquivo confidencial, o sistema não exibiu discursos heroicos, mas os registros do intendente medindo rações de trigo para nove dias e as ordens na lama...
                           </p>
 
                           {/* Sombreado (Fade-out) + Botão Centralizado de Continuar Lendo */}
@@ -464,7 +447,7 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
 
                     {/* Rodapé da Tela do Celular */}
                     <div className={`pt-3 border-t ${theme === 'dark' ? 'border-white/10' : theme === 'sepia' ? 'border-[#cfbfa0]' : 'border-slate-200'} flex items-center justify-between text-[11px] font-mono ${currentTheme.subColor}`}>
-                      <span>Passado (49 a.C.) ➔ Presente</span>
+                      <span>Faria Lima ➔ Conexão Roma (49 a.C.)</span>
                       <button
                         type="button"
                         onClick={openFullscreenModal}
@@ -629,39 +612,21 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
             <div className={`flex-1 overflow-y-auto px-5 py-6 sm:p-10 ${currentTheme.cardBg} transition-colors duration-300`}>
               <div className="max-w-2xl mx-auto pb-10 space-y-4 text-left">
                 
-                {/* Card Ilustrado Oficial do E-Reader */}
-                <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-lg`}>
-                  <div className="px-3.5 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/20">
-                    <span className={`text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
-                      49 A.C. — MARGENS DO RIO RUBICÃO
-                    </span>
-                    <span className={`text-xs font-mono ${currentTheme.subColor}`}>
-                      Arquivo 02
+                {/* PARTE 1: NARRATIVA CONTEMPORÂNEA (SÃO PAULO, FARIA LIMA / 03h42) */}
+                <div className={`rounded-xl px-4 py-2 border ${currentTheme.figureBg} flex items-center justify-between shadow-md`}>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className={`text-xs font-mono font-bold uppercase tracking-wider ${currentTheme.meta}`}>
+                      SÃO PAULO — FARIA LIMA / 03h42
                     </span>
                   </div>
-                  <div className="relative w-full h-52 sm:h-64 overflow-hidden bg-black">
-                    <img
-                      src="/reader/assets/chapters/ch02_julio_cesar.webp"
-                      alt="Júlio César às margens do Rubicão"
-                      className="w-full h-full object-cover object-center"
-                      loading="lazy"
-                      width="640"
-                      height="400"
-                    />
-                  </div>
-                  <div className="px-3.5 py-2 flex items-center justify-between">
-                    <span className={`text-sm font-sans font-bold ${currentTheme.textColor}`}>
-                      JÚLIO CÉSAR
-                    </span>
-                    <span className={`text-xs font-mono ${currentTheme.subColor}`}>
-                      A travessia do Rubicão // Roma
-                    </span>
-                  </div>
+                  <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                    Capítulo 01 // Sala de Auditoria
+                  </span>
                 </div>
 
-                {/* PARTE 1: O PASSADO (COM A TENSÃO PSICOLÓGICA E O CONFLITO ANTES DA ORDEM) */}
                 <h2 className={`font-sans font-bold text-2xl sm:text-3xl leading-snug pt-1 ${currentTheme.textColor}`}>
-                  A Travessia sem Volta
+                  O Teste Proibido
                 </h2>
 
                 <div
@@ -669,53 +634,119 @@ export const SpecialReaderShowcaseSection = ({ onCtaClick }: SpecialReaderShowca
                   style={{ fontSize: `${fontSize}px` }}
                 >
                   <p>
-                    O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado começava o território da Itália, onde a lei do Senado proibia qualquer comandante de entrar em armas.
+                    O prédio estava quase vazio. No décimo sexto andar, apenas algumas luzes permaneciam acesas, e o ruído constante da ventilação preenchia o silêncio da sala de auditoria. Caio Avelar estava sentado diante de dois monitores, revisando um lote de operações que analisava havia quase meia hora.
                   </p>
 
                   <p>
-                    Sob o toldo da tenda, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: restavam rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte. César não tinha semanas para negociar. Tinha horas.
+                    Naquela semana, três instituições financeiras de médio porte tinham reduzido seus limites de crédito corporativo. Nos painéis principais, os registros de risco continuavam estáveis, mas o custo de financiamento começava a subir nas pontas mais curtas. O que chamava sua atenção era a diferença entre o que os comunicados oficiais diziam e a pressa silenciosa com que aquelas tesourarias estavam recolhendo dinheiro.
                   </p>
 
                   <p>
-                    Os emissários do Senado haviam bloqueado a liberação de crédito e grãos para as legiões da fronteira. Na entrada da tenda, o escrivão de serviço registrava cada cavaleiro atrasado que chegava do sul: ninguém sabia o número real das tropas de Pompeu em Roma, mas todos sabiam que o inverno consumiria as reservas antes de qualquer resposta política.
+                    Foi esse incômodo que o fez lembrar do caderno do avô. João Avelar trabalhou durante décadas no Banco Central. Numa folha antiga de agosto de 1989, uma frase destacada em caneta preta parecia descrever o mesmo movimento: <em>"Procurar o que mudou antes da decisão."</em>
                   </p>
 
                   <p>
-                    Um dos legados mais velhos aproximou-se de César na barranca escura. Lembrou que atravessar o rio com as insígnias erguidas encerraria qualquer retorno jurídico — e sugeriu recuar até Ravena para tentar uma última embaixada aos cônsules.
+                    Caio abriu o ambiente de testes da Strata. A empresa mantinha um acervo histórico gigantesco para calibrar modelos de risco. Caio digitou a relação empírica que João anotou, combinando quatro variáveis: pressão, restrição, informação disponível e decisão. Ele queria ver se aquela estrutura resistia numa escala global.
                   </p>
 
                   <p>
-                    César encarou a água barrenta por um instante antes de responder:
+                    A barra de leitura avançou na tela. Segundos depois, a primeira correspondência apareceu no topo do terminal: <strong className="text-gold font-mono">326 a.C.</strong> E, logo abaixo, surgiram outras datas em ordem cronológica: <strong className="text-gold font-mono">49 a.C. • 1431 • 1815 • 2007</strong>.
                   </p>
 
                   <p>
-                    — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
+                    Caio franziu a testa. A fórmula inserida lidava apenas com variações matemáticas de escassez e incerteza. Ele reconheceu a data romana de cabeça: 49 a.C., a crise da República e a travessia do Rubicão. Para testar se os números faziam sentido fora da tela, Caio desceu ao arquivo físico da Strata para examinar o compêndio de registros de época.
                   </p>
 
-                  <p>
-                    César caminhou até a beira do barranco e entrou na água gelada. As primeiras fileiras de soldados desceram logo atrás, levantando espuma e barro na correnteza rasa. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível.
-                  </p>
-
-                  {/* DIVISOR VISUAL DE TRANSIÇÃO TEMPORAL: PASSADO ➔ PRESENTE */}
-                  <div className="py-3 flex items-center gap-3">
+                  {/* DIVISOR DE TRANSIÇÃO: PRESENTE ➔ ARQUIVO HISTÓRICO EM ITÁLICO */}
+                  <div className="py-4 flex items-center gap-3">
                     <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
                     <span className={`px-3 py-1 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
-                      • • • DIAS ATUAIS — SÃO PAULO • • •
+                      • • • ARQUIVO HISTÓRICO // ROMA, 49 a.C. • • •
                     </span>
                     <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
                   </div>
 
-                  {/* PARTE 2: A QUEBRA PARA O PRESENTE (A INVESTIGAÇÃO DE CAIO + CLIFFHANGER) */}
+                  {/* Card Ilustrado Oficial do E-Reader (Júlio César) */}
+                  <div className={`rounded-2xl overflow-hidden border ${currentTheme.figureBg} shadow-lg`}>
+                    <div className="px-3.5 py-1.5 flex items-center justify-between border-b border-white/10 bg-black/20">
+                      <span className={`text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.meta}`}>
+                        49 A.C. — MARGENS DO RIO RUBICÃO
+                      </span>
+                      <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                        Arquivo 02 // Intendência
+                      </span>
+                    </div>
+                    <div className="relative w-full h-52 sm:h-64 overflow-hidden bg-black">
+                      <img
+                        src="/reader/assets/chapters/ch02_julio_cesar.webp"
+                        alt="Júlio César às margens do Rubicão"
+                        className="w-full h-full object-cover object-center"
+                        loading="lazy"
+                        width="640"
+                        height="400"
+                      />
+                    </div>
+                    <div className="px-3.5 py-2 flex items-center justify-between">
+                      <span className={`text-sm font-sans font-bold ${currentTheme.textColor}`}>
+                        JÚLIO CÉSAR
+                      </span>
+                      <span className={`text-xs font-mono ${currentTheme.subColor}`}>
+                        A travessia do Rubicão // Roma
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* PARTE 2: A CENA HISTÓRICA DO ARQUIVO */}
+                  <div className="border-l-2 border-gold/40 pl-4 py-1 space-y-3.5 italic text-slate-200">
+                    <p>
+                      O frio de janeiro ainda pesava no ar quando a vanguarda de César chegou às margens do Rubicão. Do outro lado daquele curso d'água começava o território da Itália, onde a lei proibia qualquer comandante de entrar em armas.
+                    </p>
+
+                    <p>
+                      A poucos passos do general, o intendente-chefe conferia as tábuas de cera à luz de uma lamparina: rações de trigo para apenas nove dias, soldos atrasados desde o outono e carroças retidas pelo gelo nos passos do norte. César não tinha semanas para negociar. Tinha horas.
+                    </p>
+
+                    <p>
+                      Os emissários do Senado haviam bloqueado o crédito e os grãos. Na entrada da tenda, o escrivão de serviço registrava a chegada dos mensageiros esgotados: ninguém sabia o número real das tropas de Pompeu em Roma, mas todos sabiam que o inverno consumiria o acampamento antes de qualquer acordo.
+                    </p>
+
+                    <p>
+                      Um dos legados mais velhos aproximou-se de César e sugeriu recuar até Ravena para enviar uma última embaixada diplomática. César olhou para a escuridão da outra margem:
+                    </p>
+
+                    <p className="font-semibold text-white not-italic">
+                      — E deixar Pompeu escolher o terreno, a data e o tamanho da corda enquanto esperamos na lama? Preparem os homens. Para atravessar.
+                    </p>
+
+                    <p>
+                      César caminhou até a beira do barranco e entrou na água gelada. As primeiras fileiras desceram logo atrás. Para quem fechava o livro de suprimentos na retaguarda, as alternativas tinham encolhido até sobrar uma única direção irreversível.
+                    </p>
+                  </div>
+
+                  {/* DIVISOR DE TRANSIÇÃO: ARQUIVO HISTÓRICO ➔ RETORNO AO PRESENTE */}
+                  <div className="py-4 flex items-center gap-3">
+                    <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
+                    <span className={`px-3 py-1 rounded-full border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest ${currentTheme.dividerBadge}`}>
+                      • • • DIAS ATUAIS — SÃO PAULO // 05h18 • • •
+                    </span>
+                    <div className={`flex-1 border-t ${currentTheme.dividerLine}`} />
+                  </div>
+
+                  {/* PARTE 3: O RETORNO A CAIO E O CLIFFHANGER DA INVESTIGAÇÃO */}
                   <p>
-                    Dois mil anos depois, o brilho frio de três monitores iluminava o rosto de Caio na madrugada silenciosa. Na tela central, o relatório logístico do Rubicão acabava de ser cruzado com os registros de Waterloo em 1815, de Bletchley Park em 1941 e de uma sala de conselho em São Francisco em 2007.
+                    Caio fechou o livro de Roma. A ocorrência continuava aberta na tela do computador. A máquina deixava de lado os discursos de glória e se concentrava nas condições práticas que alguém na retaguarda — um intendente, um contador de expediente — anotou antes da escolha.
                   </p>
 
                   <p>
-                    Caio recuou na cadeira, sentindo um frio percorrer a espinha. Não era coincidência. Os mesmos números, o mesmo estrangulamento de tempo e a mesma sequência de cinco movimentos estavam lá — como se alguém não apenas observasse as grandes rupturas da humanidade por milênios, mas soubesse exatamente quando a próxima iria acontecer.
+                    Ele abriu o caderno do avô e escreveu: <em>"A História tem uma crueldade particular. Depois que tudo termina, ela transforma incerteza em sequência."</em>
                   </p>
 
-                  <p className="font-semibold">
-                    Foi quando o alerta de segurança do seu terminal disparou. Ele não era o único olhando para aqueles arquivos...
+                  <p>
+                    Naquele instante, o computador apitou com um novo arquivo compilado da lista: <strong className="text-gold font-mono">09.01.2007 — SÃO FRANCISCO. Steve Jobs.</strong> E, logo abaixo, um registro em vermelho que não deveria estar ali: a sua consulta acabava de acionar um rastreador de segurança no servidor da Strata.
+                  </p>
+
+                  <p className="font-semibold text-gold">
+                    Ele não era o primeiro a fazer aquela pergunta. E quem controlava a máquina já sabia que ele estava acordado.
                   </p>
                 </div>
 

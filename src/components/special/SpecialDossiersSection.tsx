@@ -43,13 +43,13 @@ export const SpecialDossiersSection = () => {
           <div className="text-center max-w-3xl mx-auto space-y-4">
             <span className="text-xs font-mono tracking-[0.25em] text-gold uppercase bg-gold/10 px-3.5 py-1.5 rounded-full border border-gold/30 inline-flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-gold" />
-              CONTEÚDO EXPANDIDO // 4 DOSSIÊS SECRETOS INCLUSOS
+              BÔNUS DE LANÇAMENTO // ARQUIVOS DA INVESTIGAÇÃO
             </span>
             <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
-              Os Dossiês Históricos da Obra
+              Os 4 Dossiês Confidenciais da Trama
             </h2>
             <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-              Além dos 21 capítulos e do epílogo, você recebe 4 relatórios investigativos ilustrados com mapas táticos e documentos confidenciais, liberados diretamente no seu leitor.
+              Conforme avança na leitura da investigação de Caio, você ganha acesso aos 4 relatórios de inteligência que conectam as decisões do passado ao colapso do presente — ilustrados com mapas táticos e transcrições de época liberados como bônus no seu leitor digital.
             </p>
           </div>
 

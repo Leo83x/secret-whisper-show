@@ -40,7 +40,7 @@ export const SpecialStickyCta = ({ onCtaClick }: SpecialStickyCtaProps) => {
       <div className="flex items-center justify-between gap-3 px-3.5 py-2 rounded-xl bg-[#090f1e]/95 backdrop-blur-xl border border-gold/40 shadow-[0_-4px_20px_rgba(0,0,0,0.85)]">
         <div className="flex flex-col">
           <span className="text-[9px] font-mono font-bold text-gold uppercase tracking-wider leading-none mb-0.5">
-            Obra + 4 Dossiês
+            Romance Completo (23 Partes)
           </span>
           <div className="flex items-baseline gap-1.5">
             <span className="text-base font-black text-emerald-400 font-display leading-none">R$ 29,90</span>

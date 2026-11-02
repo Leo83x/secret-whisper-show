@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Star, Quote, BookOpen, CheckCircle } from "lucide-react";
+import { Star, Quote, CheckCircle } from "lucide-react";
 
 export const SpecialSocialProofSection = () => {
   const testimonials = [
@@ -87,26 +87,7 @@ export const SpecialSocialProofSection = () => {
           ))}
         </div>
 
-        {/* Amostra da Escrita com Quebra de Linha Suave */}
-        <div className="p-7 sm:p-10 rounded-3xl bg-gradient-to-r from-[#0c1424] via-[#111c33] to-[#0c1424] border border-gold/40 shadow-2xl relative overflow-hidden text-center space-y-5">
-          <div className="flex items-center justify-center gap-2 text-gold font-mono text-xs uppercase tracking-widest font-bold">
-            <BookOpen className="w-4 h-4 text-gold" />
-            <span>AMOSTRA DE ESCRITA // PRÓLOGO OFICIAL</span>
-          </div>
 
-          <blockquote className="max-w-3xl mx-auto font-sans text-base sm:text-lg md:text-xl text-slate-100 font-medium leading-relaxed tracking-normal space-y-3">
-            <p>
-              "A humanidade sempre precisou acreditar no caos. Talvez porque o acaso seja a única explicação que nos isenta de culpa."
-            </p>
-            <p>
-              "Mas quando os mesmos erros e os mesmos medos se repetem a cada três séculos com precisão matemática, o acaso deixa de ser acidente — <span className="text-gold font-bold">e passa a ser uma assinatura</span>."
-            </p>
-          </blockquote>
-
-          <span className="text-xs font-mono text-slate-400 font-medium block pt-2">
-            — Trecho de <em>O Observador</em>, Prólogo de <strong>O Último Segredo da Humanidade</strong>
-          </span>
-        </div>
 
       </div>
     </section>
