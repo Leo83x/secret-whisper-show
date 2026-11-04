@@ -7,6 +7,34 @@ const PAGARME_KEY = process.env.PAGARME_API_KEY || 'sk_54a3c94367f448e48b15cdb7f
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+async function markReaderClickedBuy(readerId, isPaid = false) {
+  try {
+    const { data: traits } = await supabase.from('reader_traits').select('id, reading_progress').eq('reader_id', readerId).maybeSingle();
+    const nowIso = new Date().toISOString();
+    if (traits) {
+      const prog = traits.reading_progress || {};
+      const updatedProg = { ...prog, clicked_buy: true, clicked_buy_at: prog.clicked_buy_at || nowIso };
+      if (isPaid) updatedProg.purchased_at = prog.purchased_at || nowIso;
+      await supabase.from('reader_traits').update({
+        reading_progress: updatedProg,
+        updated_at: nowIso
+      }).eq('id', traits.id);
+    } else {
+      const initialProg = { last_chapter: 0, last_chapter_title: 'Não iniciado', max_chapter: 0, clicked_buy: true, clicked_buy_at: nowIso };
+      if (isPaid) initialProg.purchased_at = nowIso;
+      await supabase.from('reader_traits').insert([{
+        reader_id: readerId,
+        reading_progress: initialProg,
+        interactions: {},
+        hypotheses: [],
+        explored_links: []
+      }]);
+    }
+  } catch (e) {
+    console.error('Error marking clicked_buy:', e);
+  }
+}
+
 function isValidCPF(cpf) {
   if (typeof cpf !== 'string') return false;
   cpf = cpf.replace(/[^\d]+/g, '');
@@ -253,6 +281,8 @@ export default async function handler(req, res) {
         })
         .eq('id', reader.id);
 
+      await markReaderClickedBuy(reader.id, false);
+
       return res.status(200).json({
         success: true,
         orderId: pagarmeData.id,
@@ -274,6 +304,8 @@ export default async function handler(req, res) {
             status: 'paid'
           })
           .eq('id', reader.id);
+
+        await markReaderClickedBuy(reader.id, true);
 
                 // Dispara Purchase imediatamente para cartao aprovado
         try {

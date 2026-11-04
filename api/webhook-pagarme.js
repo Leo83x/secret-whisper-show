@@ -6,6 +6,30 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_AN
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+async function markReaderClickedBuy(readerId) {
+  try {
+    const { data: traits } = await supabase.from('reader_traits').select('id, reading_progress').eq('reader_id', readerId).maybeSingle();
+    const nowIso = new Date().toISOString();
+    if (traits) {
+      const prog = traits.reading_progress || {};
+      await supabase.from('reader_traits').update({
+        reading_progress: { ...prog, clicked_buy: true, clicked_buy_at: prog.clicked_buy_at || nowIso, purchased_at: prog.purchased_at || nowIso },
+        updated_at: nowIso
+      }).eq('id', traits.id);
+    } else {
+      await supabase.from('reader_traits').insert([{
+        reader_id: readerId,
+        reading_progress: { last_chapter: 0, last_chapter_title: 'Não iniciado', max_chapter: 0, clicked_buy: true, clicked_buy_at: nowIso, purchased_at: nowIso },
+        interactions: {},
+        hypotheses: [],
+        explored_links: []
+      }]);
+    }
+  } catch (e) {
+    console.error('Error marking clicked_buy in webhook:', e);
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -56,6 +80,8 @@ export default async function handler(req, res) {
               pagarme_order_id: orderId || reader.pagarme_order_id
             })
             .eq('id', reader.id);
+
+          await markReaderClickedBuy(reader.id);
 
           // 2. Registra na tabela da Corrente se o leitor veio por indicacao
           if (reader.referred_by) {

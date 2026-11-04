@@ -215,7 +215,8 @@
         const lastChapterHtml = `<span class="badge ${chBadgeClass}">${lastChapterLabel}</span>`;
 
         // Badge de clicou em comprar
-        const clickedBuyHtml = r.clicou_comprar
+        const hasClickedBuy = isPaid || r.clicou_comprar;
+        const clickedBuyHtml = hasClickedBuy
           ? `<span class="badge badge-fire" title="${r.clicou_comprar_em ? 'Clicou em ' + new Date(r.clicou_comprar_em).toLocaleString('pt-BR') : 'Clicou para comprar'}">🔥 SIM</span>`
           : `<span class="badge badge-muted">NÃO</span>`;
 

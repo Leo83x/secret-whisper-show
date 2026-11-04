@@ -108,7 +108,7 @@ export default async function handler(req, res) {
         }
       }
 
-      const clickedBuy = progress ? progress.clicked_buy === true : false;
+      const clickedBuy = (r.status === 'paid') || (progress ? progress.clicked_buy === true : false);
       if (clickedBuy) clickedBuyTotal++;
 
       return {
