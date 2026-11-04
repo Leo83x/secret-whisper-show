@@ -24,22 +24,37 @@ export default async function handler(req, res) {
       const metadata = orderData.metadata || (orderData.order ? orderData.order.metadata : {}) || {};
       const accessToken = metadata.access_token;
 
-      if (accessToken || orderId) {
-        // Busca o leitor no Supabase
-        let query = supabase.from('readers').select('*');
-        if (accessToken) {
-          query = query.eq('access_token', accessToken);
-        } else {
-          query = query.eq('pagarme_order_id', orderId);
-        }
+      const readerId = metadata.reader_id;
+      const customerEmail = (orderData.customer && orderData.customer.email) || (orderData.order && orderData.order.customer && orderData.order.customer.email);
 
-        const { data: reader } = await query.maybeSingle();
+      if (accessToken || orderId || readerId || customerEmail) {
+        // Busca o leitor no Supabase (com multiplas camadas de seguranca)
+        let reader = null;
+        if (accessToken) {
+          const { data } = await supabase.from('readers').select('*').eq('access_token', accessToken).maybeSingle();
+          if (data) reader = data;
+        }
+        if (!reader && readerId) {
+          const { data } = await supabase.from('readers').select('*').eq('id', readerId).maybeSingle();
+          if (data) reader = data;
+        }
+        if (!reader && orderId) {
+          const { data } = await supabase.from('readers').select('*').eq('pagarme_order_id', orderId).maybeSingle();
+          if (data) reader = data;
+        }
+        if (!reader && customerEmail) {
+          const { data } = await supabase.from('readers').select('*').eq('email', customerEmail.trim().toLowerCase()).maybeSingle();
+          if (data) reader = data;
+        }
 
         if (reader) {
           // 1. Atualiza o status do leitor no Supabase para PAID (Acesso liberado!)
           await supabase
             .from('readers')
-            .update({ status: 'paid' })
+            .update({
+              status: 'paid',
+              pagarme_order_id: orderId || reader.pagarme_order_id
+            })
             .eq('id', reader.id);
 
           // 2. Registra na tabela da Corrente se o leitor veio por indicacao

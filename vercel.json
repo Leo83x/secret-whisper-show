@@ -1,14 +1,23 @@
 {
   "cleanUrls": true,
-  "trailingSlash": true,
+  "trailingSlash": false,
   "redirects": [
     {
       "source": "/reader",
       "destination": "/reader/",
       "permanent": true
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/",
+      "permanent": true
     }
   ],
   "rewrites": [
+    {
+      "source": "/api/webhook-pagarme/",
+      "destination": "/api/webhook-pagarme"
+    },
     {
       "source": "/edicao-especial",
       "destination": "/"
