@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { DocumentInspectorModal, getEraDocumentTheme } from './DocumentInspectorModal';
 import { ArchiveRoom3DStage } from './ArchiveRoom3DStage';
+import { EvidenceBoard3DStage } from './EvidenceBoard3DStage';
 import { DiscoveryRevealModal } from './DiscoveryRevealModal';
 import { soundEngine } from '../../utils/investigationAudio';
 
@@ -352,20 +353,13 @@ export const DossierInvestigationView: React.FC = () => {
                 type="button"
                 onClick={() => {
                   soundEngine.playDocumentOpen();
-                  setIs3DTableStageTwo(v => !v);
+                  setIs3DTableStageTwo(true);
                 }}
-                className={`px-3 py-2 rounded-xl border text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all truncate ${
-                  is3DTableStageTwo
-                    ? 'bg-amber-500/20 border-amber-400/60 text-amber-200'
-                    : 'bg-[#0B1320] border-slate-700 text-slate-300'
-                }`}
+                className="px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/50 text-amber-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm truncate"
               >
-                <span className="sm:hidden truncate">
-                  [ {is3DTableStageTwo ? 'Mesa 3D' : 'Mesa 2D'} ]
-                </span>
-                <span className="hidden sm:inline">
-                  [ Mesa: {is3DTableStageTwo ? 'Vista Topográfica 3D' : 'Vista Plana 2D'} ]
-                </span>
+                <Maximize2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="sm:hidden truncate">[ Abrir Mesa 3D ]</span>
+                <span className="hidden sm:inline">[ Entrar na Mesa Topográfica 3D ]</span>
               </button>
             )}
             <button
@@ -789,9 +783,38 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 2 — CONECTAR (SIMPLIFICAR VÍNCULOS E VISUALIZAR A CONEXÃO)
+          ETAPA 2 — CONECTAR (CENÁRIO 3D: MESA TOPOGRÁFICA DE INVESTIGAÇÃO + MODO 2D)
          ===================================================================== */}
-      {state.activeStep === 2 && (
+      {state.activeStep === 2 && is3DTableStageTwo && (
+        <EvidenceBoard3DStage
+          selectedCase={selectedCase}
+          challenges={challenges}
+          activeChallenge={activeChallenge}
+          solvedConnectionIds={progress.solvedConnectionIds}
+          extractedCluesList={extractedCluesList}
+          allCaseCluesCount={allCaseClues.length}
+          boardSelectedClues={boardSelectedClues}
+          connectionFeedback={connectionFeedback}
+          activeStep={state.activeStep}
+          onSelectStep={step => setActiveStep(step)}
+          onSelectChallenge={chId => {
+            setActiveChallengeId(chId);
+            setConnectionFeedback(null);
+          }}
+          onToggleBoardClue={clueId => toggleBoardClue(clueId)}
+          onValidateConnection={handleValidateConnection}
+          onOpenArchiveDrawer={() => setIsArchiveDrawerOpen(true)}
+          onSwitchTo2D={() => {
+            soundEngine.playDocumentOpen();
+            setIs3DTableStageTwo(false);
+          }}
+          onRequestExit={() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+          }}
+        />
+      )}
+
+      {state.activeStep === 2 && !is3DTableStageTwo && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           
           {/* Coluna Esquerda Compacta (4 cols): Apenas título da pergunta e badge (Comprovada / Em aberto) */}
