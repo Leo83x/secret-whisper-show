@@ -1,5 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { TabKey, EraFilter, UserInvestigationState, HistoricalNode } from '../types/investigation';
+import {
+  TabKey,
+  EraFilter,
+  UserInvestigationState,
+  HistoricalNode,
+  CasePlayProgress,
+} from '../types/investigation';
 import { HISTORICAL_NODES } from '../data/investigationCasesData';
 
 interface InvestigationContextType {
@@ -15,21 +21,52 @@ interface InvestigationContextType {
   logoutReader: () => void;
   setActiveTab: (tab: TabKey) => void;
   setSelectedCaseId: (id: string) => void;
+  selectCase: (id: string) => void;
   setEraFilter: (era: EraFilter) => void;
-  setActiveStep: (step: 1 | 2 | 3) => void;
+  setActiveStep: (step: 1 | 2 | 3 | 4 | 5) => void;
   startCaseInvestigation: (caseId: string) => void;
   discoverEvidence: (caseId: string) => void;
   selectHypothesis: (caseId: string, hypothesisId: string) => void;
   updatePersonalNote: (caseId: string, text: string) => void;
+  // Novas funções do Ciclo de Investigação em 5 Etapas
+  getCasePlayProgress: (caseId: string) => CasePlayProgress;
+  extractClue: (caseId: string, clueId: string, xpReward: number) => void;
+  attemptConnection: (
+    caseId: string,
+    challengeId: string,
+    cluePair: [string, string]
+  ) => { success: boolean; title?: string; message: string; unlockedMap?: boolean };
+  submitStructuredHypothesis: (
+    caseId: string,
+    thesisId: string,
+    attachedClueIds: string[],
+    reasoning: string
+  ) => { score: 'forte' | 'parcial'; feedback: string; xpAwarded: number };
+  submitSimulationDecision: (caseId: string, choiceId: string) => void;
+  areCaseConnectionsUnlocked: (caseId: string) => boolean;
   stats: {
     analyzedCount: number;
+    completedCount: number;
     totalVolumeOne: number;
+    totalVol1: number;
     hypothesesCount: number;
     completionPercentage: number;
+    progressPercent: number;
+    evidenceCount: number;
+    totalCluesExtracted: number;
   };
 }
 
-const STORAGE_KEY = 'ush_investigator_state_v2';
+const STORAGE_KEY = 'ush_investigator_state_v3';
+
+const DEFAULT_CASE_PROGRESS: CasePlayProgress = {
+  extractedClueIds: [],
+  solvedConnectionIds: [],
+  attachedClueIds: [],
+  hypothesisReasoning: '',
+  completed: false,
+  xpEarned: 0,
+};
 
 const DEFAULT_STATE: UserInvestigationState = {
   activeTab: 'mapa',
@@ -37,25 +74,35 @@ const DEFAULT_STATE: UserInvestigationState = {
   eraFilter: 'todos',
   activeStep: 1,
   completedNodes: [],
-  discoveredEvidenceIds: ['cesar'],
+  discoveredEvidenceIds: [],
+  unlockedConnectionNodeIds: [], // Conexões iniciam ocultas até que o jogador as descubra!
+  caseProgress: {},
   formulatedHypotheses: {},
   personalNotes: {},
+  totalXp: 0,
   decisionProfile: {
-    analitico: 68,
-    estrategico: 62,
-    humanista: 60
+    analitico: 58,
+    estrategico: 54,
+    humanista: 52,
+    exploratorio: 60,
+  },
+  skills: {
+    leituraEvidencias: 25,
+    reconhecimentoPadroes: 20,
+    raciocinioEstrategico: 20,
+    tomadaDecisao: 20,
   },
   globalImpact: {
-    caosGlobal: 55,
-    livreArbitrio: 65,
-    suspeita: 42
+    caosGlobal: 50,
+    livreArbitrio: 60,
+    suspeita: 35,
   },
   investigator: {
     id: '7426',
     name: 'Investigador 7426',
-    role: 'Auditor de Campo',
-    level: 1
-  }
+    role: 'Investigador Independente',
+    level: 1,
+  },
 };
 
 const InvestigationContext = createContext<InvestigationContextType | undefined>(undefined);
@@ -64,10 +111,17 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
   const [state, setState] = useState<UserInvestigationState>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+        const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('ush_investigator_state_v2');
         if (saved) {
           const parsed = JSON.parse(saved);
-          return { ...DEFAULT_STATE, ...parsed };
+          return {
+            ...DEFAULT_STATE,
+            ...parsed,
+            decisionProfile: { ...DEFAULT_STATE.decisionProfile, ...(parsed.decisionProfile || {}) },
+            skills: { ...DEFAULT_STATE.skills, ...(parsed.skills || {}) },
+            caseProgress: parsed.caseProgress || {},
+            unlockedConnectionNodeIds: parsed.unlockedConnectionNodeIds || [],
+          };
         }
       } catch (e) {
         console.error('Error reading localStorage', e);
@@ -102,15 +156,19 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         setState(prev => ({
           ...prev,
           completedNodes: savedInv.completedNodes || prev.completedNodes,
+          unlockedConnectionNodeIds: savedInv.unlockedConnectionNodeIds || prev.unlockedConnectionNodeIds,
+          caseProgress: savedInv.caseProgress || prev.caseProgress,
           formulatedHypotheses: savedInv.formulatedHypotheses || prev.formulatedHypotheses,
-          decisionProfile: savedInv.decisionProfile || prev.decisionProfile,
+          totalXp: savedInv.totalXp ?? prev.totalXp,
+          decisionProfile: { ...prev.decisionProfile, ...(savedInv.decisionProfile || {}) },
+          skills: { ...prev.skills, ...(savedInv.skills || {}) },
           globalImpact: savedInv.globalImpact || prev.globalImpact,
           investigator: {
             id: r.referral_code || prev.investigator.id,
             name: r.name || prev.investigator.name,
-            role: r.status === 'paid' ? 'Auditor Credenciado (Edição Especial)' : 'Auditor em Degustação',
-            level: Math.max(1, (savedInv.completedNodes?.length || prev.completedNodes.length) + 1)
-          }
+            role: r.status === 'paid' ? 'Auditor Credenciado' : 'Investigador Independente',
+            level: Math.max(1, Math.floor((savedInv.totalXp || prev.totalXp) / 250) + 1),
+          },
         }));
         return { success: true };
       }
@@ -120,74 +178,77 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  // Verifica URL ?token= ou localStorage ao iniciar
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
-    const savedToken = localStorage.getItem('ush_token');
-    const tokenToUse = urlToken || savedToken;
+    const savedToken = urlToken || localStorage.getItem('ush_token');
+    const savedEmail = localStorage.getItem('ush_email');
 
-    if (tokenToUse) {
-      loadProfileFromApi(`token=${encodeURIComponent(tokenToUse)}`);
+    if (savedToken) {
+      loadProfileFromApi(`token=${encodeURIComponent(savedToken)}`);
+    } else if (savedEmail) {
+      loadProfileFromApi(`email=${encodeURIComponent(savedEmail)}`);
     }
   }, [loadProfileFromApi]);
 
-  const loginWithEmailOrToken = useCallback(async (identifier: string) => {
-    const clean = identifier.trim();
-    if (!clean) return { success: false, message: 'Informe seu e-mail ou código de acesso.' };
-    const isToken = clean.startsWith('TK_');
-    const query = isToken
-      ? `token=${encodeURIComponent(clean)}`
-      : `email=${encodeURIComponent(clean.toLowerCase())}`;
-    const result = await loadProfileFromApi(query);
-    if (result.success) {
-      setIsAuthModalOpen(false);
-    }
-    return result;
-  }, [loadProfileFromApi]);
+  const loginWithEmailOrToken = useCallback(
+    async (identifier: string) => {
+      const clean = identifier.trim();
+      if (!clean) return { success: false, message: 'Informe seu e-mail ou código de acesso.' };
+      const isEmail = clean.includes('@');
+      const query = isEmail
+        ? `email=${encodeURIComponent(clean.toLowerCase())}`
+        : `token=${encodeURIComponent(clean)}`;
+      const result = await loadProfileFromApi(query);
+      if (result.success && isEmail && typeof window !== 'undefined') {
+        localStorage.setItem('ush_email', clean.toLowerCase());
+      }
+      return result;
+    },
+    [loadProfileFromApi]
+  );
 
   const logoutReader = useCallback(() => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('ush_token');
+      localStorage.removeItem('ush_email');
       localStorage.removeItem('ush_reader_status');
     }
     setIsAuthenticated(false);
     setReaderStatus('guest');
-    setState(DEFAULT_STATE);
   }, []);
 
-  // Salva no localStorage em toda mudanca de estado
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (e) {
-        console.error('Error saving state', e);
-      }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.error('Error saving localStorage', e);
     }
   }, [state]);
 
-  // Sincronizacao silenciosa com Supabase se houver token autenticado
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('ush_token') : null;
-    if (!token) return;
-
     const syncToSupabase = async () => {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('ush_token') : null;
+      if (!token) return;
       try {
-        await fetch('/api/track-progress', {
+        await fetch('/api/save-reading-progress', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            token,
+            accessToken: token,
             investigation_state: {
               completedNodes: state.completedNodes,
+              unlockedConnectionNodeIds: state.unlockedConnectionNodeIds,
+              caseProgress: state.caseProgress,
               formulatedHypotheses: state.formulatedHypotheses,
+              totalXp: state.totalXp,
               decisionProfile: state.decisionProfile,
+              skills: state.skills,
               globalImpact: state.globalImpact,
-              last_active_case: state.selectedCaseId
-            }
-          })
+              lastActiveCase: state.selectedCaseId,
+            },
+          }),
         });
       } catch (e) {
         // Mantem local
@@ -196,7 +257,17 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const timeout = setTimeout(syncToSupabase, 2000);
     return () => clearTimeout(timeout);
-  }, [state.completedNodes, state.formulatedHypotheses, state.decisionProfile, state.globalImpact, state.selectedCaseId]);
+  }, [
+    state.completedNodes,
+    state.unlockedConnectionNodeIds,
+    state.caseProgress,
+    state.formulatedHypotheses,
+    state.totalXp,
+    state.decisionProfile,
+    state.skills,
+    state.globalImpact,
+    state.selectedCaseId,
+  ]);
 
   const selectedCase = HISTORICAL_NODES.find(n => n.id === state.selectedCaseId) || HISTORICAL_NODES[0];
 
@@ -204,6 +275,23 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
     if (state.eraFilter === 'todos') return true;
     return node.era === state.eraFilter;
   });
+
+  const getCasePlayProgress = useCallback(
+    (caseId: string): CasePlayProgress => {
+      return state.caseProgress[caseId] || DEFAULT_CASE_PROGRESS;
+    },
+    [state.caseProgress]
+  );
+
+  const areCaseConnectionsUnlocked = useCallback(
+    (caseId: string): boolean => {
+      return (
+        state.unlockedConnectionNodeIds.includes(caseId) ||
+        state.completedNodes.includes(caseId)
+      );
+    },
+    [state.unlockedConnectionNodeIds, state.completedNodes]
+  );
 
   const setActiveTab = useCallback((tab: TabKey) => {
     setState(prev => ({ ...prev, activeTab: tab }));
@@ -217,7 +305,7 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
     setState(prev => ({ ...prev, eraFilter: era }));
   }, []);
 
-  const setActiveStep = useCallback((step: 1 | 2 | 3) => {
+  const setActiveStep = useCallback((step: 1 | 2 | 3 | 4 | 5) => {
     setState(prev => ({ ...prev, activeStep: step }));
   }, []);
 
@@ -226,8 +314,247 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
       ...prev,
       selectedCaseId: caseId,
       activeTab: 'dossies',
-      activeStep: 1
+      activeStep: 1,
     }));
+  }, []);
+
+  // ETAPA 1: Extrair pista de um documento para o Arquivo Pessoal
+  const extractClue = useCallback((caseId: string, clueId: string, xpReward: number) => {
+    setState(prev => {
+      const currentProg = prev.caseProgress[caseId] || DEFAULT_CASE_PROGRESS;
+      if (currentProg.extractedClueIds.includes(clueId)) return prev;
+
+      const nextClues = [...currentProg.extractedClueIds, clueId];
+      const nextCaseXp = currentProg.xpEarned + xpReward;
+      const nextTotalXp = prev.totalXp + xpReward;
+      const nextLevel = Math.max(1, Math.floor(nextTotalXp / 250) + 1);
+
+      const nextDiscovered = prev.discoveredEvidenceIds.includes(caseId)
+        ? prev.discoveredEvidenceIds
+        : [...prev.discoveredEvidenceIds, caseId];
+
+      return {
+        ...prev,
+        totalXp: nextTotalXp,
+        discoveredEvidenceIds: nextDiscovered,
+        caseProgress: {
+          ...prev.caseProgress,
+          [caseId]: {
+            ...currentProg,
+            extractedClueIds: nextClues,
+            xpEarned: nextCaseXp,
+          },
+        },
+        skills: {
+          ...prev.skills,
+          leituraEvidencias: Math.min(100, prev.skills.leituraEvidencias + 4),
+        },
+        decisionProfile: {
+          ...prev.decisionProfile,
+          exploratorio: Math.min(100, prev.decisionProfile.exploratorio + 2),
+        },
+        investigator: {
+          ...prev.investigator,
+          level: nextLevel,
+        },
+      };
+    });
+  }, []);
+
+  // ETAPA 2: Validar relação entre duas pistas na Mesa de Conexões
+  const attemptConnection = useCallback(
+    (caseId: string, challengeId: string, cluePair: [string, string]) => {
+      const node = HISTORICAL_NODES.find(n => n.id === caseId);
+      const challenge = node?.connectionChallenges?.find(c => c.id === challengeId);
+      if (!challenge) {
+        return { success: false, message: 'Desafio de conexão não encontrado.' };
+      }
+
+      const [reqA, reqB] = challenge.requiredClueIds;
+      const [selA, selB] = cluePair;
+      const isMatch = (selA === reqA && selB === reqB) || (selA === reqB && selB === reqA);
+
+      if (!isMatch) {
+        return {
+          success: false,
+          message: challenge.errorFeedback,
+        };
+      }
+
+      setState(prev => {
+        const currentProg = prev.caseProgress[caseId] || DEFAULT_CASE_PROGRESS;
+        const alreadySolved = currentProg.solvedConnectionIds.includes(challengeId);
+        const xpGain = alreadySolved ? 0 : challenge.xpReward;
+        const nextSolved = alreadySolved
+          ? currentProg.solvedConnectionIds
+          : [...currentProg.solvedConnectionIds, challengeId];
+
+        const nextUnlockedMap =
+          challenge.unlocksMapConnections && !prev.unlockedConnectionNodeIds.includes(caseId)
+            ? [...prev.unlockedConnectionNodeIds, caseId]
+            : prev.unlockedConnectionNodeIds;
+
+        const nextTotalXp = prev.totalXp + xpGain;
+        const nextLevel = Math.max(1, Math.floor(nextTotalXp / 250) + 1);
+
+        return {
+          ...prev,
+          totalXp: nextTotalXp,
+          unlockedConnectionNodeIds: nextUnlockedMap,
+          caseProgress: {
+            ...prev.caseProgress,
+            [caseId]: {
+              ...currentProg,
+              solvedConnectionIds: nextSolved,
+              xpEarned: currentProg.xpEarned + xpGain,
+            },
+          },
+          skills: {
+            ...prev.skills,
+            reconhecimentoPadroes: Math.min(100, prev.skills.reconhecimentoPadroes + (alreadySolved ? 0 : 8)),
+          },
+          decisionProfile: {
+            ...prev.decisionProfile,
+            analitico: Math.min(100, prev.decisionProfile.analitico + (alreadySolved ? 0 : 3)),
+          },
+          investigator: {
+            ...prev.investigator,
+            level: nextLevel,
+          },
+        };
+      });
+
+      return {
+        success: true,
+        title: challenge.successTitle,
+        message: challenge.successConclusion,
+        unlockedMap: Boolean(challenge.unlocksMapConnections),
+      };
+    },
+    []
+  );
+
+  // ETAPA 3: Formular Hipótese sustentada por evidências
+  const submitStructuredHypothesis = useCallback(
+    (caseId: string, thesisId: string, attachedClueIds: string[], reasoning: string) => {
+      const node = HISTORICAL_NODES.find(n => n.id === caseId);
+      const thesis = node?.hypothesisTheses?.find(t => t.id === thesisId);
+
+      const matchingClues = attachedClueIds.filter(id => thesis?.supportingClueIds.includes(id));
+      const score: 'forte' | 'parcial' = matchingClues.length >= 2 ? 'forte' : 'parcial';
+      const xpAwarded = score === 'forte' ? 100 : 50;
+      const feedback =
+        score === 'forte'
+          ? thesis?.feedbackStrong || 'Hipótese bem sustentada pelas evidências selecionadas.'
+          : thesis?.feedbackPartial || 'Hipótese registrada, mas poderia ser melhor fundamentada com outras pistas do arquivo.';
+
+      setState(prev => {
+        const currentProg = prev.caseProgress[caseId] || DEFAULT_CASE_PROGRESS;
+        const firstTimeHypothesis = !currentProg.selectedThesisId;
+        const xpGain = firstTimeHypothesis ? xpAwarded : 0;
+        const nextTotalXp = prev.totalXp + xpGain;
+        const nextLevel = Math.max(1, Math.floor(nextTotalXp / 250) + 1);
+
+        return {
+          ...prev,
+          totalXp: nextTotalXp,
+          formulatedHypotheses: {
+            ...prev.formulatedHypotheses,
+            [caseId]: thesisId,
+          },
+          personalNotes: reasoning.trim()
+            ? { ...prev.personalNotes, [caseId]: reasoning.trim() }
+            : prev.personalNotes,
+          caseProgress: {
+            ...prev.caseProgress,
+            [caseId]: {
+              ...currentProg,
+              selectedThesisId: thesisId,
+              attachedClueIds,
+              hypothesisReasoning: reasoning,
+              hypothesisScore: score,
+              xpEarned: currentProg.xpEarned + xpGain,
+            },
+          },
+          skills: {
+            ...prev.skills,
+            leituraEvidencias: Math.min(100, prev.skills.leituraEvidencias + (firstTimeHypothesis ? 6 : 0)),
+            reconhecimentoPadroes: Math.min(100, prev.skills.reconhecimentoPadroes + (firstTimeHypothesis ? 6 : 0)),
+          },
+          investigator: {
+            ...prev.investigator,
+            level: nextLevel,
+          },
+        };
+      });
+
+      return { score, feedback, xpAwarded };
+    },
+    []
+  );
+
+  // ETAPA 4 -> 5: Tomar decisão no dilema simulado e concluir o ciclo do caso
+  const submitSimulationDecision = useCallback((caseId: string, choiceId: string) => {
+    const node = HISTORICAL_NODES.find(n => n.id === caseId);
+    const choice = node?.simulationChoices?.find(c => c.id === choiceId);
+
+    setState(prev => {
+      const currentProg = prev.caseProgress[caseId] || DEFAULT_CASE_PROGRESS;
+      const firstDecision = !currentProg.selectedDecisionId;
+      const xpGain = firstDecision ? 80 : 0;
+      const nextTotalXp = prev.totalXp + xpGain;
+      const nextCompleted = prev.completedNodes.includes(caseId)
+        ? prev.completedNodes
+        : [...prev.completedNodes, caseId];
+      const nextUnlockedMap = prev.unlockedConnectionNodeIds.includes(caseId)
+        ? prev.unlockedConnectionNodeIds
+        : [...prev.unlockedConnectionNodeIds, caseId];
+
+      const nextProfile = { ...prev.decisionProfile };
+      const nextSkills = { ...prev.skills };
+      const nextImpact = { ...prev.globalImpact };
+
+      if (choice && firstDecision) {
+        nextProfile.analitico = Math.min(100, Math.max(15, nextProfile.analitico + choice.deltaPerfil.analitico));
+        nextProfile.estrategico = Math.min(100, Math.max(15, nextProfile.estrategico + choice.deltaPerfil.estrategico));
+        nextProfile.humanista = Math.min(100, Math.max(15, nextProfile.humanista + choice.deltaPerfil.humanista));
+        nextProfile.exploratorio = Math.min(100, Math.max(15, nextProfile.exploratorio + choice.deltaPerfil.exploratorio));
+
+        nextSkills.leituraEvidencias = Math.min(100, nextSkills.leituraEvidencias + choice.deltaSkills.leituraEvidencias);
+        nextSkills.reconhecimentoPadroes = Math.min(100, nextSkills.reconhecimentoPadroes + choice.deltaSkills.reconhecimentoPadroes);
+        nextSkills.raciocinioEstrategico = Math.min(100, nextSkills.raciocinioEstrategico + choice.deltaSkills.raciocinioEstrategico);
+        nextSkills.tomadaDecisao = Math.min(100, nextSkills.tomadaDecisao + choice.deltaSkills.tomadaDecisao);
+
+        nextImpact.caosGlobal = Math.min(100, Math.max(0, nextImpact.caosGlobal + choice.deltaCaos));
+        nextImpact.livreArbitrio = Math.min(100, Math.max(0, nextImpact.livreArbitrio + choice.deltaLivreArbitrio));
+      }
+
+      const nextLevel = Math.max(1, Math.floor(nextTotalXp / 250) + 1);
+
+      return {
+        ...prev,
+        totalXp: nextTotalXp,
+        completedNodes: nextCompleted,
+        unlockedConnectionNodeIds: nextUnlockedMap,
+        decisionProfile: nextProfile,
+        skills: nextSkills,
+        globalImpact: nextImpact,
+        caseProgress: {
+          ...prev.caseProgress,
+          [caseId]: {
+            ...currentProg,
+            selectedDecisionId: choiceId,
+            completed: true,
+            xpEarned: currentProg.xpEarned + xpGain,
+          },
+        },
+        investigator: {
+          ...prev.investigator,
+          level: nextLevel,
+          role: nextCompleted.length >= 2 ? 'Auditor Desperto' : prev.investigator.role,
+        },
+      };
+    });
   }, []);
 
   const discoverEvidence = useCallback((caseId: string) => {
@@ -235,52 +562,19 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
       if (prev.discoveredEvidenceIds.includes(caseId)) return prev;
       return {
         ...prev,
-        discoveredEvidenceIds: [...prev.discoveredEvidenceIds, caseId]
+        discoveredEvidenceIds: [...prev.discoveredEvidenceIds, caseId],
       };
     });
   }, []);
 
   const selectHypothesis = useCallback((caseId: string, hypothesisId: string) => {
-    const targetCase = HISTORICAL_NODES.find(n => n.id === caseId);
-    const chosen = targetCase?.hypotheses.find(h => h.id === hypothesisId);
-
-    setState(prev => {
-      const nextCompleted = prev.completedNodes.includes(caseId)
-        ? prev.completedNodes
-        : [...prev.completedNodes, caseId];
-
-      const nextHypotheses = {
+    setState(prev => ({
+      ...prev,
+      formulatedHypotheses: {
         ...prev.formulatedHypotheses,
-        [caseId]: hypothesisId
-      };
-
-      const nextProfile = { ...prev.decisionProfile };
-      const nextImpact = { ...prev.globalImpact };
-
-      if (chosen) {
-        nextProfile.analitico = Math.min(100, Math.max(10, nextProfile.analitico + chosen.deltaPerfil.analitico));
-        nextProfile.estrategico = Math.min(100, Math.max(10, nextProfile.estrategico + chosen.deltaPerfil.estrategico));
-        nextProfile.humanista = Math.min(100, Math.max(10, nextProfile.humanista + chosen.deltaPerfil.humanista));
-
-        nextImpact.caosGlobal = Math.min(100, Math.max(0, nextImpact.caosGlobal + chosen.deltaCaos));
-        nextImpact.livreArbitrio = Math.min(100, Math.max(0, nextImpact.livreArbitrio + chosen.deltaLivreArbitrio));
-      }
-
-      const newLevel = Math.max(1, nextCompleted.length + 1);
-
-      return {
-        ...prev,
-        completedNodes: nextCompleted,
-        formulatedHypotheses: nextHypotheses,
-        decisionProfile: nextProfile,
-        globalImpact: nextImpact,
-        investigator: {
-          ...prev.investigator,
-          level: newLevel,
-          role: newLevel >= 3 ? 'Auditor Desperto' : prev.investigator.role
-        }
-      };
-    });
+        [caseId]: hypothesisId,
+      },
+    }));
   }, []);
 
   const updatePersonalNote = useCallback((caseId: string, text: string) => {
@@ -288,8 +582,8 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
       ...prev,
       personalNotes: {
         ...prev.personalNotes,
-        [caseId]: text
-      }
+        [caseId]: text,
+      },
     }));
   }, []);
 
@@ -298,6 +592,10 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
   const analyzedCount = state.completedNodes.filter(id => volumeOneNodes.some(n => n.id === id)).length;
   const hypothesesCount = Object.keys(state.formulatedHypotheses).length;
   const completionPercentage = Math.round((analyzedCount / totalVolumeOne) * 100);
+  const totalCluesExtracted = Object.values(state.caseProgress).reduce(
+    (acc, curr) => acc + (curr.extractedClueIds?.length || 0),
+    0
+  );
 
   return (
     <InvestigationContext.Provider
@@ -314,18 +612,30 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         logoutReader,
         setActiveTab,
         setSelectedCaseId,
+        selectCase: setSelectedCaseId,
         setEraFilter,
         setActiveStep,
         startCaseInvestigation,
         discoverEvidence,
         selectHypothesis,
         updatePersonalNote,
+        getCasePlayProgress,
+        extractClue,
+        attemptConnection,
+        submitStructuredHypothesis,
+        submitSimulationDecision,
+        areCaseConnectionsUnlocked,
         stats: {
           analyzedCount,
+          completedCount: analyzedCount,
           totalVolumeOne,
+          totalVol1: totalVolumeOne,
           hypothesesCount,
-          completionPercentage
-        }
+          completionPercentage,
+          progressPercent: completionPercentage,
+          evidenceCount: state.discoveredEvidenceIds.length,
+          totalCluesExtracted,
+        },
       }}
     >
       {children}

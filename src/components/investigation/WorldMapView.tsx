@@ -5,7 +5,15 @@ import { CaseDrawer } from './CaseDrawer';
 import { Check, Lock, Sparkles, Compass, Globe2 } from 'lucide-react';
 
 export const WorldMapView: React.FC = () => {
-  const { state, filteredNodes, allNodes, selectCase, setEraFilter, stats } = useInvestigation();
+  const {
+    state,
+    filteredNodes,
+    allNodes,
+    selectCase,
+    setEraFilter,
+    areCaseConnectionsUnlocked,
+    stats,
+  } = useInvestigation();
 
   const eras: { key: EraFilter; label: string }[] = [
     { key: 'todos', label: 'Todos' },
@@ -21,13 +29,15 @@ export const WorldMapView: React.FC = () => {
     (a, b) => chronologicalOrder.indexOf(a.id) - chronologicalOrder.indexOf(b.id)
   );
 
-  // Nó atualmente selecionado
   const selectedNode = allNodes.find(n => n.id === state.selectedCaseId) || allNodes[0];
 
-  // Conexões históricas visíveis (NÃO revela conexões de nós bloqueados/em quarentena)
+  // Conexões históricas visíveis APENAS se o jogador já descobriu/validou as conexões na investigação!
   const visibleConnections: { from: string; to: string; isRelatedToSelected: boolean }[] = [];
   filteredNodes.forEach(node => {
     if (node.status === 'quarentena') return;
+    // Só revela os elos deste nó se o jogador já desbloqueou as conexões dele
+    if (!areCaseConnectionsUnlocked(node.id)) return;
+
     node.connectedTo.forEach(targetId => {
       const targetNode = filteredNodes.find(n => n.id === targetId);
       if (!targetNode || targetNode.status === 'quarentena') return;
@@ -45,7 +55,7 @@ export const WorldMapView: React.FC = () => {
   return (
     <div className="space-y-5 mt-2 sm:mt-4">
       
-      {/* 1. TOPO DO MAPA & FILTROS DE ERA (Margem superior adequada, largura livre, sem rolagem horizontal indesejada) */}
+      {/* 1. TOPO DO MAPA & FILTROS DE ERA */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b border-amber-500/20 pb-4 w-full">
         <div className="w-full lg:w-auto">
           <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.2em] text-amber-400/90 mb-1">
@@ -56,11 +66,11 @@ export const WorldMapView: React.FC = () => {
             CONECTE O PASSADO. DESCUBRA O <span className="text-amber-400">PADRÃO.</span>
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 font-sans mt-1">
-            Explore os eventos que moldaram o mundo e identifique as variáveis que atravessam os séculos.
+            Examine os registros históricos de cada época, valide conexões fundamentadas e revele os elos ocultos no mapa.
           </p>
         </div>
 
-        {/* Pílulas de Filtro de Época (flex-wrap para nunca gerar barra de rolagem horizontal indesejada) */}
+        {/* Pílulas de Filtro de Época */}
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
           {eras.map((era) => {
             const active = state.eraFilter === era.key;
@@ -90,7 +100,7 @@ export const WorldMapView: React.FC = () => {
           {/* CANVAS GEOGRÁFICO */}
           <div className="relative w-full h-[460px] sm:h-[520px] overflow-hidden select-none">
             
-            {/* Efeito Sutil de Radar / Pontos Estelares (Radial Gradient) */}
+            {/* Efeito Sutil de Radar / Pontos Estelares */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -99,14 +109,14 @@ export const WorldMapView: React.FC = () => {
               }}
             />
 
-            {/* Mapa-Múndi Cartográfico Reconhecível ao Fundo (Proporções reais dos continentes, azul-acinzentado discreto e nós luminosos) */}
+            {/* Mapa-Múndi Cartográfico Reconhecível ao Fundo */}
             <img
               src="/dossiers/world_map_bg.webp"
               alt="Mapa Mundial de Investigação"
               className="absolute inset-0 w-full h-full object-cover object-center opacity-85 pointer-events-none mix-blend-lighten"
             />
 
-            {/* Vinheta Suave nas Bordas para Integração Cinematográfica */}
+            {/* Vinheta Suave nas Bordas */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -115,7 +125,7 @@ export const WorldMapView: React.FC = () => {
               }}
             />
 
-            {/* CAMADA SVG: ARCOS DE CONEXÃO HISTÓRICA + LINHAS-GUIA GEOGRÁFICAS + PINOS REAIS */}
+            {/* CAMADA SVG: ARCOS DESCOBERTOS + INDÍCIOS DE RESSONÂNCIA + LINHAS-GUIA + PINOS REAIS */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="goldArcActive" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -124,13 +134,13 @@ export const WorldMapView: React.FC = () => {
                   <stop offset="100%" stopColor="#06B6D4" stopOpacity="0.9" />
                 </linearGradient>
                 <linearGradient id="goldArcIdle" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.3" />
-                  <stop offset="50%" stopColor="#06B6D4" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.3" />
+                  <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.35" />
+                  <stop offset="50%" stopColor="#06B6D4" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.35" />
                 </linearGradient>
               </defs>
 
-              {/* 1. Arcos Curvos Conectando as Coordenadas Geográficas Reais dos Eventos Ativos */}
+              {/* 1. Arcos Curvos Conectando apenas os Nós cujas Conexões já foram Descobertas pelo Jogador */}
               {visibleConnections.map((conn, idx) => {
                 const fromNode = allNodes.find(n => n.id === conn.from);
                 const toNode = allNodes.find(n => n.id === conn.to);
@@ -150,7 +160,7 @@ export const WorldMapView: React.FC = () => {
                         fill="none"
                         stroke="#F59E0B"
                         strokeWidth="0.9"
-                        opacity="0.25"
+                        opacity="0.28"
                       />
                     )}
                     <path
@@ -174,6 +184,20 @@ export const WorldMapView: React.FC = () => {
 
                 return (
                   <g key={`pin-${node.id}`}>
+                    {/* Indício sutil de onda/radar no pino selecionado quando conexões ainda estão ocultas */}
+                    {isSelected && !isQuarantine && !areCaseConnectionsUnlocked(node.id) && (
+                      <circle
+                        cx={geo.x}
+                        cy={geo.y}
+                        r="3.2"
+                        fill="none"
+                        stroke="#06B6D4"
+                        strokeWidth="0.2"
+                        strokeDasharray="0.6, 0.6"
+                        opacity="0.6"
+                      />
+                    )}
+
                     {/* Linha-guia conectando o ponto geográfico real ao cartão deslocado */}
                     {hasOffset && (
                       <line
@@ -210,11 +234,15 @@ export const WorldMapView: React.FC = () => {
             </svg>
 
             {/* Rosa dos Ventos Decorativa no Canto Inferior Esquerdo */}
-            <div className="absolute bottom-4 left-4 hidden sm:flex items-center gap-2.5 opacity-60 pointer-events-none">
+            <div className="absolute bottom-4 left-4 hidden sm:flex items-center gap-2.5 opacity-65 pointer-events-none">
               <Compass className="w-8 h-8 text-amber-500/70 stroke-[1.2]" />
               <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-amber-200/80 leading-tight">
                 <div>CONECTANDO O PASSADO AO PRESENTE</div>
-                <div className="text-amber-400/70">EM BUSCA DO PADRÃO</div>
+                <div className="text-amber-400/70">
+                  {visibleConnections.length > 0
+                    ? `${visibleConnections.length} ELOS HISTÓRICOS REVELADOS`
+                    : 'ELOS OCULTOS — INVESTIGUE OS CASOS PARA REVELAR'}
+                </div>
               </div>
             </div>
 
@@ -223,16 +251,16 @@ export const WorldMapView: React.FC = () => {
               const isSelected = state.selectedCaseId === node.id;
               const isCompleted = state.completedNodes.includes(node.id);
               const isQuarantine = node.status === 'quarentena';
-              const isConnectedPeer =
+              const isUnlockedPeer =
                 !isQuarantine &&
+                areCaseConnectionsUnlocked(selectedNode.id) &&
                 (selectedNode.connectedTo.includes(node.id) ||
                   node.connectedTo.includes(selectedNode.id));
 
-              // Reduz discretamente a intensidade dos demais nós quando um está selecionado
               const dimClass = isSelected
                 ? 'z-30 scale-105 opacity-100'
-                : isConnectedPeer
-                ? 'z-20 opacity-90 hover:opacity-100 hover:scale-105'
+                : isUnlockedPeer
+                ? 'z-20 opacity-95 hover:opacity-100 hover:scale-105'
                 : 'z-10 opacity-70 hover:opacity-100 hover:scale-105';
 
               return (
@@ -242,12 +270,10 @@ export const WorldMapView: React.FC = () => {
                   style={{ left: `${node.coords.x}%`, top: `${node.coords.y}%` }}
                   className={`absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-300 cursor-pointer group ${dimClass}`}
                 >
-                  {/* Halo de seleção */}
                   {isSelected && (
                     <div className="absolute -inset-1 rounded-xl bg-amber-400/20 blur-md animate-pulse pointer-events-none" />
                   )}
 
-                  {/* Card Compacto e Proporcional do Personagem */}
                   <div
                     className={`relative flex items-center gap-2 p-1.5 pr-2.5 rounded-xl backdrop-blur-md border transition-all min-w-[128px] sm:min-w-[146px] ${
                       isSelected
@@ -259,7 +285,6 @@ export const WorldMapView: React.FC = () => {
                         : 'bg-[#0B1320]/90 border-amber-500/40 hover:border-amber-400 shadow-[0_0_12px_rgba(212,175,55,0.15)]'
                     }`}
                   >
-                    {/* Retrato */}
                     <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg overflow-hidden border border-amber-500/30 shrink-0 bg-slate-900">
                       <img
                         src={node.image}
@@ -268,7 +293,6 @@ export const WorldMapView: React.FC = () => {
                       />
                     </div>
 
-                    {/* Nome & Data */}
                     <div className="text-left leading-tight flex-1 min-w-0">
                       <div className="font-serif text-[11px] sm:text-xs font-bold text-slate-100 truncate">
                         {node.name}
@@ -278,7 +302,6 @@ export const WorldMapView: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Ícone de Status */}
                     <div className="ml-0.5 shrink-0">
                       {isCompleted ? (
                         <span className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-400">
@@ -300,10 +323,9 @@ export const WorldMapView: React.FC = () => {
             })}
           </div>
 
-          {/* RÉGUA CRONOLÓGICA INFERIOR INTEGRADA AO MAPA (Sem barra de rolagem horizontal nativa e sem cortar eventos) */}
+          {/* RÉGUA CRONOLÓGICA INFERIOR INTEGRADA AO MAPA */}
           <div className="bg-[#060A12]/95 border-t border-amber-500/25 px-3 sm:px-5 py-3">
             <div className="relative">
-              {/* Linha Dourada Horizontal Contínua (Desktop) */}
               <div className="hidden lg:block absolute top-2.5 left-6 right-6 h-[1px] bg-gradient-to-r from-amber-500/20 via-amber-400/50 to-amber-500/20 pointer-events-none" />
 
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1.5 sm:gap-2 relative z-10">
@@ -364,9 +386,9 @@ export const WorldMapView: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-[#0B1320]/90 border border-amber-500/20">
         <div className="w-full sm:w-1/2 space-y-1.5">
           <div className="flex justify-between text-xs font-mono">
-            <span className="text-slate-300 uppercase tracking-wider">Sua Jornada no Volume I:</span>
+            <span className="text-slate-300 uppercase tracking-wider">Progresso na Investigação (Volume I):</span>
             <span className="text-amber-400 font-bold">
-              {stats.completedCount} de {stats.totalVol1} Dossiês ({stats.progressPercent}%)
+              {stats.completedCount} de {stats.totalVol1} Missões Concluídas ({stats.progressPercent}%)
             </span>
           </div>
           <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
@@ -377,14 +399,18 @@ export const WorldMapView: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-mono text-slate-300">
+        <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-300">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Evidências: <strong className="text-white">{stats.evidenceCount}/4</strong></span>
+            <span>Pistas Extraídas: <strong className="text-white">{stats.totalCluesExtracted}</strong></span>
           </div>
           <span className="text-slate-600">|</span>
           <div>
-            <span>Hipóteses Gravadas: <strong className="text-cyan-400">{stats.hypothesesCount}</strong></span>
+            <span>Hipóteses Fundamentadas: <strong className="text-cyan-400">{stats.hypothesesCount}</strong></span>
+          </div>
+          <span className="text-slate-600">|</span>
+          <div>
+            <span>Mérito Investigativo: <strong className="text-amber-300">{state.totalXp} XP</strong></span>
           </div>
         </div>
       </div>

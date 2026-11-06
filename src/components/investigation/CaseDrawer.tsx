@@ -1,17 +1,61 @@
 import React from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
-import { Sparkles, Lock, ArrowRight, CheckCircle2, ShieldAlert, FileSearch, GitCommit } from 'lucide-react';
+import {
+  Sparkles,
+  Lock,
+  ArrowRight,
+  CheckCircle2,
+  ShieldAlert,
+  FileSearch,
+  GitCommit,
+  EyeOff,
+  Check,
+  Circle,
+} from 'lucide-react';
 
 export const CaseDrawer: React.FC = () => {
-  const { selectedCase, allNodes, state, startCaseInvestigation, selectCase } = useInvestigation();
-  const isCompleted = state.completedNodes.includes(selectedCase.id);
-  const isEvidenceVerified = state.discoveredEvidenceIds.includes(selectedCase.id);
-  const isQuarantine = selectedCase.status === 'quarentena';
+  const {
+    selectedCase,
+    allNodes,
+    state,
+    startCaseInvestigation,
+    selectCase,
+    getCasePlayProgress,
+    areCaseConnectionsUnlocked,
+  } = useInvestigation();
 
-  // Conexões descobertas / relacionadas (apenas nós liberados do Volume I, sem revelar bloqueados)
+  const isCompleted = state.completedNodes.includes(selectedCase.id);
+  const isQuarantine = selectedCase.status === 'quarentena';
+  const progress = getCasePlayProgress(selectedCase.id);
+  const connectionsUnlocked = areCaseConnectionsUnlocked(selectedCase.id);
+
+  const totalCluesInCase =
+    selectedCase.documents?.reduce((acc, doc) => acc + doc.clues.length, 0) || 4;
+  const totalConnectionsInCase = selectedCase.connectionChallenges?.length || 2;
+
   const unlockedConnections = selectedCase.connectedTo
     .map(id => allNodes.find(n => n.id === id))
     .filter((n): n is NonNullable<typeof n> => Boolean(n && n.status !== 'quarentena'));
+
+  // Etapas concretas da missão para mostrar progresso vivo no painel
+  const actionSteps = [
+    {
+      label: `1. Observar documentos e extrair pistas (${progress.extractedClueIds.length}/${totalCluesInCase})`,
+      done: progress.extractedClueIds.length >= 2,
+    },
+    {
+      label: `2. Validar relações na Mesa de Conexões (${progress.solvedConnectionIds.length}/${totalConnectionsInCase})`,
+      done: progress.solvedConnectionIds.length >= totalConnectionsInCase,
+    },
+    {
+      label: '3. Formular hipótese sustentada por evidências',
+      done: Boolean(progress.selectedThesisId),
+    },
+    {
+      label: '4. Decidir no dilema simulado e revelar consequências',
+      done: Boolean(progress.selectedDecisionId),
+    },
+  ];
 
   return (
     <div className="rounded-2xl bg-[#0B1320]/95 backdrop-blur-md border border-amber-500/35 shadow-[0_0_25px_rgba(212,175,55,0.12)] overflow-hidden flex flex-col">
@@ -20,7 +64,7 @@ export const CaseDrawer: React.FC = () => {
       <div className="px-4 py-3 border-b border-amber-500/20 flex items-center justify-between bg-gradient-to-r from-amber-500/10 to-transparent">
         <div className="flex items-center gap-1.5 text-amber-400 text-[11px] font-mono uppercase tracking-widest font-semibold">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Caso em Destaque</span>
+          <span>{selectedCase.missionCode || 'Caso em Destaque'}</span>
         </div>
         {isCompleted ? (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold">
@@ -29,6 +73,10 @@ export const CaseDrawer: React.FC = () => {
         ) : isQuarantine ? (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-600 font-semibold">
             <Lock className="w-3 h-3" /> Em Quarentena
+          </span>
+        ) : progress.extractedClueIds.length > 0 ? (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 font-semibold">
+            Em Investigação
           </span>
         ) : (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold">
@@ -54,75 +102,124 @@ export const CaseDrawer: React.FC = () => {
           <h3 className="font-serif text-lg sm:text-xl font-bold text-white leading-snug mt-0.5">
             {selectedCase.title}
           </h3>
+          {selectedCase.missionTitle && (
+            <div className="text-[11px] font-mono text-cyan-300 uppercase tracking-wider mt-0.5">
+              {selectedCase.missionTitle}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Corpo Descritivo */}
       <div className="p-4 sm:p-5 space-y-4 flex-1 flex flex-col justify-between">
         <div className="space-y-4">
-          {/* Parágrafo interno com leitura confortável (text-sm leading-relaxed) */}
           <p className="text-sm text-slate-200 leading-relaxed font-sans">
             {selectedCase.shortDescription}
           </p>
 
-          {/* Evidências Disponíveis & Conexões Descobertas */}
+          {/* Evidências Disponíveis & Conexões (Ocultas até descoberta!) */}
           {!isQuarantine && (
             <div className="grid grid-cols-1 gap-2.5 pt-1">
-              {/* Evidência Disponível */}
+              {/* Arquivo Documental */}
               <div className="p-2.5 rounded-xl bg-[#060A12]/80 border border-slate-800 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <FileSearch className="w-4 h-4 text-amber-400 shrink-0" />
                   <div className="truncate">
-                    <div className="text-[10px] font-mono uppercase text-slate-400">Evidência Primária</div>
-                    <div className="text-xs font-mono text-slate-200 truncate">{selectedCase.evidence.artifactCode}</div>
+                    <div className="text-[10px] font-mono uppercase text-slate-400">
+                      Peças no Dossiê ({selectedCase.documents?.length || 4} Documentos)
+                    </div>
+                    <div className="text-xs font-mono text-slate-200 truncate">
+                      {progress.extractedClueIds.length} de {totalCluesInCase} pistas extraídas
+                    </div>
                   </div>
                 </div>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-mono shrink-0 ${
-                  isEvidenceVerified
-                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                    : 'bg-amber-500/10 text-amber-300 border border-amber-500/25'
-                }`}>
-                  {isEvidenceVerified ? 'Descriptografada' : 'Disponível'}
+                <span
+                  className={`px-2 py-0.5 rounded text-[10px] font-mono shrink-0 ${
+                    progress.extractedClueIds.length > 0
+                      ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                      : 'bg-amber-500/10 text-amber-300 border border-amber-500/25'
+                  }`}
+                >
+                  {progress.extractedClueIds.length > 0 ? 'Em Análise' : 'Inspecionar'}
                 </span>
               </div>
 
-              {/* Conexões Descobertas */}
-              {unlockedConnections.length > 0 && (
-                <div className="p-2.5 rounded-xl bg-[#060A12]/80 border border-slate-800 space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase text-cyan-400">
-                    <GitCommit className="w-3.5 h-3.5" />
-                    <span>Conexões Históricas Ativas ({unlockedConnections.length})</span>
+              {/* Conexões Históricas: Ocultas antes da investigação, reveladas depois! */}
+              <div className="p-2.5 rounded-xl bg-[#060A12]/80 border border-slate-800 space-y-1.5">
+                {connectionsUnlocked ? (
+                  <>
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase text-cyan-400">
+                      <GitCommit className="w-3.5 h-3.5" />
+                      <span>Conexões Descobertas ({unlockedConnections.length})</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {unlockedConnections.map(conn => (
+                        <button
+                          key={conn.id}
+                          onClick={() => selectCase(conn.id)}
+                          className="px-2 py-0.5 rounded-md bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-[11px] font-mono text-cyan-200 transition-colors cursor-pointer"
+                        >
+                          {conn.name} ({conn.year})
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-start gap-2 text-slate-400">
+                    <EyeOff className="w-4 h-4 text-amber-400/70 shrink-0 mt-0.5" />
+                    <div className="text-xs leading-snug">
+                      <span className="font-mono text-[10px] uppercase text-amber-300/90 block">
+                        Conexões Históricas Ocultas
+                      </span>
+                      <span className="text-[11px] text-slate-400">
+                        Indícios de ressonância detectados. Examine as evidências e valide as conexões no dossiê para revelar os elos no mapa.
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {unlockedConnections.map(conn => (
-                      <button
-                        key={conn.id}
-                        onClick={() => selectCase(conn.id)}
-                        className="px-2 py-0.5 rounded-md bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-[11px] font-mono text-cyan-200 transition-colors cursor-pointer"
-                      >
-                        {conn.name} ({conn.year})
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
 
-          {/* Lista "Sua missão:" */}
-          <div className="space-y-2 pt-2 border-t border-amber-500/15">
-            <div className="text-xs font-serif uppercase tracking-wider text-amber-400 font-semibold">
-              Sua missão:
+          {/* Lista de Ações Concretas do Ciclo de Investigação */}
+          {!isQuarantine ? (
+            <div className="space-y-2 pt-2 border-t border-amber-500/15">
+              <div className="text-xs font-serif uppercase tracking-wider text-amber-400 font-semibold">
+                Ciclo da Missão:
+              </div>
+              <ul className="space-y-1.5">
+                {actionSteps.map((step, idx) => (
+                  <li
+                    key={idx}
+                    className={`flex items-start gap-2 text-xs sm:text-sm leading-relaxed ${
+                      step.done ? 'text-emerald-300' : 'text-slate-300'
+                    }`}
+                  >
+                    {step.done ? (
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    ) : (
+                      <Circle className="w-3.5 h-3.5 text-amber-400/70 shrink-0 mt-1" />
+                    )}
+                    <span>{step.label}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-1.5">
-              {selectedCase.missionBullets.map((bullet, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-sm text-slate-300 leading-relaxed">
-                  <span className="text-amber-400 text-xs mt-1 shrink-0">◆</span>
-                  <span>{bullet}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          ) : (
+            <div className="space-y-2 pt-2 border-t border-amber-500/15">
+              <div className="text-xs font-serif uppercase tracking-wider text-amber-400 font-semibold">
+                Status do Arquivo:
+              </div>
+              <ul className="space-y-1.5">
+                {selectedCase.missionBullets.map((bullet, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm text-slate-300 leading-relaxed">
+                    <span className="text-amber-400 text-xs mt-1 shrink-0">◆</span>
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Botão de Ação Principal */}
@@ -132,7 +229,7 @@ export const CaseDrawer: React.FC = () => {
               onClick={() => startCaseInvestigation(selectedCase.id)}
               className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-[#060A12] font-serif font-bold text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(245,158,11,0.35)] hover:shadow-[0_0_28px_rgba(245,158,11,0.6)] hover:brightness-105 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>INVESTIGAR CASO</span>
+              <span>{isCompleted ? 'REVISAR INVESTIGAÇÃO' : 'INVESTIGAR CASO'}</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </button>
           ) : (
