@@ -9,8 +9,6 @@ import {
   Maximize2,
   Minimize2,
   LogOut,
-  ChevronUp,
-  ChevronDown,
   CheckCircle2,
   Sparkles,
   Activity,
@@ -37,12 +35,10 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
   const {
     state,
     selectedCase,
-    allNodes,
     isAuthenticated,
     setIsAuthModalOpen,
     setActiveTab,
     setActiveStep,
-    selectCase,
     getCasePlayProgress,
   } = useInvestigation();
 
@@ -55,7 +51,6 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
     soundEngine.getSettings()
   );
   const [audioPopoverOpen, setAudioPopoverOpen] = useState<boolean>(false);
-  const [isHudCollapsed, setIsHudCollapsed] = useState<boolean>(false);
   const [exitModalOpen, setExitModalOpen] = useState<boolean>(false);
 
   // Fullscreen API state
@@ -70,7 +65,6 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
   const prevStepRef = useRef<number>(state.activeStep);
   const prevCaseIdRef = useRef<string>(selectedCase.id);
 
-  // Subscribe to audio/motion settings
   useEffect(() => {
     return soundEngine.subscribe(next => setAudioSettings(next));
   }, []);
@@ -84,13 +78,12 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
     setEntryBannerVisible(true);
     const timer = setTimeout(() => {
       setEntryBannerVisible(false);
-    }, 450);
+    }, 420);
     return () => clearTimeout(timer);
   }, [selectedCase.id, audioSettings.reduceMotion]);
 
   // Dedicated Transitions Between Stages (1->2, 2->3, 3->4, 4->5)
   useEffect(() => {
-    // Ignore if case just switched
     if (prevCaseIdRef.current !== selectedCase.id) {
       prevCaseIdRef.current = selectedCase.id;
       prevStepRef.current = state.activeStep;
@@ -137,7 +130,7 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
     setStageTransition({ from, to, title, subtitle });
     const timer = setTimeout(() => {
       setStageTransition(null);
-    }, 320);
+    }, 280);
 
     return () => clearTimeout(timer);
   }, [state.activeStep, selectedCase.id, audioSettings.reduceMotion]);
@@ -150,8 +143,6 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
     }
 
     const handleFsChange = () => {
-      // Synchronization of icon with real browser fullscreen state.
-      // Exiting native browser fullscreen NEVER exits our Immersive Mode!
       setIsBrowserFullscreen(Boolean(document.fullscreenElement));
     };
 
@@ -176,33 +167,26 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
         await document.exitFullscreen();
       }
     } catch {
-      // Browser blocked or exited gracefully
       setIsBrowserFullscreen(Boolean(document.fullscreenElement));
     }
   }, []);
 
-  // Contextual ESC key handler:
-  // 1st priority: close any open child modal or HUD audio popover ([data-immersive-modal="true"])
-  // 2nd priority: when no modal is open, open (or close) the Exit Operation Confirmation Modal
+  // Contextual ESC key handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
 
-      // If HUD audio popover is open, close it first
       if (audioPopoverOpen) {
         e.stopPropagation();
         setAudioPopoverOpen(false);
         return;
       }
 
-      // Check if a child modal (DocumentInspectorModal or DiscoveryRevealModal) is currently open in the DOM
       const activeChildModal = document.querySelector('[data-immersive-modal="true"]');
       if (activeChildModal) {
-        // Let the child modal's own Escape listener close it
         return;
       }
 
-      // Otherwise toggle the Exit Operation Confirmation Modal
       setExitModalOpen(prev => !prev);
     };
 
@@ -228,15 +212,6 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
     setAudioSettings(next);
   };
 
-  // Calculate investigation progress percentage for the current case
-  const stepWeights = [
-    progress.extractedClueIds.length > 0 ? 25 : 0,
-    challenges.length > 0 && progress.solvedConnectionIds.length > 0 ? 25 : 0,
-    progress.selectedThesisId ? 25 : 0,
-    progress.selectedDecisionId ? 25 : 0,
-  ];
-  const caseProgressPct = stepWeights.reduce((a, b) => a + b, 0);
-
   const steps: { num: 1 | 2 | 3 | 4 | 5; short: string; label: string; done: boolean }[] = [
     {
       num: 1,
@@ -255,7 +230,7 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
     {
       num: 3,
       short: '3. Hipótese',
-      label: '3. Formular Hipótese',
+      label: '3. Hipótese',
       done: Boolean(progress.selectedThesisId),
     },
     {
@@ -266,13 +241,11 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
     },
     {
       num: 5,
-      short: '5. Consequências',
+      short: '5. Resultado',
       label: '5. Consequências',
       done: progress.completed,
     },
   ];
-
-  const volumeOneCases = allNodes.filter(n => n.isVolumeOne);
 
   return (
     <div className="min-h-screen w-full max-w-full bg-[#050811] text-slate-100 flex flex-col font-sans relative overflow-x-hidden">
@@ -299,93 +272,103 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
       )}
 
       {/* =======================================================================
-          HUD PRÓPRIO DA CENTRAL DE INVESTIGAÇÃO (COMPACTO E RECOLHÍVEL)
+          BARRA ÚNICA DE HUD IMERSIVO (ULTRA-COMPACTA, SEM EMPILHAMENTO)
          ======================================================================= */}
       <header
         aria-label="HUD Operacional de Investigação"
-        className="sticky top-0 z-40 w-full bg-[#070C18]/95 backdrop-blur-md border-b border-amber-500/25 shadow-[0_4px_25px_rgba(0,0,0,0.75)] transition-all"
+        className="sticky top-0 z-40 w-full bg-[#070C18]/95 backdrop-blur-md border-b border-amber-500/20 shadow-[0_4px_20px_rgba(0,0,0,0.65)]"
       >
-        {/* Linha Primária Ultra-Compacta do HUD */}
-        <div className="max-w-[1600px] w-full mx-auto px-2.5 sm:px-5 py-1.5 sm:py-2 flex items-center justify-between gap-2 min-w-0">
+        <div className="max-w-[1440px] w-full mx-auto px-3 sm:px-6 py-2 flex flex-col lg:flex-row lg:items-center justify-between gap-2 min-w-0">
           
-          {/* Esquerda: Identificação da Central + Código e Nome do Caso */}
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-amber-400 font-serif font-bold text-xs sm:text-sm shrink-0">
-              Φ
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-cyan-400 truncate">
-                <span className="font-bold">CENTRAL DE INVESTIGAÇÃO</span>
-                <span className="text-slate-600">//</span>
-                <span className="text-amber-400 font-semibold truncate">
-                  {selectedCase.missionCode || 'CASO ATIVO'}
-                </span>
-                {/* Indicador de Sincronização */}
-                <button
-                  onClick={() => setIsAuthModalOpen(true)}
-                  title="Status de salvamento e sincronização"
-                  className="hidden md:inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-[9px] font-mono text-emerald-300 hover:bg-emerald-500/20 cursor-pointer ml-1"
-                >
-                  <ShieldCheck className="w-2.5 h-2.5 text-emerald-400" />
-                  <span>{isAuthenticated ? 'SINCRONIZADO' : 'SALVO LOCAL'}</span>
-                </button>
+          {/* Topo Mobile / Esquerda Desktop: Identificação do Caso + Controles Rápidos Mobile */}
+          <div className="flex items-center justify-between lg:justify-start gap-3 min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-amber-400 font-serif font-bold text-sm shrink-0">
+                Φ
               </div>
-
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-cyan-400 truncate">
+                  <span>{selectedCase.missionCode || 'CASO ATIVO'}</span>
+                  <span className="text-slate-600">•</span>
+                  <button
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="inline-flex items-center gap-1 text-emerald-400 hover:underline cursor-pointer"
+                  >
+                    <ShieldCheck className="w-2.5 h-2.5" />
+                    <span>{isAuthenticated ? 'Sincronizado' : 'Salvo Local'}</span>
+                  </button>
+                </div>
                 <h1 className="font-sans text-xs sm:text-sm font-bold text-white truncate">
                   {selectedCase.fullName}{' '}
                   <span className="text-amber-400 font-normal">({selectedCase.year})</span>
                 </h1>
-
-                {/* Progresso Compacto da Investigação */}
-                <div className="hidden lg:flex items-center gap-2 text-[11px] font-mono text-slate-300 bg-[#0B1320] border border-slate-800 px-2.5 py-0.5 rounded-full shrink-0">
-                  <span className="text-amber-300 font-bold">{caseProgressPct}%</span>
-                  <span className="text-slate-600">•</span>
-                  <span>
-                    Pistas: <strong>{progress.extractedClueIds.length}/{allCluesCount}</strong>
-                  </span>
-                  <span className="text-slate-600">•</span>
-                  <span className="text-cyan-300">+{progress.xpEarned} XP</span>
-                </div>
               </div>
+            </div>
+
+            {/* Botões de Controle Visíveis no Mobile à Direita da 1ª Linha */}
+            <div className="flex lg:hidden items-center gap-1.5 shrink-0">
+              <button
+                onClick={() => setAudioPopoverOpen(o => !o)}
+                className="p-1.5 rounded-lg bg-[#0B1320] border border-cyan-500/30 text-cyan-300 cursor-pointer"
+                title="Áudio e Movimento"
+              >
+                {audioSettings.mutedAll ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              </button>
+              <button
+                onClick={() => setExitModalOpen(true)}
+                className="px-2.5 py-1 rounded-lg bg-red-500/15 border border-red-500/40 text-red-200 text-[10px] font-mono font-semibold flex items-center gap-1 cursor-pointer"
+              >
+                <LogOut className="w-3 h-3 text-red-400" />
+                <span>Sair</span>
+              </button>
             </div>
           </div>
 
-          {/* Centro (Desktop XL): Seletor Rápido entre Dossiês do Volume I */}
-          <div className="hidden xl:flex items-center gap-1 bg-[#050811] border border-slate-800/90 rounded-xl p-1 shrink-0">
-            {volumeOneCases.map(c => {
-              const active = c.id === selectedCase.id;
-              const done = state.completedNodes.includes(c.id);
+          {/* Centro: Stepper Integrado das 5 Etapas */}
+          <nav
+            aria-label="Etapas do Ciclo de Investigação"
+            className="grid grid-cols-5 gap-1 sm:gap-1.5 flex-1 max-w-2xl mx-auto w-full"
+          >
+            {steps.map(st => {
+              const isCurrent = state.activeStep === st.num;
               return (
                 <button
-                  key={c.id}
+                  key={st.num}
                   onClick={() => {
                     soundEngine.playDocumentOpen();
-                    selectCase(c.id);
+                    setActiveStep(st.num);
                   }}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-all cursor-pointer flex items-center gap-1 ${
-                    active
-                      ? 'bg-amber-500/20 text-amber-200 border border-amber-400/50 font-bold'
-                      : 'text-slate-400 hover:text-white border border-transparent'
+                  className={`py-1.5 px-1.5 sm:px-2.5 rounded-lg font-mono text-[10px] sm:text-xs transition-all flex items-center justify-center gap-1 cursor-pointer border ${
+                    isCurrent
+                      ? 'bg-amber-500/20 text-amber-200 border-amber-400/70 font-bold shadow-[0_0_12px_rgba(245,158,11,0.18)]'
+                      : st.done
+                      ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/15'
+                      : 'bg-[#0B1320]/60 text-slate-400 border-slate-800/80 hover:text-slate-200'
                   }`}
                 >
-                  <span>{c.name}</span>
-                  {done && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
+                  {st.done && !isCurrent && (
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0 hidden sm:inline" />
+                  )}
+                  <span className="truncate">
+                    <span className="xl:hidden">{st.short}</span>
+                    <span className="hidden xl:inline">{st.label}</span>
+                  </span>
                 </button>
               );
             })}
-          </div>
+          </nav>
 
-          {/* Direita: Controles Operacionais (Áudio, Reduzir Animações, Tela Cheia, Recolher HUD, Sair) */}
-          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 relative">
-            
-            {/* Botão de Áudio */}
+          {/* Direita (Desktop): Controles Discretos de Áudio, Animação, Tela Cheia e Sair */}
+          <div className="hidden lg:flex items-center gap-1.5 shrink-0 relative">
+            <span className="px-2.5 py-1 rounded-lg bg-[#0B1320] border border-slate-800 text-[11px] font-mono text-cyan-300">
+              +{progress.xpEarned} XP
+            </span>
+
             <button
               onClick={() => setAudioPopoverOpen(o => !o)}
               aria-expanded={audioPopoverOpen}
-              title="Controles de Áudio"
-              className={`p-1.5 sm:px-2 sm:py-1 rounded-lg border text-xs font-mono flex items-center gap-1 cursor-pointer transition-all ${
+              title="Controles de Áudio e Animação"
+              className={`p-1.5 px-2 rounded-lg border text-xs font-mono flex items-center gap-1 cursor-pointer transition-all ${
                 audioSettings.mutedAll
                   ? 'bg-slate-900 border-slate-700 text-slate-400'
                   : 'bg-[#0B1320] border-cyan-500/30 text-cyan-300 hover:border-cyan-400'
@@ -396,32 +379,26 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
               ) : (
                 <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
               )}
-              <span className="hidden md:inline text-[10px]">Áudio</span>
             </button>
 
-            {/* Botão Direto de Controle de Animações */}
             <button
               onClick={() =>
                 handleUpdateAudio({ reduceMotion: !audioSettings.reduceMotion })
               }
               title={
                 audioSettings.reduceMotion
-                  ? 'Animações Reduzidas (Ativo) — Clique para restaurar'
+                  ? 'Animações Reduzidas (Ativo)'
                   : 'Reduzir Animações'
               }
-              className={`hidden sm:inline-flex px-2 py-1 rounded-lg border text-[10px] font-mono items-center gap-1 cursor-pointer transition-all ${
+              className={`p-1.5 px-2 rounded-lg border text-[10px] font-mono flex items-center gap-1 cursor-pointer transition-all ${
                 audioSettings.reduceMotion
                   ? 'bg-amber-500/20 border-amber-400/50 text-amber-300 font-bold'
                   : 'bg-[#0B1320] border-slate-800 text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Sparkles className="w-3 h-3" />
-              <span className="hidden lg:inline">
-                {audioSettings.reduceMotion ? 'Anim: Reduzidas' : 'Anim: Padrão'}
-              </span>
+              <Sparkles className="w-3.5 h-3.5" />
             </button>
 
-            {/* Botão de Tela Cheia Opcional (Fullscreen API) */}
             {isFullscreenSupported && (
               <button
                 onClick={toggleBrowserFullscreen}
@@ -435,7 +412,7 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
                     ? 'Sair da Tela Cheia do navegador'
                     : 'Ativar Tela Cheia'
                 }
-                className={`p-1.5 sm:px-2 sm:py-1 rounded-lg border text-xs font-mono flex items-center gap-1 cursor-pointer transition-all ${
+                className={`p-1.5 px-2 rounded-lg border text-xs font-mono flex items-center gap-1 cursor-pointer transition-all ${
                   isBrowserFullscreen
                     ? 'bg-amber-500/20 border-amber-400/50 text-amber-300'
                     : 'bg-[#0B1320] border-slate-800 text-slate-300 hover:border-amber-500/40 hover:text-white'
@@ -446,232 +423,147 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
                 ) : (
                   <Maximize2 className="w-3.5 h-3.5" />
                 )}
-                <span className="hidden lg:inline text-[10px]">
-                  {isBrowserFullscreen ? 'Janela' : 'Tela Cheia'}
-                </span>
               </button>
             )}
 
-            {/* Botão Recolher / Expandir Barra de Etapas do HUD */}
-            <button
-              onClick={() => setIsHudCollapsed(c => !c)}
-              title={isHudCollapsed ? 'Expandir HUD de Etapas' : 'Recolher HUD para ampliar área útil'}
-              aria-label={isHudCollapsed ? 'Expandir HUD' : 'Recolher HUD'}
-              className="p-1.5 rounded-lg bg-[#0B1320] border border-slate-800 text-slate-400 hover:text-white cursor-pointer"
-            >
-              {isHudCollapsed ? (
-                <ChevronDown className="w-3.5 h-3.5" />
-              ) : (
-                <ChevronUp className="w-3.5 h-3.5" />
-              )}
-            </button>
-
-            {/* Botão Sair da Operação */}
             <button
               onClick={() => setExitModalOpen(true)}
               title="Sair da Operação e voltar ao Mapa Mundial (Esc)"
-              className="px-2 sm:px-3 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-red-200 text-[10px] sm:text-xs font-mono font-semibold flex items-center gap-1 cursor-pointer transition-all shrink-0"
+              className="px-3 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-red-200 text-xs font-mono font-semibold flex items-center gap-1.5 cursor-pointer transition-all ml-1"
             >
               <LogOut className="w-3.5 h-3.5 text-red-400" />
               <span>Sair</span>
-              <span className="hidden md:inline">da Operação</span>
             </button>
+          </div>
 
-            {/* Popover de Áudio & Animações dentro do HUD */}
-            {audioPopoverOpen && (
-              <div
-                data-immersive-modal="true"
-                className="fixed left-3 right-3 top-12 sm:absolute sm:left-auto sm:right-0 sm:top-10 sm:w-72 rounded-2xl bg-[#0B1320] border border-amber-500/40 shadow-[0_0_35px_rgba(0,0,0,0.95)] p-4 z-50 space-y-3 text-left font-sans"
-              >
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                  <span className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
-                    <Sliders className="w-3.5 h-3.5" /> Áudio & Movimento
-                  </span>
-                  <button
-                    onClick={() => setAudioPopoverOpen(false)}
-                    className="text-[11px] font-mono text-slate-400 hover:text-white cursor-pointer"
-                  >
-                    Fechar [Esc]
-                  </button>
-                </div>
+          {/* Popover de Áudio & Animações */}
+          {audioPopoverOpen && (
+            <div
+              data-immersive-modal="true"
+              className="fixed left-3 right-3 top-14 sm:absolute sm:left-auto sm:right-6 sm:top-12 sm:w-72 rounded-2xl bg-[#0B1320] border border-amber-500/40 shadow-[0_0_35px_rgba(0,0,0,0.95)] p-4 z-50 space-y-3 text-left font-sans"
+            >
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
+                  <Sliders className="w-3.5 h-3.5" /> Áudio & Movimento
+                </span>
+                <button
+                  onClick={() => setAudioPopoverOpen(false)}
+                  className="text-[11px] font-mono text-slate-400 hover:text-white cursor-pointer"
+                >
+                  Fechar [Esc]
+                </button>
+              </div>
 
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-200">Trilha Ambiente</span>
-                    <button
-                      onClick={() =>
-                        handleUpdateAudio({
-                          mutedAll: false,
-                          ambientEnabled: !audioSettings.ambientEnabled,
-                        })
-                      }
-                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold cursor-pointer ${
-                        audioSettings.ambientEnabled && !audioSettings.mutedAll
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                          : 'bg-slate-800 text-slate-400'
-                      }`}
-                    >
-                      {audioSettings.ambientEnabled && !audioSettings.mutedAll ? 'ATIVA' : 'OFF'}
-                    </button>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.05"
-                    value={audioSettings.ambientVolume}
-                    onChange={e =>
-                      handleUpdateAudio({
-                        ambientVolume: parseFloat(e.target.value),
-                        ambientEnabled: true,
-                        mutedAll: false,
-                      })
-                    }
-                    className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-200">Efeitos de Interação</span>
-                    <button
-                      onClick={() =>
-                        handleUpdateAudio({
-                          mutedAll: false,
-                          sfxEnabled: !audioSettings.sfxEnabled,
-                        })
-                      }
-                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold cursor-pointer ${
-                        audioSettings.sfxEnabled && !audioSettings.mutedAll
-                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                          : 'bg-slate-800 text-slate-400'
-                      }`}
-                    >
-                      {audioSettings.sfxEnabled && !audioSettings.mutedAll ? 'ATIVOS' : 'OFF'}
-                    </button>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.05"
-                    value={audioSettings.sfxVolume}
-                    onChange={e =>
-                      handleUpdateAudio({
-                        sfxVolume: parseFloat(e.target.value),
-                        sfxEnabled: true,
-                        mutedAll: false,
-                      })
-                    }
-                    className="w-full accent-cyan-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
-                  <span className="text-slate-200">Reduzir Animações</span>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-200">Trilha Ambiente</span>
                   <button
                     onClick={() =>
-                      handleUpdateAudio({ reduceMotion: !audioSettings.reduceMotion })
+                      handleUpdateAudio({
+                        mutedAll: false,
+                        ambientEnabled: !audioSettings.ambientEnabled,
+                      })
                     }
-                    className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold cursor-pointer ${
-                      audioSettings.reduceMotion
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold cursor-pointer ${
+                      audioSettings.ambientEnabled && !audioSettings.mutedAll
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                         : 'bg-slate-800 text-slate-400'
                     }`}
                   >
-                    {audioSettings.reduceMotion ? 'SIM' : 'NÃO'}
+                    {audioSettings.ambientEnabled && !audioSettings.mutedAll ? 'ATIVA' : 'OFF'}
                   </button>
                 </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={audioSettings.ambientVolume}
+                  onChange={e =>
+                    handleUpdateAudio({
+                      ambientVolume: parseFloat(e.target.value),
+                      ambientEnabled: true,
+                      mutedAll: false,
+                    })
+                  }
+                  className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                />
+              </div>
 
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-200">Efeitos de Interação</span>
+                  <button
+                    onClick={() =>
+                      handleUpdateAudio({
+                        mutedAll: false,
+                        sfxEnabled: !audioSettings.sfxEnabled,
+                      })
+                    }
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold cursor-pointer ${
+                      audioSettings.sfxEnabled && !audioSettings.mutedAll
+                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                        : 'bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    {audioSettings.sfxEnabled && !audioSettings.mutedAll ? 'ATIVOS' : 'OFF'}
+                  </button>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={audioSettings.sfxVolume}
+                  onChange={e =>
+                    handleUpdateAudio({
+                      sfxVolume: parseFloat(e.target.value),
+                      sfxEnabled: true,
+                      mutedAll: false,
+                    })
+                  }
+                  className="w-full accent-cyan-400 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+                <span className="text-slate-200">Reduzir Animações</span>
                 <button
-                  onClick={() => handleUpdateAudio({ mutedAll: !audioSettings.mutedAll })}
-                  className="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-slate-300 cursor-pointer"
+                  onClick={() =>
+                    handleUpdateAudio({ reduceMotion: !audioSettings.reduceMotion })
+                  }
+                  className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold cursor-pointer ${
+                    audioSettings.reduceMotion
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                      : 'bg-slate-800 text-slate-400'
+                  }`}
                 >
-                  {audioSettings.mutedAll ? 'Reativar Áudio' : 'Silenciar Tudo'}
+                  {audioSettings.reduceMotion ? 'SIM' : 'NÃO'}
                 </button>
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* Linha Secundária do HUD: Navegação pelas 5 Etapas + Progresso Mobile (Recolhível) */}
-        {!isHudCollapsed && (
-          <div className="border-t border-slate-800/80 bg-[#050811]/90 px-2.5 sm:px-5 py-1.5">
-            <div className="max-w-[1600px] w-full mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              
-              {/* Navegação pelas 5 Etapas do Ciclo Investigativo */}
-              <nav
-                aria-label="Etapas do Ciclo de Investigação"
-                className="grid grid-cols-5 gap-1 sm:gap-1.5 flex-1"
+              <button
+                onClick={() => handleUpdateAudio({ mutedAll: !audioSettings.mutedAll })}
+                className="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-slate-300 cursor-pointer"
               >
-                {steps.map(st => {
-                  const isCurrent = state.activeStep === st.num;
-                  return (
-                    <button
-                      key={st.num}
-                      onClick={() => {
-                        soundEngine.playDocumentOpen();
-                        setActiveStep(st.num);
-                      }}
-                      className={`py-1.5 px-1.5 sm:px-3 rounded-lg font-mono text-[10px] sm:text-xs transition-all flex items-center justify-center gap-1 cursor-pointer border ${
-                        isCurrent
-                          ? 'bg-amber-500/20 text-amber-200 border-amber-400/70 font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)]'
-                          : st.done
-                          ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/15'
-                          : 'bg-[#0B1320]/70 text-slate-400 border-slate-800/80 hover:text-slate-200'
-                      }`}
-                    >
-                      {st.done && !isCurrent && (
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0 hidden xs:inline" />
-                      )}
-                      <span className="truncate">
-                        <span className="md:hidden">{st.short}</span>
-                        <span className="hidden md:inline">{st.label}</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </nav>
-
-              {/* Seletor de Caso Mobile/Tablet + Telemetria Rápida */}
-              <div className="flex xl:hidden items-center justify-between gap-2 text-[10px] font-mono text-slate-400">
-                <div className="flex items-center gap-1 overflow-x-auto">
-                  {volumeOneCases.map(c => {
-                    const active = c.id === selectedCase.id;
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => selectCase(c.id)}
-                        className={`px-2 py-0.5 rounded border whitespace-nowrap cursor-pointer ${
-                          active
-                            ? 'bg-amber-500/20 border-amber-400/50 text-amber-200 font-bold'
-                            : 'bg-[#0B1320] border-slate-800 text-slate-400'
-                        }`}
-                      >
-                        {c.name}
-                      </button>
-                    );
-                  })}
-                </div>
-                <span className="text-amber-300 shrink-0">
-                  {progress.extractedClueIds.length}/{allCluesCount} pistas • +{progress.xpEarned} XP
-                </span>
-              </div>
+                {audioSettings.mutedAll ? 'Reativar Áudio' : 'Silenciar Tudo'}
+              </button>
             </div>
-          </div>
-        )}
+          )}
+
+        </div>
       </header>
 
       {/* =======================================================================
-          ÁREA PRINCIPAL DA SESSÃO DE INVESTIGAÇÃO (LARGURA INTEGRAL + TRANSIÇÕES)
+          ÁREA PRINCIPAL DA SESSÃO DE INVESTIGAÇÃO (AMPLO RESPIRO)
          ======================================================================= */}
-      <main className="flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-6 py-4 sm:py-5 min-w-0 relative">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-8 py-6 sm:py-8 min-w-0 relative">
         
         {/* Banner Rápido de Coreografia de Transição entre Etapas */}
         {stageTransition && (
           <div
             aria-live="polite"
-            className="mb-4 p-3.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-cyan-500/10 to-transparent border border-amber-400/40 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200"
+            className="mb-5 p-3.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-cyan-500/10 to-transparent border border-amber-400/40 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">

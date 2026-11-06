@@ -4,8 +4,9 @@ import {
   FileSearch,
   CheckCircle2,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   AlertTriangle,
-  ArrowLeft,
   BookmarkPlus,
   BookmarkCheck,
   GitCommit,
@@ -14,14 +15,17 @@ import {
   Award,
   Check,
   XCircle,
-  Eye,
   ArrowRight,
   AlertCircle,
   ZoomIn,
   Maximize2,
   BellRing,
-  Activity,
   ShieldCheck,
+  FolderOpen,
+  Info,
+  Link2,
+  X,
+  FileText,
 } from 'lucide-react';
 import { DocumentInspectorModal, getEraDocumentTheme } from './DocumentInspectorModal';
 import { DiscoveryRevealModal } from './DiscoveryRevealModal';
@@ -54,17 +58,16 @@ export const DossierInvestigationView: React.FC = () => {
   const theses = selectedCase.hypothesisTheses || [];
   const simChoices = selectedCase.simulationChoices || [];
 
-  // Estado local da Etapa 1 sincronizado com a persistência do caso
+  // Subníveis Retráteis (Revelação Progressiva)
+  const [isBriefingOpen, setIsBriefingOpen] = useState<boolean>(false);
+  const [isArchiveDrawerOpen, setIsArchiveDrawerOpen] = useState<boolean>(false);
+
+  // Etapa 1: Documento ativo + Abas internas (Transcrição vs Pistas)
   const [activeDocId, setActiveDocId] = useState<string>(
     progress.activeDocId || documents[0]?.id || ''
   );
+  const [docSubTab, setDocSubTab] = useState<'transcricao' | 'pistas'>('transcricao');
   const [isInspectorOpen, setIsInspectorOpen] = useState<boolean>(false);
-  const examinedDocIds =
-    progress.examinedDocumentIds && progress.examinedDocumentIds.length > 0
-      ? progress.examinedDocumentIds
-      : documents[0]?.id
-      ? [documents[0].id]
-      : [];
   const [contradictionAlert, setContradictionAlert] = useState<string | null>(null);
   const [discoveryModal, setDiscoveryModal] = useState<{
     open: boolean;
@@ -72,9 +75,17 @@ export const DossierInvestigationView: React.FC = () => {
     conclusion: string;
   } | null>(null);
 
-  // Estado local da Etapa 2 (Desafio selecionado e 2 pistas marcadas na Mesa)
+  const examinedDocIds =
+    progress.examinedDocumentIds && progress.examinedDocumentIds.length > 0
+      ? progress.examinedDocumentIds
+      : documents[0]?.id
+      ? [documents[0].id]
+      : [];
+
+  // Etapa 2: Desafio ativo + 2 pistas selecionadas + Expansão opcional de citação
   const [activeChallengeId, setActiveChallengeId] = useState<string>(challenges[0]?.id || '');
   const [boardSelectedClues, setBoardSelectedClues] = useState<string[]>([]);
+  const [expandedBoardClueId, setExpandedBoardClueId] = useState<string | null>(null);
   const [connectionFeedback, setConnectionFeedback] = useState<{
     type: 'success' | 'error';
     title?: string;
@@ -82,13 +93,15 @@ export const DossierInvestigationView: React.FC = () => {
     unlockedMap?: boolean;
   } | null>(null);
 
-  // Estado local da Etapa 3 (Construção da Hipótese)
+  // Etapa 3: Hipótese + Acordeão de detalhes da tese + Subnível de anotação
   const [chosenThesisId, setChosenThesisId] = useState<string>(
     progress.selectedThesisId || theses[0]?.id || ''
   );
+  const [expandedThesisId, setExpandedThesisId] = useState<string | null>(null);
   const [hypothesisClues, setHypothesisClues] = useState<string[]>(
     progress.attachedClueIds || []
   );
+  const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
   const [reasoningText, setReasoningText] = useState<string>(
     progress.hypothesisReasoning || state.personalNotes[selectedCase.id] || ''
   );
@@ -98,23 +111,45 @@ export const DossierInvestigationView: React.FC = () => {
     xpAwarded: number;
   } | null>(null);
 
+  // Etapa 4: Subnível de detalhes estratégicos
+  const [expandedChoiceId, setExpandedChoiceId] = useState<string | null>(null);
+
+  // Etapa 5: Subnível de auditoria detalhada
+  const [showDetailedAudit, setShowDetailedAudit] = useState<boolean>(false);
+
   useEffect(() => {
     const p = getCasePlayProgress(selectedCase.id);
     const firstId = p.activeDocId || selectedCase.documents?.[0]?.id || '';
     setActiveDocId(firstId);
+    setDocSubTab('transcricao');
     if (firstId) {
       markDocumentExamined(selectedCase.id, firstId);
     }
     setContradictionAlert(null);
     setIsInspectorOpen(false);
+    setIsBriefingOpen(false);
     setActiveChallengeId(selectedCase.connectionChallenges?.[0]?.id || '');
     setBoardSelectedClues([]);
+    setExpandedBoardClueId(null);
     setConnectionFeedback(null);
     setChosenThesisId(p.selectedThesisId || selectedCase.hypothesisTheses?.[0]?.id || '');
     setHypothesisClues(p.attachedClueIds || []);
     setReasoningText(p.hypothesisReasoning || state.personalNotes[selectedCase.id] || '');
     setHypothesisResult(null);
   }, [selectedCase.id]);
+
+  // Fechar Drawer do Arquivo Pessoal com ESC
+  useEffect(() => {
+    if (!isArchiveDrawerOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setIsArchiveDrawerOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isArchiveDrawerOpen]);
 
   // Lista plana de todas as pistas do caso
   const allCaseClues = documents.flatMap(doc =>
@@ -134,6 +169,7 @@ export const DossierInvestigationView: React.FC = () => {
 
   const handleSelectDoc = (docId: string) => {
     setActiveDocId(docId);
+    setDocSubTab('transcricao');
     markDocumentExamined(selectedCase.id, docId);
     soundEngine.playDocumentOpen();
   };
@@ -239,41 +275,6 @@ export const DossierInvestigationView: React.FC = () => {
     setActiveStep(5);
   };
 
-  const steps: { num: 1 | 2 | 3 | 4 | 5; short: string; full: string; done: boolean }[] = [
-    {
-      num: 1,
-      short: '1. Observar',
-      full: '1. Observar Evidências',
-      done: progress.extractedClueIds.length > 0,
-    },
-    {
-      num: 2,
-      short: '2. Conectar',
-      full: '2. Mesa de Conexões',
-      done:
-        challenges.length > 0 &&
-        progress.solvedConnectionIds.length >= challenges.length,
-    },
-    {
-      num: 3,
-      short: '3. Hipótese',
-      full: '3. Formular Hipótese',
-      done: Boolean(progress.selectedThesisId),
-    },
-    {
-      num: 4,
-      short: '4. Decidir',
-      full: '4. Tomar Decisão',
-      done: Boolean(progress.selectedDecisionId),
-    },
-    {
-      num: 5,
-      short: '5. Resultado',
-      full: '5. Consequências',
-      done: progress.completed,
-    },
-  ];
-
   const volumeOneCases = allNodes.filter(n => n.isVolumeOne);
 
   // Dados para o Relatório Final (Etapa 5)
@@ -288,58 +289,90 @@ export const DossierInvestigationView: React.FC = () => {
     ch => !progress.solvedConnectionIds.includes(ch.id)
   );
 
-  return (
-    <div className="space-y-6 mt-2">
-      
-      {/* BRIEFING COMPACTO DA OPERAÇÃO (COMPLEMENTAR AO HUD IMERSIVO) */}
-      <div className="p-3.5 sm:p-4 rounded-2xl bg-[#0B1320]/90 border border-amber-500/20 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="space-y-0.5 min-w-0">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-semibold">
-            {selectedCase.missionCode || 'DOSSIÊ ATIVO'} — {selectedCase.missionTitle || selectedCase.title}
-          </div>
-          <p className="text-xs sm:text-sm text-slate-200 font-sans leading-relaxed">
-            {selectedCase.shortDescription}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0 text-[11px] font-mono">
-          <span className="px-2.5 py-1 rounded-lg bg-[#060A12] border border-slate-800 text-slate-300">
-            Docs Examinados: <strong className="text-cyan-300">{examinedDocIds.length}/{documents.length}</strong>
-          </span>
-          <span className="px-2.5 py-1 rounded-lg bg-[#060A12] border border-slate-800 text-slate-300">
-            Pistas: <strong className="text-amber-300">{extractedCluesList.length}/{allCaseClues.length}</strong>
-          </span>
-        </div>
-      </div>
+  // Pistas selecionadas atualmente nos slots A e B da Mesa (Etapa 2)
+  const slotAClue = extractedCluesList.find(c => c.id === boardSelectedClues[0]);
+  const slotBClue = extractedCluesList.find(c => c.id === boardSelectedClues[1]);
+  const isActiveChallengeSolved =
+    activeChallenge && progress.solvedConnectionIds.includes(activeChallenge.id);
 
-      {/* REAÇÃO DO TERMINAL À INVESTIGAÇÃO (AMBIENTE VIVO) */}
-      {(extractedCluesList.length > 0 || progress.solvedConnectionIds.length > 0) && (
-        <div className="px-3.5 py-2.5 rounded-xl bg-[#080F1E] border border-cyan-500/25 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-          <div className="flex items-center gap-2 text-cyan-300 min-w-0">
-            <Activity className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span className="uppercase tracking-wider font-bold shrink-0">Estado do Terminal:</span>
-            <span className="text-slate-300 truncate">
-              {mapConnectionsUnlocked
-                ? 'Ressonância intertemporal ativa — Novos arcos liberados no Mapa Mundial'
-                : extractedCluesList.some(c => c.isContradiction)
-                ? 'Divergência histórica catalogada — Pronta para cruzamento na Etapa 2'
-                : `${extractedCluesList.length} evidência(s) indexada(s) no Arquivo Pessoal`}
+  return (
+    <div className="space-y-6">
+      
+      {/* =====================================================================
+          1. BARRA DE CONTEXTO ENXUTA + SUBNÍVEL RETRÁTIL DE BRIEFING + ARQUIVO PESSOAL
+         ===================================================================== */}
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+          
+          {/* Esquerda: Título da Missão + Botão Discreto [ i Ver Briefing da Missão ] */}
+          <div className="flex flex-wrap items-center gap-2.5 min-w-0">
+            <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
+              {selectedCase.missionCode || 'OPERAÇÃO'} — {selectedCase.missionTitle || selectedCase.title}
             </span>
+            <button
+              type="button"
+              onClick={() => setIsBriefingOpen(o => !o)}
+              className={`px-3 py-1 rounded-lg border text-xs font-mono flex items-center gap-1.5 cursor-pointer transition-all ${
+                isBriefingOpen
+                  ? 'bg-amber-500/20 border-amber-400/50 text-amber-200'
+                  : 'bg-[#0B1320] border-slate-800 text-slate-300 hover:border-amber-500/40 hover:text-white'
+              }`}
+            >
+              <Info className="w-3.5 h-3.5 text-amber-400" />
+              <span>{isBriefingOpen ? 'Ocultar Briefing' : 'Ver Briefing da Missão'}</span>
+              {isBriefingOpen ? (
+                <ChevronUp className="w-3.5 h-3.5" />
+              ) : (
+                <ChevronDown className="w-3.5 h-3.5" />
+              )}
+            </button>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-[10px]">
-            <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300">
-              Docs examinados: {examinedDocIds.length}/{documents.length}
-            </span>
-            {mapConnectionsUnlocked && (
+
+          {/* Direita: Botão Subnível [ 📁 Meu Arquivo Pessoal ] + Ação Principal da Etapa 1 */}
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsArchiveDrawerOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-[#0B1320] hover:bg-slate-900 border border-cyan-500/35 text-cyan-300 text-xs font-mono font-bold flex items-center gap-2 cursor-pointer transition-all shadow-sm"
+            >
+              <FolderOpen className="w-4 h-4 text-cyan-400" />
+              <span>
+                Meu Arquivo Pessoal ({extractedCluesList.length}/{allCaseClues.length})
+              </span>
+            </button>
+
+            {state.activeStep === 1 && (
               <button
-                onClick={() => setActiveTab('mapa')}
-                className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 cursor-pointer"
+                type="button"
+                onClick={() => setActiveStep(2)}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all cursor-pointer"
               >
-                Ver Arco no Mapa →
+                <span>Ir para Mesa de Conexões</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </button>
             )}
           </div>
         </div>
-      )}
+
+        {/* Subnível Retrátil: Briefing da Missão (Oculto por padrão para liberar 200px verticais) */}
+        {isBriefingOpen && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 text-sm text-slate-200 leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200 flex items-start justify-between gap-4">
+            <div className="space-y-1 max-w-4xl">
+              <div className="text-[11px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+                CONTEXTO OPERACIONAL DO DOSSIÊ
+              </div>
+              <p>{selectedCase.shortDescription}</p>
+            </div>
+            <button
+              onClick={() => setIsBriefingOpen(false)}
+              className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white cursor-pointer shrink-0"
+              title="Fechar briefing"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* ALERTA CONTEXTUAL DE AUDITORIA (QUANDO CONTRADIÇÃO É DESCOBERTA) */}
       {contradictionAlert && (
@@ -367,14 +400,14 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 1 — OBSERVAR (EXAMINAR DOCUMENTOS E EXTRAIR PISTAS)
+          ETAPA 1 — OBSERVAR (MAIS IMAGEM, MENOS TEXTO E SUBNÍVEIS)
          ===================================================================== */}
       {state.activeStep === 1 && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           
-          {/* Coluna Esquerda (4 cols): Lista de Documentos e Fontes do Caso */}
-          <div className="lg:col-span-4 min-w-0 space-y-3 rounded-2xl bg-[#0B1320]/95 border border-amber-500/25 p-4 sm:p-5">
-            <div className="flex items-center justify-between border-b border-amber-500/20 pb-2.5">
+          {/* Coluna Esquerda Compacta (4 cols): Lista de Documentos Limpa (Sem parágrafos de resumo!) */}
+          <div className="lg:col-span-4 min-w-0 space-y-3 rounded-2xl bg-[#0B1320]/90 border border-slate-800/90 p-4 sm:p-5">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <FileSearch className="w-4 h-4 text-amber-400" />
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
@@ -382,7 +415,7 @@ export const DossierInvestigationView: React.FC = () => {
                 </span>
               </div>
               <span className="text-[10px] font-mono text-slate-400">
-                Selecione para abrir
+                Toque para abrir
               </span>
             </div>
 
@@ -398,293 +431,300 @@ export const DossierInvestigationView: React.FC = () => {
                   <button
                     key={doc.id}
                     onClick={() => handleSelectDoc(doc.id)}
-                    className={`w-full text-left p-3.5 rounded-xl border transition-all cursor-pointer space-y-1.5 ${
+                    className={`w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-3.5 ${
                       isSelected
-                        ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_15px_rgba(212,175,55,0.2)]'
-                        : 'bg-[#060A12]/80 border-slate-800 hover:border-amber-500/40'
+                        ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_20px_rgba(212,175,55,0.18)]'
+                        : 'bg-[#060A12]/85 border-slate-800/90 hover:border-amber-500/40'
                     }`}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-semibold">
-                        {doc.code}
-                      </span>
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-mono ${
-                          allExtracted
-                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-slate-900 text-slate-400 border border-slate-700'
-                        }`}
-                      >
-                        {extractedInDoc}/{doc.clues.length} pistas
-                      </span>
+                    {/* Miniatura Visual da Peça Documental */}
+                    <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-amber-500/30 bg-black shrink-0">
+                      <img
+                        src={selectedCase.dossierCover || selectedCase.image}
+                        alt=""
+                        className="w-full h-full object-cover opacity-80"
+                        style={{ filter: eraTheme.imgFilter }}
+                      />
+                      {allExtracted && (
+                        <div className="absolute inset-0 bg-emerald-950/60 flex items-center justify-center">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                        </div>
+                      )}
                     </div>
-                    <div className="font-sans text-sm font-bold text-white">
-                      {doc.title}
-                    </div>
-                    <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                      {doc.summary}
-                    </p>
-                    {examinedDocIds.includes(doc.id) && (
-                      <div className="pt-1 flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-cyan-400">
-                        <Check className="w-3 h-3" /> [Camada Desclassificada]
+
+                    {/* Código, Título Curto e Badge de Pistas (Sem texto longo de resumo!) */}
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold truncate">
+                          {doc.code.split('//')[0].trim()}
+                        </span>
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-mono shrink-0 ${
+                            allExtracted
+                              ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold'
+                              : 'bg-slate-900 text-slate-400 border border-slate-700'
+                          }`}
+                        >
+                          {extractedInDoc}/{doc.clues.length} pistas
+                        </span>
                       </div>
-                    )}
+                      <div className="font-sans text-sm font-bold text-white leading-snug line-clamp-2">
+                        {doc.title}
+                      </div>
+                    </div>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Coluna Central (5 cols): Mesa de Leitura e Inspeção do Documento Ativo */}
+          {/* Área Principal (8 cols): Protagonismo Visual da Evidência + Subníveis Limpos */}
           {activeDoc && (
-            <div className="lg:col-span-5 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5 shadow-xl">
-              <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
-                <div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
-                    {activeDoc.typeLabel} // {activeDoc.dateLabel}
-                  </span>
-                  <h3 className="font-sans text-base sm:text-lg font-bold text-white mt-0.5">
-                    {activeDoc.title}
-                  </h3>
-                </div>
-                <button
-                  onClick={handleOpenInspector}
-                  className="px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-sans font-semibold flex items-center gap-1.5 shrink-0 transition-all cursor-pointer"
-                  title="Inspecionar Documento com Zoom"
-                >
-                  <ZoomIn className="w-3.5 h-3.5" />
-                  <span>Ampliar / Zoom</span>
-                </button>
-              </div>
-
-              {/* Miniatura Visual do Registro com Identificação de Reconstrução & Lupa */}
+            <div className="lg:col-span-8 min-w-0 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 overflow-hidden shadow-2xl">
+              
+              {/* Imagem Grande em Destaque (h-64 a h-80 com moldura fina dourada) */}
               <div
                 onClick={handleOpenInspector}
-                className="relative h-32 rounded-xl overflow-hidden border border-amber-500/25 bg-[#060A12] group cursor-pointer"
+                className="relative h-64 sm:h-80 w-full overflow-hidden border-b border-amber-500/35 bg-[#050811] group cursor-pointer"
               >
                 <img
                   src={selectedCase.dossierCover || selectedCase.image}
                   alt={activeDoc.title}
-                  className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-80 transition-all duration-500"
+                  className="w-full h-full object-cover object-center opacity-85 group-hover:scale-[1.03] group-hover:opacity-100 transition-all duration-500"
                   style={{ filter: eraTheme.imgFilter }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#060A12] via-[#060A12]/35 to-transparent" />
-                <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-[#060A12]/90 border border-amber-500/35 text-[9px] sm:text-[10px] font-mono text-amber-300 uppercase tracking-wider">
-                  [Reconstrução Visual] // {activeDoc.code}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/25 to-transparent" />
+
+                {/* Selo Superior Esquerdo */}
+                <div className="absolute top-4 left-4 px-3 py-1 rounded-lg bg-[#060A12]/90 border border-amber-500/40 text-[10px] sm:text-xs font-mono text-amber-300 uppercase tracking-wider backdrop-blur-md">
+                  {activeDoc.code} • [Reconstrução Visual]
                 </div>
-                <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs font-sans font-semibold flex items-center gap-1.5 backdrop-blur-sm group-hover:bg-amber-500 group-hover:text-slate-950 transition-all">
-                  <Maximize2 className="w-3.5 h-3.5" /> Inspecionar com Zoom & Lupa
+
+                {/* Botão Superior Direito: Zoom & Lupa 2.5x */}
+                <button
+                  type="button"
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleOpenInspector();
+                  }}
+                  className="absolute top-4 right-4 px-3.5 py-1.5 rounded-xl bg-[#060A12]/90 hover:bg-amber-500 text-amber-200 hover:text-slate-950 border border-amber-400/60 text-xs font-sans font-bold flex items-center gap-1.5 backdrop-blur-md transition-all cursor-pointer shadow-lg"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                  <span>Ampliar / Lupa 2.5x</span>
+                </button>
+
+                {/* Título do Documento Sobreposto na Base da Imagem */}
+                <div className="absolute bottom-4 left-5 right-5 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                  <div>
+                    <span className="text-[11px] font-mono uppercase tracking-widest text-cyan-300 block">
+                      {activeDoc.typeLabel} // {activeDoc.dateLabel}
+                    </span>
+                    <h2 className="font-sans text-lg sm:text-2xl font-bold text-white mt-0.5 drop-shadow">
+                      {activeDoc.title}
+                    </h2>
+                  </div>
                 </div>
               </div>
 
-              {/* Suporte Documental Individualizado por Período Histórico */}
-              <div className={`p-4 rounded-xl ${eraTheme.paperBg} border ${eraTheme.paperBorder} space-y-3 shadow-inner`}>
-                <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400/90 border-b border-white/10 pb-1.5 flex flex-wrap items-center justify-between gap-1">
-                  <span className="truncate">{eraTheme.eraStamp}</span>
-                  <span className="text-emerald-400 flex items-center gap-1 shrink-0">
-                    <ShieldCheck className="w-3 h-3" /> FONTE CATALOGADA
-                  </span>
+              {/* Abas de Subnível do Documento: [ Ler Transcrição ] vs [ Inspecionar Pistas (X) ] */}
+              <div className="px-6 sm:px-8 pt-5 border-b border-slate-800/90 flex flex-wrap items-center justify-between gap-3 bg-[#080E1A]">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setDocSubTab('transcricao')}
+                    className={`px-4 py-2.5 rounded-t-xl font-sans text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+                      docSubTab === 'transcricao'
+                        ? 'border-amber-400 text-amber-300 bg-amber-500/10'
+                        : 'border-transparent text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Ler Transcrição</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setDocSubTab('pistas')}
+                    className={`px-4 py-2.5 rounded-t-xl font-sans text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+                      docSubTab === 'pistas'
+                        ? 'border-amber-400 text-amber-300 bg-amber-500/10'
+                        : 'border-transparent text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>
+                      Inspecionar Pistas ({activeDoc.clues.filter(c => progress.extractedClueIds.includes(c.id)).length}/{activeDoc.clues.length})
+                    </span>
+                  </button>
                 </div>
-                <p className={`text-sm sm:text-base ${eraTheme.textStyle} leading-relaxed`}>
-                  "{activeDoc.fullText}"
-                </p>
-                <div className="pt-1.5 border-t border-white/5 text-[11px] font-mono text-slate-400">
-                  {eraTheme.materialLabel}
-                </div>
+
+                <span className="text-[11px] font-mono text-emerald-400 hidden sm:flex items-center gap-1 pb-2">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Fonte Catalogada
+                </span>
               </div>
 
-              <div className="space-y-2.5 pt-1">
-                <div className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Toque nos trechos abaixo para extrair ao seu Arquivo Pessoal:</span>
-                </div>
+              {/* Conteúdo Espaçado do Subnível Ativo (p-6 a p-8 para amplo respiro) */}
+              <div className="p-6 sm:p-8">
+                {docSubTab === 'transcricao' ? (
+                  <div className="space-y-6">
+                    <div className={`p-6 rounded-2xl ${eraTheme.paperBg} border ${eraTheme.paperBorder} space-y-4 shadow-inner`}>
+                      <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400/80 border-b border-white/10 pb-2 flex items-center justify-between">
+                        <span>{eraTheme.eraStamp}</span>
+                        <span>REGISTRO INTEGRAL</span>
+                      </div>
+                      <p className={`text-base sm:text-lg ${eraTheme.textStyle} leading-relaxed`}>
+                        "{activeDoc.fullText}"
+                      </p>
+                      <div className="pt-2 border-t border-white/5 text-xs font-mono text-slate-400">
+                        {eraTheme.materialLabel}
+                      </div>
+                    </div>
 
-                {activeDoc.clues.map(clue => {
-                  const isSaved = progress.extractedClueIds.includes(clue.id);
-                  return (
-                    <div
-                      key={clue.id}
-                      onClick={() =>
-                        handleExtractClueWithFeedback(
-                          clue.id,
-                          clue.xpReward,
-                          clue.isContradiction,
-                          clue.title
-                        )
-                      }
-                      className={`p-3.5 rounded-xl border transition-all cursor-pointer space-y-2 ${
-                        isSaved
-                          ? 'bg-emerald-950/30 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
-                          : 'bg-[#060A12]/90 border-amber-500/40 hover:border-amber-400 hover:bg-amber-500/10'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5">
-                          {clue.isContradiction && (
-                            <span className="px-2 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-red-300 text-[10px] font-mono font-bold uppercase">
-                              Inconsistência
-                            </span>
-                          )}
-                          {clue.isOptional && (
-                            <span className="px-2 py-0.5 rounded bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-mono font-bold uppercase">
-                              Pista Opcional
-                            </span>
-                          )}
-                          <span className="text-xs font-bold text-white">
-                            {clue.title}
-                          </span>
-                        </div>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-xs font-mono text-slate-400">
+                        Encontrou uma evidência relevante neste registro?
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setDocSubTab('pistas')}
+                        className="px-5 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-400/50 font-sans font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        <span>Inspecionar Pistas deste Documento ({activeDoc.clues.length})</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="text-xs font-mono uppercase tracking-wider text-slate-400 mb-2">
+                      Selecione os fragmentos abaixo para guardar em seu Arquivo Pessoal:
+                    </div>
 
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold shrink-0 ${
+                    {activeDoc.clues.map(clue => {
+                      const isSaved = progress.extractedClueIds.includes(clue.id);
+                      return (
+                        <div
+                          key={clue.id}
+                          onClick={() =>
+                            handleExtractClueWithFeedback(
+                              clue.id,
+                              clue.xpReward,
+                              clue.isContradiction,
+                              clue.title
+                            )
+                          }
+                          className={`p-5 rounded-2xl border transition-all cursor-pointer space-y-3 ${
                             isSaved
-                              ? 'bg-emerald-500/20 text-emerald-300'
-                              : 'bg-amber-500 text-slate-950'
+                              ? 'bg-emerald-950/25 border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.12)]'
+                              : 'bg-[#060A12]/90 border-amber-500/40 hover:border-amber-400'
                           }`}
                         >
-                          {isSaved ? (
-                            <>
-                              <BookmarkCheck className="w-3.5 h-3.5" /> Guardada (+{clue.xpReward} XP)
-                            </>
-                          ) : (
-                            <>
-                              <BookmarkPlus className="w-3.5 h-3.5" /> Guardar Pista
-                            </>
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              {clue.isContradiction && (
+                                <span className="px-2.5 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-red-300 text-[10px] font-mono font-bold uppercase">
+                                  Inconsistência
+                                </span>
+                              )}
+                              <span className="text-sm sm:text-base font-bold text-white">
+                                {clue.title}
+                              </span>
+                            </div>
+
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold shrink-0 ${
+                                isSaved
+                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                  : 'bg-amber-500 text-slate-950 shadow-sm'
+                              }`}
+                            >
+                              {isSaved ? (
+                                <>
+                                  <BookmarkCheck className="w-4 h-4" /> Guardada (+{clue.xpReward} XP)
+                                </>
+                              ) : (
+                                <>
+                                  <BookmarkPlus className="w-4 h-4" /> Guardar Pista
+                                </>
+                              )}
+                            </span>
+                          </div>
+
+                          <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-sans bg-white/[0.02] p-3.5 rounded-xl border-l-2 border-amber-400">
+                            "{clue.excerpt}"
+                          </p>
+
+                          {isSaved && (
+                            <div className="text-xs sm:text-sm font-mono text-cyan-300 pt-2 border-t border-white/10 leading-relaxed">
+                              <strong>Nota de Análise:</strong> {clue.analysisNote}
+                            </div>
                           )}
-                        </span>
-                      </div>
-
-                      <p className="text-sm text-slate-200 leading-relaxed font-sans">
-                        {clue.excerpt}
-                      </p>
-
-                      {isSaved && (
-                        <div className="text-xs font-mono text-cyan-300 pt-1.5 border-t border-white/10 leading-relaxed">
-                          Nota de Análise: {clue.analysisNote}
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+                      );
+                    })}
+                  </div>
+                )}
               </div>
+
             </div>
           )}
-
-          {/* Coluna Direita (3 cols): Arquivo Pessoal do Investigador */}
-          <div className="lg:col-span-3 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-4 sm:p-5 flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2.5">
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
-                  Meu Arquivo Pessoal
-                </span>
-                <span className="text-xs font-mono text-amber-400 font-bold">
-                  {extractedCluesList.length}/{allCaseClues.length}
-                </span>
-              </div>
-
-              {extractedCluesList.length === 0 ? (
-                <div className="p-5 rounded-xl bg-[#060A12]/60 border border-dashed border-slate-700 text-center space-y-2">
-                  <BookmarkPlus className="w-6 h-6 text-slate-500 mx-auto" />
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Nenhuma pista guardada ainda. Abra os documentos ao lado e clique em <strong>Guardar Pista</strong> nos registros relevantes.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2 max-h-[340px] overflow-y-auto custom-scrollbar pr-1">
-                  {extractedCluesList.map(c => (
-                    <div
-                      key={c.id}
-                      className="p-2.5 rounded-xl bg-[#060A12]/90 border border-emerald-500/30 space-y-1"
-                    >
-                      <div className="flex items-center justify-between text-[10px] font-mono text-emerald-400">
-                        <span>{c.docCode}</span>
-                        <span>+{c.xpReward} XP</span>
-                      </div>
-                      <div className="text-xs font-bold text-white leading-snug">
-                        {c.title}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="pt-3 border-t border-slate-800 space-y-2">
-              <button
-                onClick={() => setActiveStep(2)}
-                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-sm sm:text-base uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all cursor-pointer"
-              >
-                <span>Ir para Mesa de Conexões</span>
-                <ChevronRight className="w-5 h-5 stroke-[2.5]" />
-              </button>
-              {extractedCluesList.length < allCaseClues.length && (
-                <p className="text-[11px] font-mono text-slate-400 text-center">
-                  Você pode avançar agora ou continuar inspecionando os demais documentos.
-                </p>
-              )}
-            </div>
-          </div>
 
         </div>
       )}
 
       {/* =====================================================================
-          ETAPA 2 — CONECTAR (MESA DE INVESTIGAÇÃO E CRUZAMENTO DE EVIDÊNCIAS)
+          ETAPA 2 — CONECTAR (SIMPLIFICAR VÍNCULOS E VISUALIZAR A CONEXÃO)
          ===================================================================== */}
       {state.activeStep === 2 && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           
-          {/* Esquerda (5 cols): Perguntas de Cruzamento e Relações a Estabelecer */}
-          <div className="lg:col-span-5 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5">
-            <div className="flex items-center justify-between border-b border-amber-500/20 pb-2.5">
+          {/* Coluna Esquerda Compacta (4 cols): Apenas título da pergunta e badge (Comprovada / Em aberto) */}
+          <div className="lg:col-span-4 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5">
+            <div className="border-b border-slate-800 pb-3 space-y-1">
               <div className="flex items-center gap-2">
                 <GitCommit className="w-4 h-4 text-amber-400" />
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
-                  Relações da Investigação ({progress.solvedConnectionIds.length}/{challenges.length} Comprovadas)
+                  Vínculos ({progress.solvedConnectionIds.length}/{challenges.length})
                 </span>
               </div>
+              <p className="text-xs text-slate-400">
+                Selecione uma questão e conecte as 2 pistas correspondentes na mesa.
+              </p>
             </div>
 
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Selecione um vínculo abaixo e marque na mesa as <strong>2 evidências do seu arquivo</strong> que comprovam a relação. Se avançar sem validar um vínculo, ele será registrado como <strong>não comprovado</strong>.
-            </p>
-
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {challenges.map(ch => {
                 const isSolved = progress.solvedConnectionIds.includes(ch.id);
-                const hasFailedAttempt = (progress.failedConnectionIds || []).includes(ch.id);
                 const isCurrent = activeChallenge?.id === ch.id;
 
                 return (
-                  <div
+                  <button
                     key={ch.id}
+                    type="button"
                     onClick={() => {
                       setActiveChallengeId(ch.id);
                       setConnectionFeedback(null);
                     }}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer space-y-2 ${
+                    className={`w-full text-left p-4 rounded-xl border transition-all cursor-pointer space-y-2 ${
                       isCurrent
-                        ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+                        ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.18)]'
                         : isSolved
-                        ? 'bg-emerald-950/25 border-emerald-500/40'
+                        ? 'bg-emerald-950/20 border-emerald-500/40'
                         : 'bg-[#060A12]/80 border-slate-800 hover:border-amber-500/40'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold">
-                        Vínculo #{ch.stepNumber} {ch.unlocksMapConnections ? '// Elo Intertemporal' : ''}
+                        Vínculo #{ch.stepNumber}
                       </span>
                       {isSolved ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 font-bold">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Comprovada (+{ch.xpReward} XP)
-                        </span>
-                      ) : hasFailedAttempt ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-mono text-red-300 bg-red-500/15 px-2 py-0.5 rounded border border-red-500/30">
-                          Não comprovada (Tente novamente)
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-mono text-emerald-300 font-bold">
+                          <CheckCircle2 className="w-3 h-3" /> Comprovada
                         </span>
                       ) : (
-                        <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700">
-                          Não comprovada
+                        <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] font-mono text-slate-400">
+                          Em aberto
                         </span>
                       )}
                     </div>
@@ -692,116 +732,134 @@ export const DossierInvestigationView: React.FC = () => {
                     <div className="text-sm font-bold text-white leading-snug">
                       {ch.question}
                     </div>
-
-                    {isSolved ? (
-                      <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-200 leading-relaxed">
-                        <strong className="block text-emerald-300 mb-0.5">{ch.successTitle}:</strong>
-                        {ch.successConclusion}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-slate-400 italic">
-                        Dica: {ch.promptHint}
-                      </div>
-                    )}
-                  </div>
+                  </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Direita (7 cols): Mesa de Investigação Interativa */}
-          <div className="lg:col-span-7 min-w-0 space-y-5 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5 shadow-xl">
-            <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
-                  MESA DE CRUZAMENTO ANALÍTICO
-                </span>
-                <h3 className="font-sans text-base sm:text-lg font-bold text-white mt-0.5">
-                  {activeChallenge?.question}
-                </h3>
-              </div>
-              <span className="px-2.5 py-1 rounded bg-slate-900 border border-cyan-500/30 text-xs font-mono text-cyan-300 shrink-0">
-                {boardSelectedClues.length}/2 selecionadas
+          {/* Direita (8 cols): Mesa Visual de Investigação ([ Pista A ] ─── 🔗 ─── [ Pista B ]) */}
+          <div className="lg:col-span-8 min-w-0 space-y-6 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-6 sm:p-8 shadow-2xl">
+            <div className="border-b border-slate-800 pb-4">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
+                QUESTÃO EM ANÁLISE NA MESA
               </span>
+              <h3 className="font-sans text-lg sm:text-xl font-bold text-white mt-1">
+                {activeChallenge?.question}
+              </h3>
             </div>
 
-            {extractedCluesList.length < 2 ? (
-              <div className="p-6 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center space-y-3">
-                <AlertTriangle className="w-7 h-7 text-amber-400 mx-auto" />
-                <p className="text-sm text-amber-100 leading-relaxed">
-                  Você extraiu apenas {extractedCluesList.length} pista(s) até o momento. Para validar conexões na mesa são necessárias pelo menos 2 pistas no seu Arquivo Pessoal.
+            {/* Recompensa Visual na Mesa Direita quando o Vínculo está Comprovado */}
+            {isActiveChallengeSolved && activeChallenge && (
+              <div className="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/50 space-y-2 animate-in fade-in duration-300">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-mono uppercase tracking-wider text-emerald-400 font-bold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" /> Vínculo Comprovado (+{activeChallenge.xpReward} XP)
+                  </span>
+                </div>
+                <div className="text-base font-bold text-white">
+                  {activeChallenge.successTitle}
+                </div>
+                <p className="text-sm text-emerald-100/90 leading-relaxed">
+                  {activeChallenge.successConclusion}
                 </p>
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+              </div>
+            )}
+
+            {extractedCluesList.length < 2 ? (
+              <div className="p-8 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-center space-y-4">
+                <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto" />
+                <p className="text-sm sm:text-base text-amber-100 leading-relaxed max-w-lg mx-auto">
+                  Você possui {extractedCluesList.length} pista(s) no seu Arquivo Pessoal. Extraia pelo menos 2 pistas na Etapa 1 para conectá-las na mesa.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                   <button
                     onClick={() => setActiveStep(1)}
-                    className="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-sans font-bold text-sm cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-sans font-bold text-sm cursor-pointer"
                   >
-                    ← Voltar e Examinar Documentos
+                    ← Voltar aos Documentos
                   </button>
                   <button
                     onClick={() => setActiveStep(3)}
-                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-sans font-bold text-sm cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-sans font-bold text-sm cursor-pointer"
                   >
-                    Avançar sem comprovar vínculos →
+                    Avançar sem comprovar →
                   </button>
                 </div>
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {extractedCluesList.map(clue => {
-                    const isPicked = boardSelectedClues.includes(clue.id);
-                    return (
+                {/* Diagrama Visual de Conexão: [ Pista A ] ─── 🔗 ─── [ Pista B ] */}
+                <div className="p-5 rounded-2xl bg-[#060A12]/90 border border-amber-500/30 space-y-4">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                    
+                    {/* Slot Pista A */}
+                    <div
+                      className={`flex-1 p-3.5 rounded-xl border text-left transition-all ${
+                        slotAClue
+                          ? 'bg-amber-500/15 border-amber-400 text-white'
+                          : 'bg-[#0B1320]/60 border-dashed border-slate-700 text-slate-500'
+                      }`}
+                    >
+                      <div className="text-[10px] font-mono uppercase text-amber-400 mb-0.5">
+                        {slotAClue ? slotAClue.docCode.split('//')[0] : 'SLOT DE EVIDÊNCIA A'}
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold truncate">
+                        {slotAClue ? slotAClue.title : 'Selecione a 1ª pista abaixo'}
+                      </div>
+                    </div>
+
+                    {/* Conector Pontilhado Dourado */}
+                    <div className="flex items-center justify-center gap-2 px-2 shrink-0">
+                      <div className="hidden sm:block w-8 border-t-2 border-dashed border-amber-400/60" />
                       <div
-                        key={clue.id}
-                        onClick={() => toggleBoardClue(clue.id)}
-                        className={`p-3.5 rounded-xl border transition-all cursor-pointer space-y-1.5 ${
-                          isPicked
-                            ? 'bg-cyan-500/20 border-cyan-400 shadow-[0_0_18px_rgba(6,182,212,0.3)] scale-[1.01]'
-                            : 'bg-[#060A12]/90 border-slate-800 hover:border-cyan-500/40'
+                        className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
+                          boardSelectedClues.length === 2
+                            ? 'bg-amber-500 text-slate-950 border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.5)]'
+                            : 'bg-[#0B1320] border-slate-700 text-amber-400'
                         }`}
                       >
-                        <div className="flex items-center justify-between text-[10px] font-mono">
-                          <span className="text-amber-400">{clue.docCode}</span>
-                          {isPicked && (
-                            <span className="px-2 py-0.5 rounded bg-cyan-400 text-slate-950 font-bold">
-                              Na Mesa
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs sm:text-sm font-bold text-white leading-snug">
-                          {clue.title}
-                        </div>
-                        <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
-                          {clue.excerpt}
-                        </p>
+                        <Link2 className="w-4 h-4" />
                       </div>
-                    );
-                  })}
-                </div>
+                      <div className="hidden sm:block w-8 border-t-2 border-dashed border-amber-400/60" />
+                    </div>
 
-                {/* Botão de Validação da Conexão */}
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <div className="text-xs font-mono text-slate-400">
-                    Selecione 2 pistas que sustentem a resposta e clique em Validar Conexão.
+                    {/* Slot Pista B */}
+                    <div
+                      className={`flex-1 p-3.5 rounded-xl border text-left transition-all ${
+                        slotBClue
+                          ? 'bg-cyan-500/15 border-cyan-400 text-white'
+                          : 'bg-[#0B1320]/60 border-dashed border-slate-700 text-slate-500'
+                      }`}
+                    >
+                      <div className="text-[10px] font-mono uppercase text-cyan-400 mb-0.5">
+                        {slotBClue ? slotBClue.docCode.split('//')[0] : 'SLOT DE EVIDÊNCIA B'}
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold truncate">
+                        {slotBClue ? slotBClue.title : 'Selecione a 2ª pista abaixo'}
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    onClick={handleValidateConnection}
-                    disabled={boardSelectedClues.length !== 2}
-                    className={`px-5 py-3 rounded-xl font-sans font-bold text-sm uppercase tracking-wider transition-all shrink-0 ${
-                      boardSelectedClues.length === 2
-                        ? 'bg-gradient-to-r from-cyan-500 to-amber-400 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.35)] cursor-pointer'
-                        : 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                    }`}
-                  >
-                    Validar Conexão na Mesa
-                  </button>
+
+                  <div className="flex justify-center pt-1">
+                    <button
+                      onClick={handleValidateConnection}
+                      disabled={boardSelectedClues.length !== 2}
+                      className={`px-6 py-3 rounded-xl font-sans font-bold text-xs sm:text-sm uppercase tracking-wider transition-all ${
+                        boardSelectedClues.length === 2
+                          ? 'bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] cursor-pointer'
+                          : 'bg-slate-800/80 text-slate-500 cursor-not-allowed'
+                      }`}
+                    >
+                      Validar Conexão na Mesa
+                    </button>
+                  </div>
                 </div>
 
-                {/* Feedback Analítico do Sistema */}
+                {/* Feedback Analítico de Tentativa */}
                 {connectionFeedback && (
                   <div
-                    className={`p-4 rounded-xl border flex items-start gap-3 animate-in fade-in duration-300 ${
+                    className={`p-4 rounded-xl border flex items-start gap-3 animate-in fade-in duration-200 ${
                       connectionFeedback.type === 'success'
                         ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-100'
                         : 'bg-red-950/40 border-red-500/50 text-red-100'
@@ -819,32 +877,93 @@ export const DossierInvestigationView: React.FC = () => {
                         </div>
                       )}
                       <p>{connectionFeedback.message}</p>
-                      {connectionFeedback.type === 'error' && (
-                        <p className="text-xs font-mono text-amber-300 pt-1">
-                          Você pode selecionar outro par de pistas para tentar novamente ou avançar com este vínculo registrado como não comprovado.
-                        </p>
-                      )}
                     </div>
                   </div>
                 )}
 
+                {/* Fichas Visuais das Pistas do Arquivo Pessoal (Texto longo oculto em subnível!) */}
+                <div className="space-y-3">
+                  <div className="text-xs font-mono uppercase tracking-wider text-slate-400">
+                    Fichas no seu Arquivo Pessoal (Toque em 2 fichas para conectar):
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {extractedCluesList.map(clue => {
+                      const isPicked = boardSelectedClues.includes(clue.id);
+                      const isExpanded = expandedBoardClueId === clue.id;
+
+                      return (
+                        <div
+                          key={clue.id}
+                          onClick={() => toggleBoardClue(clue.id)}
+                          className={`p-4 rounded-xl border transition-all cursor-pointer space-y-2 ${
+                            isPicked
+                              ? 'bg-cyan-500/15 border-cyan-400 shadow-[0_0_18px_rgba(6,182,212,0.25)]'
+                              : 'bg-[#060A12]/90 border-slate-800 hover:border-cyan-500/40'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="w-8 h-8 rounded-lg overflow-hidden border border-amber-500/30 shrink-0">
+                                <img
+                                  src={selectedCase.dossierCover || selectedCase.image}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                  style={{ filter: eraTheme.imgFilter }}
+                                />
+                              </div>
+                              <span className="text-[10px] font-mono text-amber-400 uppercase truncate">
+                                {clue.docCode.split('//')[0]}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setExpandedBoardClueId(isExpanded ? null : clue.id);
+                                }}
+                                className="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-300 cursor-pointer"
+                              >
+                                {isExpanded ? 'Ocultar trecho' : 'Ver trecho'}
+                              </button>
+                              {isPicked && (
+                                <span className="px-2 py-0.5 rounded bg-cyan-400 text-slate-950 text-[10px] font-mono font-bold">
+                                  Na Mesa
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="text-sm font-bold text-white leading-snug">
+                            {clue.title}
+                          </div>
+
+                          {isExpanded && (
+                            <p className="text-xs text-slate-300 leading-relaxed pt-2 border-t border-slate-800/80">
+                              "{clue.excerpt}"
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
                   <button
                     onClick={() => setActiveStep(1)}
-                    className="text-xs sm:text-sm font-mono text-slate-400 hover:text-white cursor-pointer"
+                    className="text-xs font-mono text-slate-400 hover:text-white cursor-pointer"
                   >
-                    ← Examinar mais documentos
+                    ← Voltar aos documentos
                   </button>
                   <button
                     onClick={() => setActiveStep(3)}
-                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all"
+                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg transition-all"
                   >
-                    <span>
-                      {progress.solvedConnectionIds.length < challenges.length
-                        ? `Avançar para Etapa 3 (${challenges.length - progress.solvedConnectionIds.length} vínculo não comprovado)`
-                        : 'Avançar para Etapa 3: Formular Hipótese'}
-                    </span>
-                    <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+                    <span>Avançar para Etapa 3: Hipótese</span>
+                    <ChevronRight className="w-4 h-4 stroke-[2.5]" />
                   </button>
                 </div>
               </>
@@ -855,97 +974,105 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 3 — FORMULAR UMA HIPÓTESE (TESE + EVIDÊNCIAS DE SUSTENTAÇÃO)
+          ETAPA 3 — FORMULAR HIPÓTESE (RESPIRO E SUBNÍVEIS ACORDEÃO)
          ===================================================================== */}
       {state.activeStep === 3 && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
-          {/* Passo 3A (6 cols): Escolha da Tese Interpretativa */}
-          <div className="lg:col-span-6 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5">
-            <div className="border-b border-amber-500/20 pb-2.5">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-6 sm:p-8 space-y-6 shadow-2xl">
+            <div className="border-b border-slate-800 pb-4">
               <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 block">
-                PASSO 1 DA HIPÓTESE
+                ETAPA 3 // FORMULAÇÃO DE HIPÓTESE
               </span>
-              <h3 className="font-sans text-base sm:text-lg font-bold text-white">
+              <h3 className="font-sans text-xl sm:text-2xl font-bold text-white mt-1">
                 Qual interpretação explica melhor o caso investigado?
               </h3>
             </div>
 
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Não existe apenas uma resposta aceitável: uma hipótese alternativa também receberá avaliação de <strong>Alta Consistência</strong> se você anexar as evidências corretas que a fundamentam.
-            </p>
-
+            {/* 1. Escolha da Tese com Detalhes em Subnível Acordeão */}
             <div className="space-y-3">
               {theses.map(th => {
                 const isSelected = chosenThesisId === th.id;
+                const isExpanded = expandedThesisId === th.id;
                 return (
                   <div
                     key={th.id}
                     onClick={() => setChosenThesisId(th.id)}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer space-y-1.5 ${
+                    className={`p-5 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                       isSelected
-                        ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
-                        : 'bg-[#060A12]/80 border-slate-800 hover:border-amber-500/40'
+                        ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.15)]'
+                        : 'bg-[#060A12]/85 border-slate-800 hover:border-amber-500/40'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-mono font-bold">
-                        {th.tag}
-                      </span>
-                      {isSelected && (
-                        <span className="text-xs font-mono text-emerald-400 font-bold flex items-center gap-1">
-                          <Check className="w-3.5 h-3.5" /> Selecionada
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-mono font-bold shrink-0">
+                          {th.tag}
                         </span>
-                      )}
+                        <span className="font-sans text-base font-bold text-white truncate">
+                          {th.title}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={e => {
+                            e.stopPropagation();
+                            setExpandedThesisId(isExpanded ? null : th.id);
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] font-mono text-slate-300 cursor-pointer"
+                        >
+                          {isExpanded ? 'Ocultar detalhes' : 'Ver detalhes da tese'}
+                        </button>
+                        {isSelected && (
+                          <span className="w-6 h-6 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center">
+                            <Check className="w-3.5 h-3.5 stroke-[3]" />
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="font-sans text-sm sm:text-base font-bold text-white">
-                      {th.title}
-                    </div>
-                    <p className="text-sm text-slate-200 leading-relaxed font-sans">
-                      {th.description}
-                    </p>
+
+                    <p className="text-xs font-mono text-cyan-300">{th.subtitle}</p>
+
+                    {isExpanded && (
+                      <p className="text-sm text-slate-200 leading-relaxed pt-2 border-t border-slate-800/80">
+                        {th.description}
+                      </p>
+                    )}
                   </div>
                 );
               })}
             </div>
-          </div>
 
-          {/* Passo 3B e 3C (6 cols): Anexar Evidências que Sustentam a Conclusão + Raciocínio */}
-          <div className="lg:col-span-6 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5">
-            <div className="border-b border-cyan-500/20 pb-2.5">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
-                PASSO 2 & 3 DA HIPÓTESE
-              </span>
-              <h3 className="font-sans text-base sm:text-lg font-bold text-white">
-                Vincule as Evidências de Sustentação e Registre sua Dedução
-              </h3>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-mono text-slate-300 block">
-                Marque 2 ou 3 evidências do seu Arquivo Pessoal que provam sua tese ({hypothesisClues.length} anexadas):
-              </label>
+            {/* 2. Vincular Evidências de Sustentação */}
+            <div className="pt-4 border-t border-slate-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono uppercase tracking-wider text-cyan-300 font-bold">
+                  Vincule 2 ou 3 pistas que provam sua tese ({hypothesisClues.length} anexadas):
+                </span>
+              </div>
 
               {extractedCluesList.length === 0 ? (
                 <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
-                  Você ainda não extraiu pistas na Etapa 1. Sem evidências anexadas, sua hipótese será registrada com <strong>Baixa Consistência</strong>.
+                  Nenhuma pista extraída na Etapa 1. Sem evidências anexadas, a hipótese terá Baixa Consistência.
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {extractedCluesList.map(clue => {
                     const checked = hypothesisClues.includes(clue.id);
                     return (
-                      <div
+                      <button
                         key={clue.id}
+                        type="button"
                         onClick={() => toggleHypothesisClue(clue.id)}
-                        className={`p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-2.5 ${
+                        className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
                           checked
                             ? 'bg-cyan-500/15 border-cyan-400 text-white'
                             : 'bg-[#060A12]/80 border-slate-800 text-slate-300 hover:border-slate-700'
                         }`}
                       >
                         <div
-                          className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border shrink-0 ${
+                          className={`w-4 h-4 rounded flex items-center justify-center border shrink-0 ${
                             checked
                               ? 'bg-cyan-400 border-cyan-400 text-slate-950'
                               : 'border-slate-600'
@@ -953,56 +1080,62 @@ export const DossierInvestigationView: React.FC = () => {
                         >
                           {checked && <Check className="w-3 h-3 stroke-[3]" />}
                         </div>
-                        <div className="text-xs sm:text-sm leading-snug">
-                          <strong className="text-amber-300 font-mono text-[11px] mr-1.5">
-                            [{clue.docCode}]
-                          </strong>
-                          <span className="font-semibold">{clue.title}</span>
-                        </div>
-                      </div>
+                        <span className="text-xs sm:text-sm font-semibold truncate">
+                          {clue.title}
+                        </span>
+                      </button>
                     );
                   })}
                 </div>
               )}
             </div>
 
-            <div className="space-y-1.5 pt-1">
-              <label className="text-xs font-mono text-slate-300 block">
-                Explique brevemente o seu raciocínio no Caderno de Investigação (opcional):
-              </label>
-              <textarea
-                rows={3}
-                value={reasoningText}
-                onChange={e => setReasoningText(e.target.value)}
-                placeholder="Descreva por que essas evidências sustentam sua interpretação..."
-                className="w-full p-3 rounded-xl bg-[#060A12] border border-slate-700/80 text-sm text-slate-100 leading-relaxed focus:outline-none focus:border-amber-400 custom-scrollbar"
-              />
+            {/* Subnível Opcional: Caderno de Anotação */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setIsNotesOpen(o => !o)}
+                className="text-xs font-mono text-slate-400 hover:text-amber-300 flex items-center gap-1.5 cursor-pointer"
+              >
+                {isNotesOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                <span>{isNotesOpen ? 'Ocultar anotação pessoal' : '+ Adicionar raciocínio no caderno (opcional)'}</span>
+              </button>
+
+              {isNotesOpen && (
+                <textarea
+                  rows={2}
+                  value={reasoningText}
+                  onChange={e => setReasoningText(e.target.value)}
+                  placeholder="Descreva brevemente sua dedução..."
+                  className="mt-2 w-full p-3 rounded-xl bg-[#060A12] border border-slate-700/80 text-sm text-slate-100 focus:outline-none focus:border-amber-400"
+                />
+              )}
             </div>
 
             <button
               onClick={handleSubmitHypothesis}
               disabled={!chosenThesisId}
-              className={`w-full py-3.5 px-5 rounded-xl font-sans font-bold text-sm sm:text-base uppercase tracking-wider transition-all ${
+              className={`w-full py-3.5 px-5 rounded-xl font-sans font-bold text-sm uppercase tracking-wider transition-all ${
                 chosenThesisId
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.3)] cursor-pointer'
+                  ? 'bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-lg cursor-pointer'
                   : 'bg-slate-800 text-slate-500 cursor-not-allowed'
               }`}
             >
-              Validar e Registrar Hipótese no Compêndio
+              Validar e Registrar Hipótese
             </button>
 
             {hypothesisResult && (
-              <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 space-y-3 animate-in fade-in duration-300">
+              <div className="p-5 rounded-2xl bg-emerald-950/35 border border-emerald-500/40 space-y-3 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs sm:text-sm font-mono uppercase text-emerald-400 font-bold">
+                  <span className="text-xs font-mono uppercase text-emerald-400 font-bold">
                     Grau de Consistência:{' '}
                     {hypothesisResult.score === 'forte'
                       ? 'Alta (Bem Fundamentada)'
                       : hypothesisResult.score === 'parcial'
                       ? 'Parcial'
-                      : 'Baixa (Sem Sustentação Direta)'}
+                      : 'Baixa'}
                   </span>
-                  <span className="text-xs sm:text-sm font-mono text-amber-300 font-bold">
+                  <span className="text-xs font-mono text-amber-300 font-bold">
                     +{hypothesisResult.xpAwarded} XP
                   </span>
                 </div>
@@ -1012,33 +1145,32 @@ export const DossierInvestigationView: React.FC = () => {
                 <div className="pt-2 flex justify-end">
                   <button
                     onClick={() => setActiveStep(4)}
-                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all"
+                    className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-sm flex items-center gap-2 cursor-pointer shadow-lg transition-all"
                   >
                     <span>Avançar para Etapa 4: Tomar Decisão</span>
-                    <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+                    <ChevronRight className="w-4 h-4 stroke-[2.5]" />
                   </button>
                 </div>
               </div>
             )}
           </div>
-
         </div>
       )}
 
       {/* =====================================================================
-          ETAPA 4 — DECIDIR (SITUAÇÃO SIMULADA E TENDÊNCIA DO JOGADOR)
+          ETAPA 4 — DECIDIR (MAX-W-4XL COM AMPLO RESPIRO E SUBNÍVEL)
          ===================================================================== */}
       {state.activeStep === 4 && (
-        <div className="max-w-4xl mx-auto rounded-2xl bg-[#0B1320]/95 border border-amber-500/35 p-5 sm:p-7 shadow-2xl space-y-6">
-          <div className="border-b border-amber-500/20 pb-4">
-            <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-amber-400 mb-1">
+        <div className="max-w-4xl mx-auto rounded-2xl bg-[#0B1320]/95 border border-amber-500/35 p-6 sm:p-8 shadow-2xl space-y-6">
+          <div className="border-b border-slate-800 pb-4 space-y-2">
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-amber-400">
               <Scale className="w-4 h-4" />
-              <span>ETAPA 4 // SIMULAÇÃO DE TOMADA DE DECISÃO</span>
+              <span>ETAPA 4 // TOMADA DE DECISÃO</span>
             </div>
-            <h3 className="font-sans text-lg sm:text-2xl font-bold text-white">
-              Diante do padrão identificado, qual caminho você escolheria?
+            <h3 className="font-sans text-xl sm:text-2xl font-bold text-white">
+              Diante do padrão identificado, qual posição você assume?
             </h3>
-            <p className="text-sm sm:text-base text-amber-100/95 leading-relaxed mt-2 p-4 rounded-xl bg-[#060A12]/90 border border-amber-500/30">
+            <p className="text-sm text-amber-100/90 leading-relaxed">
               {selectedCase.simulationPrompt}
             </p>
           </div>
@@ -1046,36 +1178,57 @@ export const DossierInvestigationView: React.FC = () => {
           <div className="grid grid-cols-1 gap-4">
             {simChoices.map(choice => {
               const isSelected = progress.selectedDecisionId === choice.id;
+              const isExpanded = expandedChoiceId === choice.id;
               return (
                 <div
                   key={choice.id}
                   onClick={() => handleSelectSimulationDecision(choice.id)}
-                  className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                  className={`p-5 sm:p-6 rounded-2xl border transition-all cursor-pointer space-y-3 ${
                     isSelected
-                      ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.25)]'
-                      : 'bg-[#060A12]/85 border-slate-800 hover:border-amber-500/50 hover:bg-[#060A12]'
+                      ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.2)]'
+                      : 'bg-[#060A12]/90 border-slate-800 hover:border-amber-500/50'
                   }`}
                 >
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-400/50 flex items-center justify-center font-sans font-bold text-sm text-amber-300">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/50 flex items-center justify-center font-sans font-bold text-sm text-amber-300 shrink-0">
                         {choice.tag}
                       </span>
-                      <span className="font-sans text-base sm:text-lg font-bold text-white">
-                        {choice.title}
-                      </span>
+                      <div>
+                        <span className="font-sans text-base sm:text-lg font-bold text-white block">
+                          {choice.title}
+                        </span>
+                        <span className="text-xs font-mono text-cyan-300">
+                          {choice.subtitle}
+                        </span>
+                      </div>
                     </div>
-                    <div className="text-xs font-mono text-cyan-300">
-                      {choice.subtitle}
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={e => {
+                          e.stopPropagation();
+                          setExpandedChoiceId(isExpanded ? null : choice.id);
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-slate-300 cursor-pointer"
+                      >
+                        {isExpanded ? 'Ocultar detalhes' : 'Ver detalhes'}
+                      </button>
+                      <button
+                        type="button"
+                        className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-xs sm:text-sm cursor-pointer"
+                      >
+                        Escolher {choice.tag} →
+                      </button>
                     </div>
-                    <p className="text-sm text-slate-200 leading-relaxed pt-1">
-                      {choice.description}
-                    </p>
                   </div>
 
-                  <button className="px-5 py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40 font-sans font-bold text-sm shrink-0 transition-all cursor-pointer">
-                    Escolher Caminho {choice.tag} →
-                  </button>
+                  {isExpanded && (
+                    <p className="text-sm text-slate-200 leading-relaxed pt-3 border-t border-slate-800/80">
+                      {choice.description}
+                    </p>
+                  )}
                 </div>
               );
             })}
@@ -1084,347 +1237,171 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 5 — DESCOBRIR CONSEQUÊNCIAS (RELATÓRIO DE AUDITORIA DO CASO)
+          ETAPA 5 — CONSEQUÊNCIAS (RESUMO EXECUTIVO LIMPO + SUBNÍVEL DE AUDITORIA)
          ===================================================================== */}
       {state.activeStep === 5 && (
-        <div className="space-y-6">
-          
-          {/* Banner Superior de Conclusão e Mérito */}
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-[#0B1320] via-amber-950/25 to-[#0B1320] border border-amber-500/40 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">
-                <Award className="w-4 h-4" />
-                <span>RELATÓRIO DE AUDITORIA // {selectedCase.missionCode}</span>
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="rounded-2xl bg-[#0B1320]/95 border border-amber-500/40 p-6 sm:p-8 shadow-2xl space-y-6">
+            
+            {/* Cabeçalho do Relatório */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+              <div>
+                <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">
+                  <Award className="w-4 h-4" />
+                  <span>RELATÓRIO DE CONSEQUÊNCIAS // {selectedCase.missionCode}</span>
+                </div>
+                <h3 className="font-sans text-xl sm:text-2xl font-bold text-white mt-1">
+                  Síntese da Investigação: {selectedCase.fullName}
+                </h3>
               </div>
-              <h3 className="font-sans text-xl sm:text-2xl font-bold text-white">
-                Resultado da Investigação & Consequências
-              </h3>
-              <p className="text-sm text-slate-300">
-                Conferência analítica das pistas extraídas, vínculos demonstrados, consistência da hipótese e elos revelados.
-              </p>
-            </div>
 
-            <div className="flex flex-wrap items-center gap-3 shrink-0">
-              <div className="px-4 py-2.5 rounded-xl bg-[#060A12] border border-amber-500/40 text-center">
+              <div className="px-4 py-2.5 rounded-xl bg-[#060A12] border border-amber-500/40 text-center shrink-0">
                 <div className="text-[10px] font-mono uppercase text-slate-400">Mérito no Caso</div>
                 <div className="text-lg font-mono font-bold text-amber-400">+{xpBreakdown.totalCaseXp} XP</div>
               </div>
+            </div>
+
+            {/* 4 Indicadores Principais em Cards Limpos */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+              <div className="p-4 rounded-xl bg-[#060A12] border border-slate-800">
+                <div className="text-[10px] font-mono uppercase text-slate-400">Pistas Extraídas</div>
+                <div className="text-lg font-bold text-emerald-400 mt-1">
+                  {extractedCluesList.length}/{allCaseClues.length}
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#060A12] border border-slate-800">
+                <div className="text-[10px] font-mono uppercase text-slate-400">Conexões Comprovadas</div>
+                <div className="text-lg font-bold text-cyan-400 mt-1">
+                  {validatedChallenges.length}/{challenges.length}
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#060A12] border border-slate-800">
+                <div className="text-[10px] font-mono uppercase text-slate-400">Consistência</div>
+                <div className="text-sm font-bold text-amber-300 mt-1.5 uppercase">
+                  {progress.hypothesisScore === 'forte'
+                    ? 'Alta (+100 XP)'
+                    : progress.hypothesisScore === 'parcial'
+                    ? 'Parcial (+60 XP)'
+                    : 'Baixa (+25 XP)'}
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#060A12] border border-slate-800">
+                <div className="text-[10px] font-mono uppercase text-slate-400">Elos no Mapa</div>
+                <div className="text-sm font-bold text-white mt-1.5">
+                  {mapConnectionsUnlocked ? 'Comprovados' : 'Não Demonstrados'}
+                </div>
+              </div>
+            </div>
+
+            {/* Hipótese Registrada */}
+            <div className="p-5 rounded-2xl bg-[#060A12]/90 border border-slate-800 space-y-1.5">
+              <div className="text-[10px] font-mono uppercase text-amber-400">
+                Hipótese Registrada pelo Investigador:
+              </div>
+              <div className="text-base font-bold text-white">
+                {registeredThesis
+                  ? `${registeredThesis.tag} — ${registeredThesis.title}`
+                  : 'Nenhuma hipótese registrada'}
+              </div>
+              {registeredThesis && (
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  {registeredThesis.subtitle}
+                </p>
+              )}
+            </div>
+
+            {/* Subnível Retrátil: Detalhes Técnicos da Auditoria (Evidências, Vínculos Pendentes e Tendências) */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowDetailedAudit(o => !o)}
+                className="w-full py-3 px-4 rounded-xl bg-[#060A12] hover:bg-slate-900 border border-slate-800 text-xs font-mono text-cyan-300 flex items-center justify-between cursor-pointer"
+              >
+                <span>
+                  {showDetailedAudit
+                    ? 'Ocultar Detalhamento Técnico da Auditoria'
+                    : 'Ver Detalhamento de Evidências, Conexões e Tendências'}
+                </span>
+                {showDetailedAudit ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+
+              {showDetailedAudit && (
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in duration-200">
+                  <div className="p-4 rounded-xl bg-[#060A12]/90 border border-slate-800 space-y-2">
+                    <div className="text-xs font-mono uppercase text-emerald-400 font-bold">
+                      Conexões Validadas ({validatedChallenges.length}) & Pendentes ({unprovenChallenges.length})
+                    </div>
+                    {validatedChallenges.map(ch => (
+                      <div key={ch.id} className="text-xs text-emerald-200">
+                        ✓ {ch.successTitle}
+                      </div>
+                    ))}
+                    {unprovenChallenges.map(ch => (
+                      <div key={ch.id} className="text-xs text-red-300">
+                        • Não comprovada: {ch.question}
+                      </div>
+                    ))}
+                    {ignoredCluesList.length > 0 && (
+                      <div className="pt-2 text-xs text-amber-300">
+                        {ignoredCluesList.length} pista(s) não extraída(s) na Etapa 1.
+                      </div>
+                    )}
+                    {usedEvidenceObjects.length > 0 && (
+                      <div className="pt-2 text-xs text-slate-400">
+                        Evidências anexadas à hipótese: {usedEvidenceObjects.length}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-[#060A12]/90 border border-slate-800 space-y-2">
+                    <div className="text-xs font-mono uppercase text-amber-300 font-bold">
+                      Tendências do Investigador & Próximos Dossiês
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                      <div>Analítico: <strong className="text-amber-300">{state.decisionProfile.analitico}%</strong></div>
+                      <div>Estratégico: <strong className="text-cyan-300">{state.decisionProfile.estrategico}%</strong></div>
+                      <div>Humanista: <strong className="text-emerald-300">{state.decisionProfile.humanista}%</strong></div>
+                      <div>Exploratório: <strong className="text-purple-300">{state.decisionProfile.exploratorio}%</strong></div>
+                    </div>
+                    <div className="pt-2 flex flex-wrap gap-1.5">
+                      {volumeOneCases
+                        .filter(c => c.id !== selectedCase.id)
+                        .map(c => (
+                          <button
+                            key={c.id}
+                            onClick={() => {
+                              selectCase(c.id);
+                              setActiveStep(1);
+                            }}
+                            className="px-2.5 py-1 rounded bg-[#0B1320] border border-amber-500/30 text-[11px] font-mono text-amber-200 cursor-pointer"
+                          >
+                            Abrir {c.name} →
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Botões de Encerramento */}
+            <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <button
+                onClick={() => setActiveTab('perfil')}
+                className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-slate-300 cursor-pointer"
+              >
+                Ver Perfil Completo do Investigador
+              </button>
+
               <button
                 onClick={() => setActiveTab('mapa')}
-                className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-sans font-bold text-sm uppercase tracking-wider cursor-pointer flex items-center gap-2 shadow-lg"
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-sm uppercase tracking-wider cursor-pointer flex items-center gap-2 shadow-lg"
               >
                 <span>Voltar ao Mapa Mundial</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            
-            {/* COLUNA 1 (4 cols): HIPÓTESE REGISTRADA, EVIDÊNCIAS DE FUNDAMENTAÇÃO E GRAU DE CONSISTÊNCIA */}
-            <div className="lg:col-span-4 min-w-0 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5 space-y-4 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300 border-b border-white/10 pb-2">
-                  1. Hipótese & Fundamentação
-                </div>
-
-                {/* Indicador 1: Hipótese Registrada */}
-                <div className="p-3.5 rounded-xl bg-[#060A12]/90 border border-slate-800 space-y-1">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 block">
-                    Hipótese Registrada:
-                  </span>
-                  {registeredThesis ? (
-                    <>
-                      <div className="text-sm font-sans font-bold text-white">
-                        {registeredThesis.tag} — {registeredThesis.title}
-                      </div>
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        {registeredThesis.subtitle}
-                      </p>
-                      {progress.hypothesisReasoning && (
-                        <p className="text-xs text-amber-200/90 italic pt-1 border-t border-white/5 mt-1">
-                          Raciocínio: "{progress.hypothesisReasoning}"
-                        </p>
-                      )}
-                    </>
-                  ) : (
-                    <div className="text-xs text-red-300 font-mono">
-                      Nenhuma hipótese foi submetida na Etapa 3.
-                    </div>
-                  )}
-                </div>
-
-                {/* Indicador 2: Grau de Consistência da Hipótese */}
-                <div className="p-3.5 rounded-xl bg-[#060A12]/90 border border-slate-800 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono uppercase text-slate-400">
-                      Grau de Consistência:
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase ${
-                        progress.hypothesisScore === 'forte'
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                          : progress.hypothesisScore === 'parcial'
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                          : 'bg-red-500/20 text-red-300 border border-red-500/40'
-                      }`}
-                    >
-                      {progress.hypothesisScore === 'forte'
-                        ? 'Alta Consistência (+100 XP)'
-                        : progress.hypothesisScore === 'parcial'
-                        ? 'Consistência Parcial (+60 XP)'
-                        : progress.selectedThesisId
-                        ? 'Baixa Consistência (+25 XP)'
-                        : 'Não Avaliada (0 XP)'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {progress.hypothesisScore === 'forte'
-                      ? registeredThesis?.feedbackStrong
-                      : progress.hypothesisScore === 'parcial'
-                      ? registeredThesis?.feedbackPartial
-                      : 'Para elevar o grau de consistência na Etapa 3, anexe pelo menos 2 pistas que comprovem diretamente a tese escolhida.'}
-                  </p>
-                </div>
-
-                {/* Indicador 3: Evidências Utilizadas para Fundamentação */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs font-mono text-slate-300">
-                    <span>Evidências Utilizadas na Hipótese:</span>
-                    <span className="text-cyan-400 font-bold">{usedEvidenceObjects.length} anexadas</span>
-                  </div>
-                  {usedEvidenceObjects.length === 0 ? (
-                    <div className="p-3 rounded-lg bg-[#060A12]/60 border border-slate-800 text-xs text-slate-400">
-                      Nenhuma evidência do arquivo foi anexada à hipótese.
-                    </div>
-                  ) : (
-                    <div className="space-y-1.5">
-                      {usedEvidenceObjects.map(ev => (
-                        <div
-                          key={ev.id}
-                          className="p-2.5 rounded-lg bg-[#060A12]/80 border border-cyan-500/30 text-xs text-slate-200 flex items-center justify-between gap-2"
-                        >
-                          <span className="truncate">
-                            <strong className="text-amber-300 font-mono mr-1">[{ev.docCode}]</strong>
-                            {ev.title}
-                          </span>
-                          <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Pistas Extraídas vs. Pistas Ignoradas */}
-              <div className="pt-3 border-t border-slate-800 space-y-2">
-                <div className="flex justify-between text-xs font-mono">
-                  <span className="text-slate-400">Pistas Extraídas na Etapa 1:</span>
-                  <span className="text-emerald-400 font-bold">
-                    {extractedCluesList.length}/{allCaseClues.length} (+{xpBreakdown.cluesXp} XP)
-                  </span>
-                </div>
-                {ignoredCluesList.length > 0 && (
-                  <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex items-center justify-between gap-2">
-                    <span>{ignoredCluesList.length} pista(s) ignorada(s) nos documentos.</span>
-                    <button
-                      onClick={() => setActiveStep(1)}
-                      className="underline font-mono text-amber-300 hover:text-white shrink-0 cursor-pointer"
-                    >
-                      Examinar
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* COLUNA 2 (4 cols): CONEXÕES EFETIVAMENTE VALIDADAS vs. CONEXÕES AINDA NÃO DEMONSTRADAS */}
-            <div className="lg:col-span-4 min-w-0 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5 space-y-4 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
-                    2. Auditoria de Conexões
-                  </span>
-                  <span className="text-xs font-mono text-amber-300 font-bold">
-                    +{xpBreakdown.connectionsXp} XP
-                  </span>
-                </div>
-
-                {/* Indicador 4: Conexões Efetivamente Validadas */}
-                <div className="space-y-2">
-                  <div className="text-xs font-mono uppercase text-emerald-400 font-bold flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Conexões Efetivamente Validadas ({validatedChallenges.length}/{challenges.length})</span>
-                  </div>
-
-                  {validatedChallenges.length === 0 ? (
-                    <div className="p-3 rounded-xl bg-[#060A12]/70 border border-slate-800 text-xs text-slate-400">
-                      Nenhuma conexão foi comprovada na Mesa de Investigação.
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {validatedChallenges.map(ch => (
-                        <div
-                          key={ch.id}
-                          className="p-3 rounded-xl bg-emerald-950/25 border border-emerald-500/40 space-y-1"
-                        >
-                          <div className="flex items-center justify-between text-[10px] font-mono text-emerald-300 font-bold">
-                            <span>Vínculo #{ch.stepNumber} — {ch.successTitle}</span>
-                            <span>+{ch.xpReward} XP</span>
-                          </div>
-                          <p className="text-xs text-slate-200 leading-relaxed">
-                            {ch.successConclusion}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Indicador 5: Conexões Ainda Não Demonstradas */}
-                <div className="space-y-2 pt-2">
-                  <div className="text-xs font-mono uppercase text-amber-400 font-bold flex items-center gap-1.5">
-                    <AlertCircle className="w-3.5 h-3.5" />
-                    <span>Conexões Ainda Não Demonstradas ({unprovenChallenges.length})</span>
-                  </div>
-
-                  {unprovenChallenges.length === 0 ? (
-                    <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-200">
-                      Todos os vínculos deste caso foram demonstrados com sucesso!
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {unprovenChallenges.map(ch => (
-                        <div
-                          key={ch.id}
-                          className="p-3 rounded-xl bg-red-950/20 border border-red-500/30 space-y-1.5"
-                        >
-                          <div className="flex items-center justify-between text-[10px] font-mono text-red-300 font-bold">
-                            <span>Vínculo #{ch.stepNumber}</span>
-                            <span>NÃO COMPROVADA (0 XP)</span>
-                          </div>
-                          <p className="text-xs text-slate-300 leading-snug">
-                            {ch.question}
-                          </p>
-                        </div>
-                      ))}
-                      <button
-                        onClick={() => setActiveStep(2)}
-                        className="w-full py-2.5 px-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold cursor-pointer transition-all"
-                      >
-                        ← Retornar à Etapa 2 para Demonstrar Vínculos
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Interpretações Alternativas */}
-              <div className="pt-3 border-t border-slate-800 space-y-1.5">
-                <span className="text-[10px] font-mono uppercase text-slate-400 block">
-                  Interpretações Alternativas do Caso:
-                </span>
-                {(selectedCase.alternativeInterpretations || []).slice(0, 2).map((alt, i) => (
-                  <p key={i} className="text-xs text-slate-300 leading-relaxed">
-                    • {alt}
-                  </p>
-                ))}
-              </div>
-            </div>
-
-            {/* COLUNA 3 (4 cols): SEPARAÇÃO ENTRE ELOS DESCOBERTOS NO MAPA E CASOS DISPONÍVEIS + PERFIL */}
-            <div className="lg:col-span-4 min-w-0 rounded-2xl bg-[#0B1320]/95 border border-emerald-500/30 p-5 space-y-4 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-300 border-b border-white/10 pb-2">
-                  3. Elos no Mapa & Casos Disponíveis
-                </div>
-
-                {/* Estado 1: Conexões Históricas Comprovadas pelo Jogador no Mapa */}
-                <div
-                  className={`p-3.5 rounded-xl border space-y-2 ${
-                    mapConnectionsUnlocked
-                      ? 'bg-emerald-500/10 border-emerald-500/40'
-                      : 'bg-slate-900/80 border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-[10px] font-mono uppercase font-bold">
-                    <span className={mapConnectionsUnlocked ? 'text-emerald-300' : 'text-amber-300'}>
-                      Elos Intertemporais no Mapa Mundial:
-                    </span>
-                    <span>{mapConnectionsUnlocked ? 'COMPROVADOS' : 'NÃO DEMONSTRADOS'}</span>
-                  </div>
-
-                  {mapConnectionsUnlocked ? (
-                    <p className="text-xs text-emerald-100 leading-relaxed">
-                      Você comprovou o vínculo intertemporal na Etapa 2! Os arcos de conexão histórica deste caso agora estão acesos no Mapa Mundial.
-                    </p>
-                  ) : (
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      Como o vínculo intertemporal não foi validado na Etapa 2, os arcos de conexão deste caso permanecem ocultos no Mapa Mundial.
-                    </p>
-                  )}
-                </div>
-
-                {/* Estado 2: Casos Disponíveis para Investigação (Progressão Narrativa) */}
-                <div className="p-3.5 rounded-xl bg-[#060A12]/90 border border-slate-800 space-y-2.5">
-                  <div className="text-xs font-mono uppercase text-amber-300 font-bold">
-                    Casos Disponíveis para Investigação:
-                  </div>
-                  <p className="text-xs text-slate-400 leading-snug">
-                    Independentemente dos elos comprovados no mapa, os seguintes dossiês do Volume I estão abertos para investigação:
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {volumeOneCases
-                      .filter(c => c.id !== selectedCase.id)
-                      .map(c => (
-                        <button
-                          key={c.id}
-                          onClick={() => {
-                            selectCase(c.id);
-                            setActiveStep(1);
-                          }}
-                          className="px-3 py-2 rounded-lg bg-[#0B1320] hover:bg-amber-500/20 border border-amber-500/40 text-xs font-mono text-amber-200 flex items-center gap-1.5 cursor-pointer transition-all"
-                        >
-                          <span>
-                            {c.name} ({c.year})
-                          </span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      ))}
-                  </div>
-                </div>
-
-                {/* Tendências Atualizadas do Investigador */}
-                <div className="space-y-2">
-                  <div className="text-xs font-mono uppercase text-slate-400">
-                    Tendências do Investigador (Atualizadas):
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                    <div className="p-2 rounded bg-[#060A12] border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Analítico:</span>
-                      <span className="text-amber-300 font-bold">{state.decisionProfile.analitico}%</span>
-                    </div>
-                    <div className="p-2 rounded bg-[#060A12] border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Estratégico:</span>
-                      <span className="text-cyan-300 font-bold">{state.decisionProfile.estrategico}%</span>
-                    </div>
-                    <div className="p-2 rounded bg-[#060A12] border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Humanista:</span>
-                      <span className="text-emerald-300 font-bold">{state.decisionProfile.humanista}%</span>
-                    </div>
-                    <div className="p-2 rounded bg-[#060A12] border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Exploratório:</span>
-                      <span className="text-purple-300 font-bold">{state.decisionProfile.exploratorio}%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setActiveTab('perfil')}
-                className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 font-sans font-bold text-sm cursor-pointer transition-all"
-              >
-                Abrir Perfil Completo do Investigador →
               </button>
             </div>
 
@@ -1432,7 +1409,96 @@ export const DossierInvestigationView: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL DE INSPEÇÃO DE DOCUMENTO COM ZOOM (FASE 1) */}
+      {/* =====================================================================
+          GAVETA / MODAL SUBNÍVEL: MEU ARQUIVO PESSOAL (PISTAS EXTRAÍDAS)
+         ===================================================================== */}
+      {isArchiveDrawerOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          data-immersive-modal="true"
+          className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm animate-in fade-in duration-200 font-sans"
+          onClick={() => setIsArchiveDrawerOpen(false)}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="relative w-full max-w-md h-full bg-[#0B1320] border-l border-cyan-500/35 shadow-2xl p-6 flex flex-col justify-between overflow-y-auto custom-scrollbar"
+          >
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <FolderOpen className="w-5 h-5 text-cyan-400" />
+                  <div>
+                    <h3 className="font-sans text-base font-bold text-white">
+                      Meu Arquivo Pessoal
+                    </h3>
+                    <span className="text-[11px] font-mono text-cyan-400">
+                      {extractedCluesList.length} de {allCaseClues.length} pistas catalogadas neste dossiê
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsArchiveDrawerOpen(false)}
+                  className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {extractedCluesList.length === 0 ? (
+                <div className="p-8 rounded-2xl bg-[#060A12] border border-dashed border-slate-800 text-center space-y-2">
+                  <BookmarkPlus className="w-7 h-7 text-slate-600 mx-auto" />
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Nenhuma pista guardada ainda. Na Etapa 1, clique na aba <strong>Inspecionar Pistas</strong> para salvar evidências relevantes.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {extractedCluesList.map(c => (
+                    <div
+                      key={c.id}
+                      className="p-4 rounded-xl bg-[#060A12] border border-emerald-500/30 space-y-1.5"
+                    >
+                      <div className="flex items-center justify-between text-[10px] font-mono text-emerald-400">
+                        <span>{c.docCode.split('//')[0]}</span>
+                        <span>+{c.xpReward} XP</span>
+                      </div>
+                      <div className="text-sm font-bold text-white">
+                        {c.title}
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {c.analysisNote}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-2">
+              <button
+                onClick={() => setIsArchiveDrawerOpen(false)}
+                className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-mono text-slate-300 cursor-pointer"
+              >
+                Fechar [Esc]
+              </button>
+              {state.activeStep === 1 && (
+                <button
+                  onClick={() => {
+                    setIsArchiveDrawerOpen(false);
+                    setActiveStep(2);
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-xs uppercase tracking-wider cursor-pointer"
+                >
+                  Ir para Mesa de Conexões →
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE INSPEÇÃO DE DOCUMENTO COM ZOOM E LUPA (FASE 1) */}
       {activeDoc && (
         <DocumentInspectorModal
           isOpen={isInspectorOpen}
