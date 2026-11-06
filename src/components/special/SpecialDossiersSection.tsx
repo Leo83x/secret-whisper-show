@@ -154,6 +154,17 @@ export const SpecialDossiersSection = () => {
 
             </div>
 
+            {/* BOTÃO DE ACESSO DIRETO À CENTRAL DE INVESTIGAÇÃO */}
+            <div className="pt-6 flex justify-center">
+              <a
+                href="/investigacao"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-amber-400/25 to-amber-500/20 hover:from-amber-500/30 hover:to-amber-500/30 border border-gold/50 text-gold hover:text-amber-200 font-mono text-xs sm:text-sm font-bold tracking-wider uppercase transition-all shadow-[0_0_25px_rgba(201,169,98,0.2)] hover:shadow-[0_0_35px_rgba(201,169,98,0.35)] hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <span>Acessar Central de Investigação // O Padrão</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+
           </div>
         </div>
 

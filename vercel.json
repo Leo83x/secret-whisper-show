@@ -20,6 +20,22 @@
     {
       "source": "/edicao-especial/:path*",
       "destination": "/"
+    },
+    {
+      "source": "/investigacao",
+      "destination": "/"
+    },
+    {
+      "source": "/investigacao/:path*",
+      "destination": "/"
+    },
+    {
+      "source": "/terminal",
+      "destination": "/"
+    },
+    {
+      "source": "/terminal/:path*",
+      "destination": "/"
     }
   ]
 }
