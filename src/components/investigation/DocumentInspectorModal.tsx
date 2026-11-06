@@ -160,6 +160,7 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.stopPropagation();
         onClose();
       } else if (e.key === '+' || e.key === '=') {
         setZoom(z => Math.min(2.25, Number((z + 0.25).toFixed(2))));
@@ -192,6 +193,7 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
   return (
     <div
       role="dialog"
+      data-immersive-modal="true"
       aria-modal="true"
       aria-labelledby="inspector-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 font-sans"

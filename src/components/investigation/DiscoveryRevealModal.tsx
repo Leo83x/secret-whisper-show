@@ -25,7 +25,7 @@ export const DiscoveryRevealModal: React.FC<DiscoveryRevealModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -36,6 +36,7 @@ export const DiscoveryRevealModal: React.FC<DiscoveryRevealModalProps> = ({
   return (
     <div
       role="dialog"
+      data-immersive-modal="true"
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-300 font-sans"
     >

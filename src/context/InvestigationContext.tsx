@@ -25,6 +25,7 @@ interface InvestigationContextType {
   setEraFilter: (era: EraFilter) => void;
   setActiveStep: (step: 1 | 2 | 3 | 4 | 5) => void;
   startCaseInvestigation: (caseId: string) => void;
+  markDocumentExamined: (caseId: string, docId: string) => void;
   discoverEvidence: (caseId: string) => void;
   selectHypothesis: (caseId: string, hypothesisId: string) => void;
   updatePersonalNote: (caseId: string, text: string) => void;
@@ -67,6 +68,8 @@ interface InvestigationContextType {
 const STORAGE_KEY = 'ush_investigator_state_v3';
 
 export const DEFAULT_CASE_PROGRESS: CasePlayProgress = {
+  examinedDocumentIds: [],
+  lastStep: 1,
   extractedClueIds: [],
   solvedConnectionIds: [],
   failedConnectionIds: [],
@@ -477,7 +480,14 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const setSelectedCaseId = useCallback((id: string) => {
-    setState(prev => ({ ...prev, selectedCaseId: id }));
+    setState(prev => {
+      const savedStep = prev.caseProgress[id]?.lastStep || 1;
+      return {
+        ...prev,
+        selectedCaseId: id,
+        activeStep: prev.activeTab === 'dossies' ? savedStep : prev.activeStep,
+      };
+    });
   }, []);
 
   const setEraFilter = useCallback((era: EraFilter) => {
@@ -485,16 +495,65 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const setActiveStep = useCallback((step: 1 | 2 | 3 | 4 | 5) => {
-    setState(prev => ({ ...prev, activeStep: step }));
+    setState(prev => {
+      const caseId = prev.selectedCaseId;
+      const currentProg = prev.caseProgress[caseId] || DEFAULT_CASE_PROGRESS;
+      return {
+        ...prev,
+        activeStep: step,
+        caseProgress: {
+          ...prev.caseProgress,
+          [caseId]: {
+            ...currentProg,
+            lastStep: step,
+          },
+        },
+      };
+    });
   }, []);
 
   const startCaseInvestigation = useCallback((caseId: string) => {
-    setState(prev => ({
-      ...prev,
-      selectedCaseId: caseId,
-      activeTab: 'dossies',
-      activeStep: 1,
-    }));
+    setState(prev => {
+      const currentProg = prev.caseProgress[caseId] || DEFAULT_CASE_PROGRESS;
+      const resumedStep = currentProg.lastStep || 1;
+      return {
+        ...prev,
+        selectedCaseId: caseId,
+        activeTab: 'dossies',
+        activeStep: resumedStep,
+        caseProgress: {
+          ...prev.caseProgress,
+          [caseId]: {
+            ...currentProg,
+            lastStep: resumedStep,
+          },
+        },
+      };
+    });
+  }, []);
+
+  const markDocumentExamined = useCallback((caseId: string, docId: string) => {
+    setState(prev => {
+      const currentProg = prev.caseProgress[caseId] || DEFAULT_CASE_PROGRESS;
+      const prevExamined = currentProg.examinedDocumentIds || [];
+      if (prevExamined.includes(docId) && currentProg.activeDocId === docId) {
+        return prev;
+      }
+      const nextExamined = prevExamined.includes(docId)
+        ? prevExamined
+        : [...prevExamined, docId];
+      return {
+        ...prev,
+        caseProgress: {
+          ...prev.caseProgress,
+          [caseId]: {
+            ...currentProg,
+            examinedDocumentIds: nextExamined,
+            activeDocId: docId,
+          },
+        },
+      };
+    });
   }, []);
 
   // ETAPA 1: Extrair pista de um documento
@@ -701,6 +760,7 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
           ...currentProg,
           selectedDecisionId: choiceId,
           completed: true,
+          lastStep: 5,
         },
       };
 
@@ -789,6 +849,7 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         setEraFilter,
         setActiveStep,
         startCaseInvestigation,
+        markDocumentExamined,
         discoverEvidence,
         selectHypothesis,
         updatePersonalNote,

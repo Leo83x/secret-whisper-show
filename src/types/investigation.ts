@@ -127,6 +127,9 @@ export interface HistoricalNode {
 }
 
 export interface CasePlayProgress {
+  examinedDocumentIds?: string[];
+  activeDocId?: string;
+  lastStep?: 1 | 2 | 3 | 4 | 5;
   extractedClueIds: string[];
   solvedConnectionIds: string[];
   selectedThesisId?: string;

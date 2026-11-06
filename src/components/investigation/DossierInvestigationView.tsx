@@ -42,6 +42,7 @@ export const DossierInvestigationView: React.FC = () => {
     attemptConnection,
     submitStructuredHypothesis,
     submitSimulationDecision,
+    markDocumentExamined,
   } = useInvestigation();
 
   const progress = getCasePlayProgress(selectedCase.id);
@@ -53,12 +54,17 @@ export const DossierInvestigationView: React.FC = () => {
   const theses = selectedCase.hypothesisTheses || [];
   const simChoices = selectedCase.simulationChoices || [];
 
-  // Estado local da Etapa 1 (Documento aberto na lupa + Zoom Modal + Alertas)
-  const [activeDocId, setActiveDocId] = useState<string>(documents[0]?.id || '');
-  const [isInspectorOpen, setIsInspectorOpen] = useState<boolean>(false);
-  const [examinedDocIds, setExaminedDocIds] = useState<string[]>(
-    documents[0]?.id ? [documents[0].id] : []
+  // Estado local da Etapa 1 sincronizado com a persistência do caso
+  const [activeDocId, setActiveDocId] = useState<string>(
+    progress.activeDocId || documents[0]?.id || ''
   );
+  const [isInspectorOpen, setIsInspectorOpen] = useState<boolean>(false);
+  const examinedDocIds =
+    progress.examinedDocumentIds && progress.examinedDocumentIds.length > 0
+      ? progress.examinedDocumentIds
+      : documents[0]?.id
+      ? [documents[0].id]
+      : [];
   const [contradictionAlert, setContradictionAlert] = useState<string | null>(null);
   const [discoveryModal, setDiscoveryModal] = useState<{
     open: boolean;
@@ -93,15 +99,17 @@ export const DossierInvestigationView: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    const firstId = selectedCase.documents?.[0]?.id || '';
+    const p = getCasePlayProgress(selectedCase.id);
+    const firstId = p.activeDocId || selectedCase.documents?.[0]?.id || '';
     setActiveDocId(firstId);
-    setExaminedDocIds(firstId ? [firstId] : []);
+    if (firstId) {
+      markDocumentExamined(selectedCase.id, firstId);
+    }
     setContradictionAlert(null);
     setIsInspectorOpen(false);
     setActiveChallengeId(selectedCase.connectionChallenges?.[0]?.id || '');
     setBoardSelectedClues([]);
     setConnectionFeedback(null);
-    const p = getCasePlayProgress(selectedCase.id);
     setChosenThesisId(p.selectedThesisId || selectedCase.hypothesisTheses?.[0]?.id || '');
     setHypothesisClues(p.attachedClueIds || []);
     setReasoningText(p.hypothesisReasoning || state.personalNotes[selectedCase.id] || '');
@@ -126,15 +134,13 @@ export const DossierInvestigationView: React.FC = () => {
 
   const handleSelectDoc = (docId: string) => {
     setActiveDocId(docId);
-    setExaminedDocIds(prev => (prev.includes(docId) ? prev : [...prev, docId]));
+    markDocumentExamined(selectedCase.id, docId);
     soundEngine.playDocumentOpen();
   };
 
   const handleOpenInspector = () => {
     if (activeDoc) {
-      setExaminedDocIds(prev =>
-        prev.includes(activeDoc.id) ? prev : [...prev, activeDoc.id]
-      );
+      markDocumentExamined(selectedCase.id, activeDoc.id);
     }
     soundEngine.playDocumentOpen();
     setIsInspectorOpen(true);
@@ -285,93 +291,24 @@ export const DossierInvestigationView: React.FC = () => {
   return (
     <div className="space-y-6 mt-2">
       
-      {/* 1. CABEÇALHO DA MISSÃO & SELETOR DE CASO */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-amber-500/20 pb-4">
-        <div>
-          <div className="flex flex-wrap items-center gap-2 mb-1">
-            <button
-              onClick={() => setActiveTab('mapa')}
-              className="inline-flex items-center gap-1 text-xs font-mono text-slate-400 hover:text-amber-300 transition-colors cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" /> Mapa Mundial
-            </button>
-            <span className="text-slate-600">/</span>
-            <span className="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-semibold">
-              {selectedCase.missionCode || 'DOSSIÊ ATIVO'} — {selectedCase.missionTitle || selectedCase.title}
-            </span>
+      {/* BRIEFING COMPACTO DA OPERAÇÃO (COMPLEMENTAR AO HUD IMERSIVO) */}
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-[#0B1320]/90 border border-amber-500/20 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="space-y-0.5 min-w-0">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-semibold">
+            {selectedCase.missionCode || 'DOSSIÊ ATIVO'} — {selectedCase.missionTitle || selectedCase.title}
           </div>
-
-          <h2 className="font-serif text-lg sm:text-2xl font-bold tracking-wide text-white uppercase">
-            {selectedCase.fullName}{' '}
-            <span className="text-amber-400 font-normal text-base sm:text-xl">
-              ({selectedCase.year})
-            </span>
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-300 font-sans mt-0.5 max-w-3xl">
+          <p className="text-xs sm:text-sm text-slate-200 font-sans leading-relaxed">
             {selectedCase.shortDescription}
           </p>
         </div>
-
-        {/* Telemetria Rápida da Partida + Troca de Caso */}
-        <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-2 min-w-0 max-w-full">
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <span className="px-3 py-1 rounded-full bg-[#0B1320] border border-amber-500/30 font-mono text-xs text-amber-300">
-              Arquivo Pessoal: <strong>{progress.extractedClueIds.length}/{allCaseClues.length} Pistas</strong>
-            </span>
-            <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 font-mono text-xs text-cyan-300">
-              +{progress.xpEarned} XP no Caso
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {volumeOneCases.map(c => {
-              const active = c.id === selectedCase.id;
-              const done = state.completedNodes.includes(c.id);
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => selectCase(c.id)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-all cursor-pointer flex items-center gap-1 ${
-                    active
-                      ? 'bg-amber-500/20 border-amber-400 text-amber-200 font-semibold'
-                      : 'bg-[#0B1320]/80 border-slate-800 text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  <span>{c.name}</span>
-                  {done && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
-                </button>
-              );
-            })}
-          </div>
+        <div className="flex items-center gap-2 shrink-0 text-[11px] font-mono">
+          <span className="px-2.5 py-1 rounded-lg bg-[#060A12] border border-slate-800 text-slate-300">
+            Docs Examinados: <strong className="text-cyan-300">{examinedDocIds.length}/{documents.length}</strong>
+          </span>
+          <span className="px-2.5 py-1 rounded-lg bg-[#060A12] border border-slate-800 text-slate-300">
+            Pistas: <strong className="text-amber-300">{extractedCluesList.length}/{allCaseClues.length}</strong>
+          </span>
         </div>
-      </div>
-
-      {/* 2. BARRA DO CICLO DE INVESTIGAÇÃO (5 ETAPAS) */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-[#0B1320]/95 border border-amber-500/25 shadow-lg">
-        {steps.map(st => {
-          const isCurrent = state.activeStep === st.num;
-          return (
-            <button
-              key={st.num}
-              onClick={() => setActiveStep(st.num)}
-              className={`py-2.5 px-3 rounded-xl font-mono text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
-                isCurrent
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-400/60 font-bold shadow-[0_0_15px_rgba(245,158,11,0.2)]'
-                  : st.done
-                  ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/15'
-                  : 'bg-transparent text-slate-400 border-transparent hover:text-slate-200 hover:bg-slate-800/40'
-              }`}
-            >
-              {st.done && !isCurrent ? (
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              ) : null}
-              <span className="truncate">
-                <span className="sm:hidden">{st.short}</span>
-                <span className="hidden sm:inline">{st.full}</span>
-              </span>
-            </button>
-          );
-        })}
       </div>
 
       {/* REAÇÃO DO TERMINAL À INVESTIGAÇÃO (AMBIENTE VIVO) */}
