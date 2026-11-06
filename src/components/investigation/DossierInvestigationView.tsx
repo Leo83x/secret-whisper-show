@@ -20,8 +20,10 @@ import {
   ZoomIn,
   Maximize2,
   BellRing,
+  Activity,
+  ShieldCheck,
 } from 'lucide-react';
-import { DocumentInspectorModal } from './DocumentInspectorModal';
+import { DocumentInspectorModal, getEraDocumentTheme } from './DocumentInspectorModal';
 import { DiscoveryRevealModal } from './DiscoveryRevealModal';
 import { soundEngine } from '../../utils/investigationAudio';
 
@@ -118,6 +120,7 @@ export const DossierInvestigationView: React.FC = () => {
   );
 
   const activeDoc = documents.find(d => d.id === activeDocId) || documents[0];
+  const eraTheme = getEraDocumentTheme(selectedCase.id);
   const activeChallenge =
     challenges.find(c => c.id === activeChallengeId) || challenges[0];
 
@@ -168,6 +171,7 @@ export const DossierInvestigationView: React.FC = () => {
 
   const handleValidateConnection = () => {
     if (!activeChallenge || boardSelectedClues.length !== 2) return;
+    const wasAlreadySolved = progress.solvedConnectionIds.includes(activeChallenge.id);
     const res = attemptConnection(selectedCase.id, activeChallenge.id, [
       boardSelectedClues[0],
       boardSelectedClues[1],
@@ -179,12 +183,16 @@ export const DossierInvestigationView: React.FC = () => {
       unlockedMap: res.unlockedMap,
     });
     if (res.success) {
-      soundEngine.playDiscoveryReveal();
-      setDiscoveryModal({
-        open: true,
-        title: res.title || activeChallenge.successTitle,
-        conclusion: res.message,
-      });
+      if (!wasAlreadySolved) {
+        soundEngine.playDiscoveryReveal();
+        setDiscoveryModal({
+          open: true,
+          title: res.title || activeChallenge.successTitle,
+          conclusion: res.message,
+        });
+      } else {
+        soundEngine.playClueSaved();
+      }
       setBoardSelectedClues([]);
       const nextUnsolved = challenges.find(
         c => c.id !== activeChallenge.id && !progress.solvedConnectionIds.includes(c.id)
@@ -221,7 +229,7 @@ export const DossierInvestigationView: React.FC = () => {
 
   const handleSelectSimulationDecision = (choiceId: string) => {
     submitSimulationDecision(selectedCase.id, choiceId);
-    soundEngine.playClueSaved();
+    soundEngine.playCaseConclusion();
     setActiveStep(5);
   };
 
@@ -305,8 +313,8 @@ export const DossierInvestigationView: React.FC = () => {
         </div>
 
         {/* Telemetria Rápida da Partida + Troca de Caso */}
-        <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-2 shrink-0">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-2 min-w-0 max-w-full">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             <span className="px-3 py-1 rounded-full bg-[#0B1320] border border-amber-500/30 font-mono text-xs text-amber-300">
               Arquivo Pessoal: <strong>{progress.extractedClueIds.length}/{allCaseClues.length} Pistas</strong>
             </span>
@@ -366,6 +374,36 @@ export const DossierInvestigationView: React.FC = () => {
         })}
       </div>
 
+      {/* REAÇÃO DO TERMINAL À INVESTIGAÇÃO (AMBIENTE VIVO) */}
+      {(extractedCluesList.length > 0 || progress.solvedConnectionIds.length > 0) && (
+        <div className="px-3.5 py-2.5 rounded-xl bg-[#080F1E] border border-cyan-500/25 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+          <div className="flex items-center gap-2 text-cyan-300 min-w-0">
+            <Activity className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <span className="uppercase tracking-wider font-bold shrink-0">Estado do Terminal:</span>
+            <span className="text-slate-300 truncate">
+              {mapConnectionsUnlocked
+                ? 'Ressonância intertemporal ativa — Novos arcos liberados no Mapa Mundial'
+                : extractedCluesList.some(c => c.isContradiction)
+                ? 'Divergência histórica catalogada — Pronta para cruzamento na Etapa 2'
+                : `${extractedCluesList.length} evidência(s) indexada(s) no Arquivo Pessoal`}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-[10px]">
+            <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300">
+              Docs examinados: {examinedDocIds.length}/{documents.length}
+            </span>
+            {mapConnectionsUnlocked && (
+              <button
+                onClick={() => setActiveTab('mapa')}
+                className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 cursor-pointer"
+              >
+                Ver Arco no Mapa →
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ALERTA CONTEXTUAL DE AUDITORIA (QUANDO CONTRADIÇÃO É DESCOBERTA) */}
       {contradictionAlert && (
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-between gap-4 animate-in fade-in duration-200 shadow-[0_0_20px_rgba(245,158,11,0.12)]">
@@ -398,7 +436,7 @@ export const DossierInvestigationView: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Coluna Esquerda (4 cols): Lista de Documentos e Fontes do Caso */}
-          <div className="lg:col-span-4 space-y-3 rounded-2xl bg-[#0B1320]/95 border border-amber-500/25 p-4 sm:p-5">
+          <div className="lg:col-span-4 min-w-0 space-y-3 rounded-2xl bg-[#0B1320]/95 border border-amber-500/25 p-4 sm:p-5">
             <div className="flex items-center justify-between border-b border-amber-500/20 pb-2.5">
               <div className="flex items-center gap-2">
                 <FileSearch className="w-4 h-4 text-amber-400" />
@@ -462,7 +500,7 @@ export const DossierInvestigationView: React.FC = () => {
 
           {/* Coluna Central (5 cols): Mesa de Leitura e Inspeção do Documento Ativo */}
           {activeDoc && (
-            <div className="lg:col-span-5 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5 shadow-xl">
+            <div className="lg:col-span-5 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5 shadow-xl">
               <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
@@ -482,7 +520,7 @@ export const DossierInvestigationView: React.FC = () => {
                 </button>
               </div>
 
-              {/* Miniatura Visual do Fac-símile / Registro com Abertura em Alta Resolução */}
+              {/* Miniatura Visual do Registro com Identificação de Reconstrução & Lupa */}
               <div
                 onClick={handleOpenInspector}
                 className="relative h-32 rounded-xl overflow-hidden border border-amber-500/25 bg-[#060A12] group cursor-pointer"
@@ -490,26 +528,32 @@ export const DossierInvestigationView: React.FC = () => {
                 <img
                   src={selectedCase.dossierCover || selectedCase.image}
                   alt={activeDoc.title}
-                  className="w-full h-full object-cover opacity-55 group-hover:scale-105 group-hover:opacity-75 transition-all duration-500"
-                  style={{ filter: 'sepia(0.28) contrast(1.08)' }}
+                  className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-80 transition-all duration-500"
+                  style={{ filter: eraTheme.imgFilter }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#060A12] via-[#060A12]/35 to-transparent" />
-                <div className="absolute top-2.5 left-3 px-2 py-0.5 rounded bg-[#060A12]/85 border border-amber-500/30 text-[10px] font-mono text-amber-300 uppercase tracking-wider">
-                  FAC-SÍMILE // {activeDoc.code}
+                <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-[#060A12]/90 border border-amber-500/35 text-[9px] sm:text-[10px] font-mono text-amber-300 uppercase tracking-wider">
+                  [Reconstrução Visual] // {activeDoc.code}
                 </div>
-                <div className="absolute bottom-2.5 right-3 px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs font-sans font-semibold flex items-center gap-1.5 backdrop-blur-sm group-hover:bg-amber-500 group-hover:text-slate-950 transition-all">
-                  <Maximize2 className="w-3.5 h-3.5" /> Inspecionar Evidência (Zoom)
+                <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs font-sans font-semibold flex items-center gap-1.5 backdrop-blur-sm group-hover:bg-amber-500 group-hover:text-slate-950 transition-all">
+                  <Maximize2 className="w-3.5 h-3.5" /> Inspecionar com Zoom & Lupa
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#12100B] border border-amber-500/30 space-y-3 shadow-inner">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400/80 border-b border-amber-500/20 pb-1.5 flex justify-between">
-                  <span>TRANSCRIÇÃO INTEGRAL DO REGISTRO</span>
-                  <span>AUTENTICADO</span>
+              {/* Suporte Documental Individualizado por Período Histórico */}
+              <div className={`p-4 rounded-xl ${eraTheme.paperBg} border ${eraTheme.paperBorder} space-y-3 shadow-inner`}>
+                <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400/90 border-b border-white/10 pb-1.5 flex flex-wrap items-center justify-between gap-1">
+                  <span className="truncate">{eraTheme.eraStamp}</span>
+                  <span className="text-emerald-400 flex items-center gap-1 shrink-0">
+                    <ShieldCheck className="w-3 h-3" /> FONTE CATALOGADA
+                  </span>
                 </div>
-                <p className="text-sm sm:text-base text-amber-100/95 font-sans leading-relaxed">
+                <p className={`text-sm sm:text-base ${eraTheme.textStyle} leading-relaxed`}>
                   "{activeDoc.fullText}"
                 </p>
+                <div className="pt-1.5 border-t border-white/5 text-[11px] font-mono text-slate-400">
+                  {eraTheme.materialLabel}
+                </div>
               </div>
 
               <div className="space-y-2.5 pt-1">
@@ -590,7 +634,7 @@ export const DossierInvestigationView: React.FC = () => {
           )}
 
           {/* Coluna Direita (3 cols): Arquivo Pessoal do Investigador */}
-          <div className="lg:col-span-3 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-4 sm:p-5 flex flex-col justify-between">
+          <div className="lg:col-span-3 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-4 sm:p-5 flex flex-col justify-between">
             <div className="space-y-3">
               <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2.5">
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
@@ -654,7 +698,7 @@ export const DossierInvestigationView: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Esquerda (5 cols): Perguntas de Cruzamento e Relações a Estabelecer */}
-          <div className="lg:col-span-5 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5">
+          <div className="lg:col-span-5 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5">
             <div className="flex items-center justify-between border-b border-amber-500/20 pb-2.5">
               <div className="flex items-center gap-2">
                 <GitCommit className="w-4 h-4 text-amber-400" />
@@ -729,7 +773,7 @@ export const DossierInvestigationView: React.FC = () => {
           </div>
 
           {/* Direita (7 cols): Mesa de Investigação Interativa */}
-          <div className="lg:col-span-7 space-y-5 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5 shadow-xl">
+          <div className="lg:col-span-7 min-w-0 space-y-5 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5 shadow-xl">
             <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
@@ -880,7 +924,7 @@ export const DossierInvestigationView: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Passo 3A (6 cols): Escolha da Tese Interpretativa */}
-          <div className="lg:col-span-6 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5">
+          <div className="lg:col-span-6 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5">
             <div className="border-b border-amber-500/20 pb-2.5">
               <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 block">
                 PASSO 1 DA HIPÓTESE
@@ -930,7 +974,7 @@ export const DossierInvestigationView: React.FC = () => {
           </div>
 
           {/* Passo 3B e 3C (6 cols): Anexar Evidências que Sustentam a Conclusão + Raciocínio */}
-          <div className="lg:col-span-6 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5">
+          <div className="lg:col-span-6 min-w-0 space-y-4 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5">
             <div className="border-b border-cyan-500/20 pb-2.5">
               <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
                 PASSO 2 & 3 DA HIPÓTESE
@@ -1141,7 +1185,7 @@ export const DossierInvestigationView: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             
             {/* COLUNA 1 (4 cols): HIPÓTESE REGISTRADA, EVIDÊNCIAS DE FUNDAMENTAÇÃO E GRAU DE CONSISTÊNCIA */}
-            <div className="lg:col-span-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5 space-y-4 flex flex-col justify-between">
+            <div className="lg:col-span-4 min-w-0 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5 space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300 border-b border-white/10 pb-2">
                   1. Hipótese & Fundamentação
@@ -1258,7 +1302,7 @@ export const DossierInvestigationView: React.FC = () => {
             </div>
 
             {/* COLUNA 2 (4 cols): CONEXÕES EFETIVAMENTE VALIDADAS vs. CONEXÕES AINDA NÃO DEMONSTRADAS */}
-            <div className="lg:col-span-4 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5 space-y-4 flex flex-col justify-between">
+            <div className="lg:col-span-4 min-w-0 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5 space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-b border-white/10 pb-2">
                   <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
@@ -1352,7 +1396,7 @@ export const DossierInvestigationView: React.FC = () => {
             </div>
 
             {/* COLUNA 3 (4 cols): SEPARAÇÃO ENTRE ELOS DESCOBERTOS NO MAPA E CASOS DISPONÍVEIS + PERFIL */}
-            <div className="lg:col-span-4 rounded-2xl bg-[#0B1320]/95 border border-emerald-500/30 p-5 space-y-4 flex flex-col justify-between">
+            <div className="lg:col-span-4 min-w-0 rounded-2xl bg-[#0B1320]/95 border border-emerald-500/30 p-5 space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-300 border-b border-white/10 pb-2">
                   3. Elos no Mapa & Casos Disponíveis
@@ -1457,6 +1501,7 @@ export const DossierInvestigationView: React.FC = () => {
           isOpen={isInspectorOpen}
           onClose={() => setIsInspectorOpen(false)}
           document={activeDoc}
+          caseId={selectedCase.id}
           caseImage={selectedCase.dossierCover || selectedCase.image}
           locationSubtitle={`${selectedCase.location} (${selectedCase.year})`}
           extractedClueIds={progress.extractedClueIds}

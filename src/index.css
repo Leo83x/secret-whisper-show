@@ -175,3 +175,23 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(245, 158, 11, 0.4);
 }
+
+
+/* Tipografia e Acessibilidade da Central de Investigação */
+.investigation-terminal h1:not(.font-serif),
+.investigation-terminal h2:not(.font-serif),
+.investigation-terminal h3:not(.font-serif),
+.investigation-terminal h4:not(.font-serif),
+.investigation-terminal h5:not(.font-serif),
+.investigation-terminal h6:not(.font-serif) {
+  font-family: var(--font-body);
+}
+
+.investigation-terminal.reduce-motion *,
+.investigation-terminal.reduce-motion *::before,
+.investigation-terminal.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

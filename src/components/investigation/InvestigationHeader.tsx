@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import { TabKey } from '../../types/investigation';
 import { soundEngine, AudioAndMotionSettings } from '../../utils/investigationAudio';
@@ -22,6 +22,19 @@ export const InvestigationHeader: React.FC = () => {
     soundEngine.getSettings()
   );
 
+  useEffect(() => {
+    return soundEngine.subscribe(next => setAudioSettings(next));
+  }, []);
+
+  useEffect(() => {
+    if (!audioMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setAudioMenuOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [audioMenuOpen]);
+
   const handleUpdateAudio = (partial: Partial<AudioAndMotionSettings>) => {
     const next = soundEngine.updateSettings(partial);
     setAudioSettings(next);
@@ -36,22 +49,22 @@ export const InvestigationHeader: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#060A12]/95 backdrop-blur-md border-b border-amber-500/20 px-3 sm:px-6 py-2.5 transition-colors font-sans">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
+    <header className="sticky top-0 z-40 w-full max-w-full bg-[#060A12]/95 backdrop-blur-md border-b border-amber-500/20 px-2.5 sm:px-6 py-2 sm:py-2.5 transition-colors font-sans">
+      <div className="max-w-7xl w-full mx-auto flex items-center justify-between gap-1.5 sm:gap-4 min-w-0">
         
-        {/* Lado Esquerdo: Marca & Brasão Φ (Apenas aqui mantém font-serif nobre) */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-amber-400/50 bg-gradient-to-b from-amber-500/20 to-transparent flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.25)] shrink-0">
-            <span className="font-serif text-base sm:text-lg font-bold text-amber-400 select-none">Φ</span>
+        {/* Lado Esquerdo: Marca & Brasão Φ (Único ponto com font-serif) */}
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <div className="relative w-7 h-7 sm:w-9 sm:h-9 rounded-full border border-amber-400/50 bg-gradient-to-b from-amber-500/20 to-transparent flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.25)] shrink-0">
+            <span className="font-serif text-sm sm:text-lg font-bold text-amber-400 select-none">Φ</span>
           </div>
-          <div className="min-w-0">
-            <h1 className="font-serif text-xs sm:text-sm md:text-base tracking-[0.14em] uppercase font-bold text-slate-100 truncate">
+          <div className="min-w-0 flex-1">
+            <h1 className="font-serif text-[11px] sm:text-sm md:text-base tracking-[0.06em] sm:tracking-[0.14em] uppercase font-bold text-slate-100 truncate">
               O ÚLTIMO SEGREDO
             </h1>
-            <div className="flex items-center gap-1.5 min-w-0">
+            <div className="flex items-center gap-1 min-w-0">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
-              <span className="font-mono text-[9px] sm:text-[10px] text-cyan-400/90 tracking-widest uppercase truncate">
-                Central de Investigação <span className="hidden sm:inline">// Acesso Restrito</span>
+              <span className="font-mono text-[8px] sm:text-[10px] text-cyan-400/90 tracking-wider sm:tracking-widest uppercase truncate">
+                Central de Investigação <span className="hidden lg:inline">// Acesso Restrito</span>
               </span>
             </div>
           </div>
@@ -69,7 +82,7 @@ export const InvestigationHeader: React.FC = () => {
                   soundEngine.playDocumentOpen();
                   setActiveTab(item.key);
                 }}
-                className={`relative px-3 py-1.5 rounded-lg text-xs font-mono tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`relative px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-mono tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
                   isActive
                     ? 'text-amber-300 bg-amber-500/10 shadow-[0_0_12px_rgba(212,175,55,0.15)] border border-amber-500/30 font-semibold'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent'
@@ -85,14 +98,16 @@ export const InvestigationHeader: React.FC = () => {
           })}
         </nav>
 
-        {/* Lado Direito: Controle de Áudio/Animação + Credencial + Perfil */}
-        <div className="flex items-center gap-2 shrink-0 relative">
+        {/* Lado Direito: Controle de Áudio/Animação + Credencial + Perfil (Compacto no Mobile) */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 relative">
           
           {/* Botão de Som & Acessibilidade */}
           <button
             onClick={() => setAudioMenuOpen(o => !o)}
+            aria-expanded={audioMenuOpen}
+            aria-label="Controles de Som e Animação"
             title="Controles de Som e Animação"
-            className={`p-1.5 sm:px-2.5 sm:py-1 rounded-lg border text-xs font-mono flex items-center gap-1.5 cursor-pointer transition-all ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg border text-xs font-mono flex items-center justify-center gap-1.5 cursor-pointer transition-all shrink-0 ${
               audioSettings.mutedAll
                 ? 'bg-slate-900 border-slate-700 text-slate-400 hover:text-slate-200'
                 : 'bg-[#0B1320] border-cyan-500/30 text-cyan-300 hover:border-cyan-400'
@@ -106,25 +121,25 @@ export const InvestigationHeader: React.FC = () => {
             <span className="hidden xl:inline text-[11px]">Áudio</span>
           </button>
 
-          {/* Popover de Controles de Áudio e Movimento */}
+          {/* Popover Responsivo (Fixed no mobile para nunca estourar a tela) */}
           {audioMenuOpen && (
-            <div className="absolute right-0 top-11 w-72 rounded-2xl bg-[#0B1320] border border-amber-500/35 shadow-[0_0_35px_rgba(0,0,0,0.9)] p-4 z-50 space-y-3.5 text-left">
+            <div className="fixed left-3 right-3 top-14 sm:absolute sm:left-auto sm:right-0 sm:top-11 sm:w-72 rounded-2xl bg-[#0B1320] border border-amber-500/40 shadow-[0_0_35px_rgba(0,0,0,0.95)] p-4 z-50 space-y-3.5 text-left font-sans">
               <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                 <span className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
-                  <Sliders className="w-3.5 h-3.5" /> Ambiente & Interação
+                  <Sliders className="w-3.5 h-3.5" /> Áudio & Acessibilidade
                 </span>
                 <button
                   onClick={() => setAudioMenuOpen(false)}
                   className="text-[11px] font-mono text-slate-400 hover:text-white cursor-pointer"
                 >
-                  Fechar
+                  Fechar [Esc]
                 </button>
               </div>
 
-              {/* Trilha Ambiente */}
+              {/* Trilha Ambiente Adaptativa */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-200 font-medium">Trilha Ambiente</span>
+                  <span className="text-slate-200 font-medium">Trilha Ambiente Adaptativa</span>
                   <button
                     onClick={() =>
                       handleUpdateAudio({
@@ -146,6 +161,7 @@ export const InvestigationHeader: React.FC = () => {
                   min="0"
                   max="1"
                   step="0.05"
+                  aria-label="Volume da Trilha Ambiente"
                   value={audioSettings.ambientVolume}
                   onChange={e =>
                     handleUpdateAudio({
@@ -183,6 +199,7 @@ export const InvestigationHeader: React.FC = () => {
                   min="0"
                   max="1"
                   step="0.05"
+                  aria-label="Volume dos Efeitos de Interação"
                   value={audioSettings.sfxVolume}
                   onChange={e =>
                     handleUpdateAudio({
@@ -197,18 +214,21 @@ export const InvestigationHeader: React.FC = () => {
 
               {/* Reduzir Animações */}
               <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
-                <span className="text-slate-300">Reduzir Animações</span>
+                <div>
+                  <span className="text-slate-200 block font-medium">Reduzir Animações</span>
+                  <span className="text-[10px] text-slate-400">Desativa pulsos e transições intensas</span>
+                </div>
                 <button
                   onClick={() =>
                     handleUpdateAudio({ reduceMotion: !audioSettings.reduceMotion })
                   }
-                  className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold cursor-pointer ${
+                  className={`px-2.5 py-1 rounded text-[10px] font-mono font-bold cursor-pointer shrink-0 ${
                     audioSettings.reduceMotion
                       ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                       : 'bg-slate-800 text-slate-400'
                   }`}
                 >
-                  {audioSettings.reduceMotion ? 'SIM' : 'NÃO'}
+                  {audioSettings.reduceMotion ? 'ATIVO' : 'DESATIVADO'}
                 </button>
               </div>
 
@@ -226,7 +246,7 @@ export const InvestigationHeader: React.FC = () => {
           <button
             onClick={() => setIsAuthModalOpen(true)}
             title="Vincular e-mail de leitor ou verificar credencial"
-            className={`px-2.5 py-1 rounded-lg border text-[10px] sm:text-xs font-mono font-semibold flex items-center gap-1.5 cursor-pointer transition-all ${
+            className={`p-1.5 sm:px-2.5 sm:py-1 rounded-lg border text-[10px] sm:text-xs font-mono font-semibold flex items-center justify-center gap-1 cursor-pointer transition-all shrink-0 ${
               isAuthenticated
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20'
                 : 'bg-amber-500/15 border-amber-400/40 text-amber-300 hover:bg-amber-500/25'
@@ -239,16 +259,17 @@ export const InvestigationHeader: React.FC = () => {
               </>
             ) : (
               <>
-                <KeyRound className="w-3 h-3 text-amber-400" />
-                <span>Entrar</span>
+                <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden xs:inline sm:inline">Entrar</span>
               </>
             )}
           </button>
 
-          {/* Badge do Investigador */}
+          {/* Badge do Investigador (Círculo compacto no mobile, pílula completa no desktop) */}
           <button
             onClick={() => setActiveTab('perfil')}
-            className="flex items-center gap-2 bg-[#0B1320]/90 hover:bg-[#111C30] border border-amber-500/30 rounded-full py-1 px-2.5 transition-all cursor-pointer shadow-sm"
+            title={`${state.investigator.name} — ${state.investigator.role}`}
+            className="flex items-center gap-2 bg-[#0B1320]/90 hover:bg-[#111C30] border border-amber-500/30 rounded-full p-0.5 sm:py-1 sm:px-2.5 transition-all cursor-pointer shadow-sm shrink-0"
           >
             <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-600 to-amber-300 flex items-center justify-center text-[#060A12] font-bold text-[11px] shrink-0">
               {state.investigator.name.slice(0, 1).toUpperCase()}
