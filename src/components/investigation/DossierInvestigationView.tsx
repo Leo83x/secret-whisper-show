@@ -28,6 +28,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { DocumentInspectorModal, getEraDocumentTheme } from './DocumentInspectorModal';
+import { ArchiveRoom3DStage } from './ArchiveRoom3DStage';
 import { DiscoveryRevealModal } from './DiscoveryRevealModal';
 import { soundEngine } from '../../utils/investigationAudio';
 
@@ -58,7 +59,9 @@ export const DossierInvestigationView: React.FC = () => {
   const theses = selectedCase.hypothesisTheses || [];
   const simChoices = selectedCase.simulationChoices || [];
 
-  // Subníveis Retráteis (Revelação Progressiva)
+  // Subníveis Retráteis + Modo Cenário 3D Realista (Etapa 1: Arquivo Histórico 3D / Etapa 2: Mesa Topográfica 3D)
+  const [is3DStageOne, setIs3DStageOne] = useState<boolean>(true);
+  const [is3DTableStageTwo, setIs3DTableStageTwo] = useState<boolean>(true);
   const [isBriefingOpen, setIsBriefingOpen] = useState<boolean>(false);
   const [isArchiveDrawerOpen, setIsArchiveDrawerOpen] = useState<boolean>(false);
 
@@ -328,8 +331,37 @@ export const DossierInvestigationView: React.FC = () => {
             </button>
           </div>
 
-          {/* Direita: Botão Subnível [ 📁 Meu Arquivo Pessoal ] + Ação Principal da Etapa 1 */}
+          {/* Direita: Alternador 3D/2D + Botão Subnível [ 📁 Meu Arquivo Pessoal ] + Ação Principal */}
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            {state.activeStep === 1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playDocumentOpen();
+                  setIs3DStageOne(v => !v);
+                }}
+                className="px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/50 text-amber-200 text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-sm"
+              >
+                <Maximize2 className="w-3.5 h-3.5 text-amber-400" />
+                <span>[ Entrar no Cenário 3D ]</span>
+              </button>
+            )}
+            {state.activeStep === 2 && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playDocumentOpen();
+                  setIs3DTableStageTwo(v => !v);
+                }}
+                className={`px-3.5 py-2 rounded-xl border text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer transition-all ${
+                  is3DTableStageTwo
+                    ? 'bg-amber-500/20 border-amber-400/60 text-amber-200'
+                    : 'bg-[#0B1320] border-slate-700 text-slate-300'
+                }`}
+              >
+                <span>[ Mesa: {is3DTableStageTwo ? 'Vista Topográfica 3D' : 'Vista Plana 2D'} ]</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setIsArchiveDrawerOpen(true)}
@@ -400,9 +432,33 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 1 — OBSERVAR (MAIS IMAGEM, MENOS TEXTO E SUBNÍVEIS)
+          ETAPA 1 — OBSERVAR (CENÁRIO 3D REALISTA: ARQUIVO HISTÓRICO + MODO 2D)
          ===================================================================== */}
-      {state.activeStep === 1 && (
+      {state.activeStep === 1 && is3DStageOne && (
+        <ArchiveRoom3DStage
+          selectedCase={selectedCase}
+          documents={documents}
+          extractedClueIds={progress.extractedClueIds}
+          examinedDocIds={examinedDocIds}
+          activeStep={state.activeStep}
+          onSelectStep={step => setActiveStep(step)}
+          onInspectDocument={doc => {
+            setActiveDocId(doc.id);
+            markDocumentExamined(selectedCase.id, doc.id);
+            setIsInspectorOpen(true);
+          }}
+          onOpenArchiveDrawer={() => setIsArchiveDrawerOpen(true)}
+          onSwitchTo2D={() => {
+            soundEngine.playDocumentOpen();
+            setIs3DStageOne(false);
+          }}
+          onRequestExit={() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+          }}
+        />
+      )}
+
+      {state.activeStep === 1 && !is3DStageOne && (
         <div className="space-y-5 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-8 items-start">
           
           {/* Seletor Horizontal Compacto de Documentos no Mobile (< lg) para exibir a Imagem imediatamente no topo */}
@@ -786,8 +842,18 @@ export const DossierInvestigationView: React.FC = () => {
             </div>
           </div>
 
-          {/* Direita (8 cols): Mesa Visual de Investigação ([ Pista A ] ─── 🔗 ─── [ Pista B ]) */}
-          <div className="lg:col-span-8 min-w-0 space-y-6 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-6 sm:p-8 shadow-2xl">
+          {/* Direita (8 cols): Mesa Visual de Investigação (Perspectiva Topográfica 3D Inclinada) */}
+          <div
+            className="lg:col-span-8 min-w-0"
+            style={{ perspective: is3DTableStageTwo ? '1100px' : 'none' }}
+          >
+          <div
+            style={{
+              transform: is3DTableStageTwo ? 'rotateX(6deg)' : 'none',
+              transformOrigin: 'center top',
+            }}
+            className="space-y-6 rounded-2xl bg-gradient-to-b from-[#0E1726] to-[#080D18] border-2 border-amber-500/35 p-6 sm:p-8 shadow-[0_25px_60px_rgba(0,0,0,0.9)] transition-transform duration-500"
+          >
             <div className="border-b border-slate-800 pb-4">
               <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
                 QUESTÃO EM ANÁLISE NA MESA
@@ -1016,6 +1082,7 @@ export const DossierInvestigationView: React.FC = () => {
                 </div>
               </>
             )}
+          </div>
           </div>
 
         </div>
