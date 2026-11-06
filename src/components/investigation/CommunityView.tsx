@@ -89,7 +89,7 @@ export const CommunityView: React.FC = () => {
           <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
             NÍVEL 1 // INDIVIDUAL
           </span>
-          <div className="font-serif text-base font-bold text-white">
+          <div className="font-sans text-base font-bold text-white">
             Sua Trajetória e Arquivo
           </div>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -101,7 +101,7 @@ export const CommunityView: React.FC = () => {
           <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 font-bold">
             NÍVEL 2 // COLABORATIVO
           </span>
-          <div className="font-serif text-base font-bold text-white">
+          <div className="font-sans text-base font-bold text-white">
             Confronto de Hipóteses
           </div>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -113,7 +113,7 @@ export const CommunityView: React.FC = () => {
           <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
             NÍVEL 3 // COLETIVO
           </span>
-          <div className="font-serif text-base font-bold text-white">
+          <div className="font-sans text-base font-bold text-white">
             Descoberta Convergente
           </div>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -169,7 +169,7 @@ export const CommunityView: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-serif font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-sans font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Publicar no Mural de Campo</span>
@@ -189,7 +189,7 @@ export const CommunityView: React.FC = () => {
                 <span className="text-slate-400">{item.time}</span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-serif text-sm font-bold text-white">{item.caseTitle}</span>
+                <span className="font-sans text-sm font-bold text-white">{item.caseTitle}</span>
                 <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[11px] font-mono border border-emerald-500/30">
                   {item.badge}
                 </span>
@@ -216,7 +216,7 @@ export const CommunityView: React.FC = () => {
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm font-serif font-bold text-white">{item.case}</span>
+                <span className="text-sm font-sans font-bold text-white">{item.case}</span>
                 <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-xs font-mono border border-cyan-500/25">
                   {item.hypothesis}
                 </span>

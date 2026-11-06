@@ -100,7 +100,7 @@ export const InvestigatorProfileView: React.FC = () => {
                 {state.investigator.name.slice(0, 1).toUpperCase()}
               </div>
               <div className="min-w-0">
-                <h2 className="font-serif text-xl sm:text-2xl font-bold text-white truncate">
+                <h2 className="font-sans text-xl sm:text-2xl font-bold text-white truncate">
                   {state.investigator.name}
                 </h2>
                 <div className="text-xs font-mono text-cyan-400">
@@ -273,7 +273,7 @@ export const InvestigatorProfileView: React.FC = () => {
                   {ev.status}
                 </span>
               </div>
-              <div className="font-serif text-base font-bold text-white">{ev.title}</div>
+              <div className="font-sans text-base font-bold text-white">{ev.title}</div>
               <ul className="space-y-1 text-xs sm:text-sm text-slate-300 leading-relaxed">
                 {ev.items.map((it, idx) => (
                   <li key={idx}>• {it}</li>
@@ -311,7 +311,7 @@ export const InvestigatorProfileView: React.FC = () => {
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-serif font-bold text-sm text-white">
+                        <span className="font-sans font-bold text-sm text-white">
                           {node.fullName}
                         </span>
                         <span className="text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">

@@ -39,7 +39,7 @@ export const MissionsView: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-serif font-bold text-base text-white">{node.fullName}</span>
+                    <span className="font-sans font-bold text-base text-white">{node.fullName}</span>
                     <span className="text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
                       {node.year}
                     </span>

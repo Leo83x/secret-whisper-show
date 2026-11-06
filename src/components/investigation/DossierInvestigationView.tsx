@@ -17,7 +17,13 @@ import {
   Eye,
   ArrowRight,
   AlertCircle,
+  ZoomIn,
+  Maximize2,
+  BellRing,
 } from 'lucide-react';
+import { DocumentInspectorModal } from './DocumentInspectorModal';
+import { DiscoveryRevealModal } from './DiscoveryRevealModal';
+import { soundEngine } from '../../utils/investigationAudio';
 
 export const DossierInvestigationView: React.FC = () => {
   const {
@@ -45,8 +51,18 @@ export const DossierInvestigationView: React.FC = () => {
   const theses = selectedCase.hypothesisTheses || [];
   const simChoices = selectedCase.simulationChoices || [];
 
-  // Estado local da Etapa 1 (Documento aberto na lupa)
+  // Estado local da Etapa 1 (Documento aberto na lupa + Zoom Modal + Alertas)
   const [activeDocId, setActiveDocId] = useState<string>(documents[0]?.id || '');
+  const [isInspectorOpen, setIsInspectorOpen] = useState<boolean>(false);
+  const [examinedDocIds, setExaminedDocIds] = useState<string[]>(
+    documents[0]?.id ? [documents[0].id] : []
+  );
+  const [contradictionAlert, setContradictionAlert] = useState<string | null>(null);
+  const [discoveryModal, setDiscoveryModal] = useState<{
+    open: boolean;
+    title: string;
+    conclusion: string;
+  } | null>(null);
 
   // Estado local da Etapa 2 (Desafio selecionado e 2 pistas marcadas na Mesa)
   const [activeChallengeId, setActiveChallengeId] = useState<string>(challenges[0]?.id || '');
@@ -75,7 +91,11 @@ export const DossierInvestigationView: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    setActiveDocId(selectedCase.documents?.[0]?.id || '');
+    const firstId = selectedCase.documents?.[0]?.id || '';
+    setActiveDocId(firstId);
+    setExaminedDocIds(firstId ? [firstId] : []);
+    setContradictionAlert(null);
+    setIsInspectorOpen(false);
     setActiveChallengeId(selectedCase.connectionChallenges?.[0]?.id || '');
     setBoardSelectedClues([]);
     setConnectionFeedback(null);
@@ -101,6 +121,42 @@ export const DossierInvestigationView: React.FC = () => {
   const activeChallenge =
     challenges.find(c => c.id === activeChallengeId) || challenges[0];
 
+  const handleSelectDoc = (docId: string) => {
+    setActiveDocId(docId);
+    setExaminedDocIds(prev => (prev.includes(docId) ? prev : [...prev, docId]));
+    soundEngine.playDocumentOpen();
+  };
+
+  const handleOpenInspector = () => {
+    if (activeDoc) {
+      setExaminedDocIds(prev =>
+        prev.includes(activeDoc.id) ? prev : [...prev, activeDoc.id]
+      );
+    }
+    soundEngine.playDocumentOpen();
+    setIsInspectorOpen(true);
+  };
+
+  const handleExtractClueWithFeedback = (
+    clueId: string,
+    xpReward: number,
+    isContradiction?: boolean,
+    clueTitle?: string
+  ) => {
+    const alreadySaved = progress.extractedClueIds.includes(clueId);
+    extractClue(selectedCase.id, clueId, xpReward);
+    if (!alreadySaved) {
+      if (isContradiction) {
+        soundEngine.playContradictionAlert();
+        setContradictionAlert(
+          `Inconsistência documental registrada: "${clueTitle || 'Evidência crítica'}" contradiz a versão oficial do episódio.`
+        );
+      } else {
+        soundEngine.playClueSaved();
+      }
+    }
+  };
+
   const toggleBoardClue = (clueId: string) => {
     setConnectionFeedback(null);
     setBoardSelectedClues(prev => {
@@ -123,6 +179,12 @@ export const DossierInvestigationView: React.FC = () => {
       unlockedMap: res.unlockedMap,
     });
     if (res.success) {
+      soundEngine.playDiscoveryReveal();
+      setDiscoveryModal({
+        open: true,
+        title: res.title || activeChallenge.successTitle,
+        conclusion: res.message,
+      });
       setBoardSelectedClues([]);
       const nextUnsolved = challenges.find(
         c => c.id !== activeChallenge.id && !progress.solvedConnectionIds.includes(c.id)
@@ -132,6 +194,8 @@ export const DossierInvestigationView: React.FC = () => {
           setActiveChallengeId(nextUnsolved.id);
         }, 1200);
       }
+    } else {
+      soundEngine.playErrorPulse();
     }
   };
 
@@ -152,10 +216,12 @@ export const DossierInvestigationView: React.FC = () => {
       reasoningText
     );
     setHypothesisResult(res);
+    soundEngine.playClueSaved();
   };
 
   const handleSelectSimulationDecision = (choiceId: string) => {
     submitSimulationDecision(selectedCase.id, choiceId);
+    soundEngine.playClueSaved();
     setActiveStep(5);
   };
 
@@ -300,6 +366,31 @@ export const DossierInvestigationView: React.FC = () => {
         })}
       </div>
 
+      {/* ALERTA CONTEXTUAL DE AUDITORIA (QUANDO CONTRADIÇÃO É DESCOBERTA) */}
+      {contradictionAlert && (
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-between gap-4 animate-in fade-in duration-200 shadow-[0_0_20px_rgba(245,158,11,0.12)]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 shrink-0">
+              <BellRing className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-[11px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+                ALERTA DE AUDITORIA // CONTRADIÇÃO DOCUMENTAL DETECTADA
+              </div>
+              <p className="text-xs sm:text-sm font-sans text-slate-200 mt-0.5">
+                {contradictionAlert}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setContradictionAlert(null)}
+            className="px-3 py-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-xs font-mono text-slate-300 border border-slate-700 shrink-0 cursor-pointer"
+          >
+            Ciente
+          </button>
+        </div>
+      )}
+
       {/* =====================================================================
           ETAPA 1 — OBSERVAR (EXAMINAR DOCUMENTOS E EXTRAIR PISTAS)
          ===================================================================== */}
@@ -331,7 +422,7 @@ export const DossierInvestigationView: React.FC = () => {
                 return (
                   <button
                     key={doc.id}
-                    onClick={() => setActiveDocId(doc.id)}
+                    onClick={() => handleSelectDoc(doc.id)}
                     className={`w-full text-left p-3.5 rounded-xl border transition-all cursor-pointer space-y-1.5 ${
                       isSelected
                         ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_15px_rgba(212,175,55,0.2)]'
@@ -352,12 +443,17 @@ export const DossierInvestigationView: React.FC = () => {
                         {extractedInDoc}/{doc.clues.length} pistas
                       </span>
                     </div>
-                    <div className="font-serif text-sm font-bold text-white">
+                    <div className="font-sans text-sm font-bold text-white">
                       {doc.title}
                     </div>
                     <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
                       {doc.summary}
                     </p>
+                    {examinedDocIds.includes(doc.id) && (
+                      <div className="pt-1 flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-cyan-400">
+                        <Check className="w-3 h-3" /> [Camada Desclassificada]
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -372,11 +468,38 @@ export const DossierInvestigationView: React.FC = () => {
                   <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
                     {activeDoc.typeLabel} // {activeDoc.dateLabel}
                   </span>
-                  <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5">
+                  <h3 className="font-sans text-base sm:text-lg font-bold text-white mt-0.5">
                     {activeDoc.title}
                   </h3>
                 </div>
-                <Eye className="w-5 h-5 text-amber-400 shrink-0" />
+                <button
+                  onClick={handleOpenInspector}
+                  className="px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-sans font-semibold flex items-center gap-1.5 shrink-0 transition-all cursor-pointer"
+                  title="Inspecionar Documento com Zoom"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                  <span>Ampliar / Zoom</span>
+                </button>
+              </div>
+
+              {/* Miniatura Visual do Fac-símile / Registro com Abertura em Alta Resolução */}
+              <div
+                onClick={handleOpenInspector}
+                className="relative h-32 rounded-xl overflow-hidden border border-amber-500/25 bg-[#060A12] group cursor-pointer"
+              >
+                <img
+                  src={selectedCase.dossierCover || selectedCase.image}
+                  alt={activeDoc.title}
+                  className="w-full h-full object-cover opacity-55 group-hover:scale-105 group-hover:opacity-75 transition-all duration-500"
+                  style={{ filter: 'sepia(0.28) contrast(1.08)' }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#060A12] via-[#060A12]/35 to-transparent" />
+                <div className="absolute top-2.5 left-3 px-2 py-0.5 rounded bg-[#060A12]/85 border border-amber-500/30 text-[10px] font-mono text-amber-300 uppercase tracking-wider">
+                  FAC-SÍMILE // {activeDoc.code}
+                </div>
+                <div className="absolute bottom-2.5 right-3 px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs font-sans font-semibold flex items-center gap-1.5 backdrop-blur-sm group-hover:bg-amber-500 group-hover:text-slate-950 transition-all">
+                  <Maximize2 className="w-3.5 h-3.5" /> Inspecionar Evidência (Zoom)
+                </div>
               </div>
 
               <div className="p-4 rounded-xl bg-[#12100B] border border-amber-500/30 space-y-3 shadow-inner">
@@ -384,7 +507,7 @@ export const DossierInvestigationView: React.FC = () => {
                   <span>TRANSCRIÇÃO INTEGRAL DO REGISTRO</span>
                   <span>AUTENTICADO</span>
                 </div>
-                <p className="text-sm sm:text-base text-amber-100/95 font-sans leading-relaxed italic">
+                <p className="text-sm sm:text-base text-amber-100/95 font-sans leading-relaxed">
                   "{activeDoc.fullText}"
                 </p>
               </div>
@@ -400,7 +523,14 @@ export const DossierInvestigationView: React.FC = () => {
                   return (
                     <div
                       key={clue.id}
-                      onClick={() => extractClue(selectedCase.id, clue.id, clue.xpReward)}
+                      onClick={() =>
+                        handleExtractClueWithFeedback(
+                          clue.id,
+                          clue.xpReward,
+                          clue.isContradiction,
+                          clue.title
+                        )
+                      }
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer space-y-2 ${
                         isSaved
                           ? 'bg-emerald-950/30 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
@@ -501,7 +631,7 @@ export const DossierInvestigationView: React.FC = () => {
             <div className="pt-3 border-t border-slate-800 space-y-2">
               <button
                 onClick={() => setActiveStep(2)}
-                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-serif font-bold text-sm sm:text-base uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all cursor-pointer"
+                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-sm sm:text-base uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all cursor-pointer"
               >
                 <span>Ir para Mesa de Conexões</span>
                 <ChevronRight className="w-5 h-5 stroke-[2.5]" />
@@ -605,7 +735,7 @@ export const DossierInvestigationView: React.FC = () => {
                 <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
                   MESA DE CRUZAMENTO ANALÍTICO
                 </span>
-                <h3 className="font-serif text-base sm:text-lg font-bold text-white mt-0.5">
+                <h3 className="font-sans text-base sm:text-lg font-bold text-white mt-0.5">
                   {activeChallenge?.question}
                 </h3>
               </div>
@@ -623,13 +753,13 @@ export const DossierInvestigationView: React.FC = () => {
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
                   <button
                     onClick={() => setActiveStep(1)}
-                    className="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-serif font-bold text-sm cursor-pointer"
+                    className="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-sans font-bold text-sm cursor-pointer"
                   >
                     ← Voltar e Examinar Documentos
                   </button>
                   <button
                     onClick={() => setActiveStep(3)}
-                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-serif font-bold text-sm cursor-pointer"
+                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-sans font-bold text-sm cursor-pointer"
                   >
                     Avançar sem comprovar vínculos →
                   </button>
@@ -677,7 +807,7 @@ export const DossierInvestigationView: React.FC = () => {
                   <button
                     onClick={handleValidateConnection}
                     disabled={boardSelectedClues.length !== 2}
-                    className={`px-5 py-3 rounded-xl font-serif font-bold text-sm uppercase tracking-wider transition-all shrink-0 ${
+                    className={`px-5 py-3 rounded-xl font-sans font-bold text-sm uppercase tracking-wider transition-all shrink-0 ${
                       boardSelectedClues.length === 2
                         ? 'bg-gradient-to-r from-cyan-500 to-amber-400 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.35)] cursor-pointer'
                         : 'bg-slate-800 text-slate-500 cursor-not-allowed'
@@ -726,7 +856,7 @@ export const DossierInvestigationView: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setActiveStep(3)}
-                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-serif font-bold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all"
+                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all"
                   >
                     <span>
                       {progress.solvedConnectionIds.length < challenges.length
@@ -755,7 +885,7 @@ export const DossierInvestigationView: React.FC = () => {
               <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 block">
                 PASSO 1 DA HIPÓTESE
               </span>
-              <h3 className="font-serif text-base sm:text-lg font-bold text-white">
+              <h3 className="font-sans text-base sm:text-lg font-bold text-white">
                 Qual interpretação explica melhor o caso investigado?
               </h3>
             </div>
@@ -787,7 +917,7 @@ export const DossierInvestigationView: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <div className="font-serif text-sm sm:text-base font-bold text-white">
+                    <div className="font-sans text-sm sm:text-base font-bold text-white">
                       {th.title}
                     </div>
                     <p className="text-sm text-slate-200 leading-relaxed font-sans">
@@ -805,7 +935,7 @@ export const DossierInvestigationView: React.FC = () => {
               <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 block">
                 PASSO 2 & 3 DA HIPÓTESE
               </span>
-              <h3 className="font-serif text-base sm:text-lg font-bold text-white">
+              <h3 className="font-sans text-base sm:text-lg font-bold text-white">
                 Vincule as Evidências de Sustentação e Registre sua Dedução
               </h3>
             </div>
@@ -871,7 +1001,7 @@ export const DossierInvestigationView: React.FC = () => {
             <button
               onClick={handleSubmitHypothesis}
               disabled={!chosenThesisId}
-              className={`w-full py-3.5 px-5 rounded-xl font-serif font-bold text-sm sm:text-base uppercase tracking-wider transition-all ${
+              className={`w-full py-3.5 px-5 rounded-xl font-sans font-bold text-sm sm:text-base uppercase tracking-wider transition-all ${
                 chosenThesisId
                   ? 'bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.3)] cursor-pointer'
                   : 'bg-slate-800 text-slate-500 cursor-not-allowed'
@@ -901,7 +1031,7 @@ export const DossierInvestigationView: React.FC = () => {
                 <div className="pt-2 flex justify-end">
                   <button
                     onClick={() => setActiveStep(4)}
-                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-serif font-bold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all"
+                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all"
                   >
                     <span>Avançar para Etapa 4: Tomar Decisão</span>
                     <ChevronRight className="w-5 h-5 stroke-[2.5]" />
@@ -924,7 +1054,7 @@ export const DossierInvestigationView: React.FC = () => {
               <Scale className="w-4 h-4" />
               <span>ETAPA 4 // SIMULAÇÃO DE TOMADA DE DECISÃO</span>
             </div>
-            <h3 className="font-serif text-lg sm:text-2xl font-bold text-white">
+            <h3 className="font-sans text-lg sm:text-2xl font-bold text-white">
               Diante do padrão identificado, qual caminho você escolheria?
             </h3>
             <p className="text-sm sm:text-base text-amber-100/95 leading-relaxed mt-2 p-4 rounded-xl bg-[#060A12]/90 border border-amber-500/30">
@@ -947,10 +1077,10 @@ export const DossierInvestigationView: React.FC = () => {
                 >
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2">
-                      <span className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-400/50 flex items-center justify-center font-serif font-bold text-sm text-amber-300">
+                      <span className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-400/50 flex items-center justify-center font-sans font-bold text-sm text-amber-300">
                         {choice.tag}
                       </span>
-                      <span className="font-serif text-base sm:text-lg font-bold text-white">
+                      <span className="font-sans text-base sm:text-lg font-bold text-white">
                         {choice.title}
                       </span>
                     </div>
@@ -962,7 +1092,7 @@ export const DossierInvestigationView: React.FC = () => {
                     </p>
                   </div>
 
-                  <button className="px-5 py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40 font-serif font-bold text-sm shrink-0 transition-all cursor-pointer">
+                  <button className="px-5 py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40 font-sans font-bold text-sm shrink-0 transition-all cursor-pointer">
                     Escolher Caminho {choice.tag} →
                   </button>
                 </div>
@@ -985,7 +1115,7 @@ export const DossierInvestigationView: React.FC = () => {
                 <Award className="w-4 h-4" />
                 <span>RELATÓRIO DE AUDITORIA // {selectedCase.missionCode}</span>
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
+              <h3 className="font-sans text-xl sm:text-2xl font-bold text-white">
                 Resultado da Investigação & Consequências
               </h3>
               <p className="text-sm text-slate-300">
@@ -1000,7 +1130,7 @@ export const DossierInvestigationView: React.FC = () => {
               </div>
               <button
                 onClick={() => setActiveTab('mapa')}
-                className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-serif font-bold text-sm uppercase tracking-wider cursor-pointer flex items-center gap-2 shadow-lg"
+                className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-sans font-bold text-sm uppercase tracking-wider cursor-pointer flex items-center gap-2 shadow-lg"
               >
                 <span>Voltar ao Mapa Mundial</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
@@ -1024,7 +1154,7 @@ export const DossierInvestigationView: React.FC = () => {
                   </span>
                   {registeredThesis ? (
                     <>
-                      <div className="text-sm font-serif font-bold text-white">
+                      <div className="text-sm font-sans font-bold text-white">
                         {registeredThesis.tag} — {registeredThesis.title}
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed">
@@ -1311,7 +1441,7 @@ export const DossierInvestigationView: React.FC = () => {
 
               <button
                 onClick={() => setActiveTab('perfil')}
-                className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 font-serif font-bold text-sm cursor-pointer transition-all"
+                className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 font-sans font-bold text-sm cursor-pointer transition-all"
               >
                 Abrir Perfil Completo do Investigador →
               </button>
@@ -1319,6 +1449,46 @@ export const DossierInvestigationView: React.FC = () => {
 
           </div>
         </div>
+      )}
+
+      {/* MODAL DE INSPEÇÃO DE DOCUMENTO COM ZOOM (FASE 1) */}
+      {activeDoc && (
+        <DocumentInspectorModal
+          isOpen={isInspectorOpen}
+          onClose={() => setIsInspectorOpen(false)}
+          document={activeDoc}
+          caseImage={selectedCase.dossierCover || selectedCase.image}
+          locationSubtitle={`${selectedCase.location} (${selectedCase.year})`}
+          extractedClueIds={progress.extractedClueIds}
+          onExtractClue={(clueId, xpReward, isContradiction) => {
+            const clueObj = activeDoc.clues.find(c => c.id === clueId);
+            handleExtractClueWithFeedback(
+              clueId,
+              xpReward,
+              isContradiction,
+              clueObj?.title
+            );
+          }}
+        />
+      )}
+
+      {/* MODAL DE REVELAÇÃO DE DESCOBERTA / ELO HISTÓRICO (FASE 1) */}
+      {discoveryModal && (
+        <DiscoveryRevealModal
+          isOpen={discoveryModal.open}
+          onClose={() => setDiscoveryModal(null)}
+          title={discoveryModal.title}
+          conclusion={discoveryModal.conclusion}
+          sourceName={selectedCase.name}
+          sourceYear={selectedCase.year}
+          targetNames={selectedCase.connectedTo
+            .map(id => allNodes.find(n => n.id === id)?.name)
+            .filter((n): n is string => Boolean(n))}
+          onInspectMap={() => {
+            setDiscoveryModal(null);
+            setActiveTab('mapa');
+          }}
+        />
       )}
 
     </div>
