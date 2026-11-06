@@ -89,6 +89,7 @@ export const CaseDrawer: React.FC = () => {
       <div className="relative h-44 w-full overflow-hidden bg-slate-950 border-b border-amber-500/20">
         <img
           src={selectedCase.dossierCover || selectedCase.image}
+          onError={(e) => { (e.currentTarget as HTMLImageElement).src = selectedCase.image; }}
           alt={selectedCase.title}
           className={`w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105 ${
             isQuarantine ? 'grayscale contrast-125 opacity-60' : ''

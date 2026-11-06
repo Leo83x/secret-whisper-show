@@ -25,7 +25,7 @@ export const InvestigationHeader: React.FC = () => {
           </div>
           <div className="min-w-0">
             <h1 className="font-serif text-[11px] sm:text-sm md:text-base tracking-[0.14em] uppercase font-bold text-slate-100 truncate">
-              O ÚLTIMO SEGREDO DA HUMANIDADE
+              O ÚLTIMO SEGREDO
             </h1>
             <div className="flex items-center gap-1.5 min-w-0">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />

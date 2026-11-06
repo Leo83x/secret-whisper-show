@@ -132,7 +132,8 @@ export interface CasePlayProgress {
   selectedThesisId?: string;
   attachedClueIds: string[];
   hypothesisReasoning: string;
-  hypothesisScore?: 'forte' | 'parcial';
+  hypothesisScore?: 'forte' | 'parcial' | 'fraca';
+  failedConnectionIds?: string[];
   selectedDecisionId?: string;
   completed: boolean;
   xpEarned: number;

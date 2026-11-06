@@ -11,14 +11,12 @@ import {
   GitCommit,
   Sparkles,
   Scale,
-  Compass,
   Award,
   Check,
   XCircle,
-  Lock,
   Eye,
   ArrowRight,
-  Layers,
+  AlertCircle,
 } from 'lucide-react';
 
 export const DossierInvestigationView: React.FC = () => {
@@ -30,6 +28,8 @@ export const DossierInvestigationView: React.FC = () => {
     setActiveTab,
     selectCase,
     getCasePlayProgress,
+    getCaseXpBreakdown,
+    areCaseConnectionsUnlocked,
     extractClue,
     attemptConnection,
     submitStructuredHypothesis,
@@ -37,6 +37,9 @@ export const DossierInvestigationView: React.FC = () => {
   } = useInvestigation();
 
   const progress = getCasePlayProgress(selectedCase.id);
+  const xpBreakdown = getCaseXpBreakdown(selectedCase.id);
+  const mapConnectionsUnlocked = areCaseConnectionsUnlocked(selectedCase.id);
+
   const documents = selectedCase.documents || [];
   const challenges = selectedCase.connectionChallenges || [];
   const theses = selectedCase.hypothesisTheses || [];
@@ -44,6 +47,7 @@ export const DossierInvestigationView: React.FC = () => {
 
   // Estado local da Etapa 1 (Documento aberto na lupa)
   const [activeDocId, setActiveDocId] = useState<string>(documents[0]?.id || '');
+
   // Estado local da Etapa 2 (Desafio selecionado e 2 pistas marcadas na Mesa)
   const [activeChallengeId, setActiveChallengeId] = useState<string>(challenges[0]?.id || '');
   const [boardSelectedClues, setBoardSelectedClues] = useState<string[]>([]);
@@ -65,7 +69,7 @@ export const DossierInvestigationView: React.FC = () => {
     progress.hypothesisReasoning || state.personalNotes[selectedCase.id] || ''
   );
   const [hypothesisResult, setHypothesisResult] = useState<{
-    score: 'forte' | 'parcial';
+    score: 'forte' | 'parcial' | 'fraca';
     feedback: string;
     xpAwarded: number;
   } | null>(null);
@@ -88,6 +92,9 @@ export const DossierInvestigationView: React.FC = () => {
   );
   const extractedCluesList = allCaseClues.filter(c =>
     progress.extractedClueIds.includes(c.id)
+  );
+  const ignoredCluesList = allCaseClues.filter(
+    c => !progress.extractedClueIds.includes(c.id)
   );
 
   const activeDoc = documents.find(d => d.id === activeDocId) || documents[0];
@@ -117,7 +124,6 @@ export const DossierInvestigationView: React.FC = () => {
     });
     if (res.success) {
       setBoardSelectedClues([]);
-      // Se houver próximo desafio ainda não resolvido, destaca-o após breve leitura
       const nextUnsolved = challenges.find(
         c => c.id !== activeChallenge.id && !progress.solvedConnectionIds.includes(c.id)
       );
@@ -138,7 +144,7 @@ export const DossierInvestigationView: React.FC = () => {
   };
 
   const handleSubmitHypothesis = () => {
-    if (!chosenThesisId || hypothesisClues.length === 0) return;
+    if (!chosenThesisId) return;
     const res = submitStructuredHypothesis(
       selectedCase.id,
       chosenThesisId,
@@ -158,7 +164,7 @@ export const DossierInvestigationView: React.FC = () => {
       num: 1,
       short: '1. Observar',
       full: '1. Observar Evidências',
-      done: progress.extractedClueIds.length >= 2,
+      done: progress.extractedClueIds.length > 0,
     },
     {
       num: 2,
@@ -189,6 +195,18 @@ export const DossierInvestigationView: React.FC = () => {
   ];
 
   const volumeOneCases = allNodes.filter(n => n.isVolumeOne);
+
+  // Dados para o Relatório Final (Etapa 5)
+  const registeredThesis = theses.find(t => t.id === progress.selectedThesisId);
+  const usedEvidenceObjects = allCaseClues.filter(c =>
+    progress.attachedClueIds.includes(c.id)
+  );
+  const validatedChallenges = challenges.filter(ch =>
+    progress.solvedConnectionIds.includes(ch.id)
+  );
+  const unprovenChallenges = challenges.filter(
+    ch => !progress.solvedConnectionIds.includes(ch.id)
+  );
 
   return (
     <div className="space-y-6 mt-2">
@@ -361,7 +379,6 @@ export const DossierInvestigationView: React.FC = () => {
                 <Eye className="w-5 h-5 text-amber-400 shrink-0" />
               </div>
 
-              {/* Fac-símile Visual + Texto Completo do Documento */}
               <div className="p-4 rounded-xl bg-[#12100B] border border-amber-500/30 space-y-3 shadow-inner">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400/80 border-b border-amber-500/20 pb-1.5 flex justify-between">
                   <span>TRANSCRIÇÃO INTEGRAL DO REGISTRO</span>
@@ -372,7 +389,6 @@ export const DossierInvestigationView: React.FC = () => {
                 </p>
               </div>
 
-              {/* Trechos Destacáveis / Evidências Extraíveis deste Documento */}
               <div className="space-y-2.5 pt-1">
                 <div className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" />
@@ -485,19 +501,14 @@ export const DossierInvestigationView: React.FC = () => {
             <div className="pt-3 border-t border-slate-800 space-y-2">
               <button
                 onClick={() => setActiveStep(2)}
-                disabled={extractedCluesList.length < 2}
-                className={`w-full py-3 px-4 rounded-xl font-serif font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
-                  extractedCluesList.length >= 2
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] cursor-pointer'
-                    : 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                }`}
+                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-serif font-bold text-sm sm:text-base uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all cursor-pointer"
               >
                 <span>Ir para Mesa de Conexões</span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-5 h-5 stroke-[2.5]" />
               </button>
-              {extractedCluesList.length < 2 && (
+              {extractedCluesList.length < allCaseClues.length && (
                 <p className="text-[11px] font-mono text-slate-400 text-center">
-                  Extraia pelo menos 2 pistas para iniciar o cruzamento.
+                  Você pode avançar agora ou continuar inspecionando os demais documentos.
                 </p>
               )}
             </div>
@@ -518,18 +529,19 @@ export const DossierInvestigationView: React.FC = () => {
               <div className="flex items-center gap-2">
                 <GitCommit className="w-4 h-4 text-amber-400" />
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
-                  Relações da Investigação ({progress.solvedConnectionIds.length}/{challenges.length})
+                  Relações da Investigação ({progress.solvedConnectionIds.length}/{challenges.length} Comprovadas)
                 </span>
               </div>
             </div>
 
             <p className="text-sm text-slate-300 leading-relaxed">
-              O sistema não aceita conexões aleatórias. Selecione uma questão abaixo e, na mesa ao lado, marque as <strong>2 evidências do seu arquivo</strong> que comprovam a relação:
+              Selecione um vínculo abaixo e marque na mesa as <strong>2 evidências do seu arquivo</strong> que comprovam a relação. Se avançar sem validar um vínculo, ele será registrado como <strong>não comprovado</strong>.
             </p>
 
             <div className="space-y-3">
               {challenges.map(ch => {
                 const isSolved = progress.solvedConnectionIds.includes(ch.id);
+                const hasFailedAttempt = (progress.failedConnectionIds || []).includes(ch.id);
                 const isCurrent = activeChallenge?.id === ch.id;
 
                 return (
@@ -547,17 +559,21 @@ export const DossierInvestigationView: React.FC = () => {
                         : 'bg-[#060A12]/80 border-slate-800 hover:border-amber-500/40'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold">
-                        Vínculo #{ch.stepNumber} {ch.unlocksMapConnections ? '// Revela Mapa' : ''}
+                        Vínculo #{ch.stepNumber} {ch.unlocksMapConnections ? '// Elo Intertemporal' : ''}
                       </span>
                       {isSolved ? (
                         <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 font-bold">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Comprovado (+{ch.xpReward} XP)
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Comprovada (+{ch.xpReward} XP)
+                        </span>
+                      ) : hasFailedAttempt ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono text-red-300 bg-red-500/15 px-2 py-0.5 rounded border border-red-500/30">
+                          Não comprovada (Tente novamente)
                         </span>
                       ) : (
-                        <span className="text-[10px] font-mono text-slate-400">
-                          Em aberto
+                        <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700">
+                          Não comprovada
                         </span>
                       )}
                     </div>
@@ -602,14 +618,22 @@ export const DossierInvestigationView: React.FC = () => {
               <div className="p-6 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center space-y-3">
                 <AlertTriangle className="w-7 h-7 text-amber-400 mx-auto" />
                 <p className="text-sm text-amber-100 leading-relaxed">
-                  Você precisa extrair mais pistas nos documentos da Etapa 1 antes de poder cruzá-las na mesa de investigação.
+                  Você extraiu apenas {extractedCluesList.length} pista(s) até o momento. Para validar conexões na mesa são necessárias pelo menos 2 pistas no seu Arquivo Pessoal.
                 </p>
-                <button
-                  onClick={() => setActiveStep(1)}
-                  className="px-4 py-2 rounded-lg bg-amber-500 text-slate-950 font-mono text-xs font-bold cursor-pointer"
-                >
-                  ← Voltar para Etapa 1 (Examinar Documentos)
-                </button>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+                  <button
+                    onClick={() => setActiveStep(1)}
+                    className="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-serif font-bold text-sm cursor-pointer"
+                  >
+                    ← Voltar e Examinar Documentos
+                  </button>
+                  <button
+                    onClick={() => setActiveStep(3)}
+                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-serif font-bold text-sm cursor-pointer"
+                  >
+                    Avançar sem comprovar vínculos →
+                  </button>
+                </div>
               </div>
             ) : (
               <>
@@ -648,12 +672,12 @@ export const DossierInvestigationView: React.FC = () => {
                 {/* Botão de Validação da Conexão */}
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
                   <div className="text-xs font-mono text-slate-400">
-                    Selecione exatamente 2 pistas que sustentem a resposta e valide o vínculo.
+                    Selecione 2 pistas que sustentem a resposta e clique em Validar Conexão.
                   </div>
                   <button
                     onClick={handleValidateConnection}
                     disabled={boardSelectedClues.length !== 2}
-                    className={`px-5 py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider transition-all shrink-0 ${
+                    className={`px-5 py-3 rounded-xl font-serif font-bold text-sm uppercase tracking-wider transition-all shrink-0 ${
                       boardSelectedClues.length === 2
                         ? 'bg-gradient-to-r from-cyan-500 to-amber-400 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.35)] cursor-pointer'
                         : 'bg-slate-800 text-slate-500 cursor-not-allowed'
@@ -684,23 +708,32 @@ export const DossierInvestigationView: React.FC = () => {
                         </div>
                       )}
                       <p>{connectionFeedback.message}</p>
+                      {connectionFeedback.type === 'error' && (
+                        <p className="text-xs font-mono text-amber-300 pt-1">
+                          Você pode selecionar outro par de pistas para tentar novamente ou avançar com este vínculo registrado como não comprovado.
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}
 
-                <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
                   <button
                     onClick={() => setActiveStep(1)}
-                    className="text-xs font-mono text-slate-400 hover:text-white cursor-pointer"
+                    className="text-xs sm:text-sm font-mono text-slate-400 hover:text-white cursor-pointer"
                   >
                     ← Examinar mais documentos
                   </button>
                   <button
                     onClick={() => setActiveStep(3)}
-                    className="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-300 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-serif font-bold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all"
                   >
-                    <span>Avançar para Formulação de Hipótese</span>
-                    <ChevronRight className="w-4 h-4" />
+                    <span>
+                      {progress.solvedConnectionIds.length < challenges.length
+                        ? `Avançar para Etapa 3 (${challenges.length - progress.solvedConnectionIds.length} vínculo não comprovado)`
+                        : 'Avançar para Etapa 3: Formular Hipótese'}
+                    </span>
+                    <ChevronRight className="w-5 h-5 stroke-[2.5]" />
                   </button>
                 </div>
               </>
@@ -728,7 +761,7 @@ export const DossierInvestigationView: React.FC = () => {
             </div>
 
             <p className="text-sm text-slate-300 leading-relaxed">
-              Não existe apenas uma resposta aceitável: uma hipótese alternativa também receberá avaliação máxima se você anexar as evidências corretas que a sustentam.
+              Não existe apenas uma resposta aceitável: uma hipótese alternativa também receberá avaliação de <strong>Alta Consistência</strong> se você anexar as evidências corretas que a fundamentam.
             </p>
 
             <div className="space-y-3">
@@ -782,38 +815,44 @@ export const DossierInvestigationView: React.FC = () => {
                 Marque 2 ou 3 evidências do seu Arquivo Pessoal que provam sua tese ({hypothesisClues.length} anexadas):
               </label>
 
-              <div className="grid grid-cols-1 gap-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
-                {extractedCluesList.map(clue => {
-                  const checked = hypothesisClues.includes(clue.id);
-                  return (
-                    <div
-                      key={clue.id}
-                      onClick={() => toggleHypothesisClue(clue.id)}
-                      className={`p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-2.5 ${
-                        checked
-                          ? 'bg-cyan-500/15 border-cyan-400 text-white'
-                          : 'bg-[#060A12]/80 border-slate-800 text-slate-300 hover:border-slate-700'
-                      }`}
-                    >
+              {extractedCluesList.length === 0 ? (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
+                  Você ainda não extraiu pistas na Etapa 1. Sem evidências anexadas, sua hipótese será registrada com <strong>Baixa Consistência</strong>.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
+                  {extractedCluesList.map(clue => {
+                    const checked = hypothesisClues.includes(clue.id);
+                    return (
                       <div
-                        className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border shrink-0 ${
+                        key={clue.id}
+                        onClick={() => toggleHypothesisClue(clue.id)}
+                        className={`p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-2.5 ${
                           checked
-                            ? 'bg-cyan-400 border-cyan-400 text-slate-950'
-                            : 'border-slate-600'
+                            ? 'bg-cyan-500/15 border-cyan-400 text-white'
+                            : 'bg-[#060A12]/80 border-slate-800 text-slate-300 hover:border-slate-700'
                         }`}
                       >
-                        {checked && <Check className="w-3 h-3 stroke-[3]" />}
+                        <div
+                          className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border shrink-0 ${
+                            checked
+                              ? 'bg-cyan-400 border-cyan-400 text-slate-950'
+                              : 'border-slate-600'
+                          }`}
+                        >
+                          {checked && <Check className="w-3 h-3 stroke-[3]" />}
+                        </div>
+                        <div className="text-xs sm:text-sm leading-snug">
+                          <strong className="text-amber-300 font-mono text-[11px] mr-1.5">
+                            [{clue.docCode}]
+                          </strong>
+                          <span className="font-semibold">{clue.title}</span>
+                        </div>
                       </div>
-                      <div className="text-xs sm:text-sm leading-snug">
-                        <strong className="text-amber-300 font-mono text-[11px] mr-1.5">
-                          [{clue.docCode}]
-                        </strong>
-                        <span className="font-semibold">{clue.title}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             <div className="space-y-1.5 pt-1">
@@ -831,10 +870,10 @@ export const DossierInvestigationView: React.FC = () => {
 
             <button
               onClick={handleSubmitHypothesis}
-              disabled={!chosenThesisId || hypothesisClues.length === 0}
-              className={`w-full py-3 px-4 rounded-xl font-serif font-bold text-xs sm:text-sm uppercase tracking-wider transition-all ${
-                chosenThesisId && hypothesisClues.length > 0
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.3)] cursor-pointer'
+              disabled={!chosenThesisId}
+              className={`w-full py-3.5 px-5 rounded-xl font-serif font-bold text-sm sm:text-base uppercase tracking-wider transition-all ${
+                chosenThesisId
+                  ? 'bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.3)] cursor-pointer'
                   : 'bg-slate-800 text-slate-500 cursor-not-allowed'
               }`}
             >
@@ -842,12 +881,17 @@ export const DossierInvestigationView: React.FC = () => {
             </button>
 
             {hypothesisResult && (
-              <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 space-y-2 animate-in fade-in duration-300">
+              <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 space-y-3 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase text-emerald-400 font-bold">
-                    Avaliação da Hipótese: Sustentação {hypothesisResult.score === 'forte' ? 'Forte' : 'Parcial'}
+                  <span className="text-xs sm:text-sm font-mono uppercase text-emerald-400 font-bold">
+                    Grau de Consistência:{' '}
+                    {hypothesisResult.score === 'forte'
+                      ? 'Alta (Bem Fundamentada)'
+                      : hypothesisResult.score === 'parcial'
+                      ? 'Parcial'
+                      : 'Baixa (Sem Sustentação Direta)'}
                   </span>
-                  <span className="text-xs font-mono text-amber-300 font-bold">
+                  <span className="text-xs sm:text-sm font-mono text-amber-300 font-bold">
                     +{hypothesisResult.xpAwarded} XP
                   </span>
                 </div>
@@ -857,10 +901,10 @@ export const DossierInvestigationView: React.FC = () => {
                 <div className="pt-2 flex justify-end">
                   <button
                     onClick={() => setActiveStep(4)}
-                    className="px-4 py-2 rounded-lg bg-amber-500 text-slate-950 font-mono text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                    className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-serif font-bold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all"
                   >
                     <span>Avançar para Etapa 4: Tomar Decisão</span>
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-5 h-5 stroke-[2.5]" />
                   </button>
                 </div>
               </div>
@@ -918,7 +962,7 @@ export const DossierInvestigationView: React.FC = () => {
                     </p>
                   </div>
 
-                  <button className="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40 font-mono text-xs font-bold shrink-0 transition-all cursor-pointer">
+                  <button className="px-5 py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40 font-serif font-bold text-sm shrink-0 transition-all cursor-pointer">
                     Escolher Caminho {choice.tag} →
                   </button>
                 </div>
@@ -933,139 +977,316 @@ export const DossierInvestigationView: React.FC = () => {
          ===================================================================== */}
       {state.activeStep === 5 && (
         <div className="space-y-6">
+          
+          {/* Banner Superior de Conclusão e Mérito */}
           <div className="p-6 rounded-2xl bg-gradient-to-r from-[#0B1320] via-amber-950/25 to-[#0B1320] border border-amber-500/40 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">
                 <Award className="w-4 h-4" />
-                <span>RELATÓRIO DE CONCLUSÃO // {selectedCase.missionCode}</span>
+                <span>RELATÓRIO DE AUDITORIA // {selectedCase.missionCode}</span>
               </div>
               <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
-                Consequências e Descobertas Consolidadas
+                Resultado da Investigação & Consequências
               </h3>
               <p className="text-sm text-slate-300">
-                Sua investigação foi gravada no seu perfil de investigador e desbloqueou novos elos no Mapa Mundial.
+                Conferência analítica das pistas extraídas, vínculos demonstrados, consistência da hipótese e elos revelados.
               </p>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
               <div className="px-4 py-2.5 rounded-xl bg-[#060A12] border border-amber-500/40 text-center">
-                <div className="text-[10px] font-mono uppercase text-slate-400">Mérito Obtido</div>
-                <div className="text-lg font-mono font-bold text-amber-400">+{progress.xpEarned} XP</div>
+                <div className="text-[10px] font-mono uppercase text-slate-400">Mérito no Caso</div>
+                <div className="text-lg font-mono font-bold text-amber-400">+{xpBreakdown.totalCaseXp} XP</div>
               </div>
               <button
                 onClick={() => setActiveTab('mapa')}
-                className="px-4 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-serif font-bold text-xs uppercase tracking-wider cursor-pointer flex items-center gap-1.5 shadow-lg"
+                className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-serif font-bold text-sm uppercase tracking-wider cursor-pointer flex items-center gap-2 shadow-lg"
               >
-                <span>Ver Elos no Mapa</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Voltar ao Mapa Mundial</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             
-            {/* Card 1: O que foi identificado vs. Evidências ignoradas */}
-            <div className="rounded-2xl bg-[#0B1320]/95 border border-amber-500/25 p-5 space-y-4">
-              <div className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300 border-b border-white/10 pb-2">
-                1. Balanço de Evidências e Deduções
+            {/* COLUNA 1 (4 cols): HIPÓTESE REGISTRADA, EVIDÊNCIAS DE FUNDAMENTAÇÃO E GRAU DE CONSISTÊNCIA */}
+            <div className="lg:col-span-4 rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-5 space-y-4 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300 border-b border-white/10 pb-2">
+                  1. Hipótese & Fundamentação
+                </div>
+
+                {/* Indicador 1: Hipótese Registrada */}
+                <div className="p-3.5 rounded-xl bg-[#060A12]/90 border border-slate-800 space-y-1">
+                  <span className="text-[10px] font-mono uppercase text-slate-400 block">
+                    Hipótese Registrada:
+                  </span>
+                  {registeredThesis ? (
+                    <>
+                      <div className="text-sm font-serif font-bold text-white">
+                        {registeredThesis.tag} — {registeredThesis.title}
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {registeredThesis.subtitle}
+                      </p>
+                      {progress.hypothesisReasoning && (
+                        <p className="text-xs text-amber-200/90 italic pt-1 border-t border-white/5 mt-1">
+                          Raciocínio: "{progress.hypothesisReasoning}"
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-xs text-red-300 font-mono">
+                      Nenhuma hipótese foi submetida na Etapa 3.
+                    </div>
+                  )}
+                </div>
+
+                {/* Indicador 2: Grau de Consistência da Hipótese */}
+                <div className="p-3.5 rounded-xl bg-[#060A12]/90 border border-slate-800 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono uppercase text-slate-400">
+                      Grau de Consistência:
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase ${
+                        progress.hypothesisScore === 'forte'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                          : progress.hypothesisScore === 'parcial'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                          : 'bg-red-500/20 text-red-300 border border-red-500/40'
+                      }`}
+                    >
+                      {progress.hypothesisScore === 'forte'
+                        ? 'Alta Consistência (+100 XP)'
+                        : progress.hypothesisScore === 'parcial'
+                        ? 'Consistência Parcial (+60 XP)'
+                        : progress.selectedThesisId
+                        ? 'Baixa Consistência (+25 XP)'
+                        : 'Não Avaliada (0 XP)'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {progress.hypothesisScore === 'forte'
+                      ? registeredThesis?.feedbackStrong
+                      : progress.hypothesisScore === 'parcial'
+                      ? registeredThesis?.feedbackPartial
+                      : 'Para elevar o grau de consistência na Etapa 3, anexe pelo menos 2 pistas que comprovem diretamente a tese escolhida.'}
+                  </p>
+                </div>
+
+                {/* Indicador 3: Evidências Utilizadas para Fundamentação */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-mono text-slate-300">
+                    <span>Evidências Utilizadas na Hipótese:</span>
+                    <span className="text-cyan-400 font-bold">{usedEvidenceObjects.length} anexadas</span>
+                  </div>
+                  {usedEvidenceObjects.length === 0 ? (
+                    <div className="p-3 rounded-lg bg-[#060A12]/60 border border-slate-800 text-xs text-slate-400">
+                      Nenhuma evidência do arquivo foi anexada à hipótese.
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5">
+                      {usedEvidenceObjects.map(ev => (
+                        <div
+                          key={ev.id}
+                          className="p-2.5 rounded-lg bg-[#060A12]/80 border border-cyan-500/30 text-xs text-slate-200 flex items-center justify-between gap-2"
+                        >
+                          <span className="truncate">
+                            <strong className="text-amber-300 font-mono mr-1">[{ev.docCode}]</strong>
+                            {ev.title}
+                          </span>
+                          <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="space-y-2.5 text-sm">
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#060A12]/80 border border-slate-800">
-                  <span className="text-slate-300">Pistas Extraídas:</span>
-                  <strong className="font-mono text-emerald-400">
-                    {extractedCluesList.length} de {allCaseClues.length}
-                  </strong>
+              {/* Pistas Extraídas vs. Pistas Ignoradas */}
+              <div className="pt-3 border-t border-slate-800 space-y-2">
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-slate-400">Pistas Extraídas na Etapa 1:</span>
+                  <span className="text-emerald-400 font-bold">
+                    {extractedCluesList.length}/{allCaseClues.length} (+{xpBreakdown.cluesXp} XP)
+                  </span>
                 </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#060A12]/80 border border-slate-800">
-                  <span className="text-slate-300">Conexões Validadas:</span>
-                  <strong className="font-mono text-cyan-400">
-                    {progress.solvedConnectionIds.length} de {challenges.length}
-                  </strong>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#060A12]/80 border border-slate-800">
-                  <span className="text-slate-300">Sustentação da Hipótese:</span>
-                  <strong className="font-mono text-amber-300 uppercase">
-                    {progress.hypothesisScore === 'forte' ? 'Forte (Máxima)' : 'Registrada'}
-                  </strong>
-                </div>
+                {ignoredCluesList.length > 0 && (
+                  <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex items-center justify-between gap-2">
+                    <span>{ignoredCluesList.length} pista(s) ignorada(s) nos documentos.</span>
+                    <button
+                      onClick={() => setActiveStep(1)}
+                      className="underline font-mono text-amber-300 hover:text-white shrink-0 cursor-pointer"
+                    >
+                      Examinar
+                    </button>
+                  </div>
+                )}
               </div>
-
-              {extractedCluesList.length < allCaseClues.length && (
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 leading-relaxed">
-                  <strong>Pistas Ignoradas:</strong> Ainda restam{' '}
-                  {allCaseClues.length - extractedCluesList.length} pista(s) nos documentos da Etapa 1 que você pode examinar para atingir 100% de cobertura.
-                </div>
-              )}
             </div>
 
-            {/* Card 2: Interpretações Alternativas & Consequência da Decisão */}
-            <div className="rounded-2xl bg-[#0B1320]/95 border border-cyan-500/25 p-5 space-y-4">
-              <div className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300 border-b border-white/10 pb-2">
-                2. Interpretações Alternativas & Decisão
+            {/* COLUNA 2 (4 cols): CONEXÕES EFETIVAMENTE VALIDADAS vs. CONEXÕES AINDA NÃO DEMONSTRADAS */}
+            <div className="lg:col-span-4 rounded-2xl bg-[#0B1320]/95 border border-cyan-500/30 p-5 space-y-4 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
+                    2. Auditoria de Conexões
+                  </span>
+                  <span className="text-xs font-mono text-amber-300 font-bold">
+                    +{xpBreakdown.connectionsXp} XP
+                  </span>
+                </div>
+
+                {/* Indicador 4: Conexões Efetivamente Validadas */}
+                <div className="space-y-2">
+                  <div className="text-xs font-mono uppercase text-emerald-400 font-bold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Conexões Efetivamente Validadas ({validatedChallenges.length}/{challenges.length})</span>
+                  </div>
+
+                  {validatedChallenges.length === 0 ? (
+                    <div className="p-3 rounded-xl bg-[#060A12]/70 border border-slate-800 text-xs text-slate-400">
+                      Nenhuma conexão foi comprovada na Mesa de Investigação.
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {validatedChallenges.map(ch => (
+                        <div
+                          key={ch.id}
+                          className="p-3 rounded-xl bg-emerald-950/25 border border-emerald-500/40 space-y-1"
+                        >
+                          <div className="flex items-center justify-between text-[10px] font-mono text-emerald-300 font-bold">
+                            <span>Vínculo #{ch.stepNumber} — {ch.successTitle}</span>
+                            <span>+{ch.xpReward} XP</span>
+                          </div>
+                          <p className="text-xs text-slate-200 leading-relaxed">
+                            {ch.successConclusion}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Indicador 5: Conexões Ainda Não Demonstradas */}
+                <div className="space-y-2 pt-2">
+                  <div className="text-xs font-mono uppercase text-amber-400 font-bold flex items-center gap-1.5">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    <span>Conexões Ainda Não Demonstradas ({unprovenChallenges.length})</span>
+                  </div>
+
+                  {unprovenChallenges.length === 0 ? (
+                    <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-200">
+                      Todos os vínculos deste caso foram demonstrados com sucesso!
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {unprovenChallenges.map(ch => (
+                        <div
+                          key={ch.id}
+                          className="p-3 rounded-xl bg-red-950/20 border border-red-500/30 space-y-1.5"
+                        >
+                          <div className="flex items-center justify-between text-[10px] font-mono text-red-300 font-bold">
+                            <span>Vínculo #{ch.stepNumber}</span>
+                            <span>NÃO COMPROVADA (0 XP)</span>
+                          </div>
+                          <p className="text-xs text-slate-300 leading-snug">
+                            {ch.question}
+                          </p>
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => setActiveStep(2)}
+                        className="w-full py-2.5 px-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold cursor-pointer transition-all"
+                      >
+                        ← Retornar à Etapa 2 para Demonstrar Vínculos
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {progress.selectedDecisionId && (
-                <div className="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-sm text-slate-200 leading-relaxed">
-                  <div className="text-[10px] font-mono uppercase text-cyan-300 font-bold mb-1">
-                    Reflexo da sua Decisão de Campo:
-                  </div>
-                  {
-                    simChoices.find(c => c.id === progress.selectedDecisionId)
-                      ?.consequenceSummary
-                  }
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <div className="text-xs font-mono uppercase text-slate-400">
-                  Outras leituras possíveis deste evento:
-                </div>
-                {(selectedCase.alternativeInterpretations || []).map((alt, i) => (
-                  <div
-                    key={i}
-                    className="p-2.5 rounded-lg bg-[#060A12]/80 border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed"
-                  >
+              {/* Interpretações Alternativas */}
+              <div className="pt-3 border-t border-slate-800 space-y-1.5">
+                <span className="text-[10px] font-mono uppercase text-slate-400 block">
+                  Interpretações Alternativas do Caso:
+                </span>
+                {(selectedCase.alternativeInterpretations || []).slice(0, 2).map((alt, i) => (
+                  <p key={i} className="text-xs text-slate-300 leading-relaxed">
                     • {alt}
-                  </div>
+                  </p>
                 ))}
               </div>
             </div>
 
-            {/* Card 3: Desbloqueios e Evolução do Perfil de Investigador */}
-            <div className="rounded-2xl bg-[#0B1320]/95 border border-emerald-500/25 p-5 space-y-4 flex flex-col justify-between">
+            {/* COLUNA 3 (4 cols): SEPARAÇÃO ENTRE ELOS DESCOBERTOS NO MAPA E CASOS DISPONÍVEIS + PERFIL */}
+            <div className="lg:col-span-4 rounded-2xl bg-[#0B1320]/95 border border-emerald-500/30 p-5 space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-300 border-b border-white/10 pb-2">
-                  3. Desbloqueios & Evolução de Perfil
+                  3. Elos no Mapa & Casos Disponíveis
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
-                  <div className="text-xs font-mono font-bold text-emerald-300 uppercase">
-                    Novos Caminhos Desbloqueados no Mapa:
+                {/* Estado 1: Conexões Históricas Comprovadas pelo Jogador no Mapa */}
+                <div
+                  className={`p-3.5 rounded-xl border space-y-2 ${
+                    mapConnectionsUnlocked
+                      ? 'bg-emerald-500/10 border-emerald-500/40'
+                      : 'bg-slate-900/80 border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-[10px] font-mono uppercase font-bold">
+                    <span className={mapConnectionsUnlocked ? 'text-emerald-300' : 'text-amber-300'}>
+                      Elos Intertemporais no Mapa Mundial:
+                    </span>
+                    <span>{mapConnectionsUnlocked ? 'COMPROVADOS' : 'NÃO DEMONSTRADOS'}</span>
                   </div>
+
+                  {mapConnectionsUnlocked ? (
+                    <p className="text-xs text-emerald-100 leading-relaxed">
+                      Você comprovou o vínculo intertemporal na Etapa 2! Os arcos de conexão histórica deste caso agora estão acesos no Mapa Mundial.
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Como o vínculo intertemporal não foi validado na Etapa 2, os arcos de conexão deste caso permanecem ocultos no Mapa Mundial.
+                    </p>
+                  )}
+                </div>
+
+                {/* Estado 2: Casos Disponíveis para Investigação (Progressão Narrativa) */}
+                <div className="p-3.5 rounded-xl bg-[#060A12]/90 border border-slate-800 space-y-2.5">
+                  <div className="text-xs font-mono uppercase text-amber-300 font-bold">
+                    Casos Disponíveis para Investigação:
+                  </div>
+                  <p className="text-xs text-slate-400 leading-snug">
+                    Independentemente dos elos comprovados no mapa, os seguintes dossiês do Volume I estão abertos para investigação:
+                  </p>
                   <div className="flex flex-wrap gap-2">
-                    {selectedCase.connectedTo
-                      .map(id => allNodes.find(n => n.id === id))
-                      .filter((n): n is NonNullable<typeof n> => Boolean(n && n.status !== 'quarentena'))
-                      .map(conn => (
+                    {volumeOneCases
+                      .filter(c => c.id !== selectedCase.id)
+                      .map(c => (
                         <button
-                          key={conn.id}
+                          key={c.id}
                           onClick={() => {
-                            selectCase(conn.id);
+                            selectCase(c.id);
                             setActiveStep(1);
                           }}
-                          className="px-3 py-1.5 rounded-lg bg-[#060A12] hover:bg-amber-500/20 border border-emerald-500/40 text-xs font-mono text-emerald-200 flex items-center gap-1.5 cursor-pointer transition-all"
+                          className="px-3 py-2 rounded-lg bg-[#0B1320] hover:bg-amber-500/20 border border-amber-500/40 text-xs font-mono text-amber-200 flex items-center gap-1.5 cursor-pointer transition-all"
                         >
-                          <span>Investigar {conn.name} ({conn.year})</span>
+                          <span>
+                            {c.name} ({c.year})
+                          </span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       ))}
                   </div>
                 </div>
 
+                {/* Tendências Atualizadas do Investigador */}
                 <div className="space-y-2">
                   <div className="text-xs font-mono uppercase text-slate-400">
-                    Suas Tendências Atualizadas:
+                    Tendências do Investigador (Atualizadas):
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                     <div className="p-2 rounded bg-[#060A12] border border-slate-800 flex justify-between">
@@ -1090,9 +1311,9 @@ export const DossierInvestigationView: React.FC = () => {
 
               <button
                 onClick={() => setActiveTab('perfil')}
-                className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold cursor-pointer transition-all"
+                className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 font-serif font-bold text-sm cursor-pointer transition-all"
               >
-                Abrir Identidade Completa do Investigador →
+                Abrir Perfil Completo do Investigador →
               </button>
             </div>
 
