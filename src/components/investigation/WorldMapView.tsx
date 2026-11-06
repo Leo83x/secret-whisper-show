@@ -2,20 +2,12 @@ import React from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import { EraFilter } from '../../types/investigation';
 import { CaseDrawer } from './CaseDrawer';
-import { Compass, CheckCircle2, Lock, Filter } from 'lucide-react';
+import { Check, Lock, Sparkles, Compass, Globe2 } from 'lucide-react';
 
 export const WorldMapView: React.FC = () => {
-  const {
-    state,
-    filteredNodes,
-    allNodes,
-    selectedCase,
-    setSelectedCaseId,
-    setEraFilter,
-    stats
-  } = useInvestigation();
+  const { state, filteredNodes, allNodes, selectCase, setEraFilter, stats } = useInvestigation();
 
-  const eraFilters: { key: EraFilter; label: string }[] = [
+  const eras: { key: EraFilter; label: string }[] = [
     { key: 'todos', label: 'Todos' },
     { key: 'antiguidade', label: 'Antiguidade' },
     { key: 'idade_media', label: 'Idade Média' },
@@ -23,353 +15,378 @@ export const WorldMapView: React.FC = () => {
     { key: 'contemporanea', label: 'Contemporânea' },
   ];
 
-  // Arcos de conexão entre os nós históricos
-  const connectionArcs = [
-    { from: 'jobs', to: 'joana' },
-    { from: 'jobs', to: 'napoleao' },
-    { from: 'joana', to: 'turing' },
-    { from: 'joana', to: 'napoleao' },
-    { from: 'turing', to: 'cesar' },
-    { from: 'napoleao', to: 'cesar' },
-    { from: 'napoleao', to: 'cleopatra' },
-    { from: 'cesar', to: 'cleopatra' },
-    { from: 'cleopatra', to: 'mandela' },
-  ];
+  // Ordem estritamente cronológica
+  const chronologicalOrder = ['cesar', 'cleopatra', 'joana', 'napoleao', 'turing', 'mandela', 'jobs'];
+  const orderedAllNodes = [...allNodes].sort(
+    (a, b) => chronologicalOrder.indexOf(a.id) - chronologicalOrder.indexOf(b.id)
+  );
 
-  const getNodeCoords = (id: string) => {
-    const node = allNodes.find(n => n.id === id);
-    return node ? node.coords : { x: 50, y: 50 };
-  };
+  // Nó atualmente selecionado
+  const selectedNode = allNodes.find(n => n.id === state.selectedCaseId) || allNodes[0];
+
+  // Conexões históricas visíveis (NÃO revela conexões de nós bloqueados/em quarentena)
+  const visibleConnections: { from: string; to: string; isRelatedToSelected: boolean }[] = [];
+  filteredNodes.forEach(node => {
+    if (node.status === 'quarentena') return;
+    node.connectedTo.forEach(targetId => {
+      const targetNode = filteredNodes.find(n => n.id === targetId);
+      if (!targetNode || targetNode.status === 'quarentena') return;
+      const exists = visibleConnections.some(
+        c => (c.from === node.id && c.to === targetId) || (c.from === targetId && c.to === node.id)
+      );
+      if (!exists) {
+        const isRelatedToSelected =
+          node.id === state.selectedCaseId || targetId === state.selectedCaseId;
+        visibleConnections.push({ from: node.id, to: targetId, isRelatedToSelected });
+      }
+    });
+  });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 mt-2 sm:mt-4">
       
-      {/* 1. TOPO: TÍTULO DA VISÃO & FILTROS DE ERA */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-500/20 pb-4">
-        <div>
-          <h2 className="font-serif text-lg sm:text-2xl font-bold tracking-wider text-white uppercase">
+      {/* 1. TOPO DO MAPA & FILTROS DE ERA (Margem superior adequada, largura livre, sem rolagem horizontal indesejada) */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b border-amber-500/20 pb-4 w-full">
+        <div className="w-full lg:w-auto">
+          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.2em] text-amber-400/90 mb-1">
+            <Globe2 className="w-3.5 h-3.5 text-amber-400" />
+            <span>Cartografia de Convergência // O Padrão</span>
+          </div>
+          <h2 className="font-serif text-lg sm:text-2xl md:text-3xl font-bold tracking-wider uppercase text-white leading-tight">
             CONECTE O PASSADO. DESCUBRA O <span className="text-amber-400">PADRÃO.</span>
           </h2>
-          <p className="text-sm sm:text-base text-slate-300 font-sans mt-1">
-            Explore os eventos que moldaram o mundo e encontre as pistas que atravessam os séculos.
+          <p className="text-xs sm:text-sm text-slate-300 font-sans mt-1">
+            Explore os eventos que moldaram o mundo e identifique as variáveis que atravessam os séculos.
           </p>
         </div>
 
-        {/* Pílulas de Filtro de Era com Fonte Maior */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-          <div className="flex items-center gap-1 text-slate-400 text-xs sm:text-sm font-mono mr-1 shrink-0">
-            <Filter className="w-3.5 h-3.5 text-amber-400" />
-            <span className="hidden sm:inline">Era:</span>
-          </div>
-          {eraFilters.map(filter => {
-            const isActive = state.eraFilter === filter.key;
+        {/* Pílulas de Filtro de Época (flex-wrap para nunca gerar barra de rolagem horizontal indesejada) */}
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
+          {eras.map((era) => {
+            const active = state.eraFilter === era.key;
             return (
               <button
-                key={filter.key}
-                onClick={() => setEraFilter(filter.key)}
-                className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-mono font-semibold tracking-wide whitespace-nowrap transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-amber-500/25 text-amber-300 border border-amber-400/60 shadow-[0_0_12px_rgba(212,175,55,0.25)]'
-                    : 'bg-slate-900/80 text-slate-300 hover:text-white border border-white/10 hover:border-amber-500/30'
+                key={era.key}
+                onClick={() => setEraFilter(era.key)}
+                className={`px-3 py-1.5 rounded-full text-xs font-mono whitespace-nowrap transition-all cursor-pointer border ${
+                  active
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-400 shadow-[0_0_12px_rgba(212,175,55,0.25)] font-semibold'
+                    : 'bg-[#0B1320]/80 text-slate-400 border-slate-700/60 hover:border-amber-500/40 hover:text-slate-200'
                 }`}
               >
-                {filter.label}
+                {era.label}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* 2. GRID PRINCIPAL: MAPA (ESQUERDA) + CASO EM DESTAQUE (DIREITA) */}
+      {/* 2. GRID PRINCIPAL: MAPA INTERATIVO (8 COLUNAS) + PAINEL LATERAL (4 COLUNAS) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* COLUNA ESQUERDA: MAPA-MÚNDI NOTURNO ESTILIZADO */}
-        <div className="lg:col-span-8 space-y-4">
-          <div
-            className="relative w-full rounded-2xl border border-amber-500/30 p-3 sm:p-5 shadow-[0_0_50px_rgba(0,0,0,0.95)] overflow-hidden min-h-[430px] sm:min-h-[500px] flex flex-col justify-between"
-            style={{
-              background: 'radial-gradient(ellipse at 50% 110%, rgba(14, 116, 144, 0.32) 0%, rgba(11, 22, 44, 0.85) 40%, #050912 85%)'
-            }}
-          >
-            {/* Grade tática de coordenadas */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(56,189,248,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(56,189,248,0.04)_1px,transparent_1px)] [background-size:40px_40px] pointer-events-none" />
+        {/* COLUNA CENTRAL: CONTAINER DO MAPA-MÚNDI + RÉGUA CRONOLÓGICA INTEGRADA */}
+        <div className="lg:col-span-8 flex flex-col rounded-2xl bg-gradient-to-b from-[#060A12] via-[#090E17] to-[#04060B] border border-amber-500/30 shadow-[0_0_35px_rgba(0,0,0,0.85)] overflow-hidden">
+          
+          {/* CANVAS GEOGRÁFICO */}
+          <div className="relative w-full h-[460px] sm:h-[520px] overflow-hidden select-none">
+            
+            {/* Efeito Sutil de Radar / Pontos Estelares (Radial Gradient) */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'radial-gradient(circle at 50% 42%, rgba(212, 175, 55, 0.07) 0%, rgba(6, 182, 212, 0.04) 45%, rgba(4, 6, 11, 0.85) 100%)',
+              }}
+            />
 
-            {/* MAPA-MÚNDI NOTURNO COM CONTINENTES E LUZES DE CIDADES DOURADAS (SVG) */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none select-none"
-              viewBox="0 0 1000 520"
-              preserveAspectRatio="xMidYMid slice"
-            >
+            {/* Mapa-Múndi Cartográfico Reconhecível ao Fundo (Proporções reais dos continentes, azul-acinzentado discreto e nós luminosos) */}
+            <img
+              src="/dossiers/world_map_bg.webp"
+              alt="Mapa Mundial de Investigação"
+              className="absolute inset-0 w-full h-full object-cover object-center opacity-85 pointer-events-none mix-blend-lighten"
+            />
+
+            {/* Vinheta Suave nas Bordas para Integração Cinematográfica */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'radial-gradient(ellipse at center, transparent 55%, #050811 100%)',
+              }}
+            />
+
+            {/* CAMADA SVG: ARCOS DE CONEXÃO HISTÓRICA + LINHAS-GUIA GEOGRÁFICAS + PINOS REAIS */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
               <defs>
-                <pattern id="continentDots" width="6" height="6" patternUnits="userSpaceOnUse">
-                  <circle cx="2" cy="2" r="1" fill="#38bdf8" fillOpacity="0.22" />
-                </pattern>
-                <filter id="goldGlow" x="-30%" y="-30%" width="160%" height="160%">
-                  <feGaussianBlur stdDeviation="3.5" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-                <radialGradient id="cityCluster" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#FDE68A" stopOpacity="0.9" />
-                  <stop offset="40%" stopColor="#F59E0B" stopOpacity="0.55" />
-                  <stop offset="100%" stopColor="#D97706" stopOpacity="0" />
-                </radialGradient>
+                <linearGradient id="goldArcActive" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.95" />
+                  <stop offset="50%" stopColor="#FDE68A" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#06B6D4" stopOpacity="0.9" />
+                </linearGradient>
+                <linearGradient id="goldArcIdle" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.3" />
+                  <stop offset="50%" stopColor="#06B6D4" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.3" />
+                </linearGradient>
               </defs>
 
-              {/* Linhas de Latitude e Equador */}
-              <line x1="0" y1="130" x2="1000" y2="130" stroke="#1e293b" strokeWidth="0.8" strokeDasharray="4,4" />
-              <line x1="0" y1="260" x2="1000" y2="260" stroke="#334155" strokeWidth="1" strokeDasharray="6,4" opacity="0.6" />
-              <line x1="0" y1="390" x2="1000" y2="390" stroke="#1e293b" strokeWidth="0.8" strokeDasharray="4,4" />
+              {/* 1. Arcos Curvos Conectando as Coordenadas Geográficas Reais dos Eventos Ativos */}
+              {visibleConnections.map((conn, idx) => {
+                const fromNode = allNodes.find(n => n.id === conn.from);
+                const toNode = allNodes.find(n => n.id === conn.to);
+                if (!fromNode || !toNode) return null;
 
-              {/* SILHUETAS DOS CONTINENTES (Visíveis com preenchimento noturno + malha pontilhada + borda dourada/azul) */}
-              <g fill="#0d1b30" stroke="#2d4a6d" strokeWidth="1.5" opacity="0.85">
-                {/* América do Norte */}
-                <path d="M 45 75 L 125 60 L 210 75 L 285 65 L 310 110 L 270 160 L 235 195 L 200 225 L 175 245 L 145 225 L 115 190 L 95 145 L 55 120 Z" />
-                {/* Groenlândia */}
-                <path d="M 295 35 L 365 30 L 380 65 L 335 85 L 295 65 Z" />
-                {/* América do Sul */}
-                <path d="M 205 265 L 255 260 L 315 305 L 305 365 L 265 435 L 230 475 L 205 445 L 195 365 L 180 305 Z" />
-                {/* Europa */}
-                <path d="M 420 75 L 485 55 L 565 65 L 595 110 L 565 165 L 525 185 L 475 185 L 430 165 L 410 130 Z" />
-                {/* Reino Unido / Escandinávia */}
-                <path d="M 415 95 L 435 90 L 440 118 L 420 122 Z" />
-                {/* África */}
-                <path d="M 425 200 L 505 195 L 575 210 L 615 265 L 595 345 L 555 425 L 505 435 L 480 375 L 455 305 L 410 265 Z" />
-                {/* Ásia */}
-                <path d="M 580 65 L 710 55 L 855 75 L 925 115 L 895 195 L 845 255 L 775 280 L 705 270 L 655 245 L 605 205 L 575 155 Z" />
-                {/* Japão e Sudeste Asiático */}
-                <path d="M 865 160 L 885 155 L 890 195 L 870 205 Z" />
-                <path d="M 760 285 L 825 295 L 845 330 L 780 335 Z" />
-                {/* Oceania / Austrália */}
-                <path d="M 790 360 L 885 355 L 910 415 L 865 445 L 795 430 Z" />
-              </g>
+                const p1 = fromNode.geoCoords || fromNode.coords;
+                const p2 = toNode.geoCoords || toNode.coords;
 
-              {/* Malha Pontilhada Tecnológica sobre os Continentes */}
-              <g fill="url(#continentDots)" stroke="#d4af37" strokeWidth="0.6" strokeOpacity="0.35">
-                <path d="M 45 75 L 125 60 L 210 75 L 285 65 L 310 110 L 270 160 L 235 195 L 200 225 L 175 245 L 145 225 L 115 190 L 95 145 L 55 120 Z" />
-                <path d="M 205 265 L 255 260 L 315 305 L 305 365 L 265 435 L 230 475 L 205 445 L 195 365 L 180 305 Z" />
-                <path d="M 420 75 L 485 55 L 565 65 L 595 110 L 565 165 L 525 185 L 475 185 L 430 165 L 410 130 Z" />
-                <path d="M 425 200 L 505 195 L 575 210 L 615 265 L 595 345 L 555 425 L 505 435 L 480 375 L 455 305 L 410 265 Z" />
-                <path d="M 580 65 L 710 55 L 855 75 L 925 115 L 895 195 L 845 255 L 775 280 L 705 270 L 655 245 L 605 205 L 575 155 Z" />
-                <path d="M 790 360 L 885 355 L 910 415 L 865 445 L 795 430 Z" />
-              </g>
-
-              {/* AGLOMERADOS DE LUZES NOTURNAS DOURADAS (Igual à arte de referência) */}
-              <g filter="url(#goldGlow)">
-                {/* Califórnia / Costa Oeste EUA */}
-                <circle cx="145" cy="185" r="22" fill="url(#cityCluster)" />
-                <circle cx="145" cy="185" r="2.5" fill="#FEF08A" />
-                {/* Costa Leste EUA */}
-                <circle cx="235" cy="165" r="26" fill="url(#cityCluster)" />
-                <circle cx="235" cy="165" r="2.5" fill="#FEF08A" />
-                {/* América do Sul (São Paulo / Rio / Buenos Aires) */}
-                <circle cx="285" cy="365" r="22" fill="url(#cityCluster)" />
-                <circle cx="285" cy="365" r="2.5" fill="#FEF08A" />
-                {/* Europa Ocidental (Londres / Paris / Waterloo) */}
-                <circle cx="465" cy="135" r="35" fill="url(#cityCluster)" />
-                <circle cx="455" cy="125" r="3" fill="#FEF08A" />
-                <circle cx="480" cy="145" r="3" fill="#FEF08A" />
-                {/* Itália / Roma / Mediterrâneo */}
-                <circle cx="525" cy="175" r="28" fill="url(#cityCluster)" />
-                <circle cx="525" cy="175" r="3" fill="#FEF08A" />
-                {/* Egito / Alexandria / Nilo */}
-                <circle cx="565" cy="225" r="24" fill="url(#cityCluster)" />
-                <circle cx="565" cy="225" r="2.5" fill="#FEF08A" />
-                {/* África do Sul */}
-                <circle cx="535" cy="405" r="22" fill="url(#cityCluster)" />
-                <circle cx="535" cy="405" r="2.5" fill="#FEF08A" />
-                {/* Índia e Ásia Oriental */}
-                <circle cx="715" cy="235" r="25" fill="url(#cityCluster)" />
-                <circle cx="835" cy="185" r="30" fill="url(#cityCluster)" />
-                <circle cx="835" cy="185" r="2.5" fill="#FEF08A" />
-              </g>
-
-              {/* Horizonte Curvo Atmosférico na Base */}
-              <path
-                d="M -50 515 Q 500 465 1050 515"
-                fill="none"
-                stroke="#38bdf8"
-                strokeWidth="2"
-                opacity="0.35"
-              />
-            </svg>
-
-            {/* Camada SVG de Linhas Curvas Douradas Conectando as Coordenadas dos Cards */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-            >
-              {connectionArcs.map((arc, i) => {
-                const p1 = getNodeCoords(arc.from);
-                const p2 = getNodeCoords(arc.to);
                 const midX = (p1.x + p2.x) / 2;
                 const midY = Math.min(p1.y, p2.y) - 10;
-                const isSelected = selectedCase.id === arc.from || selectedCase.id === arc.to;
 
                 return (
-                  <path
-                    key={i}
-                    d={`M ${p1.x} ${p1.y} Q ${midX} ${midY} ${p2.x} ${p2.y}`}
-                    fill="none"
-                    stroke={isSelected ? '#F59E0B' : '#D4AF37'}
-                    strokeWidth={isSelected ? '0.45' : '0.28'}
-                    strokeDasharray={isSelected ? '1.5, 0.8' : '1, 1'}
-                    opacity={isSelected ? 0.95 : 0.45}
-                  />
+                  <g key={idx}>
+                    {conn.isRelatedToSelected && (
+                      <path
+                        d={`M ${p1.x} ${p1.y} Q ${midX} ${midY} ${p2.x} ${p2.y}`}
+                        fill="none"
+                        stroke="#F59E0B"
+                        strokeWidth="0.9"
+                        opacity="0.25"
+                      />
+                    )}
+                    <path
+                      d={`M ${p1.x} ${p1.y} Q ${midX} ${midY} ${p2.x} ${p2.y}`}
+                      fill="none"
+                      stroke={conn.isRelatedToSelected ? 'url(#goldArcActive)' : 'url(#goldArcIdle)'}
+                      strokeWidth={conn.isRelatedToSelected ? '0.45' : '0.28'}
+                      strokeDasharray={conn.isRelatedToSelected ? 'none' : '1.2, 1.2'}
+                    />
+                  </g>
+                );
+              })}
+
+              {/* 2. Linhas-Guia (Leader Lines) e Pinos Luminosos na Localização Geográfica Exata */}
+              {filteredNodes.map((node) => {
+                const geo = node.geoCoords || node.coords;
+                const card = node.coords;
+                const isSelected = state.selectedCaseId === node.id;
+                const isQuarantine = node.status === 'quarentena';
+                const hasOffset = Math.hypot(card.x - geo.x, card.y - geo.y) > 2;
+
+                return (
+                  <g key={`pin-${node.id}`}>
+                    {/* Linha-guia conectando o ponto geográfico real ao cartão deslocado */}
+                    {hasOffset && (
+                      <line
+                        x1={geo.x}
+                        y1={geo.y}
+                        x2={card.x}
+                        y2={card.y}
+                        stroke={isSelected ? '#F59E0B' : isQuarantine ? '#64748B' : '#D4AF37'}
+                        strokeWidth={isSelected ? '0.35' : '0.22'}
+                        strokeDasharray={isSelected ? 'none' : '0.8, 0.8'}
+                        opacity={isSelected ? '0.95' : '0.55'}
+                      />
+                    )}
+
+                    {/* Halo e Pino Geográfico Exato sobre o Continente */}
+                    {!isQuarantine && (
+                      <circle
+                        cx={geo.x}
+                        cy={geo.y}
+                        r={isSelected ? '1.6' : '1.0'}
+                        fill={isSelected ? '#F59E0B' : '#D4AF37'}
+                        opacity={isSelected ? '0.45' : '0.25'}
+                      />
+                    )}
+                    <circle
+                      cx={geo.x}
+                      cy={geo.y}
+                      r={isSelected ? '0.75' : '0.5'}
+                      fill={isSelected ? '#FDE68A' : isQuarantine ? '#64748B' : '#F59E0B'}
+                    />
+                  </g>
                 );
               })}
             </svg>
 
-            {/* Rosa dos Ventos no Canto Inferior Esquerdo */}
-            <div className="absolute bottom-16 left-4 text-amber-500/30 pointer-events-none hidden sm:flex items-center gap-2">
-              <Compass className="w-14 h-14 stroke-[1.2]" />
-              <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400/50 leading-tight">
-                Conectando o Passado<br />em Busca do Padrão
+            {/* Rosa dos Ventos Decorativa no Canto Inferior Esquerdo */}
+            <div className="absolute bottom-4 left-4 hidden sm:flex items-center gap-2.5 opacity-60 pointer-events-none">
+              <Compass className="w-8 h-8 text-amber-500/70 stroke-[1.2]" />
+              <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-amber-200/80 leading-tight">
+                <div>CONECTANDO O PASSADO AO PRESENTE</div>
+                <div className="text-amber-400/70">EM BUSCA DO PADRÃO</div>
               </div>
             </div>
 
-            {/* Nós Interativos Espalhados (Sem Sobreposição!) */}
-            <div className="relative z-10 w-full h-[350px] sm:h-[410px]">
-              {filteredNodes.map(node => {
-                const isSelected = selectedCase.id === node.id;
-                const isCompleted = state.completedNodes.includes(node.id);
-                const isQuarantine = node.status === 'quarentena';
-                const isAvailable = node.status === 'disponivel' || isCompleted;
+            {/* CARDS INTERATIVOS DOS 7 NÓS HISTÓRICOS */}
+            {filteredNodes.map((node) => {
+              const isSelected = state.selectedCaseId === node.id;
+              const isCompleted = state.completedNodes.includes(node.id);
+              const isQuarantine = node.status === 'quarentena';
+              const isConnectedPeer =
+                !isQuarantine &&
+                (selectedNode.connectedTo.includes(node.id) ||
+                  node.connectedTo.includes(selectedNode.id));
 
-                return (
+              // Reduz discretamente a intensidade dos demais nós quando um está selecionado
+              const dimClass = isSelected
+                ? 'z-30 scale-105 opacity-100'
+                : isConnectedPeer
+                ? 'z-20 opacity-90 hover:opacity-100 hover:scale-105'
+                : 'z-10 opacity-70 hover:opacity-100 hover:scale-105';
+
+              return (
+                <div
+                  key={node.id}
+                  onClick={() => selectCase(node.id)}
+                  style={{ left: `${node.coords.x}%`, top: `${node.coords.y}%` }}
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-300 cursor-pointer group ${dimClass}`}
+                >
+                  {/* Halo de seleção */}
+                  {isSelected && (
+                    <div className="absolute -inset-1 rounded-xl bg-amber-400/20 blur-md animate-pulse pointer-events-none" />
+                  )}
+
+                  {/* Card Compacto e Proporcional do Personagem */}
                   <div
-                    key={node.id}
-                    onClick={() => setSelectedCaseId(node.id)}
-                    style={{ left: `${node.coords.x}%`, top: `${node.coords.y}%` }}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer group select-none"
+                    className={`relative flex items-center gap-2 p-1.5 pr-2.5 rounded-xl backdrop-blur-md border transition-all min-w-[128px] sm:min-w-[146px] ${
+                      isSelected
+                        ? 'bg-[#0B1320]/95 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.45)]'
+                        : isCompleted
+                        ? 'bg-[#0B1320]/90 border-emerald-500/50 hover:border-emerald-400'
+                        : isQuarantine
+                        ? 'bg-[#060A12]/85 border-slate-700/70 hover:border-slate-500'
+                        : 'bg-[#0B1320]/90 border-amber-500/40 hover:border-amber-400 shadow-[0_0_12px_rgba(212,175,55,0.15)]'
+                    }`}
                   >
-                    {/* Halo dourado na base do pin */}
-                    <div
-                      className={`absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-2.5 rounded-full blur-[2px] transition-all ${
-                        isSelected
-                          ? 'bg-amber-400 opacity-90 scale-125'
-                          : isAvailable
-                          ? 'bg-amber-500/60 opacity-70'
-                          : 'bg-slate-600/40 opacity-40'
-                      }`}
-                    />
+                    {/* Retrato */}
+                    <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg overflow-hidden border border-amber-500/30 shrink-0 bg-slate-900">
+                      <img
+                        src={node.image}
+                        alt={node.name}
+                        className={`w-full h-full object-cover ${isQuarantine ? 'grayscale opacity-65' : ''}`}
+                      />
+                    </div>
 
-                    <div
-                      className={`relative flex items-center gap-2 p-1.5 pr-3 rounded-xl transition-all duration-300 ${
-                        isSelected
-                          ? 'bg-[#09111E]/95 border-2 border-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.65)] scale-110 z-30'
-                          : isAvailable
-                          ? 'bg-[#09111E]/90 border border-amber-500/45 hover:border-amber-400 hover:scale-105 z-20 shadow-lg'
-                          : 'bg-[#09111E]/80 border border-slate-700/70 opacity-75 hover:opacity-100 z-10'
-                      }`}
-                    >
-                      {/* Retrato do Personagem */}
-                      <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-lg overflow-hidden border border-amber-400/50 shrink-0 bg-slate-900">
-                        <img
-                          src={node.image}
-                          alt={node.name}
-                          className="w-full h-full object-cover object-top"
-                        />
+                    {/* Nome & Data */}
+                    <div className="text-left leading-tight flex-1 min-w-0">
+                      <div className="font-serif text-[11px] sm:text-xs font-bold text-slate-100 truncate">
+                        {node.name}
                       </div>
-
-                      {/* Nome e Data com Fonte Maior */}
-                      <div className="leading-tight text-left">
-                        <div className="text-xs sm:text-sm font-sans font-bold text-white group-hover:text-amber-300 transition-colors flex items-center gap-1 whitespace-nowrap">
-                          <span>{node.name}</span>
-                          {isCompleted ? (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                          ) : isQuarantine ? (
-                            <Lock className="w-3 h-3 text-amber-400/80 shrink-0" />
-                          ) : null}
-                        </div>
-                        <div className="text-[11px] sm:text-xs font-mono text-amber-400 font-semibold">
-                          {node.year}
-                        </div>
+                      <div className="font-mono text-[10px] text-amber-400/90 mt-0.5">
+                        {node.year}
                       </div>
                     </div>
+
+                    {/* Ícone de Status */}
+                    <div className="ml-0.5 shrink-0">
+                      {isCompleted ? (
+                        <span className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-400">
+                          <Check className="w-2.5 h-2.5 stroke-[2.5]" />
+                        </span>
+                      ) : isQuarantine ? (
+                        <span className="w-4 h-4 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-slate-400">
+                          <Lock className="w-2.5 h-2.5" />
+                        </span>
+                      ) : (
+                        <span className="w-4 h-4 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-amber-300">
+                          <Sparkles className="w-2.5 h-2.5" />
+                        </span>
+                      )}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
+          </div>
 
-            {/* 3. RÉGUA CRONOLÓGICA INFERIOR EM ORDEM HISTÓRICA ESTRITA */}
-            <div className="relative z-20 pt-3 border-t border-amber-500/25 bg-[#060A12]/80 backdrop-blur-sm -mx-3 sm:-mx-5 -mb-3 sm:-mb-5 px-4 py-3">
-              {/* Linha dourada contínua de fundo */}
-              <div className="hidden md:block absolute top-[22px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-amber-500/20 via-amber-400/60 to-amber-500/20 pointer-events-none" />
+          {/* RÉGUA CRONOLÓGICA INFERIOR INTEGRADA AO MAPA (Sem barra de rolagem horizontal nativa e sem cortar eventos) */}
+          <div className="bg-[#060A12]/95 border-t border-amber-500/25 px-3 sm:px-5 py-3">
+            <div className="relative">
+              {/* Linha Dourada Horizontal Contínua (Desktop) */}
+              <div className="hidden lg:block absolute top-2.5 left-6 right-6 h-[1px] bg-gradient-to-r from-amber-500/20 via-amber-400/50 to-amber-500/20 pointer-events-none" />
 
-              <div className="relative flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none">
-                {allNodes.map(n => {
-                  const isSelected = selectedCase.id === n.id;
-                  const isCompleted = state.completedNodes.includes(n.id);
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1.5 sm:gap-2 relative z-10">
+                {orderedAllNodes.map((node) => {
+                  const active = state.selectedCaseId === node.id;
+                  const completed = state.completedNodes.includes(node.id);
+                  const isQuarantine = node.status === 'quarentena';
+
                   return (
                     <button
-                      key={n.id}
-                      onClick={() => setSelectedCaseId(n.id)}
-                      className={`px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer flex flex-col items-center gap-1 ${
-                        isSelected
-                          ? 'bg-amber-500/25 text-amber-300 border border-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.3)]'
-                          : 'bg-slate-900/70 hover:bg-slate-800/80 text-slate-300 hover:text-white border border-white/5'
+                      key={node.id}
+                      onClick={() => selectCase(node.id)}
+                      className={`group flex flex-col items-center justify-center py-1.5 px-2 rounded-lg border transition-all cursor-pointer text-center ${
+                        active
+                          ? 'bg-amber-500/15 border-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.2)]'
+                          : 'bg-[#0B1320]/60 lg:bg-transparent border-slate-800/80 lg:border-transparent hover:border-amber-500/30 hover:bg-amber-500/5'
                       }`}
                     >
-                      <span
-                        className={`w-2.5 h-2.5 rounded-full ${
-                          isCompleted
-                            ? 'bg-emerald-400 shadow-[0_0_8px_#10b981]'
-                            : isSelected
-                            ? 'bg-amber-400 shadow-[0_0_10px_#f59e0b]'
-                            : 'bg-slate-500'
+                      <div
+                        className={`w-2.5 h-2.5 rounded-full transition-all mb-1 ${
+                          active
+                            ? 'bg-amber-400 scale-125 shadow-[0_0_8px_#f59e0b]'
+                            : completed
+                            ? 'bg-emerald-400'
+                            : isQuarantine
+                            ? 'bg-slate-600 group-hover:bg-slate-400'
+                            : 'bg-amber-500/60 group-hover:bg-amber-300'
                         }`}
                       />
-                      <span className="text-xs font-mono font-semibold whitespace-nowrap">
-                        {n.timelineLabel}
+                      <span
+                        className={`font-mono text-[10px] sm:text-[11px] leading-tight transition-colors ${
+                          active
+                            ? 'text-amber-300 font-bold'
+                            : completed
+                            ? 'text-emerald-300 font-medium'
+                            : 'text-slate-300 group-hover:text-white'
+                        }`}
+                      >
+                        {node.timelineLabel}
                       </span>
                     </button>
                   );
                 })}
               </div>
             </div>
-
-          </div>
-
-          {/* 4. BARRA DE ESTATÍSTICAS REAIS DO LEITOR COM FONTE AMPLIADA */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-[#0B1320] border border-amber-500/25 flex items-center justify-between">
-              <div>
-                <span className="text-xs sm:text-sm font-mono text-slate-300">Sua Jornada (Volume I):</span>
-                <div className="text-white font-bold text-sm sm:text-base mt-0.5">
-                  {stats.analyzedCount} de {stats.totalVolumeOne} Dossiês Concluídos
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-amber-400 font-mono font-bold text-lg sm:text-xl">
-                  {stats.completionPercentage}%
-                </span>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#0B1320] border border-amber-500/25 flex items-center justify-between">
-              <div>
-                <span className="text-xs sm:text-sm font-mono text-slate-300">Hipóteses Formuladas:</span>
-                <div className="text-white font-bold text-sm sm:text-base mt-0.5">
-                  {stats.hypothesesCount} teses gravadas no compêndio
-                </div>
-              </div>
-              <span className="px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 text-xs font-mono font-bold border border-cyan-500/30">
-                Ativo
-              </span>
-            </div>
           </div>
 
         </div>
 
-        {/* COLUNA DIREITA: CASO EM DESTAQUE (DRAWER) */}
+        {/* COLUNA DIREITA: PAINEL LATERAL "CASO EM DESTAQUE" (4 COLUNAS) */}
         <div className="lg:col-span-4">
           <CaseDrawer />
         </div>
 
+      </div>
+
+      {/* 3. RODAPÉ DE TELEMETRIA INDIVIDUAL REAL */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-[#0B1320]/90 border border-amber-500/20">
+        <div className="w-full sm:w-1/2 space-y-1.5">
+          <div className="flex justify-between text-xs font-mono">
+            <span className="text-slate-300 uppercase tracking-wider">Sua Jornada no Volume I:</span>
+            <span className="text-amber-400 font-bold">
+              {stats.completedCount} de {stats.totalVol1} Dossiês ({stats.progressPercent}%)
+            </span>
+          </div>
+          <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-amber-600 via-amber-400 to-cyan-400 transition-all duration-500"
+              style={{ width: `${Math.max(stats.progressPercent, 6)}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 text-xs font-mono text-slate-300">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Evidências: <strong className="text-white">{stats.evidenceCount}/4</strong></span>
+          </div>
+          <span className="text-slate-600">|</span>
+          <div>
+            <span>Hipóteses Gravadas: <strong className="text-cyan-400">{stats.hypothesesCount}</strong></span>
+          </div>
+        </div>
       </div>
 
     </div>

@@ -28,7 +28,8 @@ export interface HistoricalNode {
   timelineLabel: string;
   location: string;
   era: EraFilter;
-  coords: { x: number; y: number }; // Percentual relativo no mapa SVG (0-100)
+  coords: { x: number; y: number };
+  geoCoords?: { x: number; y: number }; // Percentual relativo no mapa SVG (0-100)
   image: string;
   dossierCover: string;
   status: NodeStatus;

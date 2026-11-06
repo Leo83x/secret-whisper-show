@@ -51,20 +51,20 @@ export const CommunityView: React.FC = () => {
             className="p-5 rounded-2xl bg-[#0B1320]/95 backdrop-blur-md border border-amber-500/20 shadow-lg space-y-3 flex flex-col justify-between"
           >
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs sm:text-sm font-mono">
+              <div className="flex items-center justify-between text-xs font-mono">
                 <span className="text-amber-400 font-bold">{item.author}</span>
                 <span className="text-slate-500">{item.time}</span>
               </div>
               <div className="text-xs font-serif font-bold text-white">{item.case}</div>
-              <div className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-xs sm:text-sm font-mono border border-cyan-500/25 inline-block">
+              <div className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-xs font-mono border border-cyan-500/25 inline-block">
                 {item.hypothesis}
               </div>
-              <p className="text-xs text-slate-300 font-sans leading-relaxed italic pt-1">
+              <p className="text-sm sm:text-base text-slate-200 font-sans leading-relaxed italic pt-1">
                 "{item.text}"
               </p>
             </div>
 
-            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs sm:text-sm font-mono text-slate-400">
+            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs font-mono text-slate-400">
               <span className="flex items-center gap-1 text-emerald-400">
                 <ShieldCheck className="w-3 h-3" /> Verificado
               </span>

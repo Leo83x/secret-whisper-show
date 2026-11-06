@@ -20,7 +20,7 @@ export const HistoricalOrbitalRadar: React.FC = () => {
             2. Conexão Analógica — Matriz de Risco
           </span>
         </div>
-        <span className="text-xs sm:text-sm font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">
+        <span className="text-[11px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">
           Telemetria Ativa
         </span>
       </div>
@@ -44,7 +44,7 @@ export const HistoricalOrbitalRadar: React.FC = () => {
           <div className="relative w-10 h-10 rounded-full bg-slate-900 border-2 border-amber-400 p-0.5 shadow-[0_0_15px_rgba(245,158,11,0.5)]">
             <img src={cesarNode?.image} alt="César" className="w-full h-full rounded-full object-cover" />
           </div>
-          <div className="mt-1 px-2 py-0.5 rounded bg-black/80 border border-amber-500/30 text-xs sm:text-sm font-mono text-amber-300 font-bold whitespace-nowrap">
+          <div className="mt-1 px-2 py-0.5 rounded bg-black/80 border border-amber-500/30 text-[11px] font-mono text-amber-300 font-bold whitespace-nowrap">
             49 a.C. Roma
           </div>
         </div>
@@ -54,7 +54,7 @@ export const HistoricalOrbitalRadar: React.FC = () => {
           <div className="relative w-10 h-10 rounded-full bg-slate-900 border-2 border-amber-400 p-0.5 shadow-[0_0_15px_rgba(245,158,11,0.5)]">
             <img src={napoleaoNode?.image} alt="Napoleão" className="w-full h-full rounded-full object-cover" />
           </div>
-          <div className="mt-1 px-2 py-0.5 rounded bg-black/80 border border-amber-500/30 text-xs sm:text-sm font-mono text-amber-300 font-bold whitespace-nowrap">
+          <div className="mt-1 px-2 py-0.5 rounded bg-black/80 border border-amber-500/30 text-[11px] font-mono text-amber-300 font-bold whitespace-nowrap">
             1815 Waterloo
           </div>
         </div>
@@ -64,7 +64,7 @@ export const HistoricalOrbitalRadar: React.FC = () => {
           <div className="relative w-10 h-10 rounded-full bg-slate-900 border-2 border-cyan-400 p-0.5 shadow-[0_0_15px_rgba(6,182,212,0.5)]">
             <img src={jobsNode?.image} alt="Jobs" className="w-full h-full rounded-full object-cover" />
           </div>
-          <div className="mt-1 px-2 py-0.5 rounded bg-black/80 border border-cyan-500/30 text-xs sm:text-sm font-mono text-cyan-300 font-bold whitespace-nowrap">
+          <div className="mt-1 px-2 py-0.5 rounded bg-black/80 border border-cyan-500/30 text-[11px] font-mono text-cyan-300 font-bold whitespace-nowrap">
             2007 Califórnia
           </div>
         </div>

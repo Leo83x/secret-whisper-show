@@ -18,7 +18,8 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     timelineLabel: '49 a.C. Roma',
     location: 'Roma — Rio Rubicão',
     era: 'antiguidade',
-    coords: { x: 64, y: 46 }, // top: 46%, left: 64%
+    coords: { x: 64, y: 36 },
+    geoCoords: { x: 50.8, y: 34.8 }, // top: 46%, left: 64%
     image: cesarImg,
     dossierCover: '/dossiers/dossier_01_rubicon.webp',
     status: 'disponivel',
@@ -72,7 +73,8 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     timelineLabel: '30 a.C. Egito',
     location: 'Alexandria — Egito',
     era: 'antiguidade',
-    coords: { x: 58, y: 62 }, // top: 62%, left: 58%
+    coords: { x: 63, y: 54 },
+    geoCoords: { x: 55.4, y: 42.0 }, // top: 62%, left: 58%
     image: cleopatraImg,
     dossierCover: '/dossiers/dossier_01_rubicon.webp',
     status: 'quarentena',
@@ -102,7 +104,8 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     timelineLabel: '1429 França',
     location: 'Orléans — França',
     era: 'idade_media',
-    coords: { x: 42, y: 22 }, // top: 22%, left: 42%
+    coords: { x: 34, y: 31 },
+    geoCoords: { x: 47.0, y: 32.2 }, // top: 22%, left: 42%
     image: joanaImg,
     dossierCover: '/dossiers/dossier_02_waterloo.webp',
     status: 'quarentena',
@@ -132,7 +135,8 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     timelineLabel: '1815 Europa',
     location: 'Waterloo — Bélgica',
     era: 'moderna',
-    coords: { x: 48, y: 38 }, // top: 38%, left: 48%
+    coords: { x: 58, y: 17 },
+    geoCoords: { x: 48.6, y: 29.2 }, // top: 38%, left: 48%
     image: napoleaoImg,
     dossierCover: '/dossiers/dossier_02_waterloo.webp',
     status: 'disponivel',
@@ -186,7 +190,8 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     timelineLabel: '1941 Mundo',
     location: 'Bletchley Park — Inglaterra',
     era: 'contemporanea',
-    coords: { x: 56, y: 16 }, // top: 16%, left: 56%
+    coords: { x: 37, y: 14 },
+    geoCoords: { x: 46.2, y: 27.2 }, // top: 16%, left: 56%
     image: turingImg,
     dossierCover: '/dossiers/dossier_03_bletchley.webp',
     status: 'disponivel',
@@ -240,7 +245,8 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     timelineLabel: '1994 África do Sul',
     location: 'Pretória — África do Sul',
     era: 'contemporanea',
-    coords: { x: 52, y: 76 }, // top: 76%, left: 52%
+    coords: { x: 53.5, y: 76 },
+    geoCoords: { x: 53.5, y: 74.5 }, // top: 76%, left: 52%
     image: mandelaImg,
     dossierCover: '/dossiers/dossier_04_travamento.webp',
     status: 'quarentena',
@@ -270,7 +276,8 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     timelineLabel: '2007 Tecnologia',
     location: 'São Francisco — Moscone Center',
     era: 'contemporanea',
-    coords: { x: 16, y: 38 }, // top: 38%, left: 16%
+    coords: { x: 16.5, y: 38.5 },
+    geoCoords: { x: 16.5, y: 38.5 }, // top: 38%, left: 16%
     image: jobsImg,
     dossierCover: '/dossiers/dossier_04_travamento.webp',
     status: 'disponivel',

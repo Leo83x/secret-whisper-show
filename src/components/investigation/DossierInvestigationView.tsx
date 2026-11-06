@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import { HistoricalOrbitalRadar } from './HistoricalOrbitalRadar';
 import { DecisionChoiceCard } from './DecisionChoiceCard';
-import { FileSearch, Sparkles, CheckCircle2, ChevronRight, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { FileSearch, CheckCircle2, ChevronRight, AlertTriangle, ArrowLeft } from 'lucide-react';
 
 export const DossierInvestigationView: React.FC = () => {
   const { selectedCase, state, setActiveStep, setActiveTab, discoverEvidence } = useInvestigation();
@@ -10,15 +10,19 @@ export const DossierInvestigationView: React.FC = () => {
     state.discoveredEvidenceIds.includes(selectedCase.id)
   );
 
+  useEffect(() => {
+    setAnomalyRevealed(state.discoveredEvidenceIds.includes(selectedCase.id));
+  }, [selectedCase.id, state.discoveredEvidenceIds]);
+
   const handleRevealAnomaly = () => {
     setAnomalyRevealed(true);
     discoverEvidence(selectedCase.id);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-2">
       
-      {/* 1. BREADCRUMB & HEADER DO CASO */}
+      {/* 1. BREADCRUMB & HEADER DO CASO (Tamanhos originais compactos e proporcionais) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-4">
         <div>
           <button
@@ -79,13 +83,13 @@ export const DossierInvestigationView: React.FC = () => {
               </span>
             </div>
             {anomalyRevealed && (
-              <span className="inline-flex items-center gap-1 text-xs sm:text-sm font-mono text-emerald-400">
+              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400">
                 <CheckCircle2 className="w-3 h-3" /> Anomalia Verificada
               </span>
             )}
           </div>
 
-          <div className="text-xs sm:text-sm font-mono text-slate-400">
+          <div className="text-[11px] font-mono text-slate-400">
             {selectedCase.evidence.locationSubtitle}
           </div>
 
@@ -101,34 +105,34 @@ export const DossierInvestigationView: React.FC = () => {
             {/* Ponto Pulsante de Anomalia Clicável */}
             <div
               onClick={handleRevealAnomaly}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 rounded-xl bg-black/80 border-2 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.8)] cursor-pointer hover:scale-105 transition-all text-center animate-pulse"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2.5 rounded-xl bg-black/85 border-2 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.8)] cursor-pointer hover:scale-105 transition-all text-center animate-pulse"
             >
               <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-300">
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
                 <span>[Anomalia Detectada]</span>
               </div>
-              <div className="text-xs font-mono text-slate-300">
+              <div className="text-[10px] font-mono text-slate-300 mt-0.5">
                 Toque para inspecionar
               </div>
             </div>
           </div>
 
-          {/* Revelação Documental */}
+          {/* Revelação Documental (Parágrafos internos ampliados para leitura confortável) */}
           {anomalyRevealed ? (
-            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs font-sans text-slate-200 leading-relaxed space-y-2 animate-in fade-in duration-500">
-              <div className="font-mono text-xs sm:text-sm text-amber-400 font-bold uppercase">
+            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-slate-200 leading-relaxed space-y-2.5 animate-in fade-in duration-500">
+              <div className="font-mono text-[11px] text-amber-400 font-bold uppercase tracking-wider">
                 Tabuleta de Intendência // Transcrição Desclassificada:
               </div>
-              <p className="italic text-amber-100/90">
+              <p className="text-sm sm:text-base italic text-amber-100/95 leading-relaxed font-sans">
                 "{selectedCase.evidence.parchmentNote}"
               </p>
-              <div className="text-xs sm:text-sm font-mono text-cyan-300 pt-1 border-t border-amber-500/20">
+              <div className="text-xs sm:text-sm font-mono text-cyan-300 pt-2 border-t border-amber-500/20 leading-relaxed">
                 {selectedCase.evidence.confidentialTelemetry}
               </div>
             </div>
           ) : (
-            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/40 text-center text-xs font-mono text-slate-400">
-              Clique na [Anomalia Detectada] sobre a evidência histórica para descriptografar os registros primários.
+            <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-700/40 text-center text-sm font-sans text-slate-300 leading-relaxed">
+              Toque em <strong className="text-amber-300">[Anomalia Detectada]</strong> sobre a evidência histórica para descriptografar os registros primários.
             </div>
           )}
 
