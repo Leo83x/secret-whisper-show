@@ -403,10 +403,58 @@ export const DossierInvestigationView: React.FC = () => {
           ETAPA 1 — OBSERVAR (MAIS IMAGEM, MENOS TEXTO E SUBNÍVEIS)
          ===================================================================== */}
       {state.activeStep === 1 && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <div className="space-y-5 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-8 items-start">
           
-          {/* Coluna Esquerda Compacta (4 cols): Lista de Documentos Limpa (Sem parágrafos de resumo!) */}
-          <div className="lg:col-span-4 min-w-0 space-y-3 rounded-2xl bg-[#0B1320]/90 border border-slate-800/90 p-4 sm:p-5">
+          {/* Seletor Horizontal Compacto de Documentos no Mobile (< lg) para exibir a Imagem imediatamente no topo */}
+          <div className="lg:hidden space-y-2">
+            <div className="flex items-center justify-between text-xs font-mono text-amber-300 px-1">
+              <span className="font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <FileSearch className="w-3.5 h-3.5 text-amber-400" />
+                Peças Documentais ({documents.length})
+              </span>
+              <span className="text-[11px] text-slate-400">Deslize para alternar</span>
+            </div>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1.5 pt-0.5">
+              {documents.map((doc, idx) => {
+                const isSelected = activeDoc?.id === doc.id;
+                const extractedInDoc = doc.clues.filter(c =>
+                  progress.extractedClueIds.includes(c.id)
+                ).length;
+                const allExtracted = extractedInDoc === doc.clues.length;
+                return (
+                  <button
+                    key={doc.id}
+                    type="button"
+                    onClick={() => handleSelectDoc(doc.id)}
+                    className={`px-3.5 py-2.5 rounded-xl border text-left shrink-0 transition-all flex items-center gap-2.5 cursor-pointer ${
+                      isSelected
+                        ? 'bg-amber-500/20 border-amber-400 text-white shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+                        : 'bg-[#0B1320]/90 border-slate-800 text-slate-300'
+                    }`}
+                  >
+                    <span className="text-xs font-mono font-bold text-amber-400">
+                      DOC-0{idx + 1}
+                    </span>
+                    <span className="text-xs font-sans font-semibold max-w-[150px] truncate">
+                      {doc.title}
+                    </span>
+                    <span
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
+                        allExtracted
+                          ? 'bg-emerald-500/20 text-emerald-300 font-bold'
+                          : 'bg-slate-900 text-slate-400'
+                      }`}
+                    >
+                      {extractedInDoc}/{doc.clues.length}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Coluna Esquerda Desktop (4 cols): Lista de Documentos Limpa (Sem parágrafos de resumo!) */}
+          <div className="hidden lg:block lg:col-span-4 min-w-0 space-y-3 rounded-2xl bg-[#0B1320]/90 border border-slate-800/90 p-5">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <FileSearch className="w-4 h-4 text-amber-400" />

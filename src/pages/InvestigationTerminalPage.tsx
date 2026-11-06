@@ -25,7 +25,12 @@ const TerminalContent: React.FC = () => {
 
   useEffect(() => {
     soundEngine.setAdaptiveMode(state.activeTab === 'dossies' ? 'investigacao' : 'exploracao');
-  }, [state.activeTab]);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+  }, [state.activeTab, state.selectedCaseId, state.activeStep]);
 
   const isImmersiveInvestigation = state.activeTab === 'dossies';
 

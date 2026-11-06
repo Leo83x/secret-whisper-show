@@ -272,62 +272,64 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
       )}
 
       {/* =======================================================================
-          BARRA ÚNICA DE HUD IMERSIVO (ULTRA-COMPACTA, SEM EMPILHAMENTO)
+          BARRA ÚNICA DE HUD IMERSIVO (AREJADA NO MOBILE E DESKTOP)
          ======================================================================= */}
       <header
         aria-label="HUD Operacional de Investigação"
         className="sticky top-0 z-40 w-full bg-[#070C18]/95 backdrop-blur-md border-b border-amber-500/20 shadow-[0_4px_20px_rgba(0,0,0,0.65)]"
       >
-        <div className="max-w-[1440px] w-full mx-auto px-3 sm:px-6 py-2 flex flex-col lg:flex-row lg:items-center justify-between gap-2 min-w-0">
+        <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 min-w-0">
           
-          {/* Topo Mobile / Esquerda Desktop: Identificação do Caso + Controles Rápidos Mobile */}
+          {/* Topo Mobile / Esquerda Desktop: Identificação Limpa e Sem Aglutinação */}
           <div className="flex items-center justify-between lg:justify-start gap-3 min-w-0">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-amber-400 font-serif font-bold text-sm shrink-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-amber-400 font-serif font-bold text-sm shrink-0">
                 Φ
               </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-cyan-400 truncate">
+                <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-cyan-400 truncate">
                   <span>{selectedCase.missionCode || 'CASO ATIVO'}</span>
                   <span className="text-slate-600">•</span>
                   <button
                     onClick={() => setIsAuthModalOpen(true)}
                     className="inline-flex items-center gap-1 text-emerald-400 hover:underline cursor-pointer"
                   >
-                    <ShieldCheck className="w-2.5 h-2.5" />
+                    <ShieldCheck className="w-3 h-3" />
                     <span>{isAuthenticated ? 'Sincronizado' : 'Salvo Local'}</span>
                   </button>
                 </div>
-                <h1 className="font-sans text-xs sm:text-sm font-bold text-white truncate">
+                <h1 className="font-sans text-sm sm:text-base font-bold text-white truncate">
                   {selectedCase.fullName}{' '}
-                  <span className="text-amber-400 font-normal">({selectedCase.year})</span>
+                  <span className="text-amber-400 font-normal text-xs sm:text-sm">
+                    ({selectedCase.year})
+                  </span>
                 </h1>
               </div>
             </div>
 
-            {/* Botões de Controle Visíveis no Mobile à Direita da 1ª Linha */}
-            <div className="flex lg:hidden items-center gap-1.5 shrink-0">
+            {/* Botões de Controle no Mobile (Bem espaçados) */}
+            <div className="flex lg:hidden items-center gap-2 shrink-0">
               <button
                 onClick={() => setAudioPopoverOpen(o => !o)}
-                className="p-1.5 rounded-lg bg-[#0B1320] border border-cyan-500/30 text-cyan-300 cursor-pointer"
+                className="p-2 rounded-xl bg-[#0B1320] border border-cyan-500/30 text-cyan-300 cursor-pointer"
                 title="Áudio e Movimento"
               >
-                {audioSettings.mutedAll ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                {audioSettings.mutedAll ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
               </button>
               <button
                 onClick={() => setExitModalOpen(true)}
-                className="px-2.5 py-1 rounded-lg bg-red-500/15 border border-red-500/40 text-red-200 text-[10px] font-mono font-semibold flex items-center gap-1 cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-red-500/15 border border-red-500/40 text-red-200 text-xs font-mono font-semibold flex items-center gap-1.5 cursor-pointer"
               >
-                <LogOut className="w-3 h-3 text-red-400" />
+                <LogOut className="w-3.5 h-3.5 text-red-400" />
                 <span>Sair</span>
               </button>
             </div>
           </div>
 
-          {/* Centro: Stepper Integrado das 5 Etapas */}
+          {/* Centro: Stepper Inteligente (No mobile mostra o nome completo da etapa ativa e números nas demais, sem truncar "1. Obse...") */}
           <nav
             aria-label="Etapas do Ciclo de Investigação"
-            className="grid grid-cols-5 gap-1 sm:gap-1.5 flex-1 max-w-2xl mx-auto w-full"
+            className="flex sm:grid sm:grid-cols-5 items-center gap-1.5 sm:gap-2 flex-1 max-w-2xl mx-auto w-full"
           >
             {steps.map(st => {
               const isCurrent = state.activeStep === st.num;
@@ -338,18 +340,22 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
                     soundEngine.playDocumentOpen();
                     setActiveStep(st.num);
                   }}
-                  className={`py-1.5 px-1.5 sm:px-2.5 rounded-lg font-mono text-[10px] sm:text-xs transition-all flex items-center justify-center gap-1 cursor-pointer border ${
+                  className={`py-2 rounded-xl font-mono text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
                     isCurrent
-                      ? 'bg-amber-500/20 text-amber-200 border-amber-400/70 font-bold shadow-[0_0_12px_rgba(245,158,11,0.18)]'
+                      ? 'flex-1 sm:flex-initial px-3 bg-amber-500/20 text-amber-200 border-amber-400/70 font-bold shadow-[0_0_12px_rgba(245,158,11,0.18)]'
                       : st.done
-                      ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/15'
-                      : 'bg-[#0B1320]/60 text-slate-400 border-slate-800/80 hover:text-slate-200'
+                      ? 'w-10 sm:w-auto px-2 bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/15'
+                      : 'w-10 sm:w-auto px-2 bg-[#0B1320]/60 text-slate-400 border-slate-800/80 hover:text-slate-200'
                   }`}
                 >
                   {st.done && !isCurrent && (
-                    <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0 hidden sm:inline" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                   )}
-                  <span className="truncate">
+                  {/* No mobile (< sm): Etapa ativa exibe rótulo completo ("1. Observar"), inativas exibem apenas o número ("2", "3"...) */}
+                  <span className="sm:hidden whitespace-nowrap">
+                    {isCurrent ? st.short : st.done ? '' : st.num}
+                  </span>
+                  <span className="hidden sm:inline truncate">
                     <span className="xl:hidden">{st.short}</span>
                     <span className="hidden xl:inline">{st.label}</span>
                   </span>
