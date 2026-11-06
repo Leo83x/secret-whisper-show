@@ -29,7 +29,6 @@ import {
 } from 'lucide-react';
 import { DocumentInspectorModal, getEraDocumentTheme } from './DocumentInspectorModal';
 import { ArchiveRoom3DStage } from './ArchiveRoom3DStage';
-import { EvidenceBoard3DStage } from './EvidenceBoard3DStage';
 import { DiscoveryRevealModal } from './DiscoveryRevealModal';
 import { soundEngine } from '../../utils/investigationAudio';
 
@@ -332,57 +331,48 @@ export const DossierInvestigationView: React.FC = () => {
             </button>
           </div>
 
-          {/* Direita: Chave Seletora Fixa [ Visão 3D | Modo 2D ] (Sempre na Mesma Posição!) + Arquivo Pessoal */}
-          <div className="w-full sm:w-auto flex flex-wrap items-center justify-between sm:justify-end gap-2">
-            {(state.activeStep === 1 || state.activeStep === 2) && (
-              <div
-                role="group"
-                aria-label="Alternar entre Visão 3D e Modo 2D"
-                className="inline-flex items-center p-1 rounded-xl bg-[#070B14] border border-slate-700/90 shadow-inner"
+          {/* Direita: Alternador 3D/2D + Botão Subnível [ 📁 Meu Arquivo Pessoal ] + Ação Principal (100% Responsivo no Mobile) */}
+          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+            {state.activeStep === 1 && !is3DStageOne && (
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playDocumentOpen();
+                  setIs3DStageOne(true);
+                }}
+                className="px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/50 text-amber-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm"
               >
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playDocumentOpen();
-                    if (state.activeStep === 1) setIs3DStageOne(true);
-                    if (state.activeStep === 2) setIs3DTableStageTwo(true);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                    (state.activeStep === 1 ? is3DStageOne : is3DTableStageTwo)
-                      ? 'bg-amber-500 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.4)]'
-                      : 'text-slate-300 hover:text-white'
-                  }`}
-                >
-                  Visão 3D
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playDocumentOpen();
-                    if (state.activeStep === 1) setIs3DStageOne(false);
-                    if (state.activeStep === 2) setIs3DTableStageTwo(false);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                    !(state.activeStep === 1 ? is3DStageOne : is3DTableStageTwo)
-                      ? 'bg-cyan-400 text-slate-950 shadow-[0_0_12px_rgba(34,211,238,0.4)]'
-                      : 'text-slate-300 hover:text-white'
-                  }`}
-                >
-                  Modo 2D
-                </button>
-              </div>
+                <Maximize2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>[ Entrar no Cenário 3D ]</span>
+              </button>
             )}
 
             <button
               type="button"
               onClick={() => setIsArchiveDrawerOpen(true)}
-              className="px-3 py-2 rounded-xl bg-[#0B1320] hover:bg-slate-900 border border-cyan-500/35 text-cyan-300 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm"
+              className={`px-3 py-2 rounded-xl bg-[#0B1320] hover:bg-slate-900 border border-cyan-500/35 text-cyan-300 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm truncate ${
+                state.activeStep !== 1 && state.activeStep !== 2 ? 'col-span-2 sm:col-span-1' : ''
+              }`}
             >
               <FolderOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 shrink-0" />
-              <span>
+              <span className="sm:hidden truncate">
                 Arquivo ({extractedCluesList.length}/{allCaseClues.length})
               </span>
+              <span className="hidden sm:inline">
+                Meu Arquivo Pessoal ({extractedCluesList.length}/{allCaseClues.length})
+              </span>
             </button>
+
+            {state.activeStep === 1 && (
+              <button
+                type="button"
+                onClick={() => setActiveStep(2)}
+                className="col-span-2 sm:col-span-1 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all cursor-pointer"
+              >
+                <span>Ir para Mesa de Conexões</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -778,39 +768,9 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 2 — CONECTAR (CENÁRIO 3D: MESA TOPOGRÁFICA DE INVESTIGAÇÃO + MODO 2D)
+          ETAPA 2 — CONECTAR (SIMPLIFICAR VÍNCULOS E VISUALIZAR A CONEXÃO)
          ===================================================================== */}
-      {state.activeStep === 2 && is3DTableStageTwo && (
-        <EvidenceBoard3DStage
-          selectedCase={selectedCase}
-          challenges={challenges}
-          activeChallenge={activeChallenge}
-          solvedConnectionIds={progress.solvedConnectionIds}
-          extractedCluesList={extractedCluesList}
-          allCaseClues={allCaseClues}
-          allCaseCluesCount={allCaseClues.length}
-          boardSelectedClues={boardSelectedClues}
-          connectionFeedback={connectionFeedback}
-          activeStep={state.activeStep}
-          onSelectStep={step => setActiveStep(step)}
-          onSelectChallenge={chId => {
-            setActiveChallengeId(chId);
-            setConnectionFeedback(null);
-          }}
-          onToggleBoardClue={clueId => toggleBoardClue(clueId)}
-          onValidateConnection={handleValidateConnection}
-          onOpenArchiveDrawer={() => setIsArchiveDrawerOpen(true)}
-          onSwitchTo2D={() => {
-            soundEngine.playDocumentOpen();
-            setIs3DTableStageTwo(false);
-          }}
-          onRequestExit={() => {
-            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-          }}
-        />
-      )}
-
-      {state.activeStep === 2 && !is3DTableStageTwo && (
+      {state.activeStep === 2 && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           
           {/* Coluna Esquerda Compacta (4 cols): Apenas título da pergunta e badge (Comprovada / Em aberto) */}
