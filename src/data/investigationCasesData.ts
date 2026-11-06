@@ -7,6 +7,8 @@ import cleopatraImg from '../assets/characters/cleopatra.webp';
 import joanaImg from '../assets/characters/joana_darc.webp';
 import mandelaImg from '../assets/characters/mandela.webp';
 
+// Ordenados estritamente em ordem cronológica para a régua inferior:
+// 49 a.C. Roma -> 30 a.C. Egito -> 1429 França -> 1815 Europa -> 1941 Mundo -> 1994 África do Sul -> 2007 Tecnologia
 export const HISTORICAL_NODES: HistoricalNode[] = [
   {
     id: 'cesar',
@@ -16,7 +18,7 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     timelineLabel: '49 a.C. Roma',
     location: 'Roma — Rio Rubicão',
     era: 'antiguidade',
-    coords: { x: 48, y: 33 },
+    coords: { x: 64, y: 46 }, // top: 46%, left: 64%
     image: cesarImg,
     dossierCover: '/dossiers/dossier_01_rubicon.webp',
     status: 'disponivel',
@@ -63,74 +65,80 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     ]
   },
   {
-    id: 'jobs',
-    name: 'Steve Jobs',
-    fullName: 'Steve Jobs e o Lançamento do iPhone',
-    year: '2007',
-    timelineLabel: '2007 Tecnologia',
-    location: 'São Francisco — Moscone Center',
-    era: 'contemporanea',
-    coords: { x: 19, y: 35 },
-    image: jobsImg,
-    dossierCover: '/dossiers/dossier_04_travamento.webp',
-    status: 'disponivel',
-    isVolumeOne: true,
-    title: 'Steve Jobs e o Lançamento de 2007',
-    subtitle: '2007 — São Francisco // Bastidores do Moscone Center',
-    shortDescription: 'Minutos antes da apresentação que moldou o século XXI, protótipos instáveis reiniciavam sozinhos nos bastidores. A ilusão de fluidez precisava resistir diante do mundo.',
+    id: 'cleopatra',
+    name: 'Cleópatra',
+    fullName: 'Cleópatra e o Fim da Dinastia Ptolomaica',
+    year: '30 a.C.',
+    timelineLabel: '30 a.C. Egito',
+    location: 'Alexandria — Egito',
+    era: 'antiguidade',
+    coords: { x: 58, y: 62 }, // top: 62%, left: 58%
+    image: cleopatraImg,
+    dossierCover: '/dossiers/dossier_01_rubicon.webp',
+    status: 'quarentena',
+    isVolumeOne: false,
+    title: 'Cleópatra VII e a Queda de Alexandria',
+    subtitle: '30 a.C. — Egito // Arquivo Reservado — Volume II',
+    shortDescription: 'A última rainha do Nilo em confronto com a expansão imperial de Otaviano. Negociação, tesouro naval e o cálculo final da soberania.',
     missionBullets: [
-      'Analise os registros de telemetria de rede e o plano de contingência com 3 aparelhos.',
-      'Identifique a simetria entre o palco de 2007 e a barranca do rio em 49 a.C.',
-      'Avalie se a apresentação foi um ato de visão tecnológica ou um blefe de sobrevivência.'
+      'Arquivo classificado no compêndio principal.',
+      'Liberação programada para a expansão do Volume II.'
     ],
     evidence: {
-      title: '1. O Relatório dos Bastidores',
-      artifactCode: 'DOC-STRATA-2007-09',
-      locationSubtitle: 'MOSCONE WEST // SALA DE CONTROLE DE TELEMETRIA',
-      parchmentNote: 'O protótipo estourava a memória se o navegador ficasse aberto por mais de dois minutos seguidos. Havia três unidades espelhadas na coxia para troca invisível durante a exibição dos slides. Cinco barras de sinal foram desenhadas na tela para disfarçar as quedas da antena.',
-      confidentialTelemetry: 'RELATÓRIO STRATA // ASSINATURA DE RISCO: A certeza pública foi sustentada por uma rede de salvaguardas que operava no limiar absoluto da falha.'
+      title: 'Arquivo sob Quarentena',
+      artifactCode: 'DOC-QUARANTINE-30BC',
+      locationSubtitle: 'PALÁCIO REAL DE ALEXANDRIA // ACESSO RESTRITO',
+      parchmentNote: 'Documento selado pela auditoria externa.',
+      confidentialTelemetry: 'Em quarentena analítica.'
     },
-    connectedTo: ['cesar', 'turing'],
-    hypotheses: [
-      {
-        id: 'jobs_a',
-        tag: 'A',
-        title: 'Apresentação Controlada em Vídeo Gravado',
-        subtitle: 'Mitigação Clássica de Risco Operacional',
-        description: 'Exibir a interface em vídeo pré-renderizado, evitando o risco de travamento ao vivo perante os analistas e a imprensa global.',
-        consequence: 'Elimina o risco de colapso reputacional imediato, mas sinaliza fraqueza e pode atrasar o fechamento dos contratos de exclusividade.',
-        deltaCaos: -10,
-        deltaLivreArbitrio: -15,
-        deltaPerfil: { analitico: 25, estrategico: -10, humanista: 5 }
-      },
-      {
-        id: 'jobs_b',
-        tag: 'B',
-        title: 'Demonstração Real no Limiar da Falha',
-        subtitle: 'Criação da Realidade por Antecipação',
-        description: 'Manter a demonstração ao vivo com aparelhos alternados em sequência milimétrica, dobrando a aposta na capacidade de persuasão.',
-        consequence: 'Consolida a revolução do mercado móvel em 90 minutos se obtiver sucesso; desastre total se o sistema congelar.',
-        deltaCaos: 20,
-        deltaLivreArbitrio: 25,
-        deltaPerfil: { analitico: 5, estrategico: 30, humanista: -5 }
-      }
-    ]
+    connectedTo: ['cesar'],
+    hypotheses: []
+  },
+  {
+    id: 'joana',
+    name: 'Joana d\'Arc',
+    fullName: 'Joana d\'Arc e o Cerco de Orléans',
+    year: '1429',
+    timelineLabel: '1429 França',
+    location: 'Orléans — França',
+    era: 'idade_media',
+    coords: { x: 42, y: 22 }, // top: 22%, left: 42%
+    image: joanaImg,
+    dossierCover: '/dossiers/dossier_02_waterloo.webp',
+    status: 'quarentena',
+    isVolumeOne: false,
+    title: 'Joana d\'Arc e a Virada de Orléans',
+    subtitle: '1429 — França // Arquivo Reservado — Volume II',
+    shortDescription: 'A ruptura do protocolo militar feudal e a mobilização psicológica em um reino sitiado e financeiramente exaurido.',
+    missionBullets: [
+      'Arquivo classificado no compêndio principal.',
+      'Liberação programada para a expansão do Volume II.'
+    ],
+    evidence: {
+      title: 'Arquivo sob Quarentena',
+      artifactCode: 'DOC-QUARANTINE-1429',
+      locationSubtitle: 'PORTAS DE ORLÉANS // ACESSO RESTRITO',
+      parchmentNote: 'Documento selado pela auditoria externa.',
+      confidentialTelemetry: 'Em quarentena analítica.'
+    },
+    connectedTo: ['napoleao'],
+    hypotheses: []
   },
   {
     id: 'napoleao',
-    name: 'Napoleão Bonaparte',
-    fullName: 'Napoleão e o Campo de Waterloo',
+    name: 'Napoleão',
+    fullName: 'Napoleão e Waterloo',
     year: '1815',
     timelineLabel: '1815 Europa',
     location: 'Waterloo — Bélgica',
     era: 'moderna',
-    coords: { x: 46, y: 27 },
+    coords: { x: 48, y: 38 }, // top: 38%, left: 48%
     image: napoleaoImg,
     dossierCover: '/dossiers/dossier_02_waterloo.webp',
     status: 'disponivel',
     isVolumeOne: true,
     title: 'Napoleão e Waterloo',
-    subtitle: '1815 — Waterloo // O Ponto de Inflexão da Europa',
+    subtitle: '1815 — Waterloo // O Ponto de Virada da Europa',
     shortDescription: 'Chuva torrencial, ordens interceptadas e o relógio correndo contra o Império. Descubra como a lama e a assimetria de informação decidiram o destino do continente.',
     missionBullets: [
       'Investigue o atraso fatal da artilharia francesa devido ao solo enlameado.',
@@ -178,10 +186,10 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     timelineLabel: '1941 Mundo',
     location: 'Bletchley Park — Inglaterra',
     era: 'contemporanea',
-    coords: { x: 44, y: 23 },
+    coords: { x: 56, y: 16 }, // top: 16%, left: 56%
     image: turingImg,
     dossierCover: '/dossiers/dossier_03_bletchley.webp',
-    status: 'bloqueado',
+    status: 'disponivel',
     isVolumeOne: true,
     title: 'Alan Turing e Bletchley Park',
     subtitle: '1941 — Bletchley Park // A Guerra Silenciosa dos Códigos',
@@ -198,7 +206,7 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
       parchmentNote: 'Se todos os submarinos fossem interceptados com precisão imediata, Berlim mudaria os rotores da Enigma no dia seguinte. Proteger a fonte exigia permitir perdas calculadas.',
       confidentialTelemetry: 'RELATÓRIO STRATA // ASSIMETRIA DA INFORMAÇÃO: Saber tudo impõe o fardo de escolher quando fingir ignorância.'
     },
-    connectedTo: ['jobs'],
+    connectedTo: ['jobs', 'napoleao'],
     hypotheses: [
       {
         id: 'turing_a',
@@ -225,81 +233,21 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     ]
   },
   {
-    id: 'cleopatra',
-    name: 'Cleópatra',
-    fullName: 'Cleópatra e o Fim da Dinastia Ptolomaica',
-    year: '30 a.C.',
-    timelineLabel: '30 a.C. Egito',
-    location: 'Alexandria — Egito',
-    era: 'antiguidade',
-    coords: { x: 53, y: 41 },
-    image: cleopatraImg,
-    dossierCover: '/assets/characters/cleopatra.webp',
-    status: 'quarentena',
-    isVolumeOne: false,
-    title: 'Cleópatra VII e a Queda de Alexandria',
-    subtitle: '30 a.C. — Egito // Arquivo Reservado — Volume II',
-    shortDescription: 'A última rainha do Nilo em confronto com a expansão imperial de Otaviano. Negociação, tesouro e o veneno da soberania.',
-    missionBullets: [
-      'Arquivo classificado no compêndio principal.',
-      'Liberação programada para a expansão do Volume II.'
-    ],
-    evidence: {
-      title: 'Arquivo sob Quarentena',
-      artifactCode: 'DOC-QUARANTINE-30BC',
-      locationSubtitle: 'PALÁCIO REAL DE ALEXANDRIA // ACESSO RESTRITO',
-      parchmentNote: 'Documento selado pela auditoria externa.',
-      confidentialTelemetry: 'Em quarentena analítica.'
-    },
-    connectedTo: ['cesar'],
-    hypotheses: []
-  },
-  {
-    id: 'joana',
-    name: 'Joana d\'Arc',
-    fullName: 'Joana d\'Arc e o Cerco de Orléans',
-    year: '1429',
-    timelineLabel: '1429 França',
-    location: 'Orléans — França',
-    era: 'idade_media',
-    coords: { x: 44, y: 30 },
-    image: joanaImg,
-    dossierCover: '/assets/characters/joana_darc.webp',
-    status: 'quarentena',
-    isVolumeOne: false,
-    title: 'Joana d\'Arc e a Virada da Guerra dos Cem Anos',
-    subtitle: '1429 — França // Arquivo Reservado — Volume II',
-    shortDescription: 'A ruptura mística do protocolo de cavalaria e a mobilização popular em um reino desestruturado.',
-    missionBullets: [
-      'Arquivo classificado no compêndio principal.',
-      'Liberação programada para a expansão do Volume II.'
-    ],
-    evidence: {
-      title: 'Arquivo sob Quarentena',
-      artifactCode: 'DOC-QUARANTINE-1429',
-      locationSubtitle: 'PORTAS DE ORLÉANS // ACESSO RESTRITO',
-      parchmentNote: 'Documento selado pela auditoria externa.',
-      confidentialTelemetry: 'Em quarentena analítica.'
-    },
-    connectedTo: ['cesar'],
-    hypotheses: []
-  },
-  {
     id: 'mandela',
-    name: 'Nelson Mandela',
+    name: 'Mandela',
     fullName: 'Nelson Mandela e a Transição Sul-Africana',
     year: '1994',
     timelineLabel: '1994 África do Sul',
     location: 'Pretória — África do Sul',
     era: 'contemporanea',
-    coords: { x: 54, y: 78 },
+    coords: { x: 52, y: 76 }, // top: 76%, left: 52%
     image: mandelaImg,
-    dossierCover: '/assets/characters/mandela.webp',
+    dossierCover: '/dossiers/dossier_04_travamento.webp',
     status: 'quarentena',
     isVolumeOne: false,
     title: 'Nelson Mandela e o Desarmamento do Ódio',
     subtitle: '1994 — Pretória // Arquivo Reservado — Volume II',
-    shortDescription: 'Como evitar a guerra civil racial iminente contendo as exigências de vingança dos próprios aliados.',
+    shortDescription: 'Como evitar a guerra civil iminente contendo as exigências de vingança dos próprios aliados e o temor do aparato militar.',
     missionBullets: [
       'Arquivo classificado no compêndio principal.',
       'Liberação programada para a expansão do Volume II.'
@@ -313,5 +261,59 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     },
     connectedTo: ['jobs'],
     hypotheses: []
+  },
+  {
+    id: 'jobs',
+    name: 'Steve Jobs',
+    fullName: 'Steve Jobs e o Lançamento de 2007',
+    year: '2007',
+    timelineLabel: '2007 Tecnologia',
+    location: 'São Francisco — Moscone Center',
+    era: 'contemporanea',
+    coords: { x: 16, y: 38 }, // top: 38%, left: 16%
+    image: jobsImg,
+    dossierCover: '/dossiers/dossier_04_travamento.webp',
+    status: 'disponivel',
+    isVolumeOne: true,
+    title: 'Steve Jobs e o Lançamento de 2007',
+    subtitle: '2007 — São Francisco // Bastidores do Moscone Center',
+    shortDescription: 'Minutos antes da apresentação que moldou o século XXI, protótipos instáveis reiniciavam sozinhos nos bastidores. A ilusão de fluidez precisava resistir diante do mundo.',
+    missionBullets: [
+      'Analise os registros de telemetria de rede e o plano de contingência com 3 aparelhos.',
+      'Identifique a simetria entre o palco de 2007 e a barranca do rio em 49 a.C.',
+      'Avalie se a apresentação foi um ato de visão tecnológica ou um blefe de sobrevivência.'
+    ],
+    evidence: {
+      title: '1. O Relatório dos Bastidores',
+      artifactCode: 'DOC-STRATA-2007-09',
+      locationSubtitle: 'MOSCONE WEST // SALA DE CONTROLE DE TELEMETRIA',
+      parchmentNote: 'O protótipo estourava a memória se o navegador ficasse aberto por mais de dois minutos seguidos. Havia três unidades espelhadas na coxia para troca invisível durante a exibição dos slides. Cinco barras de sinal foram desenhadas na tela para disfarçar as quedas da antena.',
+      confidentialTelemetry: 'RELATÓRIO STRATA // ASSINATURA DE RISCO: A certeza pública foi sustentada por uma rede de salvaguardas que operava no limiar absoluto da falha.'
+    },
+    connectedTo: ['cesar', 'turing'],
+    hypotheses: [
+      {
+        id: 'jobs_a',
+        tag: 'A',
+        title: 'Apresentação Controlada em Vídeo Gravado',
+        subtitle: 'Mitigação Clássica de Risco Operacional',
+        description: 'Exibir a interface em vídeo pré-renderizado, evitando o risco de travamento ao vivo perante os analistas e a imprensa global.',
+        consequence: 'Elimina o risco de colapso reputacional imediato, mas sinaliza fraqueza e pode atrasar o fechamento dos contratos de exclusividade.',
+        deltaCaos: -10,
+        deltaLivreArbitrio: -15,
+        deltaPerfil: { analitico: 25, estrategico: -10, humanista: 5 }
+      },
+      {
+        id: 'jobs_b',
+        tag: 'B',
+        title: 'Demonstração Real no Limiar da Falha',
+        subtitle: 'Criação da Realidade por Antecipação',
+        description: 'Manter a demonstração ao vivo com aparelhos alternados em sequência milimétrica, dobrando a aposta na capacidade de persuasão.',
+        consequence: 'Consolida a revolução do mercado móvel em 90 minutos se obtiver sucesso; desastre total se o sistema congelar.',
+        deltaCaos: 20,
+        deltaLivreArbitrio: 25,
+        deltaPerfil: { analitico: 5, estrategico: 30, humanista: -5 }
+      }
+    ]
   }
 ];

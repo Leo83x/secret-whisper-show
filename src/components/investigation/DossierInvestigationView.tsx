@@ -79,13 +79,13 @@ export const DossierInvestigationView: React.FC = () => {
               </span>
             </div>
             {anomalyRevealed && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400">
+              <span className="inline-flex items-center gap-1 text-xs sm:text-sm font-mono text-emerald-400">
                 <CheckCircle2 className="w-3 h-3" /> Anomalia Verificada
               </span>
             )}
           </div>
 
-          <div className="text-[11px] font-mono text-slate-400">
+          <div className="text-xs sm:text-sm font-mono text-slate-400">
             {selectedCase.evidence.locationSubtitle}
           </div>
 
@@ -107,7 +107,7 @@ export const DossierInvestigationView: React.FC = () => {
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
                 <span>[Anomalia Detectada]</span>
               </div>
-              <div className="text-[9px] font-mono text-slate-300">
+              <div className="text-xs font-mono text-slate-300">
                 Toque para inspecionar
               </div>
             </div>
@@ -116,13 +116,13 @@ export const DossierInvestigationView: React.FC = () => {
           {/* Revelação Documental */}
           {anomalyRevealed ? (
             <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs font-sans text-slate-200 leading-relaxed space-y-2 animate-in fade-in duration-500">
-              <div className="font-mono text-[10px] text-amber-400 font-bold uppercase">
+              <div className="font-mono text-xs sm:text-sm text-amber-400 font-bold uppercase">
                 Tabuleta de Intendência // Transcrição Desclassificada:
               </div>
               <p className="italic text-amber-100/90">
                 "{selectedCase.evidence.parchmentNote}"
               </p>
-              <div className="text-[10px] font-mono text-cyan-300 pt-1 border-t border-amber-500/20">
+              <div className="text-xs sm:text-sm font-mono text-cyan-300 pt-1 border-t border-amber-500/20">
                 {selectedCase.evidence.confidentialTelemetry}
               </div>
             </div>

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { TabKey, EraFilter, UserInvestigationState, HistoricalNode, Hypothesis } from '../types/investigation';
+import { TabKey, EraFilter, UserInvestigationState, HistoricalNode } from '../types/investigation';
 import { HISTORICAL_NODES } from '../data/investigationCasesData';
 
 interface InvestigationContextType {
@@ -7,6 +7,12 @@ interface InvestigationContextType {
   selectedCase: HistoricalNode;
   allNodes: HistoricalNode[];
   filteredNodes: HistoricalNode[];
+  isAuthenticated: boolean;
+  readerStatus: 'paid' | 'free' | 'guest';
+  isAuthModalOpen: boolean;
+  setIsAuthModalOpen: (open: boolean) => void;
+  loginWithEmailOrToken: (identifier: string) => Promise<{ success: boolean; message?: string }>;
+  logoutReader: () => void;
   setActiveTab: (tab: TabKey) => void;
   setSelectedCaseId: (id: string) => void;
   setEraFilter: (era: EraFilter) => void;
@@ -23,7 +29,7 @@ interface InvestigationContextType {
   };
 }
 
-const STORAGE_KEY = 'ush_investigator_state_v1';
+const STORAGE_KEY = 'ush_investigator_state_v2';
 
 const DEFAULT_STATE: UserInvestigationState = {
   activeTab: 'mapa',
@@ -70,6 +76,87 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
     return DEFAULT_STATE;
   });
 
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [readerStatus, setReaderStatus] = useState<'paid' | 'free' | 'guest'>('guest');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+
+  const loadProfileFromApi = useCallback(async (queryParam: string) => {
+    try {
+      const res = await fetch(`/api/get-reader-profile?${queryParam}`);
+      if (!res.ok) return { success: false, message: 'Credencial não localizada no banco de leitores.' };
+      const data = await res.json();
+      if (data && data.reader) {
+        const r = data.reader;
+        const token = r.access_token || data.profile?.accessToken;
+        if (token && typeof window !== 'undefined') {
+          localStorage.setItem('ush_token', token);
+          localStorage.setItem('ush_name', r.name || 'Investigador');
+          localStorage.setItem('ush_reader_status', r.status || 'free');
+        }
+        setIsAuthenticated(true);
+        setReaderStatus(r.status === 'paid' ? 'paid' : 'free');
+
+        const traits = data.profile?.traits || {};
+        const savedInv = traits.reading_progress?.investigation_state || {};
+
+        setState(prev => ({
+          ...prev,
+          completedNodes: savedInv.completedNodes || prev.completedNodes,
+          formulatedHypotheses: savedInv.formulatedHypotheses || prev.formulatedHypotheses,
+          decisionProfile: savedInv.decisionProfile || prev.decisionProfile,
+          globalImpact: savedInv.globalImpact || prev.globalImpact,
+          investigator: {
+            id: r.referral_code || prev.investigator.id,
+            name: r.name || prev.investigator.name,
+            role: r.status === 'paid' ? 'Auditor Credenciado (Edição Especial)' : 'Auditor em Degustação',
+            level: Math.max(1, (savedInv.completedNodes?.length || prev.completedNodes.length) + 1)
+          }
+        }));
+        return { success: true };
+      }
+      return { success: false, message: 'Perfil não encontrado.' };
+    } catch (e) {
+      return { success: false, message: 'Erro de conexão ao verificar credencial.' };
+    }
+  }, []);
+
+  // Verifica URL ?token= ou localStorage ao iniciar
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    const savedToken = localStorage.getItem('ush_token');
+    const tokenToUse = urlToken || savedToken;
+
+    if (tokenToUse) {
+      loadProfileFromApi(`token=${encodeURIComponent(tokenToUse)}`);
+    }
+  }, [loadProfileFromApi]);
+
+  const loginWithEmailOrToken = useCallback(async (identifier: string) => {
+    const clean = identifier.trim();
+    if (!clean) return { success: false, message: 'Informe seu e-mail ou código de acesso.' };
+    const isToken = clean.startsWith('TK_');
+    const query = isToken
+      ? `token=${encodeURIComponent(clean)}`
+      : `email=${encodeURIComponent(clean.toLowerCase())}`;
+    const result = await loadProfileFromApi(query);
+    if (result.success) {
+      setIsAuthModalOpen(false);
+    }
+    return result;
+  }, [loadProfileFromApi]);
+
+  const logoutReader = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('ush_token');
+      localStorage.removeItem('ush_reader_status');
+    }
+    setIsAuthenticated(false);
+    setReaderStatus('guest');
+    setState(DEFAULT_STATE);
+  }, []);
+
   // Salva no localStorage em toda mudanca de estado
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -103,7 +190,7 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
           })
         });
       } catch (e) {
-        // Falha de rede silenciosa (mantem local)
+        // Mantem local
       }
     };
 
@@ -167,7 +254,6 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         [caseId]: hypothesisId
       };
 
-      // Recalcula métricas com base na escolha
       const nextProfile = { ...prev.decisionProfile };
       const nextImpact = { ...prev.globalImpact };
 
@@ -180,7 +266,6 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         nextImpact.livreArbitrio = Math.min(100, Math.max(0, nextImpact.livreArbitrio + chosen.deltaLivreArbitrio));
       }
 
-      // Calcula novo nível do investigador
       const newLevel = Math.max(1, nextCompleted.length + 1);
 
       return {
@@ -192,7 +277,7 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         investigator: {
           ...prev.investigator,
           level: newLevel,
-          role: newLevel >= 3 ? 'Auditor Desperto' : 'Auditor de Campo'
+          role: newLevel >= 3 ? 'Auditor Desperto' : prev.investigator.role
         }
       };
     });
@@ -221,6 +306,12 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
         selectedCase,
         allNodes: HISTORICAL_NODES,
         filteredNodes,
+        isAuthenticated,
+        readerStatus,
+        isAuthModalOpen,
+        setIsAuthModalOpen,
+        loginWithEmailOrToken,
+        logoutReader,
         setActiveTab,
         setSelectedCaseId,
         setEraFilter,

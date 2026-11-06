@@ -2,6 +2,7 @@ import React from 'react';
 import { InvestigationProvider, useInvestigation } from '../context/InvestigationContext';
 import { InvestigationHeader } from '../components/investigation/InvestigationHeader';
 import { InvestigationBottomNav } from '../components/investigation/InvestigationBottomNav';
+import { ReaderAccessModal } from '../components/investigation/ReaderAccessModal';
 import { WorldMapView } from '../components/investigation/WorldMapView';
 import { DossierInvestigationView } from '../components/investigation/DossierInvestigationView';
 import { InvestigatorProfileView } from '../components/investigation/InvestigatorProfileView';
@@ -24,6 +25,7 @@ const TerminalContent: React.FC = () => {
       </main>
 
       <InvestigationBottomNav />
+      <ReaderAccessModal />
     </div>
   );
 };

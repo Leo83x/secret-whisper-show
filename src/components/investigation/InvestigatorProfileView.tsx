@@ -55,7 +55,7 @@ export const InvestigatorProfileView: React.FC = () => {
           <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
             Sua Jornada // Camadas do Ecossistema
           </span>
-          <span className="text-[10px] font-mono text-slate-400">
+          <span className="text-xs sm:text-sm font-mono text-slate-400">
             Volume I Ativo
           </span>
         </div>
@@ -67,7 +67,7 @@ export const InvestigatorProfileView: React.FC = () => {
               <BookOpen className="w-5 h-5" />
             </div>
             <div className="font-sans font-bold text-xs text-white">Livro Conectado</div>
-            <span className="text-[10px] font-mono text-emerald-400 font-semibold flex items-center gap-1">
+            <span className="text-xs sm:text-sm font-mono text-emerald-400 font-semibold flex items-center gap-1">
               <CheckCircle2 className="w-3 h-3" /> Volume I Ativo
             </span>
           </div>
@@ -78,7 +78,7 @@ export const InvestigatorProfileView: React.FC = () => {
               <Search className="w-5 h-5" />
             </div>
             <div className="font-sans font-bold text-xs text-white">Investigação de Campo</div>
-            <span className="text-[10px] font-mono text-amber-400 font-bold">
+            <span className="text-xs sm:text-sm font-mono text-amber-400 font-bold">
               ● Em Descoberta
             </span>
           </div>
@@ -89,7 +89,7 @@ export const InvestigatorProfileView: React.FC = () => {
               <Lock className="w-4 h-4" />
             </div>
             <div className="font-sans font-bold text-xs text-slate-400">Simulação Contrafactual</div>
-            <span className="text-[10px] font-mono text-slate-500">Volume II</span>
+            <span className="text-xs sm:text-sm font-mono text-slate-500">Volume II</span>
           </div>
 
           {/* Camada 4: Missão Global (Volume III) */}
@@ -98,7 +98,7 @@ export const InvestigatorProfileView: React.FC = () => {
               <Globe className="w-4 h-4" />
             </div>
             <div className="font-sans font-bold text-xs text-slate-400">Impacto Global</div>
-            <span className="text-[10px] font-mono text-slate-500">Volume III</span>
+            <span className="text-xs sm:text-sm font-mono text-slate-500">Volume III</span>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ export const InvestigatorProfileView: React.FC = () => {
             <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
               Seu Perfil de Decisão
             </span>
-            <span className="text-[10px] font-mono text-slate-400">
+            <span className="text-xs sm:text-sm font-mono text-slate-400">
               Calibrado por Hipóteses
             </span>
           </div>
@@ -133,7 +133,7 @@ export const InvestigatorProfileView: React.FC = () => {
               <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
                 Métricas de Interpretação
               </span>
-              <span className="text-[10px] font-mono text-slate-400">
+              <span className="text-xs sm:text-sm font-mono text-slate-400">
                 Variáveis do Modelo
               </span>
             </div>
@@ -148,7 +148,7 @@ export const InvestigatorProfileView: React.FC = () => {
             <SemiCircleGauge label="Suspeita" value={state.globalImpact.suspeita} color="purple" />
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 text-[11px] font-mono text-slate-400 text-center">
+          <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 text-xs sm:text-sm font-mono text-slate-400 text-center">
             Suas decisões influenciam a matriz de convergência dos próximos episódios.
           </div>
         </div>
@@ -161,7 +161,7 @@ export const InvestigatorProfileView: React.FC = () => {
           <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
             Caderno de Campo // Hipóteses Registradas
           </span>
-          <span className="text-[10px] font-mono text-emerald-400">
+          <span className="text-xs sm:text-sm font-mono text-emerald-400">
             {stats.hypothesesCount} gravadas
           </span>
         </div>
@@ -185,7 +185,7 @@ export const InvestigatorProfileView: React.FC = () => {
                         <span className="font-serif font-bold text-sm text-white">
                           {node.fullName}
                         </span>
-                        <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                        <span className="text-xs sm:text-sm font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
                           {node.year}
                         </span>
                       </div>

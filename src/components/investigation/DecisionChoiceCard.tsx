@@ -30,7 +30,7 @@ export const DecisionChoiceCard: React.FC = () => {
             3. Sua Hipótese no Compêndio
           </span>
         </div>
-        <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/30">
+        <span className="text-xs sm:text-sm font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/30">
           Decisão Gravada
         </span>
       </div>
@@ -54,13 +54,13 @@ export const DecisionChoiceCard: React.FC = () => {
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold ${
+                <span className={`px-2 py-0.5 rounded text-xs sm:text-sm font-mono font-bold ${
                   hypo.tag === 'A' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                 }`}>
                   Hipótese {hypo.tag}
                 </span>
                 {isSelected && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 font-bold">
+                  <span className="inline-flex items-center gap-1 text-xs sm:text-sm font-mono text-emerald-400 font-bold">
                     <Check className="w-3.5 h-3.5" /> Escolhida
                   </span>
                 )}
@@ -69,7 +69,7 @@ export const DecisionChoiceCard: React.FC = () => {
               <div className="font-sans font-bold text-xs sm:text-sm text-white">
                 {hypo.title}
               </div>
-              <div className="text-[11px] text-slate-300 font-sans leading-relaxed">
+              <div className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed">
                 {hypo.description}
               </div>
             </div>
@@ -79,7 +79,7 @@ export const DecisionChoiceCard: React.FC = () => {
 
       {/* Campo para Anotação do Investigador */}
       <div className="pt-2 space-y-1.5">
-        <label className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
+        <label className="text-xs sm:text-sm font-mono text-slate-400 flex items-center gap-1">
           <MessageSquare className="w-3 h-3 text-amber-400" />
           <span>Suas Notas Pessoais de Campo (Sincronizadas):</span>
         </label>
@@ -92,11 +92,11 @@ export const DecisionChoiceCard: React.FC = () => {
         />
         <div className="flex justify-between items-center pt-1">
           {saveSuccess ? (
-            <span className="text-[11px] font-mono text-emerald-400 font-bold flex items-center gap-1">
+            <span className="text-xs sm:text-sm font-mono text-emerald-400 font-bold flex items-center gap-1">
               <Check className="w-3 h-3" /> Registrado no Compêndio!
             </span>
           ) : (
-            <span className="text-[10px] font-mono text-slate-500">
+            <span className="text-xs sm:text-sm font-mono text-slate-500">
               Salvo no banco de dados
             </span>
           )}

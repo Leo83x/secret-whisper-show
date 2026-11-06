@@ -27,7 +27,7 @@ export const SemiCircleGauge: React.FC<SemiCircleGaugeProps> = ({ label, value, 
   };
 
   const currentTheme = colorMap[color];
-  const radius = 38;
+  const radius = 40;
   const circumference = Math.PI * radius; // Apenas semicírculo
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
@@ -68,7 +68,7 @@ export const SemiCircleGauge: React.FC<SemiCircleGaugeProps> = ({ label, value, 
         </div>
       </div>
 
-      <span className="text-[11px] font-mono text-slate-300 mt-2 font-medium">
+      <span className="text-xs sm:text-sm font-mono text-slate-300 mt-2 font-medium">
         {label}
       </span>
     </div>

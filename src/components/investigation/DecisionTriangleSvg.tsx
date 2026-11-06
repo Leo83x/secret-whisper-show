@@ -68,13 +68,13 @@ export const DecisionTriangleSvg: React.FC<DecisionTriangleProps> = ({
         <circle cx={ptH.x} cy={ptH.y} r="2" fill="#FDE68A" />
 
         {/* Rótulos dos vértices */}
-        <text x="50" y="9" textAnchor="middle" fill="#F59E0B" fontSize="3.8" fontFamily="monospace" fontWeight="bold">
+        <text x="50" y="9" textAnchor="middle" fill="#F59E0B" fontSize="4.4" fontFamily="monospace" fontWeight="bold">
           Analítico {analitico}%
         </text>
-        <text x="14" y="90" textAnchor="middle" fill="#CBD5E1" fontSize="3.8" fontFamily="monospace">
+        <text x="14" y="90" textAnchor="middle" fill="#CBD5E1" fontSize="4.4" fontFamily="monospace">
           Estratégico {estrategico}%
         </text>
-        <text x="86" y="90" textAnchor="middle" fill="#CBD5E1" fontSize="3.8" fontFamily="monospace">
+        <text x="86" y="90" textAnchor="middle" fill="#CBD5E1" fontSize="4.4" fontFamily="monospace">
           Humanista {humanista}%
         </text>
       </svg>

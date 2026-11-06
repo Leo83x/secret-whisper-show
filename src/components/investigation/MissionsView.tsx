@@ -40,12 +40,12 @@ export const MissionsView: React.FC = () => {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-serif font-bold text-base text-white">{node.fullName}</span>
-                    <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                    <span className="text-xs sm:text-sm font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
                       {node.year}
                     </span>
                   </div>
                   <p className="text-xs text-slate-300 font-sans">{node.shortDescription}</p>
-                  <div className="pt-1 flex flex-wrap items-center gap-2 text-[11px] font-mono">
+                  <div className="pt-1 flex flex-wrap items-center gap-2 text-xs sm:text-sm font-mono">
                     {isCompleted ? (
                       <span className="text-emerald-400 flex items-center gap-1 font-bold">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Dossiê Concluído e Sincronizado
