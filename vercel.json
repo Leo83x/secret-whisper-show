@@ -1,19 +1,14 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false,
-  "redirects": [
-    {
-      "source": "/reader",
-      "destination": "/reader/",
-      "permanent": true
-    },
+  "rewrites": [
     {
       "source": "/admin",
-      "destination": "/admin/",
-      "permanent": true
-    }
-  ],
-  "rewrites": [
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/reader",
+      "destination": "/reader/index.html"
+    },
     {
       "source": "/api/webhook-pagarme/",
       "destination": "/api/webhook-pagarme"
