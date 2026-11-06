@@ -299,7 +299,7 @@ export const DossierInvestigationView: React.FC = () => {
     activeChallenge && progress.solvedConnectionIds.includes(activeChallenge.id);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-full overflow-x-hidden">
       
       {/* =====================================================================
           1. BARRA DE CONTEXTO ENXUTA + SUBNÍVEL RETRÁTIL DE BRIEFING + ARQUIVO PESSOAL
@@ -331,8 +331,8 @@ export const DossierInvestigationView: React.FC = () => {
             </button>
           </div>
 
-          {/* Direita: Alternador 3D/2D + Botão Subnível [ 📁 Meu Arquivo Pessoal ] + Ação Principal */}
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          {/* Direita: Alternador 3D/2D + Botão Subnível [ 📁 Meu Arquivo Pessoal ] + Ação Principal (100% Responsivo no Mobile) */}
+          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
             {state.activeStep === 1 && (
               <button
                 type="button"
@@ -340,10 +340,11 @@ export const DossierInvestigationView: React.FC = () => {
                   soundEngine.playDocumentOpen();
                   setIs3DStageOne(v => !v);
                 }}
-                className="px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/50 text-amber-200 text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-sm"
+                className="px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/50 text-amber-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm truncate"
               >
-                <Maximize2 className="w-3.5 h-3.5 text-amber-400" />
-                <span>[ Entrar no Cenário 3D ]</span>
+                <Maximize2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="sm:hidden truncate">[ Cenário 3D ]</span>
+                <span className="hidden sm:inline">[ Entrar no Cenário 3D ]</span>
               </button>
             )}
             {state.activeStep === 2 && (
@@ -353,22 +354,32 @@ export const DossierInvestigationView: React.FC = () => {
                   soundEngine.playDocumentOpen();
                   setIs3DTableStageTwo(v => !v);
                 }}
-                className={`px-3.5 py-2 rounded-xl border text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer transition-all ${
+                className={`px-3 py-2 rounded-xl border text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all truncate ${
                   is3DTableStageTwo
                     ? 'bg-amber-500/20 border-amber-400/60 text-amber-200'
                     : 'bg-[#0B1320] border-slate-700 text-slate-300'
                 }`}
               >
-                <span>[ Mesa: {is3DTableStageTwo ? 'Vista Topográfica 3D' : 'Vista Plana 2D'} ]</span>
+                <span className="sm:hidden truncate">
+                  [ {is3DTableStageTwo ? 'Mesa 3D' : 'Mesa 2D'} ]
+                </span>
+                <span className="hidden sm:inline">
+                  [ Mesa: {is3DTableStageTwo ? 'Vista Topográfica 3D' : 'Vista Plana 2D'} ]
+                </span>
               </button>
             )}
             <button
               type="button"
               onClick={() => setIsArchiveDrawerOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-[#0B1320] hover:bg-slate-900 border border-cyan-500/35 text-cyan-300 text-xs font-mono font-bold flex items-center gap-2 cursor-pointer transition-all shadow-sm"
+              className={`px-3 py-2 rounded-xl bg-[#0B1320] hover:bg-slate-900 border border-cyan-500/35 text-cyan-300 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm truncate ${
+                state.activeStep !== 1 && state.activeStep !== 2 ? 'col-span-2 sm:col-span-1' : ''
+              }`}
             >
-              <FolderOpen className="w-4 h-4 text-cyan-400" />
-              <span>
+              <FolderOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 shrink-0" />
+              <span className="sm:hidden truncate">
+                Arquivo ({extractedCluesList.length}/{allCaseClues.length})
+              </span>
+              <span className="hidden sm:inline">
                 Meu Arquivo Pessoal ({extractedCluesList.length}/{allCaseClues.length})
               </span>
             </button>
@@ -377,7 +388,7 @@ export const DossierInvestigationView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveStep(2)}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all cursor-pointer"
+                className="col-span-2 sm:col-span-1 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all cursor-pointer"
               >
                 <span>Ir para Mesa de Conexões</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />

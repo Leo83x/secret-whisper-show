@@ -14,9 +14,6 @@ import {
   Lightbulb,
   Layers,
   X,
-  ShieldCheck,
-  LogOut,
-  Eye,
 } from 'lucide-react';
 
 interface ArchiveRoom3DStageProps {
@@ -35,13 +32,16 @@ interface ArchiveRoom3DStageProps {
 interface DeskHotspot {
   slotIndex: number;
   label: string;
+  shortName: string;
   objectName: string;
   // Position of the interactive surface over the physical object (% of 16:9 stage)
   box: { left: number; top: number; width: number; height: number };
-  // Position of the DOC-0X badge along the front edge of the table
+  // Position of the DOC-0X badge along the front edge of the table (Desktop)
   badgePos: { left: number; top: number };
   // Camera focus point when zooming in on this document
   focusOrigin: { x: number; y: number };
+  // Horizontal pan offset (%) on mobile when focusing this object
+  mobilePanX: number;
   skewDeg: number;
 }
 
@@ -49,37 +49,45 @@ const DESK_HOTSPOTS: DeskHotspot[] = [
   {
     slotIndex: 0,
     label: 'DOC-01',
+    shortName: 'Dossiê',
     objectName: 'Dossiê Selado com Lacre',
     box: { left: 6.5, top: 58.5, width: 23.5, height: 25.5 },
     badgePos: { left: 15.8, top: 85.5 },
     focusOrigin: { x: 18, y: 71 },
+    mobilePanX: 16,
     skewDeg: -8,
   },
   {
     slotIndex: 1,
     label: 'DOC-02',
+    shortName: 'Tabuleta',
     objectName: 'Tabuleta / Registro de Campo',
     box: { left: 30.2, top: 61.0, width: 25.5, height: 23.0 },
     badgePos: { left: 49.5, top: 85.5 },
     focusOrigin: { x: 43, y: 72 },
+    mobilePanX: 5,
     skewDeg: -2,
   },
   {
     slotIndex: 2,
     label: 'DOC-03',
+    shortName: 'Mapa',
     objectName: 'Mapa Estratégico & Rotas',
     box: { left: 52.5, top: 56.0, width: 25.0, height: 26.5 },
     badgePos: { left: 71.2, top: 85.5 },
     focusOrigin: { x: 65, y: 69 },
+    mobilePanX: -6,
     skewDeg: 4,
   },
   {
     slotIndex: 3,
     label: 'DOC-04',
+    shortName: 'Prancheta',
     objectName: 'Prancheta de Auditoria',
     box: { left: 76.5, top: 60.0, width: 21.5, height: 24.5 },
     badgePos: { left: 90.0, top: 85.5 },
     focusOrigin: { x: 87, y: 72 },
+    mobilePanX: -16,
     skewDeg: 9,
   },
 ];
@@ -96,9 +104,10 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
   onSwitchTo2D,
   onRequestExit,
 }) => {
-  // 3D Camera Orbit, Tilt & Zoom State
+  // 3D Camera Orbit, Pan, Tilt & Zoom State
   const [camRotX, setCamRotX] = useState<number>(0);
   const [camRotY, setCamRotY] = useState<number>(0);
+  const [camPanX, setCamPanX] = useState<number>(0);
   const [camScale, setCamScale] = useState<number>(1.04);
   const [camOrigin, setCamOrigin] = useState<{ x: number; y: number }>({ x: 50, y: 55 });
   const [isAutoOrbiting, setIsAutoOrbiting] = useState<boolean>(false);
@@ -114,7 +123,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
   const [stepMenuOpen, setStepMenuOpen] = useState<boolean>(false);
   const [muted, setMuted] = useState<boolean>(() => soundEngine.getSettings().mutedAll);
 
-  // Drag-to-orbit tracking
+  // Drag-to-orbit / touch-pan tracking
   const isDraggingRef = useRef<boolean>(false);
   const lastPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -132,12 +141,13 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
   useEffect(() => {
     if (!isAutoOrbiting || zoomingSlot !== null) return;
     let frameId: number;
-    let startTime = performance.now();
+    const startTime = performance.now();
 
     const animateOrbit = (now: number) => {
       const elapsed = (now - startTime) * 0.0012;
       setCamRotY(Math.sin(elapsed) * 6.5);
       setCamRotX(Math.cos(elapsed * 0.7) * 3.0);
+      setCamPanX(Math.sin(elapsed * 0.9) * 10);
       setCamScale(1.07 + Math.sin(elapsed * 0.5) * 0.03);
       frameId = requestAnimationFrame(animateOrbit);
     };
@@ -146,7 +156,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
     return () => cancelAnimationFrame(frameId);
   }, [isAutoOrbiting, zoomingSlot]);
 
-  // Volumetric 3D Dust Motes rendered on Canvas in the warm light beams
+  // Volumetric 3D Dust Motes rendered on Canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -154,56 +164,69 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
     if (!ctx) return;
 
     let animId: number;
-    const particles = Array.from({ length: 48 }, () => ({
-      x: Math.random() * 1376,
-      y: Math.random() * 768,
-      r: Math.random() * 1.8 + 0.6,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: -Math.random() * 0.22 - 0.05,
-      alpha: Math.random() * 0.55 + 0.15,
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const particles = Array.from({ length: 38 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.7 + 0.5,
+      vx: (Math.random() - 0.5) * 0.22,
+      vy: -Math.random() * 0.25 - 0.06,
+      alpha: Math.random() * 0.45 + 0.12,
     }));
 
-    const renderParticles = () => {
+    const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
+      if (!soundEngine.getSettings().reduceMotion) {
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.y < 0) p.y = canvas.height;
+          if (p.x < 0) p.x = canvas.width;
+          if (p.x > canvas.width) p.x = 0;
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(251, 191, 36, ${p.alpha})`;
-        ctx.fill();
-      });
-      animId = requestAnimationFrame(renderParticles);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = bankerLampOn
+            ? `rgba(251, 211, 141, ${p.alpha})`
+            : `rgba(148, 163, 184, ${p.alpha * 0.5})`;
+          ctx.fill();
+        }
+      }
+      animId = requestAnimationFrame(draw);
     };
 
-    if (!soundEngine.getSettings().reduceMotion) {
-      animId = requestAnimationFrame(renderParticles);
-    }
-    return () => cancelAnimationFrame(animId);
-  }, []);
+    animId = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
+  }, [bankerLampOn]);
 
-  // Pointer / Touch Camera Orbit Handlers
+  // Pointer drag / mouse parallax for 3D camera
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (zoomingSlot !== null) return;
+    if ((e.target as HTMLElement).closest('button')) return;
     isDraggingRef.current = true;
     lastPointerRef.current = { x: e.clientX, y: e.clientY };
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (zoomingSlot !== null) return;
+
     if (isDraggingRef.current) {
-      setIsAutoOrbiting(false);
       const dx = e.clientX - lastPointerRef.current.x;
       const dy = e.clientY - lastPointerRef.current.y;
       lastPointerRef.current = { x: e.clientX, y: e.clientY };
       setCamRotY(prev => Math.max(-9, Math.min(9, prev + dx * 0.045)));
       setCamRotX(prev => Math.max(-5, Math.min(5, prev - dy * 0.035)));
-    } else if (!isAutoOrbiting && !soundEngine.getSettings().reduceMotion) {
-      // Subtle mouse parallax when moving cursor over the room
+      setCamPanX(prev => Math.max(-16, Math.min(16, prev + dx * 0.08)));
+    } else if (!isAutoOrbiting && !soundEngine.getSettings().reduceMotion && window.innerWidth >= 768) {
+      // Subtle mouse parallax on desktop
       const rect = e.currentTarget.getBoundingClientRect();
       const nx = (e.clientX - rect.left) / rect.width - 0.5;
       const ny = (e.clientY - rect.top) / rect.height - 0.5;
@@ -229,11 +252,12 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
     setZoomingSlot(null);
     setCamRotX(0);
     setCamRotY(0);
+    setCamPanX(0);
     setCamScale(1.04);
     setCamOrigin({ x: 50, y: 55 });
   };
 
-  // Click on one of the 4 physical documents on the desk:
+  // Click on one of the 4 physical documents on the desk (or mobile quick-dock):
   // Smoothly dolly/zoom camera onto that object on the table, then open the Inspector Modal!
   const handleDocumentObjectClick = (spot: DeskHotspot) => {
     const targetDoc = documents[spot.slotIndex] || documents[documents.length - 1];
@@ -243,9 +267,10 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
     setIsAutoOrbiting(false);
     setZoomingSlot(spot.slotIndex);
     setCamOrigin(spot.focusOrigin);
+    setCamPanX(spot.mobilePanX);
     setCamRotX(2);
     setCamRotY(0);
-    setCamScale(1.48);
+    setCamScale(1.42);
 
     setTimeout(() => {
       onInspectDocument(targetDoc);
@@ -256,7 +281,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
         setCamOrigin({ x: 50, y: 55 });
         setCamRotX(0);
       }, 220);
-    }, 280);
+    }, 260);
   };
 
   const showTempPropNote = (msg: string) => {
@@ -267,30 +292,334 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
     }, 3800);
   };
 
+  const caseShortHeader = `${selectedCase.missionCode?.split('//')[0]?.trim() || 'CASO 001'} // ${
+    selectedCase.missionTitle || selectedCase.title
+  }`;
+
   return (
     <div
-      className="fixed inset-0 z-40 w-screen h-screen bg-[#04060B] overflow-hidden select-none font-sans"
+      className="fixed inset-0 z-40 w-screen h-[100dvh] bg-[#04060B] overflow-hidden select-none font-sans flex flex-col justify-between"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onWheel={handleWheel}
     >
       {/* =====================================================================
-          1. VIEWPORT 3D REALISTA COM PERSPECTIVA ESPACIAL, PARALLAX E ILUMINAÇÃO
+          1. HUD SUPERIOR UNIFICADO (SEM SOBREPOSIÇÃO NO MOBILE OU DESKTOP)
          ===================================================================== */}
       <div
-        className="w-full h-full flex items-center justify-center overflow-hidden"
+        onClick={e => e.stopPropagation()}
+        className="relative z-30 w-full p-2.5 sm:p-4 md:p-6 pointer-events-none shrink-0"
+      >
+        {/* --- VERSÃO MOBILE (< md): 2 Linhas Organizadas, Zero Sobreposição --- */}
+        <div className="md:hidden pointer-events-auto rounded-2xl bg-[#070B14]/95 backdrop-blur-md border border-slate-800/90 p-2.5 shadow-2xl space-y-2">
+          {/* Linha 1 Mobile: Título do Caso + Áudio + Sair */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold truncate">
+                {caseShortHeader} ({selectedCase.name})
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => soundEngine.updateSettings({ mutedAll: !muted })}
+                className="p-1.5 rounded-lg bg-[#0B111E] border border-slate-700/80 text-cyan-300 cursor-pointer"
+                title={muted ? 'Reativar Áudio' : 'Silenciar Áudio'}
+              >
+                {muted ? (
+                  <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+                ) : (
+                  <Volume2 className="w-3.5 h-3.5" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={onRequestExit}
+                className="px-2.5 py-1 rounded-lg bg-gradient-to-b from-[#DFBF76] to-[#B69146] text-slate-950 font-sans font-bold text-[11px] border border-amber-200/60 shadow-md cursor-pointer"
+              >
+                Sair
+              </button>
+            </div>
+          </div>
+
+          {/* Linha 2 Mobile: 4 Pílulas Compactas Sem Estourar a Tela */}
+          <div className="grid grid-cols-4 gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playDocumentOpen();
+                setBriefingOpen(o => !o);
+                setStepMenuOpen(false);
+              }}
+              className={`px-2 py-1.5 rounded-lg border text-[11px] font-sans flex items-center justify-center gap-1 cursor-pointer transition-all truncate ${
+                briefingOpen
+                  ? 'bg-amber-500/20 border-amber-400 text-amber-200'
+                  : 'bg-[#0B111E] border-slate-700/80 text-slate-200'
+              }`}
+            >
+              <Info className="w-3 h-3 text-amber-400 shrink-0" />
+              <span className="truncate">Briefing</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playDocumentOpen();
+                setStepMenuOpen(o => !o);
+                setBriefingOpen(false);
+              }}
+              className={`px-2 py-1.5 rounded-lg border text-[11px] font-sans flex items-center justify-center gap-1 cursor-pointer transition-all truncate ${
+                stepMenuOpen
+                  ? 'bg-amber-500/20 border-amber-400 text-amber-200'
+                  : 'bg-[#0B111E] border-amber-500/40 text-amber-300 font-semibold'
+              }`}
+            >
+              <span className="truncate">1. Observar</span>
+              <Layers className="w-3 h-3 text-amber-400 shrink-0" />
+            </button>
+
+            <button
+              type="button"
+              onClick={onSwitchTo2D}
+              className="px-2 py-1.5 rounded-lg bg-[#0B111E] border border-slate-700/80 text-[11px] font-sans text-cyan-300 font-semibold flex items-center justify-center gap-1 cursor-pointer truncate"
+            >
+              <span className="truncate">Modo 2D</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenArchiveDrawer}
+              className="px-2 py-1.5 rounded-lg bg-[#0B111E] border border-slate-700/80 text-[11px] font-sans text-amber-300 font-bold flex items-center justify-center gap-1 cursor-pointer truncate"
+            >
+              <FolderOpen className="w-3 h-3 text-amber-400 shrink-0" />
+              <span>
+                {extractedCount}/{totalCluesCount}
+              </span>
+            </button>
+          </div>
+
+          {/* Subníveis Mobile (Briefing ou Seletor de Etapa) */}
+          {briefingOpen && (
+            <div className="p-3 rounded-xl bg-[#0B1324] border border-amber-500/40 text-xs text-slate-200 space-y-1.5 animate-in fade-in duration-150">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+                  BRIEFING DA OPERAÇÃO // {selectedCase.location} ({selectedCase.year})
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setBriefingOpen(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <p className="leading-relaxed text-slate-300">{selectedCase.PeriodSummary}</p>
+            </div>
+          )}
+
+          {stepMenuOpen && (
+            <div className="p-1.5 rounded-xl bg-[#0B1324] border border-slate-700 grid grid-cols-1 gap-1 animate-in fade-in duration-150">
+              {(
+                [
+                  { id: 1, label: '1. Observar — Arquivo Histórico (3D)' },
+                  { id: 2, label: '2. Conectar — Mesa de Evidências' },
+                  { id: 3, label: '3. Hipótese — Sala de Análise' },
+                  { id: 4, label: '4. Decidir — Ponto de Decisão' },
+                  { id: 5, label: '5. Consequências — Relatório Final' },
+                ] as const
+              ).map(s => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => {
+                    setStepMenuOpen(false);
+                    onSelectStep(s.id);
+                  }}
+                  className={`w-full px-2.5 py-1.5 rounded-lg text-left text-xs font-sans flex items-center justify-between cursor-pointer ${
+                    activeStep === s.id
+                      ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40'
+                      : 'text-slate-300 hover:bg-slate-800/70'
+                  }`}
+                >
+                  <span>{s.label}</span>
+                  {activeStep === s.id && (
+                    <span className="text-[10px] font-mono text-amber-400">ATIVA</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* --- VERSÃO DESKTOP (>= md): HUD Diegético Flutuante Esquerda/Direita --- */}
+        <div className="hidden md:flex items-start justify-between gap-4">
+          {/* Esquerda Desktop */}
+          <div className="pointer-events-auto flex flex-col items-start gap-2 max-w-xl">
+            <div className="px-3.5 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg">
+              <h1 className="font-serif text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase">
+                {caseShortHeader} ({selectedCase.name.toUpperCase()})
+              </h1>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playDocumentOpen();
+                  setBriefingOpen(o => !o);
+                  setStepMenuOpen(false);
+                }}
+                className="px-3 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-amber-400/60 text-xs font-sans text-slate-200 flex items-center gap-1.5 cursor-pointer transition-all shadow-lg"
+              >
+                <span className="text-amber-400 font-serif italic font-bold">[ i</span>
+                <span>Briefing</span>
+                <span className="text-amber-400 font-serif">]</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playDocumentOpen();
+                  setStepMenuOpen(o => !o);
+                  setBriefingOpen(false);
+                }}
+                className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/90 hover:bg-[#131D31] backdrop-blur-md border border-amber-500/40 text-xs font-sans text-slate-200 flex items-center gap-2 cursor-pointer transition-all shadow-lg"
+              >
+                <span>
+                  <strong className="text-amber-400">1. Observar</strong> Evidências (Etapa Ativa)
+                </span>
+                <Layers className="w-3.5 h-3.5 text-amber-400" />
+              </button>
+            </div>
+
+            {briefingOpen && (
+              <div className="mt-1 p-4 rounded-xl bg-[#080D18]/95 backdrop-blur-xl border border-amber-500/40 shadow-2xl text-xs sm:text-sm text-slate-200 leading-relaxed max-w-md animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+                    BRIEFING DA OPERAÇÃO // {selectedCase.location} ({selectedCase.year})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setBriefingOpen(false)}
+                    className="text-slate-400 hover:text-white cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <p>{selectedCase.PeriodSummary}</p>
+              </div>
+            )}
+
+            {stepMenuOpen && (
+              <div className="mt-1 p-2 rounded-xl bg-[#080D18]/95 backdrop-blur-xl border border-slate-700 shadow-2xl w-72 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                {(
+                  [
+                    { id: 1, label: '1. Observar — Arquivo Histórico (3D)' },
+                    { id: 2, label: '2. Conectar — Mesa de Evidências' },
+                    { id: 3, label: '3. Hipótese — Sala de Análise' },
+                    { id: 4, label: '4. Decidir — Ponto de Decisão' },
+                    { id: 5, label: '5. Consequências — Relatório Final' },
+                  ] as const
+                ).map(s => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => {
+                      setStepMenuOpen(false);
+                      onSelectStep(s.id);
+                    }}
+                    className={`w-full px-3 py-2 rounded-lg text-left text-xs font-sans flex items-center justify-between cursor-pointer transition-colors ${
+                      activeStep === s.id
+                        ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40'
+                        : 'text-slate-300 hover:bg-slate-800/70 hover:text-white'
+                    }`}
+                  >
+                    <span>{s.label}</span>
+                    {activeStep === s.id && (
+                      <span className="text-[10px] font-mono text-amber-400">ATIVA</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Direita Desktop */}
+          <div className="pointer-events-auto flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={onSwitchTo2D}
+              className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-amber-400/60 text-xs sm:text-sm font-sans text-slate-200 cursor-pointer transition-all shadow-lg"
+            >
+              <span className="text-amber-400">[</span> Alternar:{' '}
+              <strong className="text-amber-300">3D</strong> / Leitura 2D{' '}
+              <span className="text-amber-400">]</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenArchiveDrawer}
+              className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-cyan-400/60 text-xs sm:text-sm font-sans text-slate-200 flex items-center gap-1.5 cursor-pointer transition-all shadow-lg"
+            >
+              <span className="text-amber-400">[</span>
+              <FolderOpen className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>
+                Arquivo Pessoal:{' '}
+                <strong className="text-amber-300">
+                  {extractedCount}/{totalCluesCount}
+                </strong>{' '}
+                Pistas
+              </span>
+              <span className="text-amber-400">]</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => soundEngine.updateSettings({ mutedAll: !muted })}
+              className="p-2 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-700/80 text-cyan-300 cursor-pointer shadow-lg"
+              title={muted ? 'Reativar Áudio' : 'Silenciar Áudio'}
+            >
+              {muted ? (
+                <VolumeX className="w-4 h-4 text-slate-400" />
+              ) : (
+                <Volume2 className="w-4 h-4" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={onRequestExit}
+              className="px-3.5 py-1.5 rounded-lg bg-gradient-to-b from-[#DFBF76] to-[#B69146] hover:from-[#EAD08E] hover:to-[#C8A252] text-slate-950 font-sans font-bold text-xs sm:text-sm border border-amber-200/60 shadow-[0_0_20px_rgba(212,175,55,0.3)] cursor-pointer transition-all"
+            >
+              Sair da Operação
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Notificação Contextual de Objeto do Cenário */}
+      {propMessage && (
+        <div className="fixed top-28 md:top-24 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl bg-[#080D18]/95 border border-amber-400/50 text-xs font-mono text-amber-200 shadow-2xl animate-in fade-in duration-200 max-w-[92vw] text-center">
+          {propMessage}
+        </div>
+      )}
+
+      {/* =====================================================================
+          2. VIEWPORT 3D REALISTA (RESPONSIVO NO MOBILE E TELA CHEIA NO DESKTOP)
+         ===================================================================== */}
+      <div
+        className="relative md:fixed md:inset-0 flex-1 w-full flex flex-col items-center justify-center overflow-hidden z-10 px-2 md:px-0"
         style={{ perspective: '1200px' }}
       >
         <div
-          className="relative w-full h-full transition-transform duration-300 ease-out"
+          className="relative w-[136vw] sm:w-full h-full max-h-[54vh] sm:max-h-none md:w-full md:h-full rounded-2xl md:rounded-none overflow-hidden border border-amber-500/25 md:border-none shadow-[0_0_40px_rgba(0,0,0,0.9)] transition-transform duration-300 ease-out"
           style={{
             transformStyle: 'preserve-3d',
             transformOrigin: `${camOrigin.x}% ${camOrigin.y}%`,
-            transform: `scale(${camScale}) rotateX(${camRotX}deg) rotateY(${camRotY}deg)`,
+            transform: `translateX(${camPanX}%) scale(${camScale}) rotateX(${camRotX}deg) rotateY(${camRotY}deg)`,
           }}
         >
-          {/* Container 16:9 Centralizado / Cover que preserva o alinhamento exato dos objetos da mesa */}
           <div className="relative w-full h-full">
             <img
               src="/dossiers/archive_room_3d_clean.webp"
@@ -310,23 +639,21 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 className="pointer-events-none absolute inset-0 transition-opacity duration-500"
                 style={{
                   background:
-                    'radial-gradient(circle at 77% 46%, rgba(251,191,36,0.16) 0%, rgba(16,185,129,0.06) 22%, transparent 55%), radial-gradient(circle at 50% 16%, rgba(251,191,36,0.14) 0%, transparent 48%)',
+                    'radial-gradient(circle at 75% 48%, rgba(251, 191, 36, 0.16) 0%, rgba(16, 185, 129, 0.08) 28%, transparent 62%)',
                 }}
               />
             )}
 
-            {/* Canvas de Partículas Volumétricas 3D (Poeira Dourada no Feixe de Luz) */}
+            {/* Partículas de Poeira 3D no Feixe de Luz */}
             <canvas
               ref={canvasRef}
-              width={1376}
-              height={768}
               className="pointer-events-none absolute inset-0 w-full h-full opacity-75"
             />
 
-            {/* =================================================================
-                PONTOS SECUNDÁRIOS INTERATIVOS DO CENÁRIO 3D (LUMINÁRIA, ESFERA, QUADRO)
-               ================================================================= */}
-            {/* Luminária Verde de Banqueiro (Liga/Desliga Luz de Mesa) */}
+            {/* ===============================================================
+                OBJETOS AMBIENTAIS SECUNDÁRIOS INTERATIVOS NA SALA 3D
+               =============================================================== */}
+            {/* Luminária Verde de Banqueiro */}
             <button
               type="button"
               onClick={e => {
@@ -334,40 +661,41 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 soundEngine.playDocumentOpen();
                 setBankerLampOn(v => !v);
                 showTempPropNote(
-                  !bankerLampOn
-                    ? 'Luminária de bancada acesa — Iluminação direta sobre as peças documentais.'
-                    : 'Luminária de bancada desligada — Modo de contraste noturno.'
+                  bankerLampOn
+                    ? 'Luminária de mesa desligada — modo de contraste noturno.'
+                    : 'Luminária de banqueiro acesa — iluminação direta sobre os mapas.'
                 );
               }}
-              style={{ left: '70%', top: '28%', width: '16%', height: '27%' }}
-              className="absolute z-10 rounded-2xl cursor-pointer group focus:outline-none"
-              title="Luminária de Bancada (Clique para alternar iluminação da mesa)"
+              style={{ left: '69%', top: '27%', width: '16%', height: '28%' }}
+              className="absolute z-10 rounded-full group cursor-pointer focus:outline-none"
+              title="Alternar Luminária de Mesa (Luz Volumétrica)"
             >
-              <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-7 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-black/85 border border-amber-400/50 text-[10px] font-mono text-amber-300 whitespace-nowrap flex items-center gap-1 shadow-lg">
-                <Lightbulb className="w-3 h-3" />
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-7 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded bg-slate-950/90 border border-emerald-400/50 text-[10px] font-mono text-emerald-300 whitespace-nowrap shadow-lg">
+                <Lightbulb className="w-3 h-3 inline mr-1" />
                 {bankerLampOn ? 'Apagar Luminária' : 'Acender Luminária'}
               </span>
             </button>
 
-            {/* Esfera Armilar de Latão (Calibragem Cronológica) */}
+            {/* Esfera Armilar / Globo de Latão */}
             <button
               type="button"
               onClick={e => {
                 e.stopPropagation();
                 showTempPropNote(
-                  `Esfera Armilar // Coordenada Temporal: ${selectedCase.year} — ${selectedCase.location}`
+                  `Coordenadas de Campo: ${selectedCase.location} (${selectedCase.year}) — ${selectedCase.historicalPhase}`
                 );
               }}
-              style={{ left: '16%', top: '30%', width: '14%', height: '27%' }}
-              className="absolute z-10 rounded-full cursor-pointer group focus:outline-none"
+              style={{ left: '15%', top: '28%', width: '16%', height: '29%' }}
+              className="absolute z-10 rounded-full group cursor-pointer focus:outline-none"
               title="Inspecionar Esfera Armilar"
             >
-              <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-7 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-black/85 border border-amber-400/50 text-[10px] font-mono text-amber-300 whitespace-nowrap shadow-lg">
-                Esfera Armilar ({selectedCase.year})
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-7 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded bg-slate-950/90 border border-amber-400/50 text-[10px] font-mono text-amber-300 whitespace-nowrap shadow-lg">
+                <Compass className="w-3 h-3 inline mr-1" />
+                Coordenadas: {selectedCase.location}
               </span>
             </button>
 
-            {/* Quadro de Evidências na Parede Direita (Atalho para Etapa 2: Mesa de Conexões) */}
+            {/* Quadro de Evidências na Parede Direita (Atalho para Etapa 2) */}
             <button
               type="button"
               onClick={e => {
@@ -375,124 +703,110 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 soundEngine.playDocumentOpen();
                 onSelectStep(2);
               }}
-              style={{ left: '80%', top: '9%', width: '18%', height: '34%' }}
-              className="absolute z-10 rounded-xl border border-transparent hover:border-amber-400/40 hover:bg-amber-500/5 transition-all cursor-pointer group focus:outline-none"
-              title="Ir para Etapa 2 — Sala de Cruzamento Analítico"
+              style={{ left: '81%', top: '8%', width: '17%', height: '36%' }}
+              className="absolute z-10 rounded-lg border border-transparent hover:border-amber-400/40 hover:bg-amber-500/5 transition-all group cursor-pointer focus:outline-none"
+              title="Ir para Etapa 2: Mesa de Conexões"
             >
-              <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-lg bg-black/90 border border-amber-400/60 text-[10px] font-mono text-amber-300 whitespace-nowrap shadow-lg">
-                Abrir Quadro de Conexões (Etapa 2) →
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded bg-slate-950/95 border border-amber-400/60 text-[10px] font-mono text-amber-300 whitespace-nowrap shadow-lg">
+                Ir para Etapa 2: Conectar Pistas →
               </span>
             </button>
 
-            {/* =================================================================
-                OS 4 DOCUMENTOS FÍSICOS SOBRE A MESA 3D (DOC-01 A DOC-04)
-               ================================================================= */}
+            {/* ===============================================================
+                OS 4 DOCUMENTOS FÍSICOS SOBRE A MESA DE MADEIRA (HOTSPOTS 3D)
+               =============================================================== */}
             {DESK_HOTSPOTS.map(spot => {
-              const doc = documents[spot.slotIndex] || documents[documents.length - 1];
+              const doc = documents[spot.slotIndex];
               if (!doc) return null;
 
-              const isHovered = hoveredSlot === spot.slotIndex;
+              const extractedInDoc = doc.clues.filter(c => extractedClueIds.includes(c.id)).length;
+              const allExtracted = extractedInDoc === doc.clues.length && doc.clues.length > 0;
               const isExamined = examinedDocIds.includes(doc.id);
-              const extractedInDoc = doc.clues.filter(c =>
-                extractedClueIds.includes(c.id)
-              ).length;
-              const allExtracted = extractedInDoc === doc.clues.length;
+              const isHovered = hoveredSlot === spot.slotIndex;
 
               return (
                 <React.Fragment key={spot.label}>
-                  {/* Superfície 3D Clicável sobre o Objeto Físico na Mesa */}
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Inspecionar ${spot.label}: ${doc.title}`}
-                    onMouseEnter={() => setHoveredSlot(spot.slotIndex)}
-                    onMouseLeave={() => setHoveredSlot(null)}
+                  {/* Superfície Física Interativa Sobre a Mesa */}
+                  <button
+                    type="button"
                     onClick={e => {
                       e.stopPropagation();
                       handleDocumentObjectClick(spot);
                     }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleDocumentObjectClick(spot);
-                      }
-                    }}
+                    onMouseEnter={() => setHoveredSlot(spot.slotIndex)}
+                    onMouseLeave={() => setHoveredSlot(null)}
                     style={{
                       left: `${spot.box.left}%`,
                       top: `${spot.box.top}%`,
                       width: `${spot.box.width}%`,
                       height: `${spot.box.height}%`,
-                      transform: `skewX(${spot.skewDeg}deg) ${
-                        isHovered ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)'
-                      }`,
+                      transform: `skewX(${spot.skewDeg}deg)`,
                     }}
-                    className={`absolute z-20 rounded-xl transition-all duration-300 cursor-pointer focus:outline-none ${
+                    className={`absolute z-20 rounded-xl transition-all duration-300 cursor-pointer group focus:outline-none ${
                       isHovered
-                        ? 'border-2 border-amber-400/80 bg-amber-400/15 shadow-[0_0_35px_rgba(251,191,36,0.35)]'
+                        ? 'bg-amber-400/15 border-2 border-amber-300/80 shadow-[0_0_35px_rgba(251,191,36,0.45)] -translate-y-1'
                         : allExtracted
-                        ? 'border border-emerald-400/35 bg-emerald-500/5 hover:border-amber-400/70'
-                        : 'border border-amber-500/15 bg-transparent hover:border-amber-400/70'
+                        ? 'border border-emerald-400/40 bg-emerald-500/5 hover:border-emerald-300'
+                        : 'border border-amber-400/20 bg-transparent hover:border-amber-300/70 hover:bg-amber-400/10'
                     }`}
+                    aria-label={`Inspecionar ${spot.label}: ${doc.title}`}
                   >
-                    {/* Ponto de Interesse Pulsante Discreto sobre o Objeto */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                      <span
-                        className={`flex h-3.5 w-3.5 items-center justify-center rounded-full ${
-                          allExtracted
-                            ? 'bg-emerald-400/80 shadow-[0_0_12px_#10b981]'
-                            : 'bg-amber-400/90 shadow-[0_0_15px_#fbbf24]'
-                        }`}
-                      >
-                        {!allExtracted && (
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75" />
-                        )}
-                      </span>
-                    </div>
+                    <span
+                      className={`absolute top-3 right-3 w-3 h-3 rounded-full transition-transform duration-300 ${
+                        allExtracted
+                          ? 'bg-emerald-400 shadow-[0_0_12px_#34d399]'
+                          : 'bg-amber-400 shadow-[0_0_12px_#fbbf24] animate-pulse'
+                      } ${isHovered ? 'scale-125' : ''}`}
+                    />
 
-                    {/* Tooltip Flutuante 3D ao Passar o Mouse ou Focar */}
-                    {isHovered && (
-                      <div
-                        style={{ transform: `skewX(${-spot.skewDeg}deg)` }}
-                        className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 w-64 p-3 rounded-xl bg-[#070B14]/95 border border-amber-400/60 shadow-[0_10px_30px_rgba(0,0,0,0.95)] text-left z-30 animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        <div className="flex items-center justify-between text-[10px] font-mono text-amber-400 mb-0.5">
-                          <span>{spot.label} // {spot.objectName}</span>
-                          <span className={allExtracted ? 'text-emerald-400 font-bold' : 'text-cyan-300'}>
-                            {extractedInDoc}/{doc.clues.length} pistas
-                          </span>
-                        </div>
-                        <div className="text-xs font-sans font-bold text-white truncate">
-                          {doc.title}
-                        </div>
-                        <div className="text-[10px] font-mono text-slate-400 mt-1 flex items-center gap-1">
-                          <Eye className="w-3 h-3 text-amber-400" />
-                          <span>Clique para aproximar e abrir na lupa</span>
-                        </div>
+                    {/* Card Flutuante 3D no Hover (Desktop) */}
+                    <div
+                      style={{ transform: `skewX(${-spot.skewDeg}deg)` }}
+                      className={`pointer-events-none hidden md:block absolute -top-24 left-1/2 -translate-x-1/2 w-64 p-3 rounded-xl bg-[#070B14]/95 backdrop-blur-md border transition-all duration-200 shadow-[0_15px_35px_rgba(0,0,0,0.95)] text-left ${
+                        isHovered
+                          ? 'opacity-100 translate-y-0 border-amber-400/70'
+                          : 'opacity-0 translate-y-2 border-slate-700/80'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold">
+                        <span>
+                          {spot.label} // {spot.objectName}
+                        </span>
+                        <span className={allExtracted ? 'text-emerald-300' : 'text-amber-300'}>
+                          {extractedInDoc}/{doc.clues.length} pistas
+                        </span>
                       </div>
-                    )}
-                  </div>
+                      <div className="text-xs font-sans font-bold text-white mt-1 line-clamp-1">
+                        {doc.title}
+                      </div>
+                      <div className="text-[11px] font-mono text-cyan-300 mt-1 flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        <span>Clique para dar zoom e inspecionar</span>
+                      </div>
+                    </div>
+                  </button>
 
-                  {/* Etiqueta Diegética DOC-01 .. DOC-04 na Borda da Mesa (Idêntica à Referência!) */}
+                  {/* Plaqueta Diegética na Borda da Mesa (Exibida no Desktop >= md) */}
                   <button
                     type="button"
-                    onMouseEnter={() => setHoveredSlot(spot.slotIndex)}
-                    onMouseLeave={() => setHoveredSlot(null)}
                     onClick={e => {
                       e.stopPropagation();
                       handleDocumentObjectClick(spot);
                     }}
+                    onMouseEnter={() => setHoveredSlot(spot.slotIndex)}
+                    onMouseLeave={() => setHoveredSlot(null)}
                     style={{
                       left: `${spot.badgePos.left}%`,
                       top: `${spot.badgePos.top}%`,
                     }}
-                    className={`absolute z-20 -translate-x-1/2 -translate-y-1/2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded bg-[#0D131F]/90 backdrop-blur-md border font-mono text-xs sm:text-sm tracking-wider uppercase transition-all cursor-pointer flex items-center gap-1.5 shadow-[0_4px_15px_rgba(0,0,0,0.85)] ${
+                    className={`hidden md:flex absolute z-20 -translate-x-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-md font-mono text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer items-center gap-1.5 shadow-[0_6px_20px_rgba(0,0,0,0.9)] ${
                       isHovered
-                        ? 'border-amber-400 text-amber-200 scale-110 shadow-[0_0_20px_rgba(251,191,36,0.4)]'
+                        ? 'bg-amber-400 text-slate-950 border border-amber-200 scale-110 shadow-[0_0_25px_rgba(251,191,36,0.6)]'
                         : allExtracted
-                        ? 'border-emerald-500/60 text-emerald-300'
+                        ? 'bg-[#0B1917]/95 text-emerald-300 border border-emerald-500/60 hover:border-emerald-300'
                         : isExamined
-                        ? 'border-amber-500/50 text-amber-100'
-                        : 'border-slate-600/80 text-slate-200 hover:border-amber-400'
+                        ? 'bg-[#101827]/95 text-amber-200 border border-amber-400/60 hover:bg-amber-500/20'
+                        : 'bg-[#0C121E]/95 text-slate-200 border border-slate-600/80 hover:border-amber-400/70 hover:text-amber-200'
                     }`}
                   >
                     <span>{spot.label}</span>
@@ -505,233 +819,105 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
         </div>
       </div>
 
-      {/* Vinheta Cinematográfica Suave nas Bordas */}
-      <div
-        className="pointer-events-none fixed inset-0 z-20"
-        style={{
-          background:
-            'radial-gradient(circle at center, transparent 58%, rgba(4,6,11,0.65) 100%), linear-gradient(to bottom, rgba(4,6,11,0.75) 0%, transparent 16%, transparent 82%, rgba(4,6,11,0.85) 100%)',
-        }}
-      />
-
       {/* =====================================================================
-          2. HUD DIEGÉTICO FLUTUANTE — TOPO ESQUERDO (IDÊNTICO À REFERÊNCIA!)
+          3. BARRA INFERIOR RESPONSIVA (DOCK DE DOCUMENTOS MOBILE + CONTROLES)
          ===================================================================== */}
       <div
         onClick={e => e.stopPropagation()}
-        className="fixed top-4 left-4 sm:top-6 sm:left-7 z-30 flex flex-col items-start gap-2 max-w-[92vw] sm:max-w-lg"
+        className="relative md:fixed md:bottom-5 md:left-1/2 md:-translate-x-1/2 z-30 w-full md:w-auto px-2.5 pb-2.5 pt-1.5 md:p-0 space-y-2 shrink-0"
       >
-        {/* Título do Caso em Ouro Suave */}
-        <h1 className="font-sans text-sm sm:text-lg md:text-xl font-semibold tracking-wider uppercase text-amber-200/95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
-          {selectedCase.missionCode || 'CASO 001'} // {selectedCase.missionTitle || selectedCase.title} ({selectedCase.name.toUpperCase()})
-        </h1>
+        {/* Dock Rápido de Documentos da Mesa no Mobile (< md) — 100% visível e sem corte */}
+        <div className="md:hidden grid grid-cols-4 gap-1.5">
+          {DESK_HOTSPOTS.map(spot => {
+            const doc = documents[spot.slotIndex];
+            if (!doc) return null;
+            const extractedInDoc = doc.clues.filter(c => extractedClueIds.includes(c.id)).length;
+            const allExtracted = extractedInDoc === doc.clues.length && doc.clues.length > 0;
+            const isExamined = examinedDocIds.includes(doc.id);
 
-        {/* Linha de Pílulas: [ i Briefing ] + Seletor Rápido */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setBriefingOpen(o => !o)}
-            className={`px-3 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border text-xs sm:text-sm font-sans flex items-center gap-1.5 cursor-pointer transition-all shadow-lg ${
-              briefingOpen
-                ? 'border-amber-400 text-amber-200'
-                : 'border-slate-700/80 text-slate-200 hover:border-amber-500/50'
-            }`}
-          >
-            <span className="text-amber-400">[</span>
-            <Info className="w-3.5 h-3.5 text-amber-300 italic" />
-            <span>Briefing</span>
-            <span className="text-amber-400">]</span>
-          </button>
-
-          {/* Botão de Áudio Discreto no Mobile */}
-          <button
-            type="button"
-            onClick={() => soundEngine.updateSettings({ mutedAll: !muted })}
-            className="sm:hidden p-1.5 rounded-lg bg-[#0B111E]/85 border border-slate-700/80 text-cyan-300"
-            title="Alternar Som"
-          >
-            {muted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4" />}
-          </button>
+            return (
+              <button
+                key={spot.label}
+                type="button"
+                onClick={() => handleDocumentObjectClick(spot)}
+                className={`p-2 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  allExtracted
+                    ? 'bg-emerald-950/60 border-emerald-500/60 text-emerald-200'
+                    : isExamined
+                    ? 'bg-[#10192B]/95 border-amber-400/60 text-amber-200'
+                    : 'bg-[#0A101D]/95 border-slate-700/90 text-slate-200 active:border-amber-400'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-1 w-full">
+                  <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-amber-400">
+                    {spot.label}
+                  </span>
+                  <span
+                    className={`w-2 h-2 rounded-full shrink-0 ${
+                      allExtracted
+                        ? 'bg-emerald-400'
+                        : 'bg-amber-400 animate-pulse'
+                    }`}
+                  />
+                </div>
+                <div className="text-[11px] font-sans font-semibold text-white truncate mt-0.5">
+                  {spot.shortName}
+                </div>
+                <div className="text-[10px] font-mono text-slate-400 mt-0.5">
+                  {extractedInDoc}/{doc.clues.length} pistas
+                </div>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Pílula da Etapa Ativa: 1. Observar Evidências (Etapa Ativa) — Clicável para trocar de etapa */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setStepMenuOpen(o => !o)}
-            className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-amber-500/40 text-xs sm:text-sm font-sans text-slate-200 flex items-center gap-2 cursor-pointer shadow-lg"
-          >
-            <span>
-              <strong className="text-amber-300">1. Observar</strong> Evidências (Etapa Ativa)
+        {/* Barra de Controle de Câmera + Avanço para Mesa de Conexões */}
+        <div className="flex flex-wrap items-center justify-between md:justify-center gap-2 bg-[#070B14]/95 md:bg-transparent backdrop-blur-md md:backdrop-blur-none p-2 md:p-0 rounded-2xl border border-slate-800/90 md:border-none">
+          <div className="px-3 sm:px-5 py-1.5 sm:py-2 rounded-xl bg-[#0B111E]/90 border border-amber-500/40 shadow-lg text-[11px] sm:text-sm font-sans text-slate-200 flex items-center gap-2">
+            <span className="hidden sm:inline">
+              Clique em um documento para inspecionar com zoom
             </span>
-            <Layers className="w-3.5 h-3.5 text-amber-400" />
-          </button>
+            <span className="sm:hidden text-slate-300">Toque em um doc</span>
+            <span className="text-amber-400">•</span>
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playDocumentOpen();
+                setIsAutoOrbiting(o => !o);
+              }}
+              className={`font-semibold cursor-pointer transition-colors ${
+                isAutoOrbiting
+                  ? 'text-amber-300 underline'
+                  : 'text-cyan-300 hover:text-amber-300'
+              }`}
+            >
+              [ {isAutoOrbiting ? 'Pausar' : 'Orbitar Câmera'} ]
+            </button>
 
-          {/* Menu Suspenso das 5 Etapas */}
-          {stepMenuOpen && (
-            <div className="mt-2 w-64 rounded-xl bg-[#090E1A]/95 backdrop-blur-xl border border-amber-500/40 shadow-2xl p-2 space-y-1 z-40">
-              {[
-                { num: 1 as const, label: '1. Observar — Arquivo Histórico 3D' },
-                { num: 2 as const, label: '2. Conectar — Mesa Topográfica' },
-                { num: 3 as const, label: '3. Formular Hipótese — Centro de Análise' },
-                { num: 4 as const, label: '4. Decidir — Simulação de Campo' },
-                { num: 5 as const, label: '5. Consequências — Câmara Final' },
-              ].map(st => (
-                <button
-                  key={st.num}
-                  type="button"
-                  onClick={() => {
-                    setStepMenuOpen(false);
-                    onSelectStep(st.num);
-                  }}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
-                    activeStep === st.num
-                      ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40'
-                      : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
-                  }`}
-                >
-                  {st.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Subnível Flutuante do Briefing da Missão */}
-        {briefingOpen && (
-          <div className="mt-1 p-4 rounded-xl bg-[#080D18]/95 backdrop-blur-xl border border-amber-500/40 shadow-2xl max-w-md space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
-                BRIEFING OPERACIONAL // {selectedCase.year}
-              </span>
+            {(camRotX !== 0 || camRotY !== 0 || camPanX !== 0 || camScale !== 1.04) && (
               <button
                 type="button"
-                onClick={() => setBriefingOpen(false)}
-                className="text-slate-400 hover:text-white cursor-pointer"
+                onClick={resetCamera}
+                className="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1 ml-0.5 cursor-pointer"
+                title="Centralizar Câmera"
               >
-                <X className="w-3.5 h-3.5" />
+                <RotateCcw className="w-3 h-3" />
               </button>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-              {selectedCase.shortDescription}
-            </p>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* =====================================================================
-          3. HUD DIEGÉTICO FLUTUANTE — TOPO DIREITO (IDÊNTICO À REFERÊNCIA!)
-         ===================================================================== */}
-      <div
-        onClick={e => e.stopPropagation()}
-        className="fixed top-4 right-4 sm:top-6 sm:right-7 z-30 flex flex-wrap items-center justify-end gap-2"
-      >
-        {/* Botão [ Alternar: 3D / Leitura 2D ] */}
-        <button
-          type="button"
-          onClick={onSwitchTo2D}
-          className="px-3 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-amber-400/60 text-xs sm:text-sm font-sans text-slate-200 cursor-pointer transition-all shadow-lg"
-        >
-          <span className="text-amber-400">[</span>{' '}
-          <span className="hidden sm:inline">Alternar: </span>
-          <strong className="text-amber-300">3D</strong> / Leitura 2D{' '}
-          <span className="text-amber-400">]</span>
-        </button>
-
-        {/* Botão [ 📁 Arquivo Pessoal: X/Y Pistas ] */}
-        <button
-          type="button"
-          onClick={onOpenArchiveDrawer}
-          className="px-3 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-cyan-400/60 text-xs sm:text-sm font-sans text-slate-200 flex items-center gap-1.5 cursor-pointer transition-all shadow-lg"
-        >
-          <span className="text-amber-400">[</span>
-          <FolderOpen className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-          <span>
-            <span className="hidden md:inline">Arquivo Pessoal: </span>
-            <strong className="text-amber-300">
-              {extractedCount}/{totalCluesCount}
-            </strong>{' '}
-            Pistas
-          </span>
-          <span className="text-amber-400">]</span>
-        </button>
-
-        {/* Botão Som Desktop */}
-        <button
-          type="button"
-          onClick={() => soundEngine.updateSettings({ mutedAll: !muted })}
-          className="hidden sm:flex p-2 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-700/80 text-cyan-300 cursor-pointer shadow-lg"
-          title={muted ? 'Reativar Áudio' : 'Silenciar Áudio'}
-        >
-          {muted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4" />}
-        </button>
-
-        {/* Botão Dourado [ Sair da Operação ] */}
-        <button
-          type="button"
-          onClick={onRequestExit}
-          className="px-3.5 py-1.5 rounded-lg bg-gradient-to-b from-[#DFBF76] to-[#B69146] hover:from-[#EAD08E] hover:to-[#C8A252] text-slate-950 font-sans font-bold text-xs sm:text-sm border border-amber-200/60 shadow-[0_0_20px_rgba(212,175,55,0.3)] cursor-pointer transition-all"
-        >
-          Sair da Operação
-        </button>
-      </div>
-
-      {/* Notificação Contextual de Objeto do Cenário */}
-      {propMessage && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl bg-[#080D18]/95 border border-amber-400/50 text-xs font-mono text-amber-200 shadow-2xl animate-in fade-in duration-200">
-          {propMessage}
-        </div>
-      )}
-
-      {/* =====================================================================
-          4. BARRA FLUTUANTE INFERIOR — CONTROLE DE CÂMERA & AVANÇO DE ETAPA
-         ===================================================================== */}
-      <div
-        onClick={e => e.stopPropagation()}
-        className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-wrap items-center justify-center gap-2.5 w-[94vw] sm:w-auto"
-      >
-        <div className="px-4 sm:px-5 py-2 rounded-xl bg-[#0B111E]/90 backdrop-blur-md border border-amber-500/40 shadow-[0_10px_30px_rgba(0,0,0,0.9)] text-xs sm:text-sm font-sans text-slate-200 flex flex-wrap items-center justify-center gap-2">
-          <span>Clique em um documento para inspecionar com zoom</span>
-          <span className="text-amber-400">•</span>
           <button
             type="button"
             onClick={() => {
               soundEngine.playDocumentOpen();
-              setIsAutoOrbiting(o => !o);
+              onSelectStep(2);
             }}
-            className={`font-semibold cursor-pointer transition-colors ${
-              isAutoOrbiting
-                ? 'text-amber-300 underline'
-                : 'text-cyan-300 hover:text-amber-300'
-            }`}
+            className="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-[11px] sm:text-sm uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.35)] cursor-pointer transition-all shrink-0"
           >
-            [ {isAutoOrbiting ? 'Pausar Órbita' : 'Orbitar Câmera'} ]
+            <span>Mesa de Conexões</span>
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
           </button>
-
-          {(camRotX !== 0 || camRotY !== 0 || camScale !== 1.04) && (
-            <button
-              type="button"
-              onClick={resetCamera}
-              className="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1 ml-1 cursor-pointer"
-              title="Centralizar Câmera"
-            >
-              <RotateCcw className="w-3 h-3" />
-            </button>
-          )}
         </div>
-
-        {/* Botão de Avanço imediato para a Etapa 2 (Mesa de Conexões) */}
-        <button
-          type="button"
-          onClick={() => {
-            soundEngine.playDocumentOpen();
-            onSelectStep(2);
-          }}
-          className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.35)] cursor-pointer transition-all"
-        >
-          <span>Mesa de Conexões</span>
-          <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-        </button>
       </div>
     </div>
   );
