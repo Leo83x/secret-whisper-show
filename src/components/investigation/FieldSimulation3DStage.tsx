@@ -126,7 +126,7 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      className="fixed inset-0 z-40 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
+      className="fixed inset-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
       style={{ perspective: '1300px' }}
     >
       {/* 1. CENÁRIO 3D REALISTA DE FUNDO (SIMULAÇÃO DE CAMPO HISTÓRICA) */}
@@ -142,7 +142,7 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
           alt="Simulação de Campo Histórica 3D"
           draggable={false}
           className="w-full h-full object-cover object-center select-none pointer-events-none transition-all duration-500"
-          style={{ filter: 'brightness(0.42) contrast(1.22) saturate(0.88)' }}
+          style={{ filter: 'brightness(0.62) contrast(1.14) saturate(0.95)' }}
         />
         <div
           className="absolute inset-0 pointer-events-none"
@@ -193,12 +193,11 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
       >
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="pointer-events-auto flex flex-col items-start gap-1.5 max-w-full">
-            <h1 className="font-sans text-xs sm:text-base font-bold uppercase tracking-wide text-amber-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] truncate max-w-[92vw] sm:max-w-none">
-              {caseShortHeader}{' '}
-              <span className="text-amber-300/90 font-semibold">
-                ({selectedCase.name.toUpperCase()})
-              </span>
-            </h1>
+            <div className="px-3.5 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg">
+              <h1 className="font-serif text-xs sm:text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase truncate max-w-[88vw] sm:max-w-none">
+                {caseShortHeader} ({selectedCase.name.toUpperCase()})
+              </h1>
+            </div>
 
             <div className="flex flex-wrap items-center gap-1.5">
               <button
@@ -319,17 +318,20 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
         data-hud="true"
         className="relative z-30 flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 flex flex-col justify-center gap-3 overflow-hidden"
       >
-        <div className="px-3.5 py-2 rounded-xl bg-[#0b1320]/45 backdrop-blur-sm border border-amber-400/35 flex flex-wrap items-center justify-between gap-2">
-          <div>
+        <div className="px-4 py-3 rounded-xl bg-[#0b1320]/65 backdrop-blur-md border border-amber-400/40 flex flex-wrap items-start justify-between gap-3 shadow-lg">
+          <div className="max-w-3xl">
             <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold block">
-              DILEMA ESTRATÉGICO DE CAMPO
+              DILEMA ESTRATÉGICO DE CAMPO // {eraTheme.eraName.toUpperCase()}
             </span>
-            <h2 className="text-xs sm:text-base font-sans font-bold text-white">
+            <h2 className="text-sm sm:text-lg font-sans font-bold text-white mt-0.5">
               Diante do padrão identificado, qual ordem tática você assina?
             </h2>
+            <p className="text-slate-300 text-xs sm:text-sm mt-1 mb-1 leading-relaxed">
+              {selectedCase.simulationPrompt}
+            </p>
           </div>
           {selectedDecisionId && (
-            <span className="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-mono text-[10px] font-bold uppercase flex items-center gap-1">
+            <span className="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-mono text-[10px] font-bold uppercase flex items-center gap-1 shrink-0">
               <Check className="w-3 h-3 stroke-[3]" /> DECISÃO REGISTRADA
             </span>
           )}
@@ -369,11 +371,11 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
                   <div className="text-xs sm:text-sm font-sans font-bold text-white leading-snug">
                     {choice.title}
                   </div>
-                  <div className="text-[11px] font-mono text-cyan-200/90 line-clamp-1">
+                  <div className="text-xs font-mono text-cyan-200/95 leading-snug">
                     {choice.subtitle}
                   </div>
                   {isExpanded && (
-                    <p className="text-[11px] text-slate-200 leading-relaxed pt-1.5 border-t border-white/10 line-clamp-3">
+                    <p className="text-xs text-slate-200 leading-relaxed pt-2 border-t border-white/10">
                       {choice.description}
                     </p>
                   )}

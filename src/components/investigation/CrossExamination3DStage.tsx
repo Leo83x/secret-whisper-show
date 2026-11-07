@@ -98,7 +98,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
     const t = setTimeout(() => {
       setCamRotX(0);
       setCamRotY(0);
-      setCamScale(1.03);
+      setCamScale(1.06);
     }, 60);
     return () => clearTimeout(t);
   }, [selectedCase.id]);
@@ -186,7 +186,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      className="fixed inset-0 z-40 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
+      className="fixed inset-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
       style={{ perspective: '1300px' }}
     >
       {/* =====================================================================
@@ -397,18 +397,10 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
           })()}
         </svg>
 
-        {/* Micro-rótulos de Telemetria nos Feixes */}
-        <div
-          style={{ left: '31%', top: '46%', transform: 'rotate(-14deg)' }}
-          className="hidden sm:block absolute z-30 pointer-events-none text-[8px] font-mono uppercase tracking-[0.22em] text-amber-200/85 drop-shadow-[0_0_6px_rgba(251,191,36,0.9)]"
-        >
-          VÍNCULO TÁTICO // {eraTheme.eraName.toUpperCase()}
-        </div>
-        <div
-          style={{ left: '46%', top: '42%', transform: 'rotate(-4deg)' }}
-          className="hidden sm:block absolute z-30 pointer-events-none text-[8px] font-mono uppercase tracking-[0.22em] text-cyan-200/85 drop-shadow-[0_0_6px_rgba(34,211,238,0.9)]"
-        >
-          CRUZAMENTO FORENSE DE EVIDÊNCIAS
+        {/* Badge Horizontal de Alto Contraste sobre a Linha de Conexão (Fix #3) */}
+        <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 top-[29%] z-30 pointer-events-none items-center gap-2 bg-[#060A12]/90 text-amber-300 px-3.5 py-1 rounded-full border border-amber-500/40 shadow-lg text-[10px] font-mono uppercase tracking-wider">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+          <span>VÍNCULO TÁTICO // {eraTheme.eraName.toUpperCase()}</span>
         </div>
 
         {/* ===================================================================
@@ -526,29 +518,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                 />
               </button>
 
-              {/* Plaqueta Discreta na Borda da Mesa (PAPIRI-01 / DOC-01 / etc.) */}
-              <button
-                type="button"
-                onClick={() => {
-                  if (clue) {
-                    soundEngine.playClueSaved();
-                    onToggleBoardClue(clue.id);
-                  }
-                }}
-                style={{
-                  left: spot.labelLeft,
-                  bottom: spot.labelBottom,
-                }}
-                className={`absolute z-30 -translate-x-1/2 px-3 py-1 rounded backdrop-blur-md border font-mono text-xs sm:text-sm tracking-wider transition-all cursor-pointer shadow-[0_4px_14px_rgba(0,0,0,0.85)] ${
-                  isSelected
-                    ? 'bg-amber-500/35 border-amber-300 text-amber-100 font-bold scale-105 shadow-[0_0_18px_rgba(245,158,11,0.45)]'
-                    : isPartOfSolved
-                    ? 'bg-emerald-950/60 border-emerald-400/60 text-emerald-200'
-                    : 'bg-[#0b1320]/65 border-slate-500/50 text-slate-200 hover:border-amber-400/70 hover:text-white'
-                }`}
-              >
-                {spot.tag}
-              </button>
+
             </React.Fragment>
           );
         })}
@@ -563,17 +533,10 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
       >
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="pointer-events-auto flex flex-col items-start gap-1.5 max-w-full">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-sans text-xs sm:text-base font-bold uppercase tracking-wide text-amber-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] truncate max-w-[92vw] sm:max-w-none">
-                {caseShortHeader}{' '}
-                <span className="text-amber-300/90 font-semibold">
-                  ({selectedCase.name.toUpperCase()})
-                </span>
+            <div className="px-3.5 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg flex flex-wrap items-center gap-2.5">
+              <h1 className="font-serif text-xs sm:text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase truncate max-w-[88vw] sm:max-w-none">
+                {caseShortHeader} ({selectedCase.name.toUpperCase()})
               </h1>
-              <span className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#090D16]/75 border border-amber-400/35 text-[10px] font-mono text-amber-200">
-                <Eye className="w-3 h-3 text-amber-400" />
-                <span>Câmera: Vista Superior (Top-Down)</span>
-              </span>
             </div>
 
             <div className="flex flex-wrap items-center gap-1.5">
@@ -819,7 +782,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                 setIsAutoOrbiting(false);
                 setCamRotX(0);
                 setCamRotY(0);
-                setCamScale(1.03);
+                setCamScale(1.06);
               }}
               className="ml-1 text-slate-400 hover:text-white cursor-pointer"
               title="Centralizar Vista Top-Down"

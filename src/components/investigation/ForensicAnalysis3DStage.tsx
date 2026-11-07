@@ -173,7 +173,7 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      className="fixed inset-0 z-40 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
+      className="fixed inset-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
       style={{ perspective: '1300px' }}
     >
       {/* 1. CENÁRIO 3D REALISTA DE FUNDO (SALA DE ANÁLISE & PASTA PERICIAL) */}
@@ -220,12 +220,11 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
       >
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="pointer-events-auto flex flex-col items-start gap-1.5 max-w-full">
-            <h1 className="font-sans text-xs sm:text-base font-bold uppercase tracking-wide text-amber-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] truncate max-w-[92vw] sm:max-w-none">
-              {caseShortHeader}{' '}
-              <span className="text-amber-300/90 font-semibold">
-                ({selectedCase.name.toUpperCase()})
-              </span>
-            </h1>
+            <div className="px-3.5 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg">
+              <h1 className="font-serif text-xs sm:text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase truncate max-w-[88vw] sm:max-w-none">
+                {caseShortHeader} ({selectedCase.name.toUpperCase()})
+              </h1>
+            </div>
 
             <div className="flex flex-wrap items-center gap-1.5">
               <button
@@ -368,7 +367,7 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
         <div className="px-3.5 py-2 rounded-xl bg-[#0b1320]/45 backdrop-blur-sm border border-amber-400/35 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold">
-              PASTA PERICIAL //
+              PASTA PERICIAL ({selectedCase.location.toUpperCase()} • {selectedCase.year}) //
             </span>
             <span className="text-xs sm:text-sm font-sans font-bold text-white">
               Qual interpretação explica melhor o caso investigado?
