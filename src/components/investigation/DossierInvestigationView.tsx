@@ -1145,6 +1145,9 @@ export const DossierInvestigationView: React.FC = () => {
             soundEngine.playDocumentOpen();
             setIs3DStageThree(false);
           }}
+          onRequestExit={() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+          }}
         />
       )}
 
@@ -1346,6 +1349,9 @@ export const DossierInvestigationView: React.FC = () => {
             soundEngine.playDocumentOpen();
             setIs3DStageFour(false);
           }}
+          onRequestExit={() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+          }}
         />
       )}
 
@@ -1450,6 +1456,10 @@ export const DossierInvestigationView: React.FC = () => {
           }}
           onOpenArchiveDrawer={() => setIsArchiveDrawerOpen(true)}
           onSelectStep={step => setActiveStep(step)}
+          onSwitchTo2D={() => {
+            soundEngine.playDocumentOpen();
+            setIs3DStageFive(false);
+          }}
         />
       )}
 

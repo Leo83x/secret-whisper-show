@@ -595,7 +595,7 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
 
         <div
           key={`${selectedCase.id}-step-${state.activeStep}`}
-          className="animate-in fade-in duration-200 min-w-0"
+          className="min-w-0"
         >
           {children}
         </div>
