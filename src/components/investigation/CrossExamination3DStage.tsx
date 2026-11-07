@@ -5,6 +5,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
+import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
   FolderOpen,
@@ -15,9 +16,9 @@ import {
   ArrowRight,
   RotateCcw,
   Lightbulb,
-  Layers,
   X,
   Link2,
+  Eye,
 } from 'lucide-react';
 
 export interface ExtractedClueItem extends EvidenceClue {
@@ -34,10 +35,9 @@ interface CrossExamination3DStageProps {
   allCaseClues: ExtractedClueItem[];
   boardSelectedClues: string[];
   connectionFeedback: {
-    type: 'success' | 'error';
-    title?: string;
-    message: string;
-    unlockedMap?: boolean;
+    status: 'idle' | 'success' | 'error';
+    message?: string;
+    conclusion?: string;
   } | null;
   activeStep: 1 | 2 | 3 | 4 | 5;
   onSelectStep: (step: 1 | 2 | 3 | 4 | 5) => void;
@@ -48,43 +48,6 @@ interface CrossExamination3DStageProps {
   onSwitchTo2D: () => void;
   onRequestExit: () => void;
 }
-
-interface PinNodeLayout {
-  // Position of the brass pushpin on the 16:9 3D table (% of stage)
-  pinX: number;
-  pinY: number;
-  // Position of the compact translucent card (% of stage)
-  cardLeft: number;
-  cardTop: number;
-  cardWidth: number;
-  skewDeg: number;
-}
-
-// Coordinates calibrated to the physical documents on the 3D desk (DOC-01..DOC-04)
-const FOUR_NODE_LAYOUT: PinNodeLayout[] = [
-  { pinX: 25.5, pinY: 62.5, cardLeft: 6.5, cardTop: 64.0, cardWidth: 20.5, skewDeg: -6 },
-  { pinX: 48.8, pinY: 57.5, cardLeft: 29.5, cardTop: 63.0, cardWidth: 21.0, skewDeg: -2 },
-  { pinX: 64.8, pinY: 52.0, cardLeft: 53.0, cardTop: 62.5, cardWidth: 21.0, skewDeg: 3 },
-  { pinX: 83.0, pinY: 58.0, cardLeft: 76.0, cardTop: 63.5, cardWidth: 19.0, skewDeg: 7 },
-];
-
-const SIX_NODE_LAYOUT: PinNodeLayout[] = [
-  // Row 1 (Upper desk surface over folder, tablet & map)
-  { pinX: 26.5, pinY: 53.0, cardLeft: 7.0, cardTop: 48.0, cardWidth: 24.0, skewDeg: -5 },
-  { pinX: 49.0, pinY: 48.5, cardLeft: 36.5, cardTop: 46.5, cardWidth: 25.0, skewDeg: 0 },
-  { pinX: 68.5, pinY: 51.0, cardLeft: 66.5, cardTop: 48.0, cardWidth: 24.5, skewDeg: 5 },
-  // Row 2 (Lower desk surface near front edge of documents)
-  { pinX: 23.0, pinY: 71.5, cardLeft: 6.0, cardTop: 68.0, cardWidth: 25.0, skewDeg: -6 },
-  { pinX: 49.5, pinY: 70.5, cardLeft: 36.5, cardTop: 67.5, cardWidth: 25.5, skewDeg: -1 },
-  { pinX: 79.5, pinY: 70.0, cardLeft: 67.0, cardTop: 68.0, cardWidth: 25.0, skewDeg: 6 },
-];
-
-const FRONT_EDGE_BADGES = [
-  { label: 'DOC-01', left: 19.5, top: 86.2 },
-  { label: 'DOC-02', left: 49.5, top: 86.2 },
-  { label: 'DOC-03', left: 68.8, top: 86.2 },
-  { label: 'DOC-04', left: 90.2, top: 86.2 },
-];
 
 export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = ({
   selectedCase,
@@ -104,38 +67,51 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
   onSwitchTo2D,
   onRequestExit,
 }) => {
-  // 3D Camera Orbit & Tilt State
-  const [camRotX, setCamRotX] = useState<number>(2);
+  const eraTheme = getEra3DTheme(selectedCase.id);
+
+  // Dynamic Camera Transition: Starts angled and automatically rises to Top-Down (Vista Superior)
+  const [camRotX, setCamRotX] = useState<number>(16);
   const [camRotY, setCamRotY] = useState<number>(0);
-  const [camPanX, setCamPanX] = useState<number>(0);
-  const [camScale, setCamScale] = useState<number>(1.05);
+  const [camScale, setCamScale] = useState<number>(0.96);
   const [isAutoOrbiting, setIsAutoOrbiting] = useState<boolean>(false);
   const [bankerLampOn, setBankerLampOn] = useState<boolean>(true);
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-
-  // Diegetic HUD Sub-levels (Closed by default so zero extra boxes appear!)
   const [briefingOpen, setBriefingOpen] = useState<boolean>(false);
-  const [stepMenuOpen, setStepMenuOpen] = useState<boolean>(false);
+  const [stageMenuOpen, setStageMenuOpen] = useState<boolean>(false);
   const [muted, setMuted] = useState<boolean>(() => soundEngine.getSettings().mutedAll);
 
-  const isDraggingRef = useRef<boolean>(false);
-  const lastPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const isDraggingRef = useRef(false);
+  const dragStartRef = useRef<{ x: number; y: number; rotX: number; rotY: number }>({
+    x: 0,
+    y: 0,
+    rotX: 0,
+    rotY: 0,
+  });
 
   useEffect(() => {
     return soundEngine.subscribe(s => setMuted(s.mutedAll));
   }, []);
 
-  // Gentle 3D camera orbit animation
+  // Smoothly animate camera from diagonal perspective up into Top-Down overhead view on mount/case change
+  useEffect(() => {
+    setCamRotX(15);
+    setCamScale(0.96);
+    const t = setTimeout(() => {
+      setCamRotX(0);
+      setCamRotY(0);
+      setCamScale(1.03);
+    }, 60);
+    return () => clearTimeout(t);
+  }, [selectedCase.id]);
+
   useEffect(() => {
     if (!isAutoOrbiting) return;
     let frameId: number;
     const startTime = performance.now();
 
     const animateOrbit = (now: number) => {
-      const elapsed = (now - startTime) * 0.0012;
-      setCamRotY(Math.sin(elapsed) * 5.5);
-      setCamRotX(2 + Math.cos(elapsed * 0.7) * 2.5);
-      setCamScale(1.07 + Math.sin(elapsed * 0.5) * 0.02);
+      const elapsed = (now - startTime) * 0.0011;
+      setCamRotY(Math.sin(elapsed) * 4.5);
+      setCamRotX(Math.cos(elapsed * 0.8) * 2.5);
       frameId = requestAnimationFrame(animateOrbit);
     };
 
@@ -144,25 +120,31 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
   }, [isAutoOrbiting]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest('button')) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('[data-hud="true"]')) return;
+    setIsAutoOrbiting(false);
     isDraggingRef.current = true;
-    lastPointerRef.current = { x: e.clientX, y: e.clientY };
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      rotX: camRotX,
+      rotY: camRotY,
+    };
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
     if (isDraggingRef.current) {
-      const dx = e.clientX - lastPointerRef.current.x;
-      const dy = e.clientY - lastPointerRef.current.y;
-      lastPointerRef.current = { x: e.clientX, y: e.clientY };
-      setCamRotY(prev => Math.max(-8, Math.min(8, prev + dx * 0.045)));
-      setCamRotX(prev => Math.max(-3, Math.min(6, prev - dy * 0.035)));
-      setCamPanX(prev => Math.max(-12, Math.min(12, prev + dx * 0.06)));
-    } else if (!isAutoOrbiting && !soundEngine.getSettings().reduceMotion && window.innerWidth >= 768) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const nx = (e.clientX - rect.left) / rect.width - 0.5;
-      const ny = (e.clientY - rect.top) / rect.height - 0.5;
-      setCamRotY(nx * 3.8);
-      setCamRotX(2 - ny * 2.2);
+      const dx = e.clientX - dragStartRef.current.x;
+      const dy = e.clientY - dragStartRef.current.y;
+      setCamRotY(Math.max(-8, Math.min(8, dragStartRef.current.rotY + dx * 0.04)));
+      setCamRotX(Math.max(-5, Math.min(8, dragStartRef.current.rotX - dy * 0.035)));
+    } else if (!isAutoOrbiting) {
+      setCamRotY(nx * -2.0);
+      setCamRotX(ny * 1.4);
     }
   };
 
@@ -170,772 +152,713 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
     isDraggingRef.current = false;
   };
 
-  const resetCamera = () => {
-    setIsAutoOrbiting(false);
-    setCamRotX(2);
-    setCamRotY(0);
-    setCamPanX(0);
-    setCamScale(1.05);
-  };
+  const activeCluesPool =
+    extractedCluesList.length >= 2 ? extractedCluesList : allCaseClues;
 
-  const isActiveChallengeSolved = Boolean(
+  const deskClues = activeCluesPool.slice(0, 4);
+
+  const isCurrentSolved = Boolean(
     activeChallenge && solvedConnectionIds.includes(activeChallenge.id)
   );
-
-  // Use extracted clues if >= 2, otherwise show all case clues so the 3D desk is always populated
-  const availableClues = (
-    extractedCluesList.length >= 2 ? extractedCluesList : allCaseClues
-  ).slice(0, 6);
-
-  const layoutNodes = availableClues.length <= 4 ? FOUR_NODE_LAYOUT : SIX_NODE_LAYOUT;
-
-  const activePairIds =
-    isActiveChallengeSolved && activeChallenge?.requiredClueIds?.length === 2
-      ? activeChallenge.requiredClueIds
-      : boardSelectedClues;
-
-  const selectedIdxA = availableClues.findIndex(c => c.id === activePairIds[0]);
-  const selectedIdxB = availableClues.findIndex(c => c.id === activePairIds[1]);
 
   const caseShortHeader = `${selectedCase.missionCode?.split('//')[0]?.trim() || 'CASO 001'} // ${
     selectedCase.missionTitle || selectedCase.title
   }`;
 
+  const topDownSpots = eraTheme.hotspotsStage2TopDown;
+
+  const getPinCoordsForClueId = (clueId: string, fallbackIdx: number) => {
+    const idx = deskClues.findIndex(c => c.id === clueId);
+    const resolvedIdx = idx >= 0 ? idx : fallbackIdx % topDownSpots.length;
+    return topDownSpots[resolvedIdx] || topDownSpots[0];
+  };
+
+  const stepsList: { num: 1 | 2 | 3 | 4 | 5; label: string }[] = [
+    { num: 1, label: '1. Observar Evidências' },
+    { num: 2, label: '2. Mesa de Conexões (Top-Down)' },
+    { num: 3, label: '3. Formular Hipótese (Dolly-In)' },
+    { num: 4, label: '4. Tomar Decisão (Maquete 3D)' },
+    { num: 5, label: '5. Consequências' },
+  ];
+
   return (
     <div
-      className="fixed inset-0 z-40 w-screen h-[100dvh] bg-[#04060B] overflow-hidden select-none font-sans flex flex-col justify-between"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
+      className="fixed inset-0 z-40 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
+      style={{ perspective: '1300px' }}
     >
       {/* =====================================================================
-          1. VIEWPORT 3D EM TELA CHEIA (MESA DE MADEIRA, MAPA, PINOS E RAIOS LUMINOSOS)
+          1. CAMADA DE CENÁRIO 3D EM VISTA SUPERIOR (TOP-DOWN ESPECÍFICA DA ERA)
          ===================================================================== */}
       <div
-        className="fixed inset-0 w-full h-full flex items-center justify-center overflow-hidden z-10"
-        style={{ perspective: '1200px' }}
+        className="absolute inset-0 w-full h-full transition-transform duration-700 ease-out"
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: `scale(${camScale}) rotateX(${camRotX}deg) rotateY(${camRotY}deg)`,
+        }}
       >
-        <div
-          className="relative w-full h-full transition-transform duration-300 ease-out"
+        <img
+          src={eraTheme.stage2TopDownBg}
+          alt={`Mesa de Investigação Top-Down — ${eraTheme.eraName}`}
+          draggable={false}
+          className="w-full h-full object-cover object-center select-none pointer-events-none transition-all duration-500"
           style={{
-            transformStyle: 'preserve-3d',
-            transformOrigin: '50% 62%',
-            transform: `translateX(${camPanX}%) scale(${camScale}) rotateX(${camRotX}deg) rotateY(${camRotY}deg)`,
+            filter: bankerLampOn
+              ? eraTheme.stage2Filter
+              : 'brightness(0.65) contrast(1.12) saturate(0.82)',
           }}
-        >
-          {/* Imagem 3D Fotorrealista da Mesa com Dossiê, Tabuleta, Mapa e Prancheta */}
-          <img
-            src="/dossiers/archive_room_3d_clean.webp"
-            alt="Mesa de Cruzamento Tátil 3D"
-            draggable={false}
-            className="w-full h-full object-cover object-center pointer-events-none transition-all duration-500"
-            style={{
-              filter: bankerLampOn
-                ? 'brightness(1.03) contrast(1.05)'
-                : 'brightness(0.72) contrast(1.08) saturate(0.85)',
-            }}
-          />
+        />
 
-          {/* Feixe de Luz Quente da Luminária Verde sobre o Tampo da Mesa */}
-          {bankerLampOn && (
-            <div
-              className="pointer-events-none absolute inset-0 transition-opacity duration-500"
-              style={{
-                background:
-                  'radial-gradient(circle at 74% 48%, rgba(251, 191, 36, 0.18) 0%, rgba(16, 185, 129, 0.08) 30%, rgba(4, 6, 11, 0.35) 75%)',
-              }}
-            />
+        {/* Iluminação Volumétrica da Era sobre a Mesa */}
+        {bankerLampOn && (
+          <div
+            className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+            style={{ background: eraTheme.ambientGlowCss }}
+          />
+        )}
+
+        {/* Vinheta Cinematográfica Superior e Inferior para leitura limpa do HUD */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(4,6,11,0.72) 0%, rgba(4,6,11,0.08) 18%, rgba(4,6,11,0.08) 78%, rgba(4,6,11,0.85) 100%)',
+          }}
+        />
+
+        {/* ===================================================================
+            2. CAMADA SVG DE FEIXES LUMINOSOS E FIOS TÁTEIS (Z-30 ACIMA DOS DOCS)
+           =================================================================== */}
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          className="absolute inset-0 w-full h-full pointer-events-none z-30"
+        >
+          <defs>
+            <filter id="goldLaserGlow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="0.65" result="blur1" />
+              <feGaussianBlur stdDeviation="1.4" result="blur2" />
+              <feMerge>
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <filter id="cyanLaserGlow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="0.55" result="blur1" />
+              <feGaussianBlur stdDeviation="1.2" result="blur2" />
+              <feMerge>
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Feixes Ambiente de Cruzamento Tátil na Vista Top-Down */}
+          {boardSelectedClues.length < 2 && solvedConnectionIds.length === 0 && topDownSpots.length >= 3 && (
+            <g opacity="0.92">
+              <line
+                x1={topDownSpots[0].pinX}
+                y1={topDownSpots[0].pinY}
+                x2={topDownSpots[1].pinX}
+                y2={topDownSpots[1].pinY}
+                stroke={eraTheme.primaryAccentHex}
+                strokeWidth="0.32"
+                filter="url(#goldLaserGlow)"
+              />
+              <line
+                x1={topDownSpots[0].pinX}
+                y1={topDownSpots[0].pinY}
+                x2={topDownSpots[1].pinX}
+                y2={topDownSpots[1].pinY}
+                stroke="#fef3c7"
+                strokeWidth="0.12"
+              />
+              <line
+                x1={topDownSpots[0].pinX}
+                y1={topDownSpots[0].pinY}
+                x2={topDownSpots[2].pinX}
+                y2={topDownSpots[2].pinY}
+                stroke={eraTheme.secondaryAccentHex}
+                strokeWidth="0.28"
+                filter="url(#cyanLaserGlow)"
+              />
+              <line
+                x1={topDownSpots[1].pinX}
+                y1={topDownSpots[1].pinY}
+                x2={topDownSpots[2].pinX}
+                y2={topDownSpots[2].pinY}
+                stroke={eraTheme.secondaryAccentHex}
+                strokeWidth="0.24"
+                strokeDasharray="0.9 0.5"
+                filter="url(#cyanLaserGlow)"
+              />
+            </g>
           )}
 
-          {/* Luminária Verde de Banqueiro Interativa */}
-          <button
-            type="button"
-            onClick={e => {
-              e.stopPropagation();
-              soundEngine.playDocumentOpen();
-              setBankerLampOn(v => !v);
-            }}
-            style={{ left: '69%', top: '26%', width: '16%', height: '27%' }}
-            className="absolute z-20 rounded-full cursor-pointer focus:outline-none group"
-            title="Alternar Luminária da Mesa"
-          >
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-slate-950/90 border border-emerald-400/50 text-[10px] font-mono text-emerald-300 whitespace-nowrap">
-              <Lightbulb className="w-3 h-3 inline mr-1" />
-              {bankerLampOn ? 'Apagar Luz' : 'Acender Luz'}
-            </span>
-          </button>
-
-          {/* =================================================================
-              CAMADA SVG DE FIOS LUMINOSOS DOURADOS/CIANO E PINOS (Z-30 POR CIMA DOS DOCUMENTOS!)
-             ================================================================= */}
-          <svg
-            className="pointer-events-none absolute inset-0 w-full h-full z-30 overflow-visible"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-          >
-            <defs>
-              <filter id="laser-gold" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="0.6" result="blur1" />
-                <feGaussianBlur stdDeviation="1.4" result="blur2" />
-                <feMerge>
-                  <feMergeNode in="blur2" />
-                  <feMergeNode in="blur1" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-              <filter id="laser-cyan" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="0.6" result="blur1" />
-                <feGaussianBlur stdDeviation="1.3" result="blur2" />
-                <feMerge>
-                  <feMergeNode in="blur2" />
-                  <feMergeNode in="blur1" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-
-            {/* 1. Malha Tática Contínua entre os Alfinetes dos Documentos (Estilo Referência) */}
-            <line
-              x1="26.5"
-              y1="62.5"
-              x2="47.2"
-              y2="39.8"
-              stroke="rgba(251, 191, 36, 0.55)"
-              strokeWidth="0.22"
-              filter="url(#laser-gold)"
-            />
-            <line
-              x1="26.5"
-              y1="62.5"
-              x2="48.8"
-              y2="57.5"
-              stroke="rgba(251, 191, 36, 0.7)"
-              strokeWidth="0.28"
-              filter="url(#laser-gold)"
-            />
-            <line
-              x1="26.5"
-              y1="62.5"
-              x2="61.5"
-              y2="49.2"
-              stroke="rgba(56, 189, 248, 0.65)"
-              strokeWidth="0.24"
-              filter="url(#laser-cyan)"
-            />
-            <line
-              x1="48.8"
-              y1="57.5"
-              x2="64.8"
-              y2="52.0"
-              stroke="rgba(56, 189, 248, 0.7)"
-              strokeWidth="0.25"
-              filter="url(#laser-cyan)"
-            />
-            <line
-              x1="64.8"
-              y1="52.0"
-              x2="83.0"
-              y2="58.0"
-              stroke="rgba(251, 191, 36, 0.5)"
-              strokeWidth="0.2"
-              strokeDasharray="0.8 0.5"
-              filter="url(#laser-gold)"
-            />
-
-            {/* Nó Óptico na Lupa Central da Mesa */}
-            <circle
-              cx="47.2"
-              cy="39.8"
-              r="0.45"
-              fill="#fde68a"
-              filter="url(#laser-gold)"
-            />
-
-            {/* 2. Fio Principal Intenso Conectando Diretamente os Alfinetes Selecionados (Pino A <-> Pino B) */}
-            {selectedIdxA !== -1 && selectedIdxB !== -1 && (
-              <g>
-                {/* Sombra projetada sobre os documentos */}
-                <line
-                  x1={layoutNodes[selectedIdxA].pinX}
-                  y1={layoutNodes[selectedIdxA].pinY + 0.8}
-                  x2={layoutNodes[selectedIdxB].pinX}
-                  y2={layoutNodes[selectedIdxB].pinY + 0.8}
-                  stroke="rgba(0,0,0,0.85)"
-                  strokeWidth="0.65"
-                  strokeLinecap="round"
-                />
-                {/* Halo Externo Intenso */}
-                <line
-                  x1={layoutNodes[selectedIdxA].pinX}
-                  y1={layoutNodes[selectedIdxA].pinY}
-                  x2={layoutNodes[selectedIdxB].pinX}
-                  y2={layoutNodes[selectedIdxB].pinY}
-                  stroke={isActiveChallengeSolved ? '#34d399' : '#fbbf24'}
-                  strokeWidth="0.55"
-                  filter="url(#laser-gold)"
-                  strokeLinecap="round"
-                />
-                {/* Núcleo Brilhante Contínuo por cima dos documentos */}
-                <line
-                  x1={layoutNodes[selectedIdxA].pinX}
-                  y1={layoutNodes[selectedIdxA].pinY}
-                  x2={layoutNodes[selectedIdxB].pinX}
-                  y2={layoutNodes[selectedIdxB].pinY}
-                  stroke={isActiveChallengeSolved ? '#a7f3d0' : '#fef08a'}
-                  strokeWidth="0.22"
-                  strokeLinecap="round"
-                />
-              </g>
-            )}
-
-            {/* 3. Alfinetes / Tachas Metálicas Brilhantes em Cada Evidência */}
-            {availableClues.map((clue, idx) => {
-              const node = layoutNodes[idx];
-              if (!node) return null;
-              const slotIdx = boardSelectedClues.indexOf(clue.id);
-              const isPicked = slotIdx !== -1;
-              const isSolvedPin =
-                isActiveChallengeSolved &&
-                activeChallenge?.requiredClueIds?.includes(clue.id);
-
+          {/* Fios das Conexões Já Comprovadas */}
+          {challenges
+            .filter(ch => solvedConnectionIds.includes(ch.id))
+            .map((ch, idx) => {
+              const p1 = getPinCoordsForClueId(ch.requiredClueIds[0], idx);
+              const p2 = getPinCoordsForClueId(ch.requiredClueIds[1], idx + 1);
               return (
-                <g key={`pin-${clue.id}`}>
-                  {/* Halo luminoso ao redor da tacha */}
-                  <circle
-                    cx={node.pinX}
-                    cy={node.pinY}
-                    r={isPicked || isSolvedPin ? '1.15' : '0.7'}
-                    fill={
-                      isSolvedPin
-                        ? 'rgba(52, 211, 153, 0.45)'
-                        : isPicked
-                        ? slotIdx === 0
-                          ? 'rgba(251, 191, 36, 0.55)'
-                          : 'rgba(56, 189, 248, 0.55)'
-                        : 'rgba(251, 191, 36, 0.28)'
-                    }
-                    filter="url(#laser-gold)"
+                <g key={ch.id}>
+                  <line
+                    x1={p1.pinX}
+                    y1={p1.pinY}
+                    x2={p2.pinX}
+                    y2={p2.pinY}
+                    stroke="#fbbf24"
+                    strokeWidth="0.42"
+                    filter="url(#goldLaserGlow)"
                   />
-                  {/* Cabeça metálica do alfinete */}
-                  <circle
-                    cx={node.pinX}
-                    cy={node.pinY}
-                    r={isPicked || isSolvedPin ? '0.55' : '0.4'}
-                    fill={
-                      isSolvedPin
-                        ? '#34d399'
-                        : isPicked
-                        ? slotIdx === 0
-                          ? '#fde047'
-                          : '#38bdf8'
-                        : '#f59e0b'
-                    }
-                    stroke="#04060B"
-                    strokeWidth="0.12"
+                  <line
+                    x1={p1.pinX}
+                    y1={p1.pinY}
+                    x2={p2.pinX}
+                    y2={p2.pinY}
+                    stroke="#ffffff"
+                    strokeWidth="0.14"
                   />
                 </g>
               );
             })}
-          </svg>
 
-          {/* =================================================================
-              FICHAS NATURAIS QUASE TRANSPARENTES (bg-[#0b1320]/40 backdrop-blur-sm)
-              Apenas ID + Título + CTA discreto, liberando >60% da mesa 3D!
-             ================================================================= */}
-          {availableClues.map((clue, idx) => {
-            const node = layoutNodes[idx];
-            if (!node) return null;
-            const slotIdx = boardSelectedClues.indexOf(clue.id);
-            const isPicked = slotIdx !== -1;
-            const isSolvedClue =
-              isActiveChallengeSolved &&
-              activeChallenge?.requiredClueIds?.includes(clue.id);
-            const isHovered = hoveredIdx === idx;
-            const docShortId = clue.docCode.split('//')[0]?.trim() || `DOC-0${idx + 1}`;
-
+          {/* Fio Intenso de Confronto Ativo (Quando o jogador seleciona 2 pistas/pinos) */}
+          {boardSelectedClues.length === 2 && (() => {
+            const pA = getPinCoordsForClueId(boardSelectedClues[0], 0);
+            const pB = getPinCoordsForClueId(boardSelectedClues[1], 1);
+            const isErr = connectionFeedback?.status === 'error';
+            const isOk = connectionFeedback?.status === 'success' || isCurrentSolved;
+            const mainStroke = isErr ? '#f87171' : isOk ? '#34d399' : '#fbbf24';
             return (
+              <g>
+                <line
+                  x1={pA.pinX}
+                  y1={pA.pinY}
+                  x2={pB.pinX}
+                  y2={pB.pinY}
+                  stroke={mainStroke}
+                  strokeWidth="0.5"
+                  filter="url(#goldLaserGlow)"
+                />
+                <line
+                  x1={pA.pinX}
+                  y1={pA.pinY}
+                  x2={pB.pinX}
+                  y2={pB.pinY}
+                  stroke="#fffbeb"
+                  strokeWidth="0.18"
+                />
+                <line
+                  x1={pA.pinX}
+                  y1={pA.pinY}
+                  x2={50}
+                  y2={32}
+                  stroke="#38bdf8"
+                  strokeWidth="0.22"
+                  strokeDasharray="0.7 0.5"
+                  filter="url(#cyanLaserGlow)"
+                />
+                <line
+                  x1={pB.pinX}
+                  y1={pB.pinY}
+                  x2={50}
+                  y2={32}
+                  stroke="#38bdf8"
+                  strokeWidth="0.22"
+                  strokeDasharray="0.7 0.5"
+                  filter="url(#cyanLaserGlow)"
+                />
+              </g>
+            );
+          })()}
+
+          {boardSelectedClues.length === 1 && (() => {
+            const pA = getPinCoordsForClueId(boardSelectedClues[0], 0);
+            return (
+              <g>
+                <line
+                  x1={pA.pinX}
+                  y1={pA.pinY}
+                  x2={50}
+                  y2={32}
+                  stroke="#fbbf24"
+                  strokeWidth="0.34"
+                  strokeDasharray="0.9 0.5"
+                  filter="url(#goldLaserGlow)"
+                />
+              </g>
+            );
+          })()}
+        </svg>
+
+        {/* Micro-rótulos de Telemetria nos Feixes */}
+        <div
+          style={{ left: '31%', top: '46%', transform: 'rotate(-14deg)' }}
+          className="hidden sm:block absolute z-30 pointer-events-none text-[8px] font-mono uppercase tracking-[0.22em] text-amber-200/85 drop-shadow-[0_0_6px_rgba(251,191,36,0.9)]"
+        >
+          VÍNCULO TÁTICO // {eraTheme.eraName.toUpperCase()}
+        </div>
+        <div
+          style={{ left: '46%', top: '42%', transform: 'rotate(-4deg)' }}
+          className="hidden sm:block absolute z-30 pointer-events-none text-[8px] font-mono uppercase tracking-[0.22em] text-cyan-200/85 drop-shadow-[0_0_6px_rgba(34,211,238,0.9)]"
+        >
+          CRUZAMENTO FORENSE DE EVIDÊNCIAS
+        </div>
+
+        {/* ===================================================================
+            3. DOCUMENTOS FÍSICOS, ALFINETES METÁLICOS E FICHAS TRANSLÚCIDAS
+           =================================================================== */}
+        {topDownSpots.map((spot, idx) => {
+          const clue = deskClues[idx];
+          const isSelected = Boolean(clue && boardSelectedClues.includes(clue.id));
+          const isPartOfSolved = Boolean(
+            clue &&
+              challenges
+                .filter(ch => solvedConnectionIds.includes(ch.id))
+                .some(ch => ch.requiredClueIds.includes(clue.id))
+          );
+
+          return (
+            <React.Fragment key={spot.tag}>
+              {/* Área Clicável sobre o Artefato Físico na Vista Top-Down */}
               <button
-                key={clue.id}
                 type="button"
-                onClick={e => {
-                  e.stopPropagation();
-                  if (!isActiveChallengeSolved) {
-                    soundEngine.playDocumentOpen();
+                onClick={() => {
+                  if (clue) {
+                    soundEngine.playClueSaved();
                     onToggleBoardClue(clue.id);
                   }
                 }}
-                onMouseEnter={() => setHoveredIdx(idx)}
-                onMouseLeave={() => setHoveredIdx(null)}
                 style={{
-                  left: `${node.cardLeft}%`,
-                  top: `${node.cardTop}%`,
-                  width: `${node.cardWidth}%`,
-                  transform: `skewX(${node.skewDeg}deg)`,
+                  left: spot.left,
+                  top: spot.top,
+                  width: spot.width,
+                  height: spot.height,
                 }}
-                className={`hidden md:flex absolute z-20 p-2.5 lg:p-3 rounded-xl backdrop-blur-sm transition-all duration-200 cursor-pointer flex-col justify-between text-left focus:outline-none ${
-                  isSolvedClue
-                    ? 'bg-emerald-950/50 border border-emerald-400/90 shadow-[0_0_25px_rgba(16,185,129,0.4)] -translate-y-0.5'
-                    : isPicked
-                    ? slotIdx === 0
-                      ? 'bg-[#0b1320]/65 border-2 border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.5)] -translate-y-1'
-                      : 'bg-[#0b1320]/65 border-2 border-cyan-400 shadow-[0_0_25px_rgba(56,189,248,0.5)] -translate-y-1'
-                    : isHovered
-                    ? 'bg-[#0b1320]/55 border border-amber-300/80 shadow-[0_0_20px_rgba(251,191,36,0.3)] -translate-y-0.5'
-                    : 'bg-[#0b1320]/40 border border-amber-500/30 hover:border-amber-400/70'
+                className={`absolute z-20 rounded-xl transition-all duration-200 cursor-pointer group ${
+                  isSelected
+                    ? 'ring-2 ring-amber-300/90 bg-amber-400/10 shadow-[0_0_35px_rgba(251,191,36,0.35)]'
+                    : 'hover:ring-1 hover:ring-amber-300/50 hover:bg-amber-300/5'
                 }`}
+                title={
+                  clue
+                    ? `${spot.tag} (${spot.eraLabel}): ${clue.title} — Clique para confrontar`
+                    : spot.eraLabel
+                }
               >
-                <div
-                  style={{ transform: `skewX(${-node.skewDeg}deg)` }}
-                  className="w-full space-y-1"
-                >
-                  <div className="flex items-center justify-between gap-1 text-[10px] font-mono uppercase tracking-wider">
-                    <span className="text-amber-300 font-bold">{docShortId}</span>
-                    {isPicked ? (
+                {/* Ficha Compacta Quase Transparente (bg-[#0b1320]/40 backdrop-blur-sm) */}
+                {clue && (
+                  <div
+                    className={`absolute left-1/2 -translate-x-1/2 bottom-2 w-[94%] px-2.5 py-1.5 rounded-lg backdrop-blur-sm border transition-all text-left pointer-events-none ${
+                      isSelected
+                        ? 'bg-[#0b1320]/70 border-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.45)]'
+                        : isPartOfSolved
+                        ? 'bg-[#0b1320]/50 border-emerald-400/60'
+                        : 'bg-[#0b1320]/40 border-amber-400/35 group-hover:bg-[#0b1320]/65 group-hover:border-amber-300/70'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-bold text-amber-300">
+                        {spot.tag}
+                      </span>
                       <span
-                        className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
-                          slotIdx === 0
-                            ? 'bg-amber-400 text-slate-950'
-                            : 'bg-cyan-400 text-slate-950'
+                        className={`text-[8px] sm:text-[9px] font-mono ${
+                          isSelected
+                            ? 'text-amber-200 font-bold'
+                            : isPartOfSolved
+                            ? 'text-emerald-300'
+                            : 'text-cyan-300/90'
                         }`}
                       >
-                        PINO {slotIdx === 0 ? 'A' : 'B'}
+                        {isSelected
+                          ? '● Selecionado'
+                          : isPartOfSolved
+                          ? '✓ Vinculado'
+                          : 'Clique p/ confrontar'}
                       </span>
-                    ) : isSolvedClue ? (
-                      <span className="text-emerald-300 font-bold text-[9px]">✓ CONECTADO</span>
-                    ) : (
-                      <span className="w-2 h-2 rounded-full bg-amber-400/80 animate-pulse" />
-                    )}
+                    </div>
+                    <div className="text-[10px] sm:text-xs font-sans font-semibold text-white truncate mt-0.5 drop-shadow">
+                      {clue.title}
+                    </div>
                   </div>
-
-                  <div className="text-xs lg:text-sm font-sans font-bold text-white leading-tight line-clamp-1 drop-shadow">
-                    {clue.title}
-                  </div>
-
-                  <div className="text-[10px] font-mono text-cyan-300/90 flex items-center justify-between pt-0.5">
-                    <span>
-                      {isPicked ? 'Conectado ao fio' : 'Clique para confrontar'}
-                    </span>
-                    <span className="text-amber-400/80">→</span>
-                  </div>
-                </div>
+                )}
               </button>
-            );
-          })}
 
-          {/* Plaquetas Diegéticas DOC-01..04 na Borda Frontal da Mesa */}
-          {FRONT_EDGE_BADGES.map((b, i) => (
-            <div
-              key={b.label}
-              style={{ left: `${b.left}%`, top: `${b.top}%` }}
-              className="hidden md:flex absolute z-20 -translate-x-1/2 -translate-y-1/2 px-3 py-1 rounded bg-[#0C121E]/85 backdrop-blur-sm border border-slate-600/70 font-mono text-xs font-bold tracking-wider text-slate-200 uppercase shadow-lg"
-            >
-              {b.label}
-            </div>
-          ))}
-        </div>
+              {/* ALFINETE / TACHA METÁLICA BRILHANTE (Z-35) */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (clue) {
+                    soundEngine.playClueSaved();
+                    onToggleBoardClue(clue.id);
+                  }
+                }}
+                style={{
+                  left: `${spot.pinX}%`,
+                  top: `${spot.pinY}%`,
+                }}
+                className="absolute z-30 -translate-x-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center cursor-pointer group focus:outline-none"
+                title={clue ? `Conectar pino: ${clue.title}` : `Pino ${spot.tag}`}
+              >
+                <span
+                  className={`absolute inset-0 rounded-full transition-all duration-300 ${
+                    isSelected
+                      ? 'bg-amber-400/60 animate-ping scale-125'
+                      : isPartOfSolved
+                      ? 'bg-emerald-400/40 scale-110'
+                      : 'bg-amber-300/30 group-hover:bg-amber-300/55 group-hover:scale-125'
+                  }`}
+                />
+                <span
+                  className={`relative w-3.5 h-3.5 rounded-full border-2 shadow-[0_2px_10px_rgba(0,0,0,0.95)] transition-transform ${
+                    isSelected
+                      ? 'bg-amber-300 border-white scale-125 shadow-[0_0_16px_#fbbf24]'
+                      : isPartOfSolved
+                      ? 'bg-emerald-400 border-emerald-100 shadow-[0_0_12px_#34d399]'
+                      : 'bg-gradient-to-br from-amber-200 via-amber-400 to-amber-700 border-amber-100 group-hover:scale-110'
+                  }`}
+                />
+              </button>
+
+              {/* Plaqueta Discreta na Borda da Mesa (PAPIRI-01 / DOC-01 / etc.) */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (clue) {
+                    soundEngine.playClueSaved();
+                    onToggleBoardClue(clue.id);
+                  }
+                }}
+                style={{
+                  left: spot.labelLeft,
+                  bottom: spot.labelBottom,
+                }}
+                className={`absolute z-30 -translate-x-1/2 px-3 py-1 rounded backdrop-blur-md border font-mono text-xs sm:text-sm tracking-wider transition-all cursor-pointer shadow-[0_4px_14px_rgba(0,0,0,0.85)] ${
+                  isSelected
+                    ? 'bg-amber-500/35 border-amber-300 text-amber-100 font-bold scale-105 shadow-[0_0_18px_rgba(245,158,11,0.45)]'
+                    : isPartOfSolved
+                    ? 'bg-emerald-950/60 border-emerald-400/60 text-emerald-200'
+                    : 'bg-[#0b1320]/65 border-slate-500/50 text-slate-200 hover:border-amber-400/70 hover:text-white'
+                }`}
+              >
+                {spot.tag}
+              </button>
+            </React.Fragment>
+          );
+        })}
       </div>
 
       {/* =====================================================================
-          2. TOPO MINIMALISTA DA APLICAÇÃO (SEM SEGUNDA BARRA DUPLICADA!)
+          4. TOPO MINIMALISTA ÚNICO (SEM CABEÇALHOS DUPLICADOS)
          ===================================================================== */}
       <div
-        onClick={e => e.stopPropagation()}
-        className="relative z-30 w-full p-2.5 sm:p-5 pointer-events-none shrink-0"
+        data-hud="true"
+        className="relative z-40 w-full px-3 sm:px-6 pt-2.5 sm:pt-4 pointer-events-none"
       >
-        {/* --- VERSÃO MOBILE (< md) --- */}
-        <div className="md:hidden pointer-events-auto rounded-2xl bg-[#070B14]/80 backdrop-blur-md border border-slate-800/80 p-2.5 shadow-xl space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#EAD29C] font-bold truncate">
-              {caseShortHeader} ({selectedCase.name})
-            </span>
-            <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                type="button"
-                onClick={() => soundEngine.updateSettings({ mutedAll: !muted })}
-                className="p-1.5 rounded-lg bg-[#0B111E]/80 border border-slate-700 text-cyan-300"
-              >
-                {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-              </button>
-              <button
-                type="button"
-                onClick={onRequestExit}
-                className="px-2.5 py-1 rounded-lg bg-gradient-to-b from-[#DFBF76] to-[#B69146] text-slate-950 font-sans font-bold text-[11px]"
-              >
-                Sair
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-4 gap-1.5">
-            <button
-              type="button"
-              onClick={() => {
-                setBriefingOpen(o => !o);
-                setStepMenuOpen(false);
-              }}
-              className="px-2 py-1 rounded-lg bg-[#0B111E]/80 border border-slate-700 text-[11px] text-slate-200 flex items-center justify-center gap-1 truncate"
-            >
-              <Info className="w-3 h-3 text-amber-400 shrink-0" />
-              <span>Briefing</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStepMenuOpen(o => !o);
-                setBriefingOpen(false);
-              }}
-              className="px-2 py-1 rounded-lg bg-[#0B111E]/80 border border-amber-500/40 text-[11px] text-amber-300 font-semibold flex items-center justify-center gap-1 truncate"
-            >
-              <span className="truncate">2. Conexões</span>
-              <Layers className="w-3 h-3 shrink-0" />
-            </button>
-            <button
-              type="button"
-              onClick={onSwitchTo2D}
-              className="px-2 py-1 rounded-lg bg-[#0B111E]/80 border border-slate-700 text-[11px] text-cyan-300 font-semibold truncate"
-            >
-              Leitura 2D
-            </button>
-            <button
-              type="button"
-              onClick={onOpenArchiveDrawer}
-              className="px-2 py-1 rounded-lg bg-[#0B111E]/80 border border-slate-700 text-[11px] text-amber-300 font-bold flex items-center justify-center gap-1 truncate"
-            >
-              <FolderOpen className="w-3 h-3 text-amber-400 shrink-0" />
-              <span>
-                {extractedCluesList.length}/{allCaseClues.length}
-              </span>
-            </button>
-          </div>
-
-          {/* Seletor Compacto de Vínculo no Mobile */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pt-0.5">
-            {challenges.map(ch => {
-              const isSolved = solvedConnectionIds.includes(ch.id);
-              const isCurrent = activeChallenge?.id === ch.id;
-              return (
-                <button
-                  key={ch.id}
-                  type="button"
-                  onClick={() => onSelectChallenge(ch.id)}
-                  className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold shrink-0 ${
-                    isCurrent
-                      ? 'bg-amber-400 text-slate-950'
-                      : isSolved
-                      ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40'
-                      : 'bg-[#0B111E] text-slate-300 border border-slate-700'
-                  }`}
-                >
-                  Vínculo #{ch.stepNumber} {isSolved ? '✓' : ''}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* --- VERSÃO DESKTOP (>= md): EXATAMENTE COMO NA IMAGEM DE REFERÊNCIA --- */}
-        <div className="hidden md:flex items-start justify-between gap-4">
-          {/* Topo Esquerdo Minimalista */}
-          <div className="pointer-events-auto flex flex-col items-start gap-2 max-w-2xl">
-            <div className="px-3.5 py-1.5 rounded-lg bg-[#080C14]/80 backdrop-blur-md border border-amber-500/30 shadow-lg">
-              <h1 className="font-serif text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase">
-                {caseShortHeader} ({selectedCase.name.toUpperCase()})
-              </h1>
-            </div>
-
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div className="pointer-events-auto flex flex-col items-start gap-1.5 max-w-full">
             <div className="flex flex-wrap items-center gap-2">
+              <h1 className="font-sans text-xs sm:text-base font-bold uppercase tracking-wide text-amber-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] truncate max-w-[92vw] sm:max-w-none">
+                {caseShortHeader}{' '}
+                <span className="text-amber-300/90 font-semibold">
+                  ({selectedCase.name.toUpperCase()})
+                </span>
+              </h1>
+              <span className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#090D16]/75 border border-amber-400/35 text-[10px] font-mono text-amber-200">
+                <Eye className="w-3 h-3 text-amber-400" />
+                <span>Câmera: Vista Superior (Top-Down)</span>
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => {
                   soundEngine.playDocumentOpen();
                   setBriefingOpen(o => !o);
-                  setStepMenuOpen(false);
                 }}
-                className="px-3 py-1.5 rounded-lg bg-[#0B111E]/80 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-amber-400/60 text-xs font-sans text-slate-200 flex items-center gap-1.5 cursor-pointer transition-all shadow-lg"
+                className={`px-2.5 py-1 rounded border text-[11px] font-mono transition-all cursor-pointer backdrop-blur-md flex items-center gap-1.5 ${
+                  briefingOpen
+                    ? 'bg-amber-500/30 border-amber-300 text-amber-100'
+                    : 'bg-[#090D16]/75 border-slate-600/70 text-slate-200 hover:border-amber-400/60 hover:text-white'
+                }`}
               >
-                <span className="text-amber-400 font-serif italic font-bold">[ i</span>
-                <span>Briefing</span>
-                <span className="text-amber-400 font-serif">]</span>
+                <span>[</span>
+                <Info className="w-3 h-3 text-amber-400 italic" />
+                <span>Briefing ]</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  soundEngine.playDocumentOpen();
-                  setStepMenuOpen(o => !o);
-                  setBriefingOpen(false);
-                }}
-                className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-amber-500/40 text-xs font-sans text-slate-200 flex items-center gap-2 cursor-pointer transition-all shadow-lg"
-              >
-                <span>
-                  <strong className="text-amber-400">2. Mesa de Conexões</strong> (Etapa Ativa)
-                </span>
-                <Link2 className="w-3.5 h-3.5 text-amber-400" />
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setStageMenuOpen(o => !o)}
+                  className="px-2.5 py-1 rounded bg-[#090D16]/80 hover:bg-[#111827]/90 border border-amber-500/40 text-[11px] font-mono text-slate-200 flex items-center gap-1.5 cursor-pointer backdrop-blur-md shadow-md"
+                >
+                  <span className="text-amber-400 font-bold">2. Mesa de Conexões</span>
+                  <span className="text-slate-300 hidden sm:inline">(Vista Superior)</span>
+                  <Link2 className="w-3 h-3 text-amber-400 ml-0.5" />
+                </button>
 
-              {/* Pílulas discretas de Vínculo #1..#3 na mesma linha */}
-              {challenges.map(ch => {
-                const isSolved = solvedConnectionIds.includes(ch.id);
-                const isCurrent = activeChallenge?.id === ch.id;
-                return (
-                  <button
-                    key={ch.id}
-                    type="button"
-                    onClick={() => {
-                      soundEngine.playDocumentOpen();
-                      onSelectChallenge(ch.id);
-                    }}
-                    className={`px-2.5 py-1.5 rounded-lg backdrop-blur-md border text-xs font-mono font-bold flex items-center gap-1 cursor-pointer transition-all shadow-lg ${
-                      isCurrent
-                        ? 'bg-amber-500/25 border-amber-400 text-amber-200'
-                        : isSolved
-                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300'
-                        : 'bg-[#0B111E]/75 border-slate-700 text-slate-300 hover:border-amber-400/50'
-                    }`}
-                  >
-                    <span>#{ch.stepNumber}</span>
-                    {isSolved && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
-                  </button>
-                );
-              })}
-            </div>
+                {stageMenuOpen && (
+                  <div className="absolute left-0 mt-1.5 w-64 rounded-xl bg-[#090D16]/95 backdrop-blur-xl border border-amber-500/40 shadow-2xl p-1.5 z-50 space-y-1">
+                    {stepsList.map(st => (
+                      <button
+                        key={st.num}
+                        type="button"
+                        onClick={() => {
+                          setStageMenuOpen(false);
+                          soundEngine.playDocumentOpen();
+                          onSelectStep(st.num);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer flex items-center justify-between ${
+                          st.num === activeStep
+                            ? 'bg-amber-500/20 text-amber-200 font-bold border border-amber-400/40'
+                            : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                        }`}
+                      >
+                        <span>{st.label}</span>
+                        {st.num === activeStep && (
+                          <span className="text-[10px] text-amber-400">ATUAL</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-            {/* Subnível de Briefing (Escondido atrás do botão [ i Briefing ]!) */}
-            {briefingOpen && (
-              <div className="mt-1 p-4 rounded-xl bg-[#080D18]/90 backdrop-blur-xl border border-amber-500/40 shadow-2xl text-xs sm:text-sm text-slate-200 leading-relaxed max-w-lg animate-in fade-in duration-150 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
-                    QUESTÃO DO VÍNCULO ATIVO (#{activeChallenge?.stepNumber})
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setBriefingOpen(false)}
-                    className="text-slate-400 hover:text-white cursor-pointer"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+              {challenges.length > 1 && (
+                <div className="flex items-center gap-1 bg-[#090D16]/75 backdrop-blur-md px-1.5 py-0.5 rounded border border-slate-700/70">
+                  {challenges.map((ch, idx) => {
+                    const solved = solvedConnectionIds.includes(ch.id);
+                    const active = activeChallenge?.id === ch.id;
+                    return (
+                      <button
+                        key={ch.id}
+                        type="button"
+                        onClick={() => onSelectChallenge(ch.id)}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all cursor-pointer flex items-center gap-1 ${
+                          active
+                            ? 'bg-amber-400 text-slate-950 font-bold'
+                            : solved
+                            ? 'text-emerald-300 hover:bg-emerald-500/20'
+                            : 'text-slate-300 hover:text-white'
+                        }`}
+                        title={ch.prompt}
+                      >
+                        {solved && <CheckCircle2 className="w-2.5 h-2.5" />}
+                        <span>V{idx + 1}</span>
+                      </button>
+                    );
+                  })}
                 </div>
-                <p className="font-bold text-white">{activeChallenge?.question}</p>
-                <p className="text-xs text-slate-300 pt-1 border-t border-slate-800">
-                  {selectedCase.PeriodSummary}
-                </p>
-              </div>
-            )}
-
-            {stepMenuOpen && (
-              <div className="mt-1 p-2 rounded-xl bg-[#080D18]/95 backdrop-blur-xl border border-slate-700 shadow-2xl w-72 space-y-1">
-                {(
-                  [
-                    { id: 1, label: '1. Observar — Arquivo Histórico (3D)' },
-                    { id: 2, label: '2. Mesa de Conexões (Etapa Ativa)' },
-                    { id: 3, label: '3. Hipótese — Sala de Análise' },
-                    { id: 4, label: '4. Decidir — Simulação de Campo' },
-                    { id: 5, label: '5. Consequências — Laudo Final' },
-                  ] as const
-                ).map(s => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => {
-                      setStepMenuOpen(false);
-                      onSelectStep(s.id);
-                    }}
-                    className={`w-full px-3 py-2 rounded-lg text-left text-xs font-sans flex items-center justify-between cursor-pointer ${
-                      activeStep === s.id
-                        ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40'
-                        : 'text-slate-300 hover:bg-slate-800/70'
-                    }`}
-                  >
-                    <span>{s.label}</span>
-                    {activeStep === s.id && (
-                      <span className="text-[10px] font-mono text-amber-400">ATIVA</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Topo Direito Minimalista */}
-          <div className="pointer-events-auto flex items-center gap-2.5">
+          <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={onSwitchTo2D}
-              className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-amber-400/60 text-xs sm:text-sm font-sans text-slate-200 cursor-pointer transition-all shadow-lg"
+              className="px-2.5 py-1.5 rounded bg-[#090D16]/75 hover:bg-[#131C2E]/90 border border-slate-600/80 hover:border-amber-400/60 text-[11px] font-mono text-slate-200 hover:text-white cursor-pointer backdrop-blur-md transition-all"
             >
-              <span className="text-amber-400">[</span> Alternar:{' '}
-              <strong className="text-amber-300">3D</strong> / Leitura 2D{' '}
-              <span className="text-amber-400">]</span>
+              [ Alternar: <span className="text-amber-300 font-semibold">3D</span> / Leitura 2D ]
             </button>
 
             <button
               type="button"
               onClick={onOpenArchiveDrawer}
-              className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-cyan-400/60 text-xs sm:text-sm font-sans text-slate-200 flex items-center gap-1.5 cursor-pointer transition-all shadow-lg"
+              className="px-2.5 py-1.5 rounded bg-[#090D16]/75 hover:bg-[#131C2E]/90 border border-slate-600/80 hover:border-amber-400/60 text-[11px] font-mono text-slate-200 hover:text-white flex items-center gap-1.5 cursor-pointer backdrop-blur-md transition-all"
             >
-              <span className="text-amber-400">[</span>
+              <span>[</span>
               <FolderOpen className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>
                 Arquivo Pessoal:{' '}
                 <strong className="text-amber-300">
                   {extractedCluesList.length}/{allCaseClues.length}
                 </strong>{' '}
-                Pistas
+                Pistas ]
               </span>
-              <span className="text-amber-400">]</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setBankerLampOn(v => !v)}
+              className="p-1.5 rounded bg-[#090D16]/75 border border-slate-600/70 text-amber-300 hover:text-white cursor-pointer backdrop-blur-md"
+              title="Alternar Luminária da Mesa"
+            >
+              <Lightbulb className="w-3.5 h-3.5" />
             </button>
 
             <button
               type="button"
               onClick={() => soundEngine.updateSettings({ mutedAll: !muted })}
-              className="p-2 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-700/80 text-cyan-300 cursor-pointer shadow-lg"
-              title={muted ? 'Reativar Áudio' : 'Silenciar Áudio'}
+              className="p-1.5 rounded bg-[#090D16]/75 border border-slate-600/70 text-cyan-300 hover:text-white cursor-pointer backdrop-blur-md"
+              title={muted ? 'Reativar áudio' : 'Silenciar'}
             >
-              {muted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4" />}
+              {muted ? (
+                <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+              ) : (
+                <Volume2 className="w-3.5 h-3.5" />
+              )}
             </button>
 
             <button
               type="button"
               onClick={onRequestExit}
-              className="px-3.5 py-1.5 rounded-lg bg-gradient-to-b from-[#DFBF76] to-[#B69146] hover:from-[#EAD08E] hover:to-[#C8A252] text-slate-950 font-sans font-bold text-xs sm:text-sm border border-amber-200/60 shadow-[0_0_20px_rgba(212,175,55,0.3)] cursor-pointer transition-all"
+              className="px-3 py-1.5 rounded bg-gradient-to-b from-[#d8b878] to-[#b38e46] hover:from-[#e4c88c] hover:to-[#c49d52] text-slate-950 font-sans font-bold text-xs shadow-lg cursor-pointer transition-all border border-amber-200/50"
             >
               Sair da Operação
             </button>
           </div>
         </div>
+
+        {briefingOpen && (
+          <div className="pointer-events-auto mt-2 max-w-xl p-3.5 rounded-xl bg-[#090D16]/90 backdrop-blur-xl border border-amber-500/40 text-xs text-slate-200 leading-relaxed shadow-2xl flex items-start justify-between gap-3 animate-in fade-in duration-150">
+            <div className="space-y-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+                BRIEFING & QUESTÃO DE CRUZAMENTO ({solvedConnectionIds.length}/{challenges.length}) — {eraTheme.eraName}
+              </div>
+              <p className="text-slate-300">{selectedCase.shortDescription}</p>
+              {activeChallenge && (
+                <div className="pt-1.5 border-t border-slate-800 text-amber-200 font-medium">
+                  Vínculo Ativo: {activeChallenge.prompt}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setBriefingOpen(false)}
+              className="text-slate-400 hover:text-white cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* =====================================================================
-          3. RODAPÉ COMPACTO (FICHAS NO MOBILE + BOTÃO CONFRONTAR EVIDÊNCIAS NA MESA)
+          5. FEEDBACK COMPACTO FLUTUANTE (APENAS QUANDO ACERTA OU ERRA VÍNCULO)
+         ===================================================================== */}
+      {connectionFeedback && connectionFeedback.status !== 'idle' && (
+        <div
+          data-hud="true"
+          className="relative z-40 mx-auto max-w-lg px-4 py-2.5 rounded-xl backdrop-blur-xl border shadow-2xl pointer-events-auto animate-in fade-in zoom-in-95 duration-200"
+          style={{
+            backgroundColor:
+              connectionFeedback.status === 'success'
+                ? 'rgba(6, 46, 34, 0.88)'
+                : 'rgba(69, 10, 10, 0.88)',
+            borderColor:
+              connectionFeedback.status === 'success'
+                ? 'rgba(52, 211, 153, 0.6)'
+                : 'rgba(248, 113, 113, 0.6)',
+          }}
+        >
+          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase">
+            {connectionFeedback.status === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+            )}
+            <span
+              className={
+                connectionFeedback.status === 'success'
+                  ? 'text-emerald-300'
+                  : 'text-red-300'
+              }
+            >
+              {connectionFeedback.message}
+            </span>
+          </div>
+          {connectionFeedback.conclusion && (
+            <p className="text-xs text-slate-100 mt-1 leading-relaxed">
+              {connectionFeedback.conclusion}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* =====================================================================
+          6. BARRA INFERIOR COMPACTA
          ===================================================================== */}
       <div
-        onClick={e => e.stopPropagation()}
-        className="relative z-30 w-full px-3 pb-3 sm:pb-5 pt-1 pointer-events-none space-y-2 shrink-0"
+        data-hud="true"
+        className="relative z-40 w-full px-3 sm:px-6 pb-2.5 sm:pb-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 pointer-events-none"
       >
-        {/* Feedback Analítico Flutuante (Aparece apenas após clicar em Confrontar) */}
-        {connectionFeedback && (
-          <div className="pointer-events-auto max-w-xl mx-auto px-4 py-2.5 rounded-xl bg-[#080D18]/90 backdrop-blur-md border border-amber-400/50 shadow-2xl flex items-center justify-between gap-3 text-xs text-slate-100 animate-in fade-in duration-150">
-            <div className="flex items-center gap-2 min-w-0">
-              {connectionFeedback.type === 'success' ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              ) : (
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-              )}
-              <span className="line-clamp-2">{connectionFeedback.message}</span>
-            </div>
-            {connectionFeedback.type === 'success' && (
-              <button
-                type="button"
-                onClick={() => onSelectStep(3)}
-                className="px-3 py-1 rounded-lg bg-amber-400 text-slate-950 font-bold text-[11px] shrink-0 cursor-pointer"
-              >
-                Etapa 3 →
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Grade Compacta Transparente para Telas Mobile (< md) */}
-        <div className="md:hidden pointer-events-auto grid grid-cols-2 gap-1.5">
-          {availableClues.slice(0, 4).map((clue, idx) => {
-            const slotIdx = boardSelectedClues.indexOf(clue.id);
-            const isPicked = slotIdx !== -1;
-            const docShortId = clue.docCode.split('//')[0]?.trim() || `DOC-0${idx + 1}`;
-            return (
-              <button
-                key={clue.id}
-                type="button"
-                onClick={() => onToggleBoardClue(clue.id)}
-                className={`p-2 rounded-xl backdrop-blur-sm border text-left transition-all ${
-                  isPicked
-                    ? 'bg-[#0b1320]/75 border-amber-400 text-white'
-                    : 'bg-[#0b1320]/45 border-amber-500/30 text-slate-200'
-                }`}
-              >
-                <div className="flex items-center justify-between text-[9px] font-mono text-amber-300 font-bold">
-                  <span>{docShortId}</span>
-                  <span>{isPicked ? `PINO ${slotIdx === 0 ? 'A' : 'B'}` : 'Confrontar'}</span>
-                </div>
-                <div className="text-[11px] font-bold text-white truncate mt-0.5">
-                  {clue.title}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Barra Inferior Idêntica à Referência: [ Orbitar Câmera ] + [ CONFRONTAR EVIDÊNCIAS NA MESA -> ] */}
-        <div className="pointer-events-auto max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          <div className="px-3.5 py-2 rounded-xl bg-[#080C14]/80 backdrop-blur-md border border-slate-700/80 text-xs sm:text-sm font-sans text-slate-300 flex items-center gap-2 shadow-lg">
+        <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 text-xs sm:text-sm font-sans text-slate-200 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] bg-[#090D16]/65 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700/70">
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.playDocumentOpen();
+              setIsAutoOrbiting(o => !o);
+            }}
+            className={`font-mono transition-colors cursor-pointer ${
+              isAutoOrbiting
+                ? 'text-amber-300 font-bold'
+                : 'text-amber-200/90 hover:text-amber-300'
+            }`}
+          >
+            [ {isAutoOrbiting ? 'Pausar Câmera' : 'Orbitar Câmera'} ]
+          </button>
+          <span className="text-slate-400">•</span>
+          <span className="text-slate-200 text-xs truncate max-w-[68vw] sm:max-w-md">
+            {activeChallenge
+              ? activeChallenge.prompt
+              : 'Selecione os nós para validar conexões'}
+          </span>
+          {(camRotX !== 0 || camRotY !== 0) && (
             <button
               type="button"
               onClick={() => {
-                soundEngine.playDocumentOpen();
-                setIsAutoOrbiting(o => !o);
+                setIsAutoOrbiting(false);
+                setCamRotX(0);
+                setCamRotY(0);
+                setCamScale(1.03);
               }}
-              className={`font-semibold cursor-pointer transition-colors ${
-                isAutoOrbiting
-                  ? 'text-amber-300 underline'
-                  : 'text-amber-200 hover:text-amber-300'
-              }`}
+              className="ml-1 text-slate-400 hover:text-white cursor-pointer"
+              title="Centralizar Vista Top-Down"
             >
-              [ {isAutoOrbiting ? 'Pausar Órbita' : 'Orbitar Câmera'} ]
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
-            <span className="text-amber-400">•</span>
-            <span className="hidden sm:inline text-slate-300">
-              {activeChallenge?.question
-                ? `Vínculo #${activeChallenge.stepNumber}: ${activeChallenge.question}`
-                : 'Selecione os nós para validar conexões'}
-            </span>
-            <span className="sm:hidden text-slate-300 text-[11px]">
-              Selecione 2 nós ({boardSelectedClues.length}/2)
-            </span>
+          )}
+        </div>
 
-            {(camRotX !== 2 || camRotY !== 0 || camPanX !== 0 || camScale !== 1.05) && (
-              <button
-                type="button"
-                onClick={resetCamera}
-                className="text-slate-400 hover:text-white ml-1 cursor-pointer"
-                title="Centralizar Câmera"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 mx-auto sm:mx-0">
+        <div className="pointer-events-auto flex items-center gap-2">
+          {boardSelectedClues.length === 2 && !isCurrentSolved ? (
+            <button
+              type="button"
+              onClick={onValidateConnection}
+              className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-lg font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.85)] bg-gradient-to-b from-[#e3c485] via-[#cfa75b] to-[#b08639] hover:from-[#ebd098] hover:to-[#c29746] text-slate-950 border border-amber-200/70"
+            >
+              <span>CONFRONTAR EVIDÊNCIAS NA MESA</span>
+              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+            </button>
+          ) : (
             <button
               type="button"
               onClick={() => {
                 if (boardSelectedClues.length === 2) {
                   onValidateConnection();
                 } else {
-                  setBriefingOpen(true);
+                  soundEngine.playDocumentOpen();
+                  onSelectStep(3);
                 }
               }}
-              className={`px-5 sm:px-6 py-2.5 rounded-xl font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 border transition-all cursor-pointer shadow-[0_0_25px_rgba(212,175,55,0.35)] ${
-                boardSelectedClues.length === 2
-                  ? 'bg-gradient-to-b from-[#E5C67B] to-[#B89244] hover:from-[#F0D58E] hover:to-[#C9A352] text-slate-950 border-amber-200/80 scale-105'
-                  : 'bg-gradient-to-b from-[#DFBF76]/90 to-[#B69146]/90 text-slate-950 border-amber-200/50'
-              }`}
+              className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-lg font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.85)] bg-gradient-to-b from-[#e3c485] via-[#cfa75b] to-[#b08639] hover:from-[#ebd098] hover:to-[#c29746] text-slate-950 border border-amber-200/70"
             >
               <span>CONFRONTAR EVIDÊNCIAS NA MESA</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                soundEngine.playDocumentOpen();
-                onSelectStep(3);
-              }}
-              className="px-3.5 py-2.5 rounded-xl bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-amber-500/40 text-amber-300 font-mono text-xs font-bold cursor-pointer shadow-lg"
-              title="Avançar para Etapa 3: Formular Hipótese"
-            >
-              Etapa 3 →
-            </button>
-          </div>
+          )}
         </div>
+
+        <div className="hidden xl:block w-64" />
       </div>
     </div>
   );

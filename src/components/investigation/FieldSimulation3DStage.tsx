@@ -4,6 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
+import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
   FolderOpen,
@@ -40,7 +41,8 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
   onSwitchTo2D,
   onRequestExit,
 }) => {
-  const [camRotX, setCamRotX] = useState<number>(3);
+  const eraTheme = getEra3DTheme(selectedCase.id);
+  const [camRotX, setCamRotX] = useState<number>(5);
   const [camRotY, setCamRotY] = useState<number>(0);
   const [camScale, setCamScale] = useState<number>(1.03);
   const [isAutoOrbiting, setIsAutoOrbiting] = useState<boolean>(false);
@@ -136,19 +138,45 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
         }}
       >
         <img
-          src="/dossiers/field_simulation_3d_clean.webp"
+          src={eraTheme.stage4SimulationBg}
           alt="Simulação de Campo Histórica 3D"
           draggable={false}
           className="w-full h-full object-cover object-center select-none pointer-events-none transition-all duration-500"
-          style={{ filter: 'brightness(0.92) contrast(1.08)' }}
+          style={{ filter: 'brightness(0.42) contrast(1.22) saturate(0.88)' }}
         />
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'radial-gradient(circle at 68% 45%, rgba(251, 191, 36, 0.16) 0%, rgba(180, 83, 9, 0.08) 38%, transparent 75%)',
+              'radial-gradient(circle at 50% 54%, rgba(34, 211, 238, 0.24) 0%, rgba(245, 158, 11, 0.16) 26%, rgba(4, 6, 11, 0.88) 68%, rgba(4, 6, 11, 0.97) 100%)',
           }}
         />
+        {/* Projetor de Maquete Tática 3D Iluminando o Quarto Escuro */}
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-80"
+        >
+          <defs>
+            <radialGradient id="maquetteGlow" cx="50%" cy="55%" r="38%">
+              <stop offset="0%" stopColor={eraTheme.primaryAccentHex} stopOpacity="0.42" />
+              <stop offset="55%" stopColor={eraTheme.secondaryAccentHex} stopOpacity="0.16" />
+              <stop offset="100%" stopColor="#000000" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <ellipse cx="50" cy="58" rx="36" ry="22" fill="url(#maquetteGlow)" />
+          <ellipse cx="50" cy="58" rx="28" ry="15" fill="none" stroke={eraTheme.primaryAccentHex} strokeWidth="0.18" strokeDasharray="1.2 0.8" />
+          <ellipse cx="50" cy="58" rx="18" ry="9.5" fill="none" stroke={eraTheme.secondaryAccentHex} strokeWidth="0.22" />
+          <line x1="22" y1="58" x2="78" y2="58" stroke={eraTheme.primaryAccentHex} strokeWidth="0.14" strokeOpacity="0.7" />
+          <line x1="50" y1="38" x2="50" y2="78" stroke={eraTheme.secondaryAccentHex} strokeWidth="0.14" strokeOpacity="0.7" />
+          {/* Feixes volumétricos 3D subindo da maquete sobre a mesa */}
+          <polygon points="36,58 32,18 40,18" fill={eraTheme.primaryAccentHex} fillOpacity="0.09" />
+          <polygon points="50,54 45,12 55,12" fill={eraTheme.secondaryAccentHex} fillOpacity="0.11" />
+          <polygon points="64,58 60,18 68,18" fill={eraTheme.primaryAccentHex} fillOpacity="0.09" />
+          <circle cx="36" cy="58" r="0.8" fill="#fef08a" />
+          <circle cx="50" cy="54" r="1.0" fill="#67e8f9" />
+          <circle cx="64" cy="58" r="0.8" fill="#fef08a" />
+        </svg>
         <div
           className="absolute inset-0 pointer-events-none"
           style={{

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EvidenceDocument, HistoricalNode } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
+import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
   FolderOpen,
@@ -127,6 +128,29 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
   const isDraggingRef = useRef<boolean>(false);
   const lastPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const eraTheme = getEra3DTheme(selectedCase.id);
+  const activeDeskHotspots = DESK_HOTSPOTS.map((spot, idx) => {
+    const eraSpot = eraTheme.hotspotsStage1[idx];
+    return eraSpot
+      ? {
+          ...spot,
+          label: eraSpot.tag,
+          shortName: eraSpot.tag,
+          objectName: eraSpot.eraLabel,
+          box: {
+            left: parseFloat(eraSpot.left),
+            top: parseFloat(eraSpot.top),
+            width: parseFloat(eraSpot.width),
+            height: parseFloat(eraSpot.height),
+          },
+          badgePos: {
+            left: parseFloat(eraSpot.labelLeft),
+            top: 85.5,
+          },
+        }
+      : spot;
+  });
 
   const totalCluesCount = documents.reduce((acc, d) => acc + d.clues.length, 0);
   const extractedCount = documents
@@ -622,14 +646,14 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
         >
           <div className="relative w-full h-full">
             <img
-              src="/dossiers/archive_room_3d_clean.webp"
+              src={eraTheme.stage1Bg}
               alt="Sala de Arquivo Histórico 3D"
               draggable={false}
               className="w-full h-full object-cover object-center pointer-events-none transition-all duration-500"
               style={{
                 filter: bankerLampOn
-                  ? 'brightness(1.02) contrast(1.04)'
-                  : 'brightness(0.72) contrast(1.08) saturate(0.85)',
+                  ? eraTheme.stage1Filter
+                  : 'brightness(0.70) contrast(1.10) saturate(0.85)',
               }}
             />
 
@@ -639,7 +663,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 className="pointer-events-none absolute inset-0 transition-opacity duration-500"
                 style={{
                   background:
-                    'radial-gradient(circle at 75% 48%, rgba(251, 191, 36, 0.16) 0%, rgba(16, 185, 129, 0.08) 28%, transparent 62%)',
+                    eraTheme.ambientGlowCss,
                 }}
               />
             )}
@@ -715,7 +739,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
             {/* ===============================================================
                 OS 4 DOCUMENTOS FÍSICOS SOBRE A MESA DE MADEIRA (HOTSPOTS 3D)
                =============================================================== */}
-            {DESK_HOTSPOTS.map(spot => {
+            {activeDeskHotspots.map(spot => {
               const doc = documents[spot.slotIndex];
               if (!doc) return null;
 
@@ -828,7 +852,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
       >
         {/* Dock Rápido de Documentos da Mesa no Mobile (< md) — 100% visível e sem corte */}
         <div className="md:hidden grid grid-cols-4 gap-1.5">
-          {DESK_HOTSPOTS.map(spot => {
+          {activeDeskHotspots.map(spot => {
             const doc = documents[spot.slotIndex];
             if (!doc) return null;
             const extractedInDoc = doc.clues.filter(c => extractedClueIds.includes(c.id)).length;

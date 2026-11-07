@@ -4,6 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
+import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
   FolderOpen,
@@ -73,9 +74,20 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
   onSwitchTo2D,
   onRequestExit,
 }) => {
-  const [camRotX, setCamRotX] = useState<number>(3);
+  const eraTheme = getEra3DTheme(selectedCase.id);
+  // Dolly-In Camera Zoom: Starts at normal scale and smoothly zooms into the open forensic folder
+  const [camRotX, setCamRotX] = useState<number>(1);
   const [camRotY, setCamRotY] = useState<number>(0);
-  const [camScale, setCamScale] = useState<number>(1.03);
+  const [camScale, setCamScale] = useState<number>(1.02);
+
+  useEffect(() => {
+    setCamScale(1.02);
+    const timer = setTimeout(() => {
+      setCamScale(1.22);
+      setCamRotX(1);
+    }, 60);
+    return () => clearTimeout(timer);
+  }, [selectedCase.id]);
   const [isAutoOrbiting, setIsAutoOrbiting] = useState<boolean>(false);
   const [bankerLampOn, setBankerLampOn] = useState<boolean>(true);
   const [briefingOpen, setBriefingOpen] = useState(false);
@@ -166,7 +178,7 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
     >
       {/* 1. CENÁRIO 3D REALISTA DE FUNDO (SALA DE ANÁLISE & PASTA PERICIAL) */}
       <div
-        className="absolute inset-0 w-full h-full transition-transform duration-300 ease-out pointer-events-none"
+        className="absolute inset-0 w-full h-full transition-transform duration-700 ease-out pointer-events-none"
         style={{
           transformStyle: 'preserve-3d',
           transform: `scale(${camScale}) rotateX(${camRotX}deg) rotateY(${camRotY}deg)`,
@@ -196,7 +208,7 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'linear-gradient(180deg, rgba(4,6,11,0.72) 0%, rgba(4,6,11,0.12) 20%, rgba(4,6,11,0.18) 80%, rgba(4,6,11,0.85) 100%)',
+              'radial-gradient(circle at 50% 52%, rgba(4,6,11,0.08) 0%, rgba(4,6,11,0.68) 62%, rgba(4,6,11,0.95) 100%)',
           }}
         />
       </div>
