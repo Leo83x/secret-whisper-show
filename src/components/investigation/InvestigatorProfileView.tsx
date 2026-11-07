@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
-import { DecisionTriangleSvg } from './DecisionTriangleSvg';
 import { SemiCircleGauge } from './SemiCircleGauge';
 import {
   BookOpen,
-  Search,
-  Lock,
   CheckCircle2,
   ArrowRight,
   Award,
   FileText,
   Sparkles,
-  Layers,
   ShieldCheck,
-  KeyRound,
+  Compass,
+  HelpCircle,
+  X,
+  ExternalLink,
+  Layers,
+  Lock,
 } from 'lucide-react';
 
 export const InvestigatorProfileView: React.FC = () => {
@@ -26,6 +27,8 @@ export const InvestigatorProfileView: React.FC = () => {
     isAuthenticated,
     setIsAuthModalOpen,
   } = useInvestigation();
+
+  const [xpHelpOpen, setXpHelpOpen] = useState(false);
 
   const tendencies = [
     { label: 'Analítico', value: state.decisionProfile.analitico, color: 'bg-amber-400', text: 'text-amber-300' },
@@ -41,95 +44,179 @@ export const InvestigatorProfileView: React.FC = () => {
     { label: 'Tomada de decisão', value: state.skills.tomadaDecisao, desc: 'Resolução de dilemas sob restrição de tempo e recursos' },
   ];
 
-  const evolutionLayers = [
-    {
-      layer: 'CAMADA 1 — AGORA',
-      title: 'Investigar o Passado',
-      status: 'Ativa',
-      active: true,
-      items: [
-        'Investigar acontecimentos históricos e documentos.',
-        'Descobrir relações, contradições e padrões.',
-        'Desenvolver a identidade e as tendências do investigador.',
-      ],
-    },
-    {
-      layer: 'CAMADA 2 — VOLUME II',
-      title: 'Alterar o Passado',
-      status: 'Em Preparação',
-      active: false,
-      items: [
-        'Alterar decisões históricas em cenários controlados.',
-        'Simular linhas temporais alternativas.',
-        'Comparar consequências e explorar o efeito borboleta.',
-      ],
-    },
-    {
-      layer: 'CAMADA 3 — VOLUME III',
-      title: 'Investigar o Presente',
-      status: 'Expansão Futura',
-      active: false,
-      items: [
-        'Conectar situações contemporâneas a padrões históricos.',
-        'Fontes verificáveis e formação de equipes por competência.',
-        'Simular hipóteses analíticas com fronteira ética clara.',
-      ],
-    },
-  ];
+  // Cálculo de progresso até o próximo nível
+  const nextLevelXp = (state.investigator.level || 1) * 300;
+  const currentLevelProgress = Math.min(100, Math.round(((state.totalXp % 300) / 300) * 100));
 
   return (
-    <div className="space-y-6 mt-2">
+    <div className="space-y-8 select-none font-sans max-w-7xl mx-auto pb-16">
       
-      {/* 1. IDENTIDADE DO INVESTIGADOR & PONTUAÇÃO POR QUALIDADE */}
+      {/* =====================================================================
+          1. CABEÇALHO DO ARQUIVO DO INVESTIGADOR
+         ===================================================================== */}
+      <div className="relative rounded-3xl overflow-hidden border border-amber-500/35 bg-[#070B14] shadow-2xl p-6 sm:p-8">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <img
+            src="/dossiers/investigator_archive_3d_clean.webp"
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-amber-400" />
+              <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold">
+                REGISTRO OPERACIONAL // STRATA PROTOCOL
+              </span>
+            </div>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-wide text-white">
+              ARQUIVO DO INVESTIGADOR
+            </h1>
+            <p className="text-sm sm:text-base text-slate-300">
+              Credencial e compêndio de habilidades analíticas, decisões simuladas e conexões históricas.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => setXpHelpOpen(true)}
+              className="px-4 py-2 rounded-xl bg-[#0B1320] hover:bg-[#131D31] border border-amber-500/40 text-amber-300 text-sm font-mono flex items-center gap-2 cursor-pointer shadow-md"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>Sistema de Mérito [ ? ]</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* MODAL / TOOLTIP DISCRETO DO SISTEMA DE MÉRITO (SUBSTITUI O MANUAL LONGO) */}
+      {xpHelpOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+        >
+          <div className="relative w-full max-w-lg rounded-2xl bg-[#0B1320] border border-amber-500/40 shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Award className="w-5 h-5 text-amber-400" />
+                <h3 className="font-sans text-base font-bold text-white">
+                  Sistema de Mérito Investigativo (XP)
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setXpHelpOpen(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-sm text-slate-200 leading-relaxed">
+              <p>
+                O mérito é concedido pela precisão da sua auditoria documental em cada etapa:
+              </p>
+              <ul className="space-y-2 font-mono text-xs text-slate-300">
+                <li className="p-2.5 rounded-lg bg-[#060A12] border border-slate-800 flex justify-between">
+                  <span>Extração de Pista Primária:</span>
+                  <strong className="text-emerald-400">+15 a +30 XP</strong>
+                </li>
+                <li className="p-2.5 rounded-lg bg-[#060A12] border border-slate-800 flex justify-between">
+                  <span>Confronto de Vínculo na Mesa:</span>
+                  <strong className="text-cyan-400">+50 XP</strong>
+                </li>
+                <li className="p-2.5 rounded-lg bg-[#060A12] border border-slate-800 flex justify-between">
+                  <span>Sustentação de Tese Pericial:</span>
+                  <strong className="text-amber-400">+25 a +100 XP</strong>
+                </li>
+                <li className="p-2.5 rounded-lg bg-[#060A12] border border-slate-800 flex justify-between">
+                  <span>Tomada de Decisão de Campo:</span>
+                  <strong className="text-purple-400">+50 XP</strong>
+                </li>
+              </ul>
+              <p className="text-xs text-slate-400">
+                Repetições de missões já concluídas não duplicam bonificações indevidamente.
+              </p>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setXpHelpOpen(false)}
+                className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          2. DUAS COLUNAS PRINCIPAIS NO DESKTOP (DOSSIÊ & HABILIDADES)
+         ===================================================================== */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Cartão de Identidade (5 cols) */}
-        <div className="lg:col-span-5 p-5 sm:p-6 rounded-2xl bg-[#0B1320]/95 backdrop-blur-md border border-amber-500/30 shadow-xl flex flex-col justify-between space-y-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
-                IDENTIDADE DO INVESTIGADOR
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-[11px] font-mono text-amber-300 font-bold">
-                Nível {state.investigator.level} • {state.totalXp} XP
-              </span>
-            </div>
-
+        {/* COLUNA 1 (5 cols): DOSSIÊ DO INVESTIGADOR & 4 TENDÊNCIAS */}
+        <div className="lg:col-span-5 rounded-3xl bg-[#09101C]/95 border border-slate-800 p-6 sm:p-7 space-y-6 shadow-xl flex flex-col justify-between">
+          <div className="space-y-5">
+            {/* Avatar & Identificação */}
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 via-amber-400 to-amber-700 flex items-center justify-center text-[#060A12] font-serif font-bold text-2xl shadow-[0_0_25px_rgba(245,158,11,0.35)] shrink-0">
-                {state.investigator.name.slice(0, 1).toUpperCase()}
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 p-0.5 shadow-lg flex items-center justify-center shrink-0">
+                <div className="w-full h-full rounded-2xl bg-[#070B14] flex items-center justify-center text-amber-300 font-serif text-2xl font-bold">
+                  {state.investigator.name.charAt(0).toUpperCase()}
+                </div>
               </div>
-              <div className="min-w-0">
-                <h2 className="font-sans text-xl sm:text-2xl font-bold text-white truncate">
+              <div className="space-y-1 min-w-0">
+                <div className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
+                  {state.investigator.role || 'Auditor Desperto'}
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white truncate">
                   {state.investigator.name}
                 </h2>
-                <div className="text-xs font-mono text-cyan-400">
-                  {state.investigator.role}
+                <div className="text-sm font-mono text-cyan-300">
+                  Nível {state.investigator.level} // {state.totalXp} XP Acumulado
                 </div>
-                <p className="text-xs text-slate-400 mt-1">
-                  O perfil emerge organicamente da maneira como você examina pistas, sustenta hipóteses e decide nos casos.
-                </p>
               </div>
             </div>
 
-            {/* 4 Tendências de Investigação */}
-            <div className="space-y-2.5 pt-2">
+            {/* Barra de Progresso de Nível */}
+            <div className="space-y-1.5 p-3.5 rounded-xl bg-[#050811] border border-slate-800">
               <div className="flex items-center justify-between text-xs font-mono text-slate-300">
-                <span className="uppercase tracking-wider font-bold text-amber-300">
-                  Tendências de Investigação:
-                </span>
-                <span className="text-[10px] text-slate-400">Mutáveis conforme suas escolhas</span>
+                <span>Progresso para Nível {state.investigator.level + 1}</span>
+                <span className="text-amber-400 font-bold">{currentLevelProgress}%</span>
               </div>
+              <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full transition-all duration-500"
+                  style={{ width: `${currentLevelProgress}%` }}
+                />
+              </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-2.5">
+            {/* 4 Tendências de Investigação (100% Preservadas!) */}
+            <div className="space-y-3 pt-2">
+              <div className="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">
+                Tendências de Investigação (Derivadas de Suas Escolhas):
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 {tendencies.map(t => (
-                  <div key={t.label} className="p-3 rounded-xl bg-[#060A12]/90 border border-slate-800 space-y-1.5">
+                  <div
+                    key={t.label}
+                    className="p-3.5 rounded-xl bg-[#050811] border border-slate-800 space-y-2"
+                  >
                     <div className="flex items-center justify-between text-xs font-mono">
                       <span className="text-slate-300">{t.label}</span>
                       <span className={`font-bold ${t.text}`}>{t.value}%</span>
                     </div>
                     <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                      <div className={`h-full rounded-full ${t.color}`} style={{ width: `${t.value}%` }} />
+                      <div
+                        className={`h-full ${t.color} rounded-full transition-all duration-500`}
+                        style={{ width: `${t.value}%` }}
+                      />
                     </div>
                   </div>
                 ))}
@@ -137,219 +224,219 @@ export const InvestigatorProfileView: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
-            <span className="text-[11px] font-mono text-slate-400">
-              {isAuthenticated ? 'Progresso sincronizado na conta' : 'Modo local — vincule seu e-mail'}
-            </span>
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-xs font-mono text-amber-300 flex items-center gap-1.5 cursor-pointer"
-            >
-              {isAuthenticated ? <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> : <KeyRound className="w-3.5 h-3.5" />}
-              <span>{isAuthenticated ? 'Conta Vinculada' : 'Sincronizar Conta'}</span>
-            </button>
+          <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>Status da Sessão: Ativo</span>
+            <span className="text-emerald-400 font-bold">● Sincronizado</span>
           </div>
         </div>
 
-        {/* Habilidades Desenvolvidas & Critérios de Mérito (7 cols) */}
-        <div className="lg:col-span-7 p-5 sm:p-6 rounded-2xl bg-[#0B1320]/95 backdrop-blur-md border border-cyan-500/25 shadow-xl flex flex-col justify-between space-y-5">
+        {/* COLUNA 2 (7 cols): 4 HABILIDADES E MÉTRICAS */}
+        <div className="lg:col-span-7 rounded-3xl bg-[#09101C]/95 border border-slate-800 p-6 sm:p-7 space-y-6 shadow-xl flex flex-col justify-between">
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
-                Habilidades Desenvolvidas em Campo
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
+                Competências Desenvolvidas na Operação:
               </span>
-              <span className="text-xs font-mono text-slate-400">
-                {stats.totalCluesExtracted} pistas extraídas • {stats.completedCount}/{stats.totalVol1} missões
-              </span>
+              <span className="text-xs font-mono text-slate-400">Escala de Aptidão</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {developedSkills.map(sk => (
-                <div key={sk.label} className="p-3.5 rounded-xl bg-[#060A12]/85 border border-slate-800 space-y-1.5">
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="font-bold text-white">{sk.label}</span>
-                    <span className="text-cyan-400 font-bold">{sk.value}%</span>
+            <div className="space-y-4">
+              {developedSkills.map(skill => (
+                <div
+                  key={skill.label}
+                  className="p-4 rounded-2xl bg-[#050811] border border-slate-800/90 space-y-2.5"
+                >
+                  <div className="flex items-center justify-between text-sm sm:text-base font-medium text-white">
+                    <span>{skill.label}</span>
+                    <span className="text-amber-400 font-mono font-bold">{skill.value}%</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-amber-400 transition-all duration-500"
-                      style={{ width: `${sk.value}%` }}
+                      className="h-full bg-gradient-to-r from-amber-500 to-cyan-400 rounded-full transition-all duration-500"
+                      style={{ width: `${skill.value}%` }}
                     />
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-snug">{sk.desc}</p>
+                  <p className="text-xs text-slate-300 leading-relaxed">{skill.desc}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Como Funciona a Pontuação (Recompensa pela Qualidade da Investigação) */}
-          <div className="p-4 rounded-xl bg-[#060A12]/90 border border-amber-500/20 space-y-2">
-            <div className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
-              <Award className="w-4 h-4 text-amber-400" />
-              <span>Sistema de Mérito: Recompensa pela Qualidade da Investigação</span>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Você não é premiado por adivinhar uma resposta única. O sistema recompensa: <strong>encontrar evidências relevantes (+XP)</strong>, <strong>identificar inconsistências documentais (+XP adicional)</strong>, <strong>estabelecer conexões fundamentadas (+XP adicional)</strong> e <strong>sustentar hipóteses com provas coerentes (+XP adicional)</strong>.
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-      {/* 2. MATRIZ TRIÁDICA E MÉTRICAS DE INTERPRETAÇÃO */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-        <div className="md:col-span-6 p-5 sm:p-6 rounded-2xl bg-[#0B1320]/95 backdrop-blur-md border border-amber-500/25 shadow-xl space-y-2">
-          <div className="flex items-center justify-between border-b border-white/10 pb-2">
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
-              Geometria de Decisão
-            </span>
-            <span className="text-xs font-mono text-slate-400">Equilíbrio Triádico</span>
-          </div>
-          <DecisionTriangleSvg
-            analitico={state.decisionProfile.analitico}
-            estrategico={state.decisionProfile.estrategico}
-            humanista={state.decisionProfile.humanista}
-          />
-        </div>
-
-        <div className="md:col-span-6 p-5 sm:p-6 rounded-2xl bg-[#0B1320]/95 backdrop-blur-md border border-cyan-500/25 shadow-xl space-y-2 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
-                Métricas de Interpretação
+          {/* Arcos de Impacto Simulado */}
+          <div className="pt-4 border-t border-slate-800 space-y-3">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="text-amber-400 font-bold uppercase">
+                Métricas de Impacto Simulado da Investigação:
               </span>
-              <span className="text-xs font-mono text-slate-400">Variáveis Acumuladas</span>
+              <span className="text-slate-400">Variáveis de Jogo</span>
             </div>
-            <p className="text-xs text-slate-400 font-sans mt-1">
-              O balanço das suas decisões de campo alimentarão as simulações futuras do Volume II.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 py-4">
-            <SemiCircleGauge label="Caos Global" value={state.globalImpact.caosGlobal} color="orange" />
-            <SemiCircleGauge label="Livre-Arbítrio" value={state.globalImpact.livreArbitrio} color="cyan" />
-            <SemiCircleGauge label="Suspeita" value={state.globalImpact.suspeita} color="purple" />
-          </div>
-
-          <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 text-xs font-mono text-slate-400 text-center">
-            Suas escolhas moldam sua trajetória individual sem alterar o cânone central do romance.
+            <div className="grid grid-cols-3 gap-3">
+              <div className="p-3.5 rounded-xl bg-[#050811] border border-slate-800 text-center space-y-1">
+                <div className="text-xs font-mono text-slate-400">Caos Global</div>
+                <div className="text-lg sm:text-xl font-bold font-mono text-amber-400">
+                  {state.globalImpact.caosGlobal}%
+                </div>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#050811] border border-slate-800 text-center space-y-1">
+                <div className="text-xs font-mono text-slate-400">Livre-Arbítrio</div>
+                <div className="text-lg sm:text-xl font-bold font-mono text-cyan-400">
+                  {state.globalImpact.livreArbitrio}%
+                </div>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#050811] border border-slate-800 text-center space-y-1">
+                <div className="text-xs font-mono text-slate-400">Suspeita</div>
+                <div className="text-lg sm:text-xl font-bold font-mono text-purple-400">
+                  {state.globalImpact.suspeita}%
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 3. AS TRÊS GRANDES EVOLUÇÕES DA PLATAFORMA (VOLUMES I, II E III) */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-[#0B1320]/95 border border-amber-500/20 shadow-xl space-y-4">
-        <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-          <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-amber-400" />
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
-              Uma Plataforma • Três Grandes Evoluções
-            </span>
-          </div>
-          <span className="text-xs font-mono text-emerald-400">Arquitetura Evolutiva</span>
+      {/* =====================================================================
+          3. CAMADAS DO ECOSSISTEMA (3 CARTÕES HORIZONTAIS ENXUTOS)
+         ===================================================================== */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 px-1">
+          <Layers className="w-4 h-4 text-amber-400" />
+          <span className="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">
+            Camadas do Ecossistema Operacional:
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {evolutionLayers.map((ev, i) => (
-            <div
-              key={i}
-              className={`p-4 rounded-xl border space-y-2.5 ${
-                ev.active
-                  ? 'bg-amber-500/10 border-amber-400/50'
-                  : 'bg-[#060A12]/70 border-slate-800 opacity-80'
-              }`}
-            >
-              <div className="flex items-center justify-between text-[10px] font-mono">
-                <span className={ev.active ? 'text-amber-300 font-bold' : 'text-slate-400'}>
-                  {ev.layer}
-                </span>
-                <span
-                  className={`px-2 py-0.5 rounded ${
-                    ev.active
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : 'bg-slate-800 text-slate-400'
-                  }`}
-                >
-                  {ev.status}
-                </span>
-              </div>
-              <div className="font-sans text-base font-bold text-white">{ev.title}</div>
-              <ul className="space-y-1 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                {ev.items.map((it, idx) => (
-                  <li key={idx}>• {it}</li>
-                ))}
-              </ul>
+          <div className="p-5 rounded-2xl bg-[#09101C]/90 border border-emerald-500/40 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono uppercase text-emerald-400 font-bold">
+                VOLUME I // CAMADA 1
+              </span>
+              <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-mono text-xs font-bold">
+                ATIVO
+              </span>
             </div>
-          ))}
+            <h4 className="text-base font-bold text-white">Investigar o Passado</h4>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Exame de documentos primários, validação de vínculos e sustentação de teses históricas.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-[#09101C]/90 border border-slate-800 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono uppercase text-cyan-400 font-bold">
+                VOLUME II // CAMADA 2
+              </span>
+              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-xs">
+                SIMULAÇÃO
+              </span>
+            </div>
+            <h4 className="text-base font-bold text-white">Alterar o Passado</h4>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Simulação de linhas temporais alternativas, dilemas de campo e ramificações de causa e efeito.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-[#09101C]/90 border border-slate-800 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono uppercase text-purple-400 font-bold">
+                VOLUME III // CAMADA 3
+              </span>
+              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono text-xs">
+                EM PREPARAÇÃO
+              </span>
+            </div>
+            <h4 className="text-base font-bold text-white">Investigar o Presente</h4>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Conexão entre dinâmicas contemporâneas verificáveis e padrões descobertos no romance.
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* 4. CADERNO DE CAMPO // HIPÓTESES E CASOS INVESTIGADOS */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-[#0B1320]/95 backdrop-blur-md border border-amber-500/20 shadow-xl space-y-4">
-        <div className="flex items-center justify-between border-b border-white/10 pb-2">
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
-            Caderno de Campo // Hipóteses e Provas Registradas
-          </span>
-          <span className="text-xs font-mono text-emerald-400">
-            {stats.hypothesesCount} gravadas
+      {/* =====================================================================
+          4. CADERNO DE CAMPO (CARTÕES COMPACTOS POR CASO)
+         ===================================================================== */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">
+              Caderno de Campo // Registros por Dossiê:
+            </span>
+          </div>
+          <span className="text-xs font-mono text-slate-400">
+            {allNodes.length} Casos Catalogados
           </span>
         </div>
 
-        {allNodes.filter(n => state.completedNodes.includes(n.id) || state.formulatedHypotheses[n.id]).length > 0 ? (
-          <div className="space-y-3">
-            {allNodes
-              .filter(n => state.completedNodes.includes(n.id) || state.formulatedHypotheses[n.id])
-              .map(node => {
-                const prog = getCasePlayProgress(node.id);
-                const thesis = node.hypothesisTheses?.find(t => t.id === prog.selectedThesisId);
-                const note = prog.hypothesisReasoning || state.personalNotes[node.id];
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {allNodes.map(node => {
+            const prog = getCasePlayProgress(node.id);
+            const isCompleted = state.completedNodes.includes(node.id);
+            const registeredThesis = node.hypothesisTheses?.find(t => t.id === prog.selectedThesisId);
 
-                return (
-                  <div
-                    key={node.id}
-                    className="p-4 rounded-xl bg-black/50 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-sans font-bold text-sm text-white">
-                          {node.fullName}
-                        </span>
-                        <span className="text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
-                          {node.year} • +{prog.xpEarned} XP
-                        </span>
-                      </div>
-                      {thesis && (
-                        <div className="text-xs sm:text-sm font-sans text-cyan-300">
-                          Hipótese Sustentada: <strong>{thesis.title}</strong> ({prog.attachedClueIds.length} provas anexadas)
-                        </div>
-                      )}
-                      {note && (
-                        <p className="text-sm font-sans text-slate-200 leading-relaxed italic pt-1">
-                          "{note}"
-                        </p>
-                      )}
-                    </div>
+            return (
+              <div
+                key={node.id}
+                className={`p-5 rounded-2xl border transition-all space-y-3 ${
+                  isCompleted
+                    ? 'bg-[#0A1A16]/90 border-emerald-500/40'
+                    : prog.extractedClueIds.length > 0
+                    ? 'bg-[#09121F]/90 border-amber-500/35'
+                    : 'bg-[#070B14]/85 border-slate-800'
+                }`}
+              >
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-amber-400 font-bold uppercase">
+                    {node.missionCode || 'CASO'}
+                  </span>
+                  {isCompleted ? (
+                    <span className="text-emerald-400 font-bold flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Concluído
+                    </span>
+                  ) : prog.extractedClueIds.length > 0 ? (
+                    <span className="text-amber-300">Em Investigação</span>
+                  ) : (
+                    <span className="text-slate-500">Disponível</span>
+                  )}
+                </div>
 
-                    <button
-                      onClick={() => startCaseInvestigation(node.id)}
-                      className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-mono font-bold flex items-center gap-1 shrink-0 self-start sm:self-auto cursor-pointer"
-                    >
-                      <span>Revisar</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+                <div className="space-y-1">
+                  <h4 className="text-base font-bold text-white leading-snug">
+                    {node.name}
+                  </h4>
+                  <p className="text-xs font-mono text-slate-400">
+                    {node.location} ({node.year})
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[#040810] border border-slate-800/80 space-y-1 text-xs">
+                  <div className="flex justify-between text-slate-300">
+                    <span>Pistas Coletadas:</span>
+                    <strong className="text-emerald-400">
+                      {prog.extractedClueIds.length}/{(node.documents || []).flatMap(d => d.clues).length}
+                    </strong>
                   </div>
-                );
-              })}
-          </div>
-        ) : (
-          <div className="p-6 rounded-xl bg-slate-900/40 border border-dashed border-slate-700 text-center space-y-2">
-            <FileText className="w-8 h-8 text-slate-600 mx-auto" />
-            <div className="text-xs font-mono text-slate-300">Nenhuma investigação concluída ainda.</div>
-            <p className="text-sm text-slate-400 font-sans max-w-md mx-auto leading-relaxed">
-              Inicie pela Missão 01 (Júlio César e o Rubicão) para examinar documentos, cruzar evidências e registrar sua primeira hipótese.
-            </p>
-          </div>
-        )}
+                  <div className="flex justify-between text-slate-300">
+                    <span>Hipótese Registrada:</span>
+                    <strong className="text-amber-300 truncate max-w-[130px]">
+                      {registeredThesis ? registeredThesis.tag : 'Nenhuma'}
+                    </strong>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => startCaseInvestigation(node.id)}
+                  className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-slate-200 hover:text-white flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                >
+                  <span>{isCompleted ? 'Revisar Dossiê' : 'Abrir Investigação'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
     </div>

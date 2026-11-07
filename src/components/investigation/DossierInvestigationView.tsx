@@ -29,6 +29,10 @@ import {
 } from 'lucide-react';
 import { DocumentInspectorModal, getEraDocumentTheme } from './DocumentInspectorModal';
 import { ArchiveRoom3DStage } from './ArchiveRoom3DStage';
+import { CrossExamination3DStage, ExtractedClueItem } from './CrossExamination3DStage';
+import { ForensicAnalysis3DStage } from './ForensicAnalysis3DStage';
+import { FieldSimulation3DStage } from './FieldSimulation3DStage';
+import { AuditReport3DStage } from './AuditReport3DStage';
 import { DiscoveryRevealModal } from './DiscoveryRevealModal';
 import { soundEngine } from '../../utils/investigationAudio';
 
@@ -59,9 +63,12 @@ export const DossierInvestigationView: React.FC = () => {
   const theses = selectedCase.hypothesisTheses || [];
   const simChoices = selectedCase.simulationChoices || [];
 
-  // Subníveis Retráteis + Modo Cenário 3D Realista (Etapa 1: Arquivo Histórico 3D / Etapa 2: Mesa Topográfica 3D)
+  // Subníveis Retráteis + Modo Cenário 3D Realista para as 5 Etapas
   const [is3DStageOne, setIs3DStageOne] = useState<boolean>(true);
-  const [is3DTableStageTwo, setIs3DTableStageTwo] = useState<boolean>(true);
+  const [is3DStageTwo, setIs3DStageTwo] = useState<boolean>(true);
+  const [is3DStageThree, setIs3DStageThree] = useState<boolean>(true);
+  const [is3DStageFour, setIs3DStageFour] = useState<boolean>(true);
+  const [is3DStageFive, setIs3DStageFive] = useState<boolean>(true);
   const [isBriefingOpen, setIsBriefingOpen] = useState<boolean>(false);
   const [isArchiveDrawerOpen, setIsArchiveDrawerOpen] = useState<boolean>(false);
 
@@ -331,48 +338,42 @@ export const DossierInvestigationView: React.FC = () => {
             </button>
           </div>
 
-          {/* Direita: Alternador 3D/2D + Botão Subnível [ 📁 Meu Arquivo Pessoal ] + Ação Principal (100% Responsivo no Mobile) */}
-          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
-            {state.activeStep === 1 && !is3DStageOne && (
-              <button
-                type="button"
-                onClick={() => {
-                  soundEngine.playDocumentOpen();
-                  setIs3DStageOne(true);
-                }}
-                className="px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/50 text-amber-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm"
-              >
-                <Maximize2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span>[ Entrar no Cenário 3D ]</span>
-              </button>
-            )}
+          {/* Direita: Alternador 3D/2D Dinâmico + Arquivo Pessoal + Ações */}
+          <div className="w-full sm:w-auto flex flex-wrap items-center justify-between sm:justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playDocumentOpen();
+                if (state.activeStep === 1) setIs3DStageOne(v => !v);
+                if (state.activeStep === 2) setIs3DStageTwo(v => !v);
+                if (state.activeStep === 3) setIs3DStageThree(v => !v);
+                if (state.activeStep === 4) setIs3DStageFour(v => !v);
+                if (state.activeStep === 5) setIs3DStageFive(v => !v);
+              }}
+              className="px-3.5 py-2 rounded-xl border text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm bg-[#0B1320] border-cyan-500/40 text-cyan-300 hover:border-amber-400 hover:text-white"
+            >
+              <Maximize2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>
+                {((state.activeStep === 1 && is3DStageOne) ||
+                  (state.activeStep === 2 && is3DStageTwo) ||
+                  (state.activeStep === 3 && is3DStageThree) ||
+                  (state.activeStep === 4 && is3DStageFour) ||
+                  (state.activeStep === 5 && is3DStageFive))
+                  ? '[ Alternar para Modo 2D ]'
+                  : '[ Entrar no Cenário 3D ]'}
+              </span>
+            </button>
 
             <button
               type="button"
               onClick={() => setIsArchiveDrawerOpen(true)}
-              className={`px-3 py-2 rounded-xl bg-[#0B1320] hover:bg-slate-900 border border-cyan-500/35 text-cyan-300 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm truncate ${
-                state.activeStep !== 1 && state.activeStep !== 2 ? 'col-span-2 sm:col-span-1' : ''
-              }`}
+              className="px-3.5 py-2 rounded-xl bg-[#0B1320] hover:bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm"
             >
-              <FolderOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 shrink-0" />
-              <span className="sm:hidden truncate">
+              <FolderOpen className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>
                 Arquivo ({extractedCluesList.length}/{allCaseClues.length})
               </span>
-              <span className="hidden sm:inline">
-                Meu Arquivo Pessoal ({extractedCluesList.length}/{allCaseClues.length})
-              </span>
             </button>
-
-            {state.activeStep === 1 && (
-              <button
-                type="button"
-                onClick={() => setActiveStep(2)}
-                className="col-span-2 sm:col-span-1 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all cursor-pointer"
-              >
-                <span>Ir para Mesa de Conexões</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            )}
           </div>
         </div>
 
@@ -768,9 +769,38 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 2 — CONECTAR (SIMPLIFICAR VÍNCULOS E VISUALIZAR A CONEXÃO)
+          ETAPA 2 — CONECTAR (CENÁRIO 3D: MESA DE CRUZAMENTO TÁTIL + MODO 2D)
          ===================================================================== */}
-      {state.activeStep === 2 && (
+      {state.activeStep === 2 && is3DStageTwo && (
+        <CrossExamination3DStage
+          selectedCase={selectedCase}
+          challenges={challenges}
+          activeChallenge={activeChallenge}
+          solvedConnectionIds={progress.solvedConnectionIds}
+          extractedCluesList={extractedCluesList}
+          allCaseClues={allCaseClues}
+          boardSelectedClues={boardSelectedClues}
+          connectionFeedback={connectionFeedback}
+          activeStep={state.activeStep}
+          onSelectStep={step => setActiveStep(step)}
+          onSelectChallenge={chId => {
+            setActiveChallengeId(chId);
+            setConnectionFeedback(null);
+          }}
+          onToggleBoardClue={clueId => toggleBoardClue(clueId)}
+          onValidateConnection={handleValidateConnection}
+          onOpenArchiveDrawer={() => setIsArchiveDrawerOpen(true)}
+          onSwitchTo2D={() => {
+            soundEngine.playDocumentOpen();
+            setIs3DStageTwo(false);
+          }}
+          onRequestExit={() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+          }}
+        />
+      )}
+
+      {state.activeStep === 2 && !is3DStageTwo && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           
           {/* Coluna Esquerda Compacta (4 cols): Apenas título da pergunta e badge (Comprovada / Em aberto) */}
@@ -1079,9 +1109,46 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 3 — FORMULAR HIPÓTESE (RESPIRO E SUBNÍVEIS ACORDEÃO)
+          ETAPA 3 — FORMULAR HIPÓTESE (CENÁRIO 3D: SALA DE ANÁLISE + MODO 2D)
          ===================================================================== */}
-      {state.activeStep === 3 && (
+      {state.activeStep === 3 && is3DStageThree && (
+        <ForensicAnalysis3DStage
+          selectedCase={selectedCase}
+          theses={theses}
+          chosenThesisId={chosenThesisId}
+          expandedThesisId={expandedThesisId}
+          hypothesisClues={hypothesisClues}
+          reasoningText={reasoningText}
+          isNotesOpen={isNotesOpen}
+          hypothesisResult={hypothesisResult}
+          extractedCluesList={extractedCluesList}
+          allCaseClues={allCaseClues}
+          allCaseCluesCount={allCaseClues.length}
+          onSelectThesis={thId => {
+            setChosenThesisId(thId);
+            // Auto-persist immediately so thesis is never lost
+            submitStructuredHypothesis(selectedCase.id, thId, hypothesisClues, reasoningText);
+          }}
+          onToggleExpandThesis={thId => setExpandedThesisId(id => (id === thId ? null : thId))}
+          onToggleHypothesisClue={clueId => toggleHypothesisClue(clueId)}
+          onUpdateReasoningText={text => setReasoningText(text)}
+          onToggleNotesOpen={() => setIsNotesOpen(o => !o)}
+          onSubmitHypothesis={handleSubmitHypothesis}
+          onSelectStep={step => {
+            if (chosenThesisId) {
+              submitStructuredHypothesis(selectedCase.id, chosenThesisId, hypothesisClues, reasoningText);
+            }
+            setActiveStep(step);
+          }}
+          onOpenArchiveDrawer={() => setIsArchiveDrawerOpen(true)}
+          onSwitchTo2D={() => {
+            soundEngine.playDocumentOpen();
+            setIs3DStageThree(false);
+          }}
+        />
+      )}
+
+      {state.activeStep === 3 && !is3DStageThree && (
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="rounded-2xl bg-[#0B1320]/95 border border-amber-500/30 p-6 sm:p-8 space-y-6 shadow-2xl">
             <div className="border-b border-slate-800 pb-4">
@@ -1263,9 +1330,26 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 4 — DECIDIR (MAX-W-4XL COM AMPLO RESPIRO E SUBNÍVEL)
+          ETAPA 4 — DECIDIR (CENÁRIO 3D: SIMULAÇÃO DE CAMPO HISTÓRICA + MODO 2D)
          ===================================================================== */}
-      {state.activeStep === 4 && (
+      {state.activeStep === 4 && is3DStageFour && (
+        <FieldSimulation3DStage
+          selectedCase={selectedCase}
+          choices={simChoices}
+          selectedDecisionId={progress.selectedDecisionId}
+          expandedChoiceId={expandedChoiceId}
+          onToggleExpandChoice={chId => setExpandedChoiceId(id => (id === chId ? null : chId))}
+          onSelectDecision={choiceId => handleSelectSimulationDecision(choiceId)}
+          onSelectStep={step => setActiveStep(step)}
+          onOpenArchiveDrawer={() => setIsArchiveDrawerOpen(true)}
+          onSwitchTo2D={() => {
+            soundEngine.playDocumentOpen();
+            setIs3DStageFour(false);
+          }}
+        />
+      )}
+
+      {state.activeStep === 4 && !is3DStageFour && (
         <div className="max-w-4xl mx-auto rounded-2xl bg-[#0B1320]/95 border border-amber-500/35 p-6 sm:p-8 shadow-2xl space-y-6">
           <div className="border-b border-slate-800 pb-4 space-y-2">
             <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-amber-400">
@@ -1342,9 +1426,34 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* =====================================================================
-          ETAPA 5 — CONSEQUÊNCIAS (RESUMO EXECUTIVO LIMPO + SUBNÍVEL DE AUDITORIA)
+          ETAPA 5 — CONSEQUÊNCIAS (CENÁRIO 3D: CÂMARA DE AUDITORIA & LAUDO + MODO 2D)
          ===================================================================== */}
-      {state.activeStep === 5 && (
+      {state.activeStep === 5 && is3DStageFive && (
+        <AuditReport3DStage
+          selectedCase={selectedCase}
+          documents={documents}
+          challenges={challenges}
+          theses={theses}
+          simChoices={simChoices}
+          extractedCluesList={extractedCluesList}
+          allCaseClues={allCaseClues}
+          solvedConnectionIds={progress.solvedConnectionIds}
+          selectedThesisId={progress.selectedThesisId || chosenThesisId}
+          hypothesisScore={progress.hypothesisScore}
+          hypothesisReasoning={progress.hypothesisReasoning || reasoningText}
+          selectedDecisionId={progress.selectedDecisionId}
+          mapConnectionsUnlocked={mapConnectionsUnlocked}
+          xpBreakdown={xpBreakdown}
+          onReturnToMap={() => {
+            soundEngine.playCaseConclusion();
+            setActiveTab('mapa');
+          }}
+          onOpenArchiveDrawer={() => setIsArchiveDrawerOpen(true)}
+          onSelectStep={step => setActiveStep(step)}
+        />
+      )}
+
+      {state.activeStep === 5 && !is3DStageFive && (
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="rounded-2xl bg-[#0B1320]/95 border border-amber-500/40 p-6 sm:p-8 shadow-2xl space-y-6">
             
