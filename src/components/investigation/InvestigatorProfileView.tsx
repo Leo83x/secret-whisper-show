@@ -25,86 +25,96 @@ import { soundEngine } from '../../utils/investigationAudio';
 type ProfileArchiveSubTab = 'credencial' | 'competencias' | 'arquivo';
 
 export const InvestigatorProfileView: React.FC = () => {
-  const { state, allNodes, startCaseInvestigation } = useInvestigation();
+  const {
+    state,
+    allNodes,
+    stats,
+    startCaseInvestigation,
+    getCasePlayProgress,
+  } = useInvestigation();
+
   const [xpHelpOpen, setXpHelpOpen] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<ProfileArchiveSubTab>('credencial');
   const [restrictedNode, setRestrictedNode] = useState<HistoricalNode | null>(null);
 
-  const playableNodesCount = allNodes.filter(n => n.status !== 'quarentena' && n.isVolumeOne).length;
+  const playableNodesCount = allNodes.filter(n => n.status !== 'quarentena' && n.isVolumeOne).length || 4;
 
-  const xpNextLevel = 1000;
-  const xpPercent = Math.min(100, Math.round((state.totalXp / xpNextLevel) * 100));
+  const xpNextLevel = Math.max(300, (state.investigator?.level || 1) * 300);
+  const xpPercent = Math.min(100, Math.round(((state.totalXp % 300) / 300) * 100));
 
   const tendencies = [
     {
       key: 'analitico',
       label: 'Analítico',
-      value: state.investigator.tendencies.analitico,
+      value: state.decisionProfile?.analitico ?? 25,
       color: 'from-cyan-500 to-cyan-300',
       description: 'Foco em dados materiais, balística, cronologia e cruzamento documental.',
     },
     {
       key: 'estrategico',
       label: 'Estratégico',
-      value: state.investigator.tendencies.estrategico,
+      value: state.decisionProfile?.estrategico ?? 25,
       color: 'from-amber-500 to-amber-300',
       description: 'Leitura de comando, logística, risco calculado e janelas de oportunidade.',
     },
     {
       key: 'humanista',
       label: 'Humanista',
-      value: state.investigator.tendencies.humanista,
+      value: state.decisionProfile?.humanista ?? 25,
       color: 'from-emerald-500 to-emerald-300',
       description: 'Atenção ao fator humano, coesão social, ética e preservação de vidas.',
     },
     {
       key: 'exploratorio',
       label: 'Exploratório',
-      value: state.investigator.tendencies.exploratorio,
+      value: state.decisionProfile?.exploratorio ?? 25,
       color: 'from-purple-500 to-purple-300',
       description: 'Descoberta de conexões transversais entre eras e padrões ocultos.',
     },
   ];
 
   const sortedTendencies = [...tendencies].sort((a, b) => b.value - a.value);
-  const dominantTendency = sortedTendencies[0];
-  const secondaryTendency = sortedTendencies[1];
+  const dominantTendency = sortedTendencies[0] || tendencies[0];
+  const secondaryTendency = sortedTendencies[1] || tendencies[1];
 
-  const totalSavedClues = Object.values(state.extractedCluesByCase || {}).reduce(
-    (acc, list) => acc + (list?.length || 0),
-    0
-  );
-  const totalSolvedLinks = Object.values(state.solvedConnectionsByCase || {}).reduce(
-    (acc, list) => acc + (list?.length || 0),
-    0
-  );
+  const totalSavedClues =
+    stats?.totalCluesExtracted ??
+    allNodes.reduce((acc, n) => acc + (getCasePlayProgress(n.id)?.extractedClueIds?.length || 0), 0);
+
+  const totalSolvedLinks =
+    stats?.totalConnectionsSolved ??
+    allNodes.reduce((acc, n) => acc + (getCasePlayProgress(n.id)?.solvedConnectionIds?.length || 0), 0);
 
   const skills = [
     {
       label: 'Leitura de evidências',
       desc: 'Inspeção de fontes primárias, despachos e documentos históricos.',
-      score: Math.min(100, 45 + totalSavedClues * 4 + state.completedNodes.length * 8),
+      score: state.skills?.leituraEvidencias ?? Math.min(100, 45 + totalSavedClues * 4),
       accent: 'text-amber-300 border-amber-500/35 bg-amber-500/10',
     },
     {
       label: 'Reconhecimento de padrões',
       desc: 'Cruzamento de pistas na Mesa de Conexões e validação de vínculos.',
-      score: Math.min(100, 40 + totalSolvedLinks * 7 + state.investigator.tendencies.analitico * 0.35),
+      score: state.skills?.reconhecimentoPadroes ?? Math.min(100, 40 + totalSolvedLinks * 7),
       accent: 'text-cyan-300 border-cyan-500/35 bg-cyan-500/10',
     },
     {
       label: 'Raciocínio estratégico',
       desc: 'Formulação de hipóteses consistentes diante de dilemas de comando.',
-      score: Math.min(100, 42 + state.investigator.tendencies.estrategico * 0.5),
+      score: state.skills?.raciocinioEstrategico ?? 50,
       accent: 'text-emerald-300 border-emerald-500/35 bg-emerald-500/10',
     },
     {
       label: 'Tomada de decisão',
       desc: 'Escolhas sob pressão nas simulações históricas de campo.',
-      score: Math.min(100, 38 + state.completedNodes.length * 14 + state.investigator.tendencies.humanista * 0.25),
+      score: state.skills?.tomadaDecisao ?? 45,
       accent: 'text-purple-300 border-purple-500/35 bg-purple-500/10',
     },
   ];
+
+  const investigatorName = state.investigator?.name || 'Investigador';
+  const investigatorRole = state.investigator?.role || 'Auditor Credenciado';
+  const investigatorLevel = state.investigator?.level || 1;
 
   return (
     <div className="relative rounded-3xl overflow-hidden border border-amber-500/35 bg-[#050811] shadow-[0_25px_70px_rgba(0,0,0,0.95)] select-none font-sans max-w-7xl mx-auto mb-12">
@@ -228,18 +238,18 @@ export const InvestigatorProfileView: React.FC = () => {
                   <div className="flex items-center gap-3.5">
                     <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-amber-500 via-amber-300 to-amber-700 p-[2px] shadow-lg flex items-center justify-center shrink-0">
                       <div className="w-full h-full rounded-2xl bg-[#060A12] flex items-center justify-center text-amber-300 font-serif text-xl sm:text-2xl font-bold">
-                        {state.investigator.name.charAt(0).toUpperCase()}
+                        {investigatorName.charAt(0).toUpperCase()}
                       </div>
                     </div>
                     <div>
                       <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/15 border border-amber-400/40 text-[10px] font-mono uppercase tracking-wider text-amber-300 font-bold">
-                        {state.investigator.role || 'Auditor Credenciado'}
+                        {investigatorRole}
                       </div>
                       <h2 className="text-lg sm:text-2xl font-bold text-white mt-1">
-                        {state.investigator.name}
+                        {investigatorName}
                       </h2>
                       <div className="text-xs sm:text-sm font-mono text-cyan-300">
-                        Nível {state.investigator.level} // {state.totalXp} XP Acumulado
+                        Nível {investigatorLevel} // {state.totalXp} XP Acumulado
                       </div>
                     </div>
                   </div>
@@ -250,7 +260,7 @@ export const InvestigatorProfileView: React.FC = () => {
                       CREDENCIAL STRATA
                     </div>
                     <div className="text-xs text-slate-200 font-semibold">
-                      NÍVEL DE ACESSO {state.investigator.level}
+                      NÍVEL DE ACESSO {investigatorLevel}
                     </div>
                   </div>
                 </div>
@@ -428,19 +438,19 @@ export const InvestigatorProfileView: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <SemiCircleGauge
                   label="Caos Global"
-                  value={state.metrics.caosGlobal}
+                  value={state.metrics?.caosGlobal ?? 48}
                   color="#f59e0b"
                   subtitle="Tensão geopolítica acumulada nas simulações"
                 />
                 <SemiCircleGauge
                   label="Livre-Arbítrio"
-                  value={state.metrics.livreArbitrio}
+                  value={state.metrics?.livreArbitrio ?? 52}
                   color="#10b981"
                   subtitle="Grau de autonomia humana preservado"
                 />
                 <SemiCircleGauge
                   label="Suspeita"
-                  value={state.metrics.suspeita}
+                  value={state.metrics?.suspeita ?? 18}
                   color="#06b6d4"
                   subtitle="Exposição operacional perante o protocolo"
                 />
@@ -472,22 +482,23 @@ export const InvestigatorProfileView: React.FC = () => {
               {allNodes.map((node, index) => {
                 const isQuarantine = node.status === 'quarentena' || !node.isVolumeOne;
                 const isCompleted = state.completedNodes.includes(node.id);
-                const extractedCount = (state.extractedCluesByCase?.[node.id] || []).length;
-                const solvedCount = (state.solvedConnectionsByCase?.[node.id] || []).length;
+                const prog = getCasePlayProgress(node.id);
+                const extractedCount = prog?.extractedClueIds?.length || 0;
+                const solvedCount = prog?.solvedConnectionIds?.length || 0;
                 const totalCaseClues = (node.documents || []).reduce(
                   (acc, d) => acc + d.clues.length,
                   0
                 );
-                const chosenThesisId = state.selectedHypothesisByCase?.[node.id];
-                const chosenThesis = (node.theses || []).find(t => t.id === chosenThesisId);
-                const chosenDecisionId = state.selectedDecisionByCase?.[node.id];
+                const chosenThesis = (node.hypothesisTheses || []).find(
+                  t => t.id === prog?.selectedThesisId
+                );
                 const chosenDecision = (node.simulationChoices || []).find(
-                  c => c.id === chosenDecisionId
+                  c => c.id === prog?.selectedDecisionId
                 );
                 const isInProgress =
                   !isQuarantine &&
                   !isCompleted &&
-                  (extractedCount > 0 || solvedCount > 0 || Boolean(chosenThesisId));
+                  (extractedCount > 0 || solvedCount > 0 || Boolean(prog?.selectedThesisId));
 
                 return (
                   <div
@@ -688,8 +699,8 @@ export const InvestigatorProfileView: React.FC = () => {
             </div>
             <p className="text-xs leading-relaxed text-slate-300">
               Cada operação histórica concluída concede pontos de experiência (XP) de acordo com as
-              pistas extraídas na Etapa 1, os vínculos comprovados na Etapa 2, a consistência da
-              hipótese na Etapa 3 e a decisão estratégica na Etapa 4.
+              pistas extraídas na Etapa 1 (+15 a +30 XP), os vínculos comprovados na Etapa 2 (+50 XP),
+              a consistência da hipótese na Etapa 3 (+25 a +100 XP) e a decisão estratégica na Etapa 4 (+50 XP).
             </p>
           </div>
         </div>
