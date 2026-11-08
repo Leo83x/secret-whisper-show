@@ -186,7 +186,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      className="fixed inset-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
+      className="fixed inset-0 top-0 left-0 !mt-0 !m-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
       style={{ perspective: '1300px' }}
     >
       {/* =====================================================================
@@ -600,8 +600,8 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                 )}
               </div>
 
-              {challenges.length > 1 && (
-                <div className="flex items-center gap-1 bg-[#090D16]/75 backdrop-blur-md px-1.5 py-0.5 rounded border border-slate-700/70">
+              {challenges.length > 0 && (
+                <div className="flex items-center gap-1 bg-[#090D16]/85 backdrop-blur-md px-1.5 py-1 rounded-lg border border-amber-500/35 shadow-md">
                   {challenges.map((ch, idx) => {
                     const solved = solvedConnectionIds.includes(ch.id);
                     const active = activeChallenge?.id === ch.id;
@@ -609,18 +609,21 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                       <button
                         key={ch.id}
                         type="button"
-                        onClick={() => onSelectChallenge(ch.id)}
-                        className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all cursor-pointer flex items-center gap-1 ${
+                        onClick={() => {
+                          soundEngine.playDocumentOpen();
+                          onSelectChallenge(ch.id);
+                        }}
+                        className={`px-2.5 py-0.5 rounded text-xs font-mono transition-all cursor-pointer flex items-center gap-1 ${
                           active
-                            ? 'bg-amber-400 text-slate-950 font-bold'
+                            ? 'bg-amber-400 text-slate-950 font-bold shadow-[0_0_12px_rgba(251,191,36,0.5)]'
                             : solved
-                            ? 'text-emerald-300 hover:bg-emerald-500/20'
-                            : 'text-slate-300 hover:text-white'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
+                            : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
                         }`}
-                        title={ch.prompt}
+                        title={ch.question}
                       >
-                        {solved && <CheckCircle2 className="w-2.5 h-2.5" />}
-                        <span>V{idx + 1}</span>
+                        {solved && <CheckCircle2 className="w-3 h-3" />}
+                        <span>Vínculo #{idx + 1}</span>
                       </button>
                     );
                   })}
@@ -695,7 +698,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
               <p className="text-slate-300">{selectedCase.shortDescription}</p>
               {activeChallenge && (
                 <div className="pt-1.5 border-t border-slate-800 text-amber-200 font-medium">
-                  Vínculo Ativo: {activeChallenge.prompt}
+                  Vínculo Ativo: {activeChallenge.question}
                 </div>
               )}
             </div>
@@ -765,7 +768,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
             <span className="text-[10px] font-mono uppercase text-amber-400 font-bold block mb-0.5">
               VÍNCULO ATIVO ({solvedConnectionIds.length}/{challenges.length} COMPROVADOS) //
             </span>
-            <span>{activeChallenge.prompt}</span>
+            <span>{activeChallenge.question}</span>
           </div>
         )}
 
@@ -875,7 +878,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
           <span className="text-slate-400">•</span>
           <span className="text-slate-200 text-xs truncate max-w-[68vw] sm:max-w-md">
             {activeChallenge
-              ? activeChallenge.prompt
+              ? activeChallenge.question
               : 'Selecione os nós para validar conexões'}
           </span>
           {(camRotX !== 0 || camRotY !== 0) && (

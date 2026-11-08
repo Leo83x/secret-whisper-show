@@ -13,11 +13,28 @@ import {
   Volume2,
   VolumeX,
   Sliders,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 
 export const InvestigationHeader: React.FC = () => {
   const { state, setActiveTab, isAuthenticated, setIsAuthModalOpen } = useInvestigation();
   const [audioMenuOpen, setAudioMenuOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.().catch(() => {});
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+    }
+  };
   const [audioSettings, setAudioSettings] = useState<AudioAndMotionSettings>(() =>
     soundEngine.getSettings()
   );

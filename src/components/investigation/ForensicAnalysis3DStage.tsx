@@ -173,7 +173,7 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      className="fixed inset-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
+      className="fixed inset-0 top-0 left-0 !mt-0 !m-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
       style={{ perspective: '1300px' }}
     >
       {/* 1. CENÁRIO 3D REALISTA DE FUNDO (SALA DE ANÁLISE & PASTA PERICIAL) */}

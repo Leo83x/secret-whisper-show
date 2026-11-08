@@ -53,32 +53,42 @@ export const WorldMapView: React.FC = () => {
   });
 
   return (
-    <div className="space-y-5 mt-2 sm:mt-4">
+    <div className="flex-1 flex flex-col justify-between gap-2.5 lg:h-full lg:min-h-0">
       
-      {/* 1. TOPO DO MAPA & FILTROS DE ERA */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b border-amber-500/20 pb-4 w-full">
-        <div className="w-full lg:w-auto">
-          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.2em] text-amber-400/90 mb-1">
-            <Globe2 className="w-3.5 h-3.5 text-amber-400" />
-            <span>Cartografia de Convergência // O Padrão</span>
+      {/* 1. BARRA TÁTICA COMPACTA DE COMANDO DO MAPA-MÚNDI (MODO JOGO FULL-SCREEN) */}
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-[#09101D]/90 border border-amber-500/25 shrink-0">
+        <div className="flex flex-wrap items-center gap-3 min-w-0">
+          <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
+            <Globe2 className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>MAPA DE OPERAÇÕES //</span>
           </div>
-          <h2 className="font-sans text-lg sm:text-2xl md:text-3xl font-bold tracking-wider uppercase text-white leading-tight">
+          <h2 className="font-sans text-sm sm:text-base font-bold tracking-wide uppercase text-white truncate">
             CONECTE O PASSADO. DESCUBRA O <span className="text-amber-400">PADRÃO.</span>
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 font-sans mt-1">
-            Examine os registros históricos de cada época, valide conexões fundamentadas e revele os elos ocultos no mapa.
-          </p>
+          <div className="hidden xl:flex items-center gap-3 text-xs font-mono text-slate-300 border-l border-slate-700 pl-3">
+            <span>
+              Missões: <strong className="text-amber-300">{stats.completedCount}/{stats.totalVol1}</strong>
+            </span>
+            <span>•</span>
+            <span>
+              Pistas: <strong className="text-emerald-300">{stats.totalCluesExtracted}</strong>
+            </span>
+            <span>•</span>
+            <span>
+              Mérito: <strong className="text-cyan-300">{state.totalXp} XP</strong>
+            </span>
+          </div>
         </div>
 
         {/* Pílulas de Filtro de Época */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-1.5 shrink-0">
           {eras.map((era) => {
             const active = state.eraFilter === era.key;
             return (
               <button
                 key={era.key}
                 onClick={() => setEraFilter(era.key)}
-                className={`px-3 py-1.5 rounded-full text-xs font-mono whitespace-nowrap transition-all cursor-pointer border ${
+                className={`px-2.5 py-1 rounded-full text-xs font-mono whitespace-nowrap transition-all cursor-pointer border ${
                   active
                     ? 'bg-amber-500/20 text-amber-300 border-amber-400 shadow-[0_0_12px_rgba(212,175,55,0.25)] font-semibold'
                     : 'bg-[#0B1320]/80 text-slate-400 border-slate-700/60 hover:border-amber-500/40 hover:text-slate-200'
@@ -91,14 +101,14 @@ export const WorldMapView: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. GRID PRINCIPAL: MAPA INTERATIVO (8 COLUNAS) + PAINEL LATERAL (4 COLUNAS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* 2. GRID PRINCIPAL FULL-HEIGHT: MAPA INTERATIVO (8 COLUNAS) + PAINEL LATERAL (4 COLUNAS) */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch lg:min-h-0">
         
         {/* COLUNA CENTRAL: CONTAINER DO MAPA-MÚNDI + RÉGUA CRONOLÓGICA INTEGRADA */}
-        <div className="lg:col-span-8 flex flex-col rounded-2xl bg-gradient-to-b from-[#060A12] via-[#090E17] to-[#04060B] border border-amber-500/30 shadow-[0_0_35px_rgba(0,0,0,0.85)] overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col justify-between rounded-2xl bg-gradient-to-b from-[#060A12] via-[#090E17] to-[#04060B] border border-amber-500/35 shadow-[0_0_35px_rgba(0,0,0,0.85)] overflow-hidden lg:h-full lg:min-h-0">
           
-          {/* CANVAS GEOGRÁFICO */}
-          <div className="relative w-full h-[460px] sm:h-[520px] overflow-hidden select-none">
+          {/* CANVAS GEOGRÁFICO EXPANSÍVEL */}
+          <div className="relative w-full h-[380px] sm:h-[460px] lg:h-auto lg:flex-1 overflow-hidden select-none min-h-0">
             
             {/* Efeito Sutil de Radar / Pontos Estelares */}
             <div
@@ -376,14 +386,14 @@ export const WorldMapView: React.FC = () => {
         </div>
 
         {/* COLUNA DIREITA: PAINEL LATERAL "CASO EM DESTAQUE" (4 COLUNAS) */}
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 flex flex-col lg:h-full lg:min-h-0">
           <CaseDrawer />
         </div>
 
       </div>
 
-      {/* 3. RODAPÉ DE TELEMETRIA INDIVIDUAL REAL */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-[#0B1320]/90 border border-amber-500/20">
+      {/* 3. RODAPÉ DE TELEMETRIA (EXIBIDO NO MOBILE/TABLET) */}
+      <div className="xl:hidden flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-xl bg-[#0B1320]/90 border border-amber-500/20 shrink-0">
         <div className="w-full sm:w-1/2 space-y-1.5">
           <div className="flex justify-between text-xs font-mono">
             <span className="text-slate-300 uppercase tracking-wider">Progresso na Investigação (Volume I):</span>

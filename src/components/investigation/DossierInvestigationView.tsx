@@ -305,12 +305,20 @@ export const DossierInvestigationView: React.FC = () => {
   const isActiveChallengeSolved =
     activeChallenge && progress.solvedConnectionIds.includes(activeChallenge.id);
 
+  const isAny3DStageActive =
+    (state.activeStep === 1 && is3DStageOne) ||
+    (state.activeStep === 2 && is3DStageTwo) ||
+    (state.activeStep === 3 && is3DStageThree) ||
+    (state.activeStep === 4 && is3DStageFour) ||
+    (state.activeStep === 5 && is3DStageFive);
+
   return (
-    <div className="space-y-6 max-w-full overflow-x-hidden">
+    <div className={isAny3DStageActive ? 'max-w-full overflow-x-hidden' : 'space-y-6 max-w-full overflow-x-hidden'}>
       
       {/* =====================================================================
-          1. BARRA DE CONTEXTO ENXUTA + SUBNÍVEL RETRÁTIL DE BRIEFING + ARQUIVO PESSOAL
+          1. BARRA DE CONTEXTO ENXUTA (EXIBIDA APENAS NO MODO 2D)
          ===================================================================== */}
+      {!isAny3DStageActive && (
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
           
@@ -396,6 +404,7 @@ export const DossierInvestigationView: React.FC = () => {
           </div>
         )}
       </div>
+      )}
 
       {/* ALERTA CONTEXTUAL DE AUDITORIA (QUANDO CONTRADIÇÃO É DESCOBERTA) */}
       {contradictionAlert && (
@@ -865,11 +874,11 @@ export const DossierInvestigationView: React.FC = () => {
           {/* Direita (8 cols): Mesa Visual de Investigação (Perspectiva Topográfica 3D Inclinada) */}
           <div
             className="lg:col-span-8 min-w-0"
-            style={{ perspective: is3DTableStageTwo ? '1100px' : 'none' }}
+            style={{ perspective: 'none' }}
           >
           <div
             style={{
-              transform: is3DTableStageTwo ? 'rotateX(6deg)' : 'none',
+              transform: 'none',
               transformOrigin: 'center top',
             }}
             className="space-y-6 rounded-2xl bg-gradient-to-b from-[#0E1726] to-[#080D18] border-2 border-amber-500/35 p-6 sm:p-8 shadow-[0_25px_60px_rgba(0,0,0,0.9)] transition-transform duration-500"

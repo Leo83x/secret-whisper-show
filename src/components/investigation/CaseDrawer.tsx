@@ -62,7 +62,7 @@ export const CaseDrawer: React.FC = () => {
 
   return (
     <>
-      <div className="rounded-2xl bg-[#0B1320]/95 backdrop-blur-md border border-amber-500/35 shadow-[0_0_25px_rgba(212,175,55,0.12)] overflow-hidden flex flex-col font-sans">
+      <div className="rounded-2xl bg-[#0B1320]/95 backdrop-blur-md border border-amber-500/35 shadow-[0_0_25px_rgba(212,175,55,0.12)] overflow-hidden flex flex-col font-sans lg:h-full lg:min-h-0">
         
         {/* Cabeçalho do Card + Status da Investigação */}
         <div className="px-4 py-3 border-b border-amber-500/20 flex items-center justify-between bg-gradient-to-r from-amber-500/10 to-transparent">
@@ -90,7 +90,7 @@ export const CaseDrawer: React.FC = () => {
         </div>
 
         {/* Imagem Ilustrativa do Personagem / Evento */}
-        <div className="relative h-44 w-full overflow-hidden bg-slate-950 border-b border-amber-500/20">
+        <div className="relative h-36 xl:h-44 w-full overflow-hidden bg-slate-950 border-b border-amber-500/20 shrink-0">
           <img
             src={selectedCase.dossierCover || selectedCase.image}
             onError={(e) => {
@@ -118,7 +118,7 @@ export const CaseDrawer: React.FC = () => {
         </div>
 
         {/* Corpo Descritivo */}
-        <div className="p-4 sm:p-5 space-y-4 flex-1 flex flex-col justify-between">
+        <div className="p-4 space-y-3 flex-1 flex flex-col justify-between lg:overflow-y-auto lg:min-h-0">
           <div className="space-y-4">
             <p className="text-sm text-slate-200 leading-relaxed font-sans">
               {selectedCase.shortDescription}

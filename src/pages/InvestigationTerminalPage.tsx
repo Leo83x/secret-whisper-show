@@ -48,7 +48,13 @@ const TerminalContent: React.FC = () => {
         <>
           <InvestigationHeader />
 
-          <main className="flex-1 max-w-7xl w-full min-w-0 mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-12 overflow-x-hidden">
+          <main
+            className={
+              state.activeTab === 'mapa'
+                ? 'flex-1 w-full max-w-[1920px] min-w-0 mx-auto px-2.5 sm:px-4 py-2 pb-20 md:pb-2.5 lg:h-[calc(100dvh-53px)] lg:overflow-hidden flex flex-col'
+                : 'flex-1 max-w-7xl w-full min-w-0 mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-12 overflow-x-hidden'
+            }
+          >
             {state.activeTab === 'mapa' && <WorldMapView />}
             {state.activeTab === 'missoes' && <MissionsView />}
             {state.activeTab === 'comunidade' && <CommunityView />}
