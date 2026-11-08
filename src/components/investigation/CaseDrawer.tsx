@@ -232,10 +232,10 @@ export const CaseDrawer: React.FC = () => {
             {!isQuarantine ? (
               <button
                 onClick={() => {
-                  soundEngine.playDocumentOpen();
+                  soundEngine.playBrassPress();
                   startCaseInvestigation(selectedCase.id);
                 }}
-                className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-[#060A12] font-sans font-bold text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(245,158,11,0.35)] hover:shadow-[0_0_28px_rgba(245,158,11,0.6)] hover:brightness-105 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="game-btn-primary w-full py-3.5 px-5 font-sans font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>{isCompleted ? 'REVISAR INVESTIGAÇÃO' : 'INVESTIGAR CASO'}</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
@@ -246,7 +246,7 @@ export const CaseDrawer: React.FC = () => {
                   soundEngine.playErrorPulse();
                   setShowRestrictedModal(true);
                 }}
-                className="w-full py-3 px-4 rounded-xl bg-red-950/30 hover:bg-red-950/50 border border-red-500/40 text-red-300 font-mono text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
+                className="game-btn-capsule w-full py-3 px-4 !border-red-500/50 !text-red-200 font-mono text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
               >
                 <ShieldAlert className="w-4 h-4 text-red-400 shrink-0" />
                 <span>ACESSO RESTRITO — VER CONDIÇÕES</span>

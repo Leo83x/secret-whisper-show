@@ -50,7 +50,7 @@ const TerminalContent: React.FC = () => {
   }, []);
 
   const handleEnterGameFullscreen = async () => {
-    soundEngine.playDocumentOpen();
+    soundEngine.playBrassPress();
     setShowFullscreenModal(false);
     try {
       const el = document.documentElement as HTMLElement & {
@@ -84,7 +84,7 @@ const TerminalContent: React.FC = () => {
       {/* MODAL DE INICIALIZAÇÃO EM MODO JOGO (TELA CHEIA TOTAL NA HOME) */}
       {showFullscreenModal && (
         <div className="fixed inset-0 z-[120] bg-[#03060C]/90 backdrop-blur-xl flex items-center justify-center p-4 select-none animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-2xl bg-gradient-to-b from-[#0B1322] to-[#060A12] border border-amber-500/45 shadow-[0_0_80px_rgba(245,158,11,0.22)] p-6 sm:p-7 text-center space-y-5 overflow-hidden">
+          <div className="relative w-full max-w-md rounded-2xl bg-gradient-to-b from-[#10192D] via-[#0A101D] to-[#060A12] border-2 border-amber-400/60 shadow-[0_25px_90px_rgba(0,0,0,0.95),0_0_70px_rgba(245,158,11,0.25)] p-6 sm:p-7 text-center space-y-5 overflow-hidden game-modal-object">
             {/* Brilho Superior */}
             <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-36 bg-amber-500/15 blur-3xl pointer-events-none" />
 
@@ -139,7 +139,7 @@ const TerminalContent: React.FC = () => {
               <button
                 type="button"
                 onClick={handleEnterGameFullscreen}
-                className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-sans font-bold text-sm tracking-wide shadow-[0_0_25px_rgba(245,158,11,0.45)] flex items-center justify-center gap-2.5 cursor-pointer transition-all transform active:scale-[0.99]"
+                className="game-btn-primary w-full py-3.5 px-5 font-sans font-extrabold text-sm tracking-wider flex items-center justify-center gap-2.5 cursor-pointer"
               >
                 <Maximize2 className="w-4 h-4 stroke-[2.5]" />
                 <span>ATIVAR TELA CHEIA (MODO JOGO)</span>
@@ -148,7 +148,7 @@ const TerminalContent: React.FC = () => {
               <button
                 type="button"
                 onClick={handleContinueWindowed}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#0B1320]/80 hover:bg-slate-800/80 border border-slate-700/80 text-xs font-mono text-slate-300 hover:text-white cursor-pointer transition-all"
+                className="game-btn-capsule w-full py-2.5 px-4 text-xs font-mono cursor-pointer"
               >
                 Continuar em Modo Janela
               </button>

@@ -1,5 +1,12 @@
-import React, { useEffect } from 'react';
-import { Sparkles, ArrowRight, GitCommit, X } from 'lucide-react';
+import React from 'react';
+import { Sparkles, ArrowRight, GitCommit, Globe } from 'lucide-react';
+import {
+  CinematicModal,
+  DecisionStamp,
+  DiscoveryAnimation,
+  GameButton,
+  GameIconButton,
+} from './GameInteractionSystem';
 
 interface DiscoveryRevealModalProps {
   isOpen: boolean;
@@ -22,102 +29,106 @@ export const DiscoveryRevealModal: React.FC<DiscoveryRevealModalProps> = ({
   targetNames,
   onInspectMap,
 }) => {
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
-
   if (!isOpen) return null;
 
   return (
-    <div
-      role="dialog"
-      data-immersive-modal="true"
-      aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-300 font-sans"
+    <CinematicModal
+      isOpen={isOpen}
+      onClose={onClose}
+      variant="revelation"
+      folderCode="DESCOBERTA DE CAMPO // RESSONÂNCIA HISTÓRICA REGISTRADA"
     >
-      <div className="relative w-full max-w-xl rounded-2xl bg-[#0B1320] border-2 border-amber-400/70 shadow-[0_0_60px_rgba(245,158,11,0.3)] overflow-hidden p-5 sm:p-6 space-y-5 text-center">
-        
-        <button
-          onClick={onClose}
-          title="Fechar (Esc)"
-          className="absolute top-4 right-4 p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white cursor-pointer"
-        >
-          <X className="w-4 h-4" />
-        </button>
+      <div className="relative p-6 sm:p-8 space-y-6 text-center">
+        <DiscoveryAnimation active={isOpen} />
 
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-mono uppercase tracking-widest font-bold">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>NOVA DESCOBERTA // ELO HISTÓRICO COMPROVADO</span>
+        <div className="flex flex-col items-center gap-3 relative z-20">
+          <DecisionStamp label="ELO HISTÓRICO COMPROVADO" tone="emerald" />
+          <h3 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight max-w-2xl">
+            {title}
+          </h3>
         </div>
 
-        <h3 className="font-sans text-lg sm:text-xl font-bold text-white tracking-normal">
-          {title}
-        </h3>
-
-        {/* Mini-Mapa Visual de Ressonância com Arco Dourado Animado */}
-        <div className="relative h-36 rounded-xl bg-[#060A12] border border-amber-500/30 overflow-hidden flex items-center justify-around px-6">
+        {/* Mapa Cinematográfico de Ressonância com Arco Luminoso */}
+        <div className="relative h-44 sm:h-48 rounded-2xl bg-[#050811] border border-amber-400/45 overflow-hidden flex items-center justify-around px-6 shadow-[inset_0_0_40px_rgba(0,0,0,0.9)] z-20">
           <img
             src="/dossiers/world_map_bg.webp"
             alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-35 pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
           />
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 140">
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 160">
+            <defs>
+              <filter id="revArcGlow">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
             <path
-              d="M 80 85 Q 200 15 320 85"
+              d="M 75 100 Q 200 18 325 100"
               fill="none"
               stroke="#fbbf24"
-              strokeWidth="2.5"
-              strokeDasharray="6 4"
+              strokeWidth="3"
+              strokeDasharray="7 4"
+              filter="url(#revArcGlow)"
             />
           </svg>
 
-          <div className="relative z-10 flex flex-col items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-amber-400 shadow-[0_0_15px_#fbbf24]" />
-            <span className="text-xs font-bold text-white bg-black/70 px-2 py-0.5 rounded">
+          <div className="relative z-10 flex flex-col items-center gap-1.5">
+            <div className="w-5 h-5 rounded-full bg-amber-400 border-2 border-white shadow-[0_0_20px_#fbbf24] animate-pulse" />
+            <span className="text-xs sm:text-sm font-bold text-white bg-[#060A12]/90 border border-amber-400/40 px-3 py-1 rounded-full">
               {sourceName}
             </span>
-            <span className="text-[10px] font-mono text-amber-300">{sourceYear}</span>
+            <span className="text-[11px] font-mono text-amber-300">{sourceYear}</span>
           </div>
 
-          <GitCommit className="relative z-10 w-6 h-6 text-amber-400" />
+          <div className="relative z-10 w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/60 flex items-center justify-center text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.35)]">
+            <GitCommit className="w-5 h-5" />
+          </div>
 
-          <div className="relative z-10 flex flex-col items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-cyan-400 shadow-[0_0_15px_#22d3ee]" />
-            <span className="text-xs font-bold text-white bg-black/70 px-2 py-0.5 rounded">
+          <div className="relative z-10 flex flex-col items-center gap-1.5">
+            <div className="w-5 h-5 rounded-full bg-cyan-400 border-2 border-white shadow-[0_0_20px_#22d3ee]" />
+            <span className="text-xs sm:text-sm font-bold text-white bg-[#060A12]/90 border border-cyan-400/40 px-3 py-1 rounded-full">
               {targetNames.join(' & ') || 'Ponto Conectado'}
             </span>
-            <span className="text-[10px] font-mono text-cyan-300">Ressonância Ativa</span>
+            <span className="text-[11px] font-mono text-cyan-300 flex items-center gap-1">
+              <Sparkles className="w-3 h-3" /> Conexão Ativa
+            </span>
           </div>
         </div>
 
-        <p className="text-sm text-slate-200 leading-relaxed text-left bg-[#060A12]/90 border border-slate-800 p-4 rounded-xl">
-          {conclusion}
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
-          {onInspectMap && (
-            <button
-              onClick={onInspectMap}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 text-xs font-mono uppercase tracking-wider cursor-pointer transition-all"
-            >
-              Ver Arco no Mapa Mundial
-            </button>
-          )}
-          <button
-            onClick={onClose}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.35)]"
-          >
-            <span>Continuar Investigação</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+        {/* Síntese Progressiva da Descoberta */}
+        <div className="relative z-20 text-left bg-[#060A12]/90 border border-amber-500/30 p-4 sm:p-5 rounded-xl shadow-inner space-y-1.5">
+          <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-amber-300 font-bold">
+            REGISTRO PERICIAL DO COMPÊNDIO
+          </div>
+          <p className="text-sm sm:text-base text-slate-100 leading-relaxed">
+            {conclusion}
+          </p>
         </div>
 
+        <div className="relative z-20 flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+          {onInspectMap && (
+            <GameIconButton
+              onClick={onInspectMap}
+              icon={<Globe className="w-4 h-4 text-cyan-300" />}
+              className="w-full sm:w-auto px-5 py-2.5"
+            >
+              Inspecionar Arco no Mapa
+            </GameIconButton>
+          )}
+          <GameButton
+            size="lg"
+            soundType="discovery"
+            onClick={onClose}
+            rightIcon={<ArrowRight className="w-4 h-4 stroke-[2.5]" />}
+            className="w-full sm:w-auto"
+          >
+            Prosseguir Operação
+          </GameButton>
+        </div>
       </div>
-    </div>
+    </CinematicModal>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EvidenceDocument } from '../../types/investigation';
+import { soundEngine } from '../../utils/investigationAudio';
 import {
   X,
   ZoomIn,
@@ -126,6 +127,7 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
   // Restaura memória de sessão ao abrir ou trocar documento
   useEffect(() => {
     if (!isOpen) return;
+    soundEngine.playPaperRustle();
     const mem = docSessionMemory[document.id];
     if (mem) {
       setZoom(mem.zoom);
@@ -196,9 +198,15 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
       data-immersive-modal="true"
       aria-modal="true"
       aria-labelledby="inspector-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 font-sans"
+      onClick={e => {
+        if (e.target === e.currentTarget) {
+          soundEngine.playMechanicalClick();
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-[115] flex items-center justify-center p-2 sm:p-4 bg-[#03050A]/80 backdrop-blur-xl animate-in fade-in duration-200 font-sans"
     >
-      <div className="relative w-full max-w-6xl max-h-[92vh] rounded-2xl bg-[#0B1320] border border-amber-500/40 shadow-[0_0_50px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col font-sans">
+      <div className="relative w-[96vw] max-w-[1440px] h-[90dvh] rounded-2xl bg-gradient-to-b from-[#101828] via-[#0A101C] to-[#060A12] border-2 border-amber-400/55 shadow-[0_25px_95px_rgba(0,0,0,0.95),0_0_60px_rgba(212,175,55,0.22)] overflow-hidden flex flex-col font-sans game-modal-object game-light-scan">
         
         {/* Top Bar do Visualizador (Sem Serifa no Título Operacional!) */}
         <div className="px-4 sm:px-5 py-3 bg-[#060A12] border-b border-amber-500/25 flex flex-wrap items-center justify-between gap-3">
@@ -270,7 +278,7 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
             <button
               ref={closeBtnRef}
               onClick={onClose}
-              className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 cursor-pointer transition-colors shrink-0"
+              className="game-btn-capsule p-2 cursor-pointer shrink-0"
               title="Fechar visualizador (Tecla Esc)"
             >
               <X className="w-5 h-5" />
@@ -458,7 +466,7 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
                       className={`p-4 rounded-xl border transition-all cursor-pointer space-y-2 ${
                         isSaved
                           ? 'bg-emerald-950/30 border-emerald-500/50'
-                          : 'bg-[#060A12] border-amber-500/40 hover:border-amber-400'
+                          : 'bg-[#060A12]/90 border-amber-500/45 hover:border-amber-300 game-hotspot-artifact cursor-game-inspect'
                       }`}
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -477,7 +485,7 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
                           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold shrink-0 cursor-pointer ${
                             isSaved
                               ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                              : 'bg-amber-500 hover:bg-amber-400 text-slate-950'
+                              : 'game-btn-primary px-3.5 py-1.5'
                           }`}
                         >
                           {isSaved ? (

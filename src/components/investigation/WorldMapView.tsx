@@ -87,7 +87,7 @@ export const WorldMapView: React.FC = () => {
             return (
               <button
                 key={era.key}
-                onClick={() => setEraFilter(era.key)}
+                onClick={() => { soundEngine.playMechanicalClick(); setEraFilter(era.key); }}
                 className={`px-2.5 py-1 rounded-full text-xs font-mono whitespace-nowrap transition-all cursor-pointer border ${
                   active
                     ? 'bg-amber-500/20 text-amber-300 border-amber-400 shadow-[0_0_12px_rgba(212,175,55,0.25)] font-semibold'

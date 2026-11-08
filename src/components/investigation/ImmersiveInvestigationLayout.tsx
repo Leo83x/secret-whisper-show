@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import { soundEngine, AudioAndMotionSettings } from '../../utils/investigationAudio';
+import { CinematicModal, GameButton, GameIconButton, SceneTransition } from './GameInteractionSystem';
 import {
   ShieldCheck,
   Volume2,
@@ -127,10 +128,11 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
       subtitle = 'Estado da investigação preservado.';
     }
 
+    soundEngine.playStageTransition();
     setStageTransition({ from, to, title, subtitle });
     const timer = setTimeout(() => {
       setStageTransition(null);
-    }, 280);
+    }, 680);
 
     return () => clearTimeout(timer);
   }, [state.activeStep, selectedCase.id, audioSettings.reduceMotion]);
@@ -564,30 +566,12 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
         
         {/* Banner Rápido de Coreografia de Transição entre Etapas */}
         {stageTransition && (
-          <div
-            aria-live="polite"
-            className="mb-5 p-3.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-cyan-500/10 to-transparent border border-amber-400/40 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
-                {stageTransition.to === 2 ? (
-                  <GitCommit className="w-4 h-4" />
-                ) : stageTransition.to === 5 ? (
-                  <FileCheck2 className="w-4 h-4" />
-                ) : (
-                  <FolderArchive className="w-4 h-4" />
-                )}
-              </div>
-              <div className="min-w-0">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold">
-                  {stageTransition.title}
-                </div>
-                <div className="text-xs text-slate-200 truncate">
-                  {stageTransition.subtitle}
-                </div>
-              </div>
-            </div>
-          </div>
+          <SceneTransition
+            stepNumber={stageTransition.to}
+            title={stageTransition.title}
+            subtitle={stageTransition.subtitle}
+            eraLabel={`${selectedCase.missionCode || 'OPERAÇÃO'} • ${selectedCase.location} (${selectedCase.year})`}
+          />
         )}
 
         <div
@@ -608,7 +592,7 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
           aria-labelledby="exit-operation-title"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 font-sans"
         >
-          <div className="relative w-full max-w-md rounded-2xl bg-[#0B1320] border border-amber-500/40 shadow-[0_0_50px_rgba(0,0,0,0.95)] p-6 space-y-5">
+          <div className="relative w-full max-w-md rounded-2xl bg-gradient-to-b from-[#101829] via-[#0A101D] to-[#060A12] border-2 border-amber-400/55 shadow-[0_25px_90px_rgba(0,0,0,0.95)] p-6 space-y-5 game-modal-object">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
                 <Compass className="w-5 h-5" />
@@ -653,13 +637,13 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
             <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-1">
               <button
                 onClick={() => setExitModalOpen(false)}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-slate-200 cursor-pointer"
+                className="game-btn-capsule w-full sm:w-auto px-4 py-2.5 text-xs font-mono cursor-pointer"
               >
                 Continuar Investigando [Esc]
               </button>
               <button
                 onClick={handleConfirmExitToMap}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-lg"
+                className="game-btn-primary w-full sm:w-auto px-5 py-2.5 font-sans font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Voltar ao Mapa Mundial</span>

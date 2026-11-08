@@ -322,7 +322,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
 
   return (
     <div
-      className="fixed inset-0 top-0 left-0 !mt-0 !m-0 z-50 w-screen h-[100dvh] bg-[#04060B] overflow-hidden select-none font-sans flex flex-col justify-between"
+      className="fixed inset-0 top-0 left-0 !mt-0 !m-0 z-50 w-screen h-[100dvh] bg-[#04060B] overflow-hidden select-none font-sans flex flex-col justify-between cursor-game-grab"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -499,11 +499,11 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                   setBriefingOpen(o => !o);
                   setStepMenuOpen(false);
                 }}
-                className="px-3 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-amber-400/60 text-xs font-sans text-slate-200 flex items-center gap-1.5 cursor-pointer transition-all shadow-lg"
+                className="game-btn-capsule px-3.5 py-1.5 text-xs font-mono flex items-center gap-1.5 cursor-pointer"
               >
-                <span className="text-amber-400 font-sans italic font-bold">[ i</span>
+                <span className="text-amber-400 font-serif italic font-bold">i</span>
                 <span>Briefing</span>
-                <span className="text-amber-400 font-sans">]</span>
+                
               </button>
 
               <button
@@ -513,7 +513,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                   setStepMenuOpen(o => !o);
                   setBriefingOpen(false);
                 }}
-                className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/90 hover:bg-[#131D31] backdrop-blur-md border border-amber-500/40 text-xs font-sans text-slate-200 flex items-center gap-2 cursor-pointer transition-all shadow-lg"
+                className="game-btn-capsule game-btn-capsule-active px-4 py-1.5 text-xs font-mono flex items-center gap-2 cursor-pointer"
               >
                 <span>
                   <strong className="text-amber-400">1. Observar</strong> Evidências (Etapa Ativa)
@@ -579,19 +579,17 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
             <button
               type="button"
               onClick={onSwitchTo2D}
-              className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-amber-400/60 text-xs sm:text-sm font-sans text-slate-200 cursor-pointer transition-all shadow-lg"
+              className="game-btn-capsule px-3.5 py-1.5 text-xs font-mono cursor-pointer"
             >
-              <span className="text-amber-400">[</span> Alternar:{' '}
-              <strong className="text-amber-300">3D</strong> / Leitura 2D{' '}
-              <span className="text-amber-400">]</span>
+              Alternar:{' '}
+              <strong className="text-amber-300">3D</strong> / Leitura 2D
             </button>
 
             <button
               type="button"
               onClick={onOpenArchiveDrawer}
-              className="px-3.5 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-cyan-400/60 text-xs sm:text-sm font-sans text-slate-200 flex items-center gap-1.5 cursor-pointer transition-all shadow-lg"
+              className="game-btn-capsule px-3.5 py-1.5 text-xs font-mono flex items-center gap-1.5 cursor-pointer"
             >
-              <span className="text-amber-400">[</span>
               <FolderOpen className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>
                 Arquivo Pessoal:{' '}
@@ -600,13 +598,12 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 </strong>{' '}
                 Pistas
               </span>
-              <span className="text-amber-400">]</span>
             </button>
 
             <button
               type="button"
               onClick={() => soundEngine.updateSettings({ mutedAll: !muted })}
-              className="p-2 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-700/80 text-cyan-300 cursor-pointer shadow-lg"
+              className="game-btn-capsule p-2 text-cyan-300 cursor-pointer"
               title={muted ? 'Reativar Áudio' : 'Silenciar Áudio'}
             >
               {muted ? (
@@ -619,7 +616,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
             <button
               type="button"
               onClick={onRequestExit}
-              className="px-3.5 py-1.5 rounded-lg bg-gradient-to-b from-[#DFBF76] to-[#B69146] hover:from-[#EAD08E] hover:to-[#C8A252] text-slate-950 font-sans font-bold text-xs sm:text-sm border border-amber-200/60 shadow-[0_0_20px_rgba(212,175,55,0.3)] cursor-pointer transition-all"
+              className="game-btn-capsule px-3.5 py-1.5 text-xs font-mono cursor-pointer"
             >
               Sair da Operação
             </button>
@@ -705,7 +702,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 );
               }}
               style={{ left: '69%', top: '27%', width: '16%', height: '28%' }}
-              className="absolute z-10 rounded-full group cursor-pointer focus:outline-none"
+              className="absolute z-10 rounded-full group cursor-game-inspect game-hotspot-artifact focus:outline-none"
               title="Alternar Luminária de Mesa (Luz Volumétrica)"
             >
               <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-7 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded bg-slate-950/90 border border-emerald-400/50 text-[10px] font-mono text-emerald-300 whitespace-nowrap shadow-lg">
@@ -724,7 +721,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 );
               }}
               style={{ left: '15%', top: '28%', width: '16%', height: '29%' }}
-              className="absolute z-10 rounded-full group cursor-pointer focus:outline-none"
+              className="absolute z-10 rounded-full group cursor-game-inspect game-hotspot-artifact focus:outline-none"
               title="Inspecionar Esfera Armilar"
             >
               <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-7 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded bg-slate-950/90 border border-amber-400/50 text-[10px] font-mono text-amber-300 whitespace-nowrap shadow-lg">
@@ -742,7 +739,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 onSelectStep(2);
               }}
               style={{ left: '81%', top: '8%', width: '17%', height: '36%' }}
-              className="absolute z-10 rounded-lg border border-transparent hover:border-amber-400/40 hover:bg-amber-500/5 transition-all group cursor-pointer focus:outline-none"
+              className="absolute z-10 rounded-lg border border-transparent hover:border-amber-400/40 hover:bg-amber-500/5 transition-all group cursor-game-inspect game-hotspot-artifact focus:outline-none"
               title="Ir para Etapa 2: Mesa de Conexões"
             >
               <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded bg-slate-950/95 border border-amber-400/60 text-[10px] font-mono text-amber-300 whitespace-nowrap shadow-lg">
@@ -947,10 +944,10 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
           <button
             type="button"
             onClick={() => {
-              soundEngine.playDocumentOpen();
+              soundEngine.playBrassPress();
               onSelectStep(2);
             }}
-            className="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-[11px] sm:text-sm uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.35)] cursor-pointer transition-all shrink-0"
+            className="game-btn-primary px-5 sm:px-6 py-2.5 font-sans font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer shrink-0"
           >
             <span>Mesa de Conexões</span>
             <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />

@@ -368,6 +368,148 @@ class InvestigationSoundEngine {
     osc.start(now);
     osc.stop(now + 0.22);
   }
+
+  // 7. Clique mecânico curto para cápsulas secundárias, abas e seletores (35ms)
+  public playMechanicalClick() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(920, now);
+    osc.frequency.exponentialRampToValueAtTime(340, now + 0.032);
+
+    gain.gain.setValueAtTime(this.settings.sfxVolume * 0.09, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.036);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.04);
+  }
+
+  // 8. Pressão física em botão metálico principal (130ms: impacto + brilho harmônico)
+  public playBrassPress() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const lowOsc = ctx.createOscillator();
+    const lowGain = ctx.createGain();
+    lowOsc.type = 'sine';
+    lowOsc.frequency.setValueAtTime(165, now);
+    lowOsc.frequency.exponentialRampToValueAtTime(92, now + 0.08);
+    lowGain.gain.setValueAtTime(this.settings.sfxVolume * 0.14, now);
+    lowGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+    lowOsc.connect(lowGain);
+    lowGain.connect(ctx.destination);
+    lowOsc.start(now);
+    lowOsc.stop(now + 0.095);
+
+    const highOsc = ctx.createOscillator();
+    const highGain = ctx.createGain();
+    highOsc.type = 'triangle';
+    highOsc.frequency.setValueAtTime(587.33, now + 0.02); // D5
+    highOsc.frequency.exponentialRampToValueAtTime(880, now + 0.13); // A5
+    highGain.gain.setValueAtTime(this.settings.sfxVolume * 0.09, now + 0.02);
+    highGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    highOsc.connect(highGain);
+    highGain.connect(ctx.destination);
+    highOsc.start(now + 0.02);
+    highOsc.stop(now + 0.16);
+  }
+
+  // 9. Manuseio de papel / pergaminho / pasta pericial (110ms ruído filtrado)
+  public playPaperRustle() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const duration = 0.11;
+    const bufferSize = Math.floor(ctx.sampleRate * duration);
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const bandpass = ctx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.setValueAtTime(1450, ctx.currentTime);
+    bandpass.Q.setValueAtTime(1.4, ctx.currentTime);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(this.settings.sfxVolume * 0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+    noise.connect(bandpass);
+    bandpass.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start();
+  }
+
+  // 10. Carimbo / Selo de Chancelaria / Assinatura de Ordem (165ms)
+  public playWaxStamp() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    // Impacto grave na madeira da mesa
+    const thud = ctx.createOscillator();
+    const thudGain = ctx.createGain();
+    thud.type = 'sine';
+    thud.frequency.setValueAtTime(118, now);
+    thud.frequency.exponentialRampToValueAtTime(42, now + 0.14);
+    thudGain.gain.setValueAtTime(this.settings.sfxVolume * 0.22, now);
+    thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+    thud.connect(thudGain);
+    thudGain.connect(ctx.destination);
+    thud.start(now);
+    thud.stop(now + 0.17);
+
+    // Ressonância metálica de autenticação
+    const chime = ctx.createOscillator();
+    const chimeGain = ctx.createGain();
+    chime.type = 'triangle';
+    chime.frequency.setValueAtTime(440, now + 0.03);
+    chime.frequency.setValueAtTime(659.25, now + 0.08);
+    chimeGain.gain.setValueAtTime(this.settings.sfxVolume * 0.11, now + 0.03);
+    chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+    chime.connect(chimeGain);
+    chimeGain.connect(ctx.destination);
+    chime.start(now + 0.03);
+    chime.stop(now + 0.3);
+  }
+
+  // 11. Transição cinematográfica entre etapas da investigação
+  public playStageTransition() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(130.81, now); // C3
+    osc.frequency.exponentialRampToValueAtTime(196.0, now + 0.34); // G3
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(this.settings.sfxVolume * 0.11, now + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.4);
+    this.playPaperRustle();
+  }
 }
 
 export const soundEngine = new InvestigationSoundEngine();

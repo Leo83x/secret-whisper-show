@@ -110,10 +110,10 @@ export const InvestigationHeader: React.FC = () => {
               <button
                 key={item.key}
                 onClick={() => {
-                  soundEngine.playDocumentOpen();
+                  soundEngine.playMechanicalClick();
                   setActiveTab(item.key);
                 }}
-                className={`relative px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-mono tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`relative px-2.5 lg:px-3 py-1.5 rounded-full text-xs font-mono tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
                   isActive
                     ? 'text-amber-300 bg-amber-500/10 shadow-[0_0_12px_rgba(212,175,55,0.15)] border border-amber-500/30 font-semibold'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent'
@@ -138,7 +138,7 @@ export const InvestigationHeader: React.FC = () => {
             data-no-autofullscreen="true"
             onClick={toggleFullscreen}
             title={isFullscreen ? 'Sair da Tela Cheia (ESC)' : 'Modo Jogo: Tela Cheia Total (Sem barras)'}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg border text-xs font-mono flex items-center justify-center gap-1.5 cursor-pointer transition-all shrink-0 ${
+            className={`game-btn-capsule px-2.5 py-1.5 text-xs font-mono flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
               isFullscreen
                 ? 'bg-amber-500/20 border-amber-400/60 text-amber-300 font-bold shadow-[0_0_12px_rgba(245,158,11,0.25)]'
                 : 'bg-[#0B1320] border-amber-500/35 text-amber-300 hover:border-amber-400 hover:bg-amber-500/10'
@@ -160,7 +160,7 @@ export const InvestigationHeader: React.FC = () => {
             aria-expanded={audioMenuOpen}
             aria-label="Controles de Som e Animação"
             title="Controles de Som e Animação"
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg border text-xs font-mono flex items-center justify-center gap-1.5 cursor-pointer transition-all shrink-0 ${
+            className={`game-btn-capsule px-2.5 py-1.5 text-xs font-mono flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
               audioSettings.mutedAll
                 ? 'bg-slate-900 border-slate-700 text-slate-400 hover:text-slate-200'
                 : 'bg-[#0B1320] border-cyan-500/30 text-cyan-300 hover:border-cyan-400'
@@ -299,7 +299,7 @@ export const InvestigationHeader: React.FC = () => {
           <button
             onClick={() => setIsAuthModalOpen(true)}
             title="Vincular e-mail de leitor ou verificar credencial"
-            className={`p-1.5 sm:px-2.5 sm:py-1 rounded-lg border text-[10px] sm:text-xs font-mono font-semibold flex items-center justify-center gap-1 cursor-pointer transition-all shrink-0 ${
+            className={`game-btn-capsule px-2.5 py-1.5 text-[10px] sm:text-xs font-mono font-semibold flex items-center justify-center gap-1 cursor-pointer shrink-0 ${
               isAuthenticated
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20'
                 : 'bg-amber-500/15 border-amber-400/40 text-amber-300 hover:bg-amber-500/25'

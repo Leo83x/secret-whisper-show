@@ -5,6 +5,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
+import { DecisionStamp, DiscoveryAnimation } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -237,7 +238,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      className="fixed inset-0 top-0 left-0 !mt-0 !m-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between"
+      className="fixed inset-0 top-0 left-0 !mt-0 !m-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between cursor-game-grab"
       style={{ perspective: '1300px' }}
     >
       {/* =====================================================================
@@ -519,7 +520,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                   width: spot.width,
                   height: spot.height,
                 }}
-                className={`hidden md:block absolute z-20 rounded-xl transition-all duration-200 cursor-pointer group ${
+                className={`hidden md:block absolute z-20 rounded-xl transition-all duration-200 cursor-game-inspect game-hotspot-artifact group ${
                   isSelected
                     ? 'ring-2 ring-amber-300/90 bg-amber-400/10 shadow-[0_0_35px_rgba(251,191,36,0.35)]'
                     : 'hover:ring-1 hover:ring-amber-300/50 hover:bg-amber-300/5'
@@ -581,7 +582,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                   left: `${spot.pinX}%`,
                   top: `${spot.pinY}%`,
                 }}
-                className="hidden md:flex absolute z-30 -translate-x-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center cursor-pointer group focus:outline-none"
+                className="hidden md:flex absolute z-30 -translate-x-1/2 -translate-y-1/2 w-8 h-8 items-center justify-center cursor-game-inspect group focus:outline-none"
                 title={clue ? `Conectar pino: ${clue.title}` : `Pino ${spot.tag}`}
               >
                 <span
@@ -637,22 +638,22 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                   soundEngine.playDocumentOpen();
                   setBriefingOpen(o => !o);
                 }}
-                className={`px-2.5 py-1 rounded border text-[11px] font-mono transition-all cursor-pointer backdrop-blur-md flex items-center gap-1.5 ${
+                className={`game-btn-capsule px-3.5 py-1.5 text-[11px] font-mono flex items-center gap-1.5 cursor-pointer ${
                   briefingOpen
                     ? 'bg-amber-500/30 border-amber-300 text-amber-100'
                     : 'bg-[#090D16]/75 border-slate-600/70 text-slate-200 hover:border-amber-400/60 hover:text-white'
                 }`}
               >
-                <span>[</span>
+                
                 <Info className="w-3 h-3 text-amber-400 italic" />
-                <span>Briefing ]</span>
+                <span>Briefing</span>
               </button>
 
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setStageMenuOpen(o => !o)}
-                  className="px-2.5 py-1 rounded bg-[#090D16]/80 hover:bg-[#111827]/90 border border-amber-500/40 text-[11px] font-mono text-slate-200 flex items-center gap-1.5 cursor-pointer backdrop-blur-md shadow-md"
+                  className="game-btn-capsule game-btn-capsule-active px-3.5 py-1.5 text-[11px] font-mono flex items-center gap-1.5 cursor-pointer"
                 >
                   <span className="text-amber-400 font-bold">2. Mesa de Conexões</span>
                   <span className="text-slate-300 hidden sm:inline">(Vista Superior)</span>
@@ -722,31 +723,31 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
             <button
               type="button"
               onClick={onSwitchTo2D}
-              className="px-2.5 py-1.5 rounded bg-[#090D16]/75 hover:bg-[#131C2E]/90 border border-slate-600/80 hover:border-amber-400/60 text-[11px] font-mono text-slate-200 hover:text-white cursor-pointer backdrop-blur-md transition-all"
+              className="game-btn-capsule px-3.5 py-1.5 text-[11px] font-mono cursor-pointer"
             >
-              [ Alternar: <span className="text-amber-300 font-semibold">3D</span> / Leitura 2D ]
+              Alternar: <span className="text-amber-300 font-semibold">3D</span> / 2D
             </button>
 
             <button
               type="button"
               onClick={onOpenArchiveDrawer}
-              className="px-2.5 py-1.5 rounded bg-[#090D16]/75 hover:bg-[#131C2E]/90 border border-slate-600/80 hover:border-amber-400/60 text-[11px] font-mono text-slate-200 hover:text-white flex items-center gap-1.5 cursor-pointer backdrop-blur-md transition-all"
+              className="game-btn-capsule px-3.5 py-1.5 text-[11px] font-mono flex items-center gap-1.5 cursor-pointer"
             >
-              <span>[</span>
+              
               <FolderOpen className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>
                 Arquivo Pessoal:{' '}
                 <strong className="text-amber-300">
                   {extractedCluesList.length}/{allCaseClues.length}
                 </strong>{' '}
-                Pistas ]
+                Pistas
               </span>
             </button>
 
             <button
               type="button"
               onClick={() => setBankerLampOn(v => !v)}
-              className="p-1.5 rounded bg-[#090D16]/75 border border-slate-600/70 text-amber-300 hover:text-white cursor-pointer backdrop-blur-md"
+              className="game-btn-capsule p-2 text-amber-300 cursor-pointer"
               title="Alternar Luminária da Mesa"
             >
               <Lightbulb className="w-3.5 h-3.5" />
@@ -755,7 +756,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
             <button
               type="button"
               onClick={() => soundEngine.updateSettings({ mutedAll: !muted })}
-              className="p-1.5 rounded bg-[#090D16]/75 border border-slate-600/70 text-cyan-300 hover:text-white cursor-pointer backdrop-blur-md"
+              className="game-btn-capsule p-2 text-cyan-300 cursor-pointer"
               title={muted ? 'Reativar áudio' : 'Silenciar'}
             >
               {muted ? (
@@ -768,7 +769,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
             <button
               type="button"
               onClick={onRequestExit}
-              className="px-3 py-1.5 rounded bg-gradient-to-b from-[#d8b878] to-[#b38e46] hover:from-[#e4c88c] hover:to-[#c49d52] text-slate-950 font-sans font-bold text-xs shadow-lg cursor-pointer transition-all border border-amber-200/50"
+              className="game-btn-capsule px-3.5 py-1.5 text-xs font-mono cursor-pointer"
             >
               Sair da Operação
             </button>
@@ -892,7 +893,8 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                 : 'rgba(248, 113, 113, 0.6)',
           }}
         >
-          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase">
+          {connectionFeedback.status === 'success' && <DiscoveryAnimation active />}
+          <div className="flex items-center justify-between gap-2 text-xs font-mono font-bold uppercase relative z-20">
             {connectionFeedback.status === 'success' ? (
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             ) : (
@@ -908,6 +910,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
               {connectionFeedback.message}
             </span>
           </div>
+          <div className="mt-1.5 relative z-20">{connectionFeedback.status === 'success' ? <DecisionStamp label="VÍNCULO COMPROVADO" tone="emerald" /> : <DecisionStamp label="INCONSISTÊNCIA DETECTADA" tone="crimson" />}</div>
           {connectionFeedback.conclusion && (
             <p className="text-xs text-slate-100 mt-1 leading-relaxed">
               {connectionFeedback.conclusion}
@@ -1063,8 +1066,8 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
           {boardSelectedClues.length === 2 && !isCurrentSolved ? (
             <button
               type="button"
-              onClick={onValidateConnection}
-              className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-lg font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.85)] bg-gradient-to-b from-[#e3c485] via-[#cfa75b] to-[#b08639] hover:from-[#ebd098] hover:to-[#c29746] text-slate-950 border border-amber-200/70"
+              onClick={() => { soundEngine.playWaxStamp(); onValidateConnection(); }}
+              className="game-btn-primary px-6 sm:px-8 py-2.5 sm:py-3 font-sans font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer"
             >
               <span>CONFRONTAR EVIDÊNCIAS NA MESA</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />
@@ -1080,7 +1083,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                   onSelectStep(3);
                 }
               }}
-              className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-lg font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.85)] bg-gradient-to-b from-[#e3c485] via-[#cfa75b] to-[#b08639] hover:from-[#ebd098] hover:to-[#c29746] text-slate-950 border border-amber-200/70"
+              className="game-btn-primary px-6 sm:px-8 py-2.5 sm:py-3 font-sans font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer"
             >
               <span>CONFRONTAR EVIDÊNCIAS NA MESA</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />

@@ -13,6 +13,7 @@ export const DecisionChoiceCard: React.FC = () => {
   }, [selectedCase.id, state.personalNotes]);
 
   const handleChoose = (id: string) => {
+    soundEngine.playWaxStamp();
     selectHypothesis(selectedCase.id, id);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2500);
@@ -53,7 +54,7 @@ export const DecisionChoiceCard: React.FC = () => {
             <div
               key={hypo.id}
               onClick={() => handleChoose(hypo.id)}
-              className={`p-4 rounded-xl border transition-all cursor-pointer text-left space-y-2 ${
+              className={`game-order-sheet p-4 rounded-xl border transition-all cursor-game-pen text-left space-y-2 ${
                 isSelected
                   ? 'bg-amber-500/15 border-amber-400 shadow-[0_0_15px_rgba(212,175,55,0.25)]'
                   : 'bg-black/40 border-white/10 hover:border-amber-500/40 hover:bg-black/60'
@@ -66,9 +67,7 @@ export const DecisionChoiceCard: React.FC = () => {
                   Hipótese {hypo.tag}
                 </span>
                 {isSelected && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 font-bold">
-                    <Check className="w-3.5 h-3.5" /> Escolhida
-                  </span>
+                  <DecisionStamp label="REGISTRADA" tone="emerald" />
                 )}
               </div>
 

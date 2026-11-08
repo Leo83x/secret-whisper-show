@@ -195,3 +195,247 @@
   transition-duration: 0.01ms !important;
   scroll-behavior: auto !important;
 }
+
+
+/* ==========================================================================
+   SISTEMA GLOBAL DE INTERAÇÃO DE JOGO (CICLO 1 — IDENTIDADE CINEMATOGRÁFICA)
+   ========================================================================== */
+
+/* Cursores Contextuais de Jogo (Lupa, Mão Tátil, Caneta de Registro) */
+.cursor-game-inspect {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28' fill='none'%3E%3Ccircle cx='12' cy='12' r='8' fill='rgba(10,16,28,0.55)' stroke='%23fbbf24' stroke-width='2.2'/%3E%3Cpath d='M18 18L25 25' stroke='%23f59e0b' stroke-width='2.8' stroke-linecap='round'/%3E%3Ccircle cx='9.5' cy='9.5' r='2' fill='rgba(254,243,199,0.5)'/%3E%3C/svg%3E") 12 12, zoom-in;
+}
+
+.cursor-game-pen {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 19l7-7 3 3-7 7-3-3z' fill='%23d97706' stroke='%23fef3c7' stroke-width='1.3'/%3E%3Cpath d='M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z' fill='%23fbbf24' stroke='%230f172a' stroke-width='1.3'/%3E%3Cpath d='M2 2l7.586 7.586' stroke='%230f172a' stroke-width='1.4'/%3E%3C/svg%3E") 2 2, pointer;
+}
+
+.cursor-game-grab {
+  cursor: grab;
+}
+.cursor-game-grab:active {
+  cursor: grabbing;
+}
+
+/* FAMÍLIA 1: Botão de Ação Principal (Bronze Iluminado / Dourado Envelhecido com Relevo Metálico) */
+.game-btn-primary {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: linear-gradient(180deg, #f3dca2 0%, #d4a64a 48%, #9e711f 100%);
+  color: #090d16;
+  border: 1px solid rgba(254, 243, 199, 0.72);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 252, 235, 0.85),
+    inset 0 -2.5px 0 rgba(66, 40, 5, 0.85),
+    0 8px 24px rgba(0, 0, 0, 0.72),
+    0 0 20px rgba(212, 175, 55, 0.25);
+  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 180ms ease,
+              filter 180ms ease;
+}
+
+.game-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -120%;
+  width: 65%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 253, 240, 0.55) 50%,
+    transparent 100%
+  );
+  transform: skewX(-24deg);
+  transition: left 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.game-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 253, 240, 0.95),
+    inset 0 -2.5px 0 rgba(66, 40, 5, 0.85),
+    0 10px 28px rgba(0, 0, 0, 0.8),
+    0 0 28px rgba(245, 158, 11, 0.42);
+}
+
+.game-btn-primary:hover:not(:disabled)::after {
+  left: 155%;
+}
+
+.game-btn-primary:active:not(:disabled) {
+  transform: translateY(2px) scale(0.985);
+  filter: brightness(0.97);
+  box-shadow:
+    inset 0 2px 4px rgba(45, 27, 3, 0.75),
+    0 3px 10px rgba(0, 0, 0, 0.75),
+    0 0 16px rgba(245, 158, 11, 0.35);
+}
+
+.game-btn-primary:disabled {
+  background: linear-gradient(180deg, #263042 0%, #161e2e 100%);
+  color: #64748b;
+  border-color: rgba(100, 116, 139, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  cursor: not-allowed;
+}
+
+/* FAMÍLIA 2: Controles Secundários (Cápsulas Metálicas Discretas — Sem Cara de Site) */
+.game-btn-capsule {
+  position: relative;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(23, 33, 52, 0.9) 0%, rgba(9, 14, 25, 0.95) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  color: #e2e8f0;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 4px 14px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 160ms ease,
+              background 160ms ease,
+              box-shadow 160ms ease,
+              color 160ms ease;
+}
+
+.game-btn-capsule:hover {
+  border-color: rgba(251, 191, 36, 0.72);
+  color: #fef3c7;
+  background: linear-gradient(180deg, rgba(32, 45, 70, 0.94) 0%, rgba(13, 20, 35, 0.98) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(254, 243, 199, 0.22),
+    0 5px 16px rgba(0, 0, 0, 0.75),
+    0 0 14px rgba(245, 158, 11, 0.2);
+}
+
+.game-btn-capsule:active {
+  transform: translateY(1.5px) scale(0.97);
+}
+
+.game-btn-capsule-active {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.28) 0%, rgba(146, 64, 14, 0.38) 100%);
+  border-color: rgba(251, 191, 36, 0.85);
+  color: #fde68a;
+  box-shadow:
+    inset 0 1px 0 rgba(254, 243, 199, 0.35),
+    0 0 18px rgba(245, 158, 11, 0.28);
+}
+
+/* FAMÍLIA 3: Elementos Interativos do Cenário (Artefatos, Pistas e Documentos na Mesa) */
+.game-hotspot-artifact {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 220ms ease,
+              border-color 220ms ease;
+}
+
+.game-hotspot-artifact:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.75),
+    0 0 24px rgba(251, 191, 36, 0.32);
+}
+
+/* FAMÍLIA 4: Ordens de Campo e Folhas Periciais de Decisão */
+.game-order-sheet {
+  position: relative;
+  overflow: hidden;
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 220ms ease,
+              border-color 220ms ease,
+              background-color 220ms ease;
+}
+
+.game-order-sheet:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.8),
+    inset 0 0 28px rgba(251, 191, 36, 0.1);
+}
+
+/* Animação de Carimbo / Selo Físico (DecisionStamp) */
+@keyframes gameStampSlam {
+  0% {
+    opacity: 0;
+    transform: scale(1.75) rotate(-14deg);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(0.94) rotate(-3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-4deg);
+  }
+}
+
+.game-wax-stamp {
+  animation: gameStampSlam 260ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Entrada Cinematográfica de Modais Físicos (Objeto se aproximando da câmera) */
+@keyframes gameObjectApproach {
+  0% {
+    opacity: 0;
+    transform: perspective(1200px) translateY(22px) scale(0.93) rotateX(4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1200px) translateY(0) scale(1) rotateX(0deg);
+  }
+}
+
+.game-modal-object {
+  animation: gameObjectApproach 300ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Varredura de Luz Revelando Documento */
+@keyframes gameLightScan {
+  0% {
+    top: -25%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.65;
+  }
+  100% {
+    top: 115%;
+    opacity: 0;
+  }
+}
+
+.game-light-scan::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(251, 191, 36, 0.16) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 25;
+  animation: gameLightScan 900ms cubic-bezier(0.22, 1, 0.36, 1) 1 forwards;
+}
+
+/* Onda de Pulso Dourado ao Validar Descoberta */
+@keyframes gamePulseRing {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+.game-pulse-ring {
+  animation: gamePulseRing 650ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
