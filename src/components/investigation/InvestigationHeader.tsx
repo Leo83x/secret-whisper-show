@@ -89,13 +89,13 @@ export const InvestigationHeader: React.FC = () => {
             />
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="font-serif text-[11px] sm:text-sm md:text-base tracking-[0.06em] sm:tracking-[0.14em] uppercase font-bold text-slate-100 truncate">
+            <h1 className="font-serif text-[10px] sm:text-xs md:text-sm tracking-[0.06em] sm:tracking-[0.12em] uppercase font-bold text-slate-100 truncate">
               O ÚLTIMO SEGREDO
             </h1>
             <div className="flex items-center gap-1 min-w-0">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
               <span className="font-mono text-[8px] sm:text-[10px] text-cyan-400/90 tracking-wider sm:tracking-widest uppercase truncate">
-                Central de Investigação <span className="hidden lg:inline">// Acesso Restrito</span>
+                Central de Investigação
               </span>
             </div>
           </div>

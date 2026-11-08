@@ -320,61 +320,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
             </filter>
           </defs>
 
-          {/* Feixes Ambiente Dinâmicos: mudam de geometria conforme o Vínculo Ativo (#1, #2 ou #3) */}
-          {boardSelectedClues.length < 2 && topDownSpots.length >= 4 && (() => {
-            const pairsByChallenge: [number, number, number][] = [
-              [0, 1, 2],
-              [1, 3, 0],
-              [0, 3, 2],
-            ];
-            const [idxA, idxB, idxC] = pairsByChallenge[activeChallengeIdx % pairsByChallenge.length];
-            const sA = topDownSpots[idxA] || topDownSpots[0];
-            const sB = topDownSpots[idxB] || topDownSpots[1];
-            const sC = topDownSpots[idxC] || topDownSpots[2];
-            return (
-              <g opacity="0.88">
-                <line
-                  x1={sA.pinX}
-                  y1={sA.pinY}
-                  x2={sB.pinX}
-                  y2={sB.pinY}
-                  stroke={eraTheme.primaryAccentHex}
-                  strokeWidth="0.34"
-                  strokeDasharray="1.1 0.6"
-                  filter="url(#goldLaserGlow)"
-                />
-                <line
-                  x1={sA.pinX}
-                  y1={sA.pinY}
-                  x2={50}
-                  y2={31}
-                  stroke={eraTheme.secondaryAccentHex}
-                  strokeWidth="0.26"
-                  strokeDasharray="0.8 0.5"
-                  filter="url(#cyanLaserGlow)"
-                />
-                <line
-                  x1={sB.pinX}
-                  y1={sB.pinY}
-                  x2={50}
-                  y2={31}
-                  stroke={eraTheme.secondaryAccentHex}
-                  strokeWidth="0.26"
-                  strokeDasharray="0.8 0.5"
-                  filter="url(#cyanLaserGlow)"
-                />
-                <line
-                  x1={sC.pinX}
-                  y1={sC.pinY}
-                  x2={50}
-                  y2={31}
-                  stroke={eraTheme.primaryAccentHex}
-                  strokeWidth="0.2"
-                  strokeDasharray="0.6 0.6"
-                />
-              </g>
-            );
-          })()}
+          {/* Linhas soltas para o badge central removidas: conexões são estritamente pino-a-pino */}
 
           {/* Fios das Conexões Já Comprovadas */}
           {challenges
@@ -437,47 +383,12 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                   strokeWidth="0.2"
                   className="game-laser-draw"
                 />
-                <line
-                  x1={pA.pinX}
-                  y1={pA.pinY}
-                  x2={50}
-                  y2={32}
-                  stroke="#38bdf8"
-                  strokeWidth="0.22"
-                  strokeDasharray="0.7 0.5"
-                  filter="url(#cyanLaserGlow)"
-                />
-                <line
-                  x1={pB.pinX}
-                  y1={pB.pinY}
-                  x2={50}
-                  y2={32}
-                  stroke="#38bdf8"
-                  strokeWidth="0.22"
-                  strokeDasharray="0.7 0.5"
-                  filter="url(#cyanLaserGlow)"
-                />
+                
               </g>
             );
           })()}
 
-          {boardSelectedClues.length === 1 && (() => {
-            const pA = getPinCoordsForClueId(boardSelectedClues[0], 0);
-            return (
-              <g>
-                <line
-                  x1={pA.pinX}
-                  y1={pA.pinY}
-                  x2={50}
-                  y2={32}
-                  stroke="#fbbf24"
-                  strokeWidth="0.34"
-                  strokeDasharray="0.9 0.5"
-                  filter="url(#goldLaserGlow)"
-                />
-              </g>
-            );
-          })()}
+          {/* Sem linha solta para pino único */}
         </svg>
 
         {/* Badge Horizontal Dinâmico do Vínculo Ativo (#1, #2 ou #3) no Centro da Mesa */}
@@ -1058,9 +969,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
           </button>
           <span className="text-slate-400">•</span>
           <span className="text-slate-200 text-xs truncate max-w-[68vw] sm:max-w-md">
-            {activeChallenge
-              ? activeChallenge.question
-              : 'Selecione os nós para validar conexões'}
+            <span>Selecione 2 evidências na mesa</span>
           </span>
           {(camRotX !== 0 || camRotY !== 0) && (
             <button

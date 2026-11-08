@@ -871,14 +871,14 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
       </div>
 
       {/* =====================================================================
-          3. BARRA INFERIOR RESPONSIVA (DOCK DE DOCUMENTOS MOBILE + CONTROLES)
+          3. BARRA INFERIOR RESPONSIVA (INSTRUÇÃO À ESQUERDA + BOTÃO CENTRALIZADO)
          ===================================================================== */}
       <div
         onClick={e => e.stopPropagation()}
-        className="relative md:fixed md:bottom-5 md:left-1/2 md:-translate-x-1/2 z-30 w-full md:w-auto px-2.5 pb-2.5 pt-1.5 md:p-0 space-y-2 shrink-0"
+        className="relative md:fixed md:bottom-3 md:inset-x-0 z-30 w-full px-2.5 pb-2.5 pt-1.5 md:px-6 md:pb-0 md:pt-0 space-y-2 md:space-y-0 md:pointer-events-none md:flex md:items-center md:justify-between shrink-0"
       >
-        {/* Dock Rápido de Documentos da Mesa no Mobile (< md) — 100% visível e sem corte */}
-        <div className="md:hidden grid grid-cols-4 gap-1.5">
+        {/* Dock Rápido de Documentos da Mesa no Mobile (< md) – 100% visível e sem corte */}
+        <div className="md:hidden grid grid-cols-4 gap-1.5 pointer-events-auto">
           {activeDeskHotspots.map(spot => {
             const doc = documents[spot.slotIndex] || documents[spot.slotIndex % Math.max(1, documents.length)];
             if (!doc) return null;
@@ -922,14 +922,9 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
           })}
         </div>
 
-        {/* Barra de Controle de Câmera + Avanço para Mesa de Conexões */}
-        <div className="flex flex-wrap items-center justify-between md:justify-center gap-2 bg-[#070B14]/95 md:bg-transparent backdrop-blur-md md:backdrop-blur-none p-2 md:p-0 rounded-2xl border border-slate-800/90 md:border-none">
-          <div className="px-3 sm:px-5 py-1.5 sm:py-2 rounded-xl bg-[#0B111E]/90 border border-amber-500/40 shadow-lg text-[11px] sm:text-sm font-sans text-slate-200 flex items-center gap-2">
-            <span className="hidden sm:inline">
-              Clique em um documento para inspecionar com zoom
-            </span>
-            <span className="sm:hidden text-slate-300">Toque em um doc</span>
-            <span className="text-amber-400">•</span>
+        {/* Instruções de Câmera e Zoom: canto inferior esquerdo, 100% desobstruído */}
+        <div className="pointer-events-auto flex items-center justify-between md:justify-start gap-2 bg-[#070B14]/95 md:bg-transparent backdrop-blur-md md:backdrop-blur-none p-1.5 md:p-0 rounded-2xl border border-slate-800/90 md:border-none">
+          <div className="px-3 sm:px-4 py-1.5 rounded-xl bg-[#0B111E]/90 border border-amber-500/40 shadow-lg text-[11px] sm:text-xs font-sans text-slate-200 flex items-center gap-2 backdrop-blur-md">
             <button
               type="button"
               onClick={() => {
@@ -944,6 +939,11 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
             >
               [ {isAutoOrbiting ? 'Pausar' : 'Orbitar Câmera'} ]
             </button>
+            <span className="text-amber-400">•</span>
+            <span className="hidden sm:inline">
+              Clique em um documento para inspecionar com zoom
+            </span>
+            <span className="sm:hidden text-slate-300">Toque para zoom</span>
 
             {(camRotX !== 0 || camRotY !== 0 || camPanX !== 0 || camScale !== 1.04) && (
               <button
@@ -956,7 +956,10 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
               </button>
             )}
           </div>
+        </div>
 
+        {/* Botão de Ação: Mesa de Conexões (centralizado no desktop, sem cobrir nenhuma etiqueta) */}
+        <div className="pointer-events-auto flex justify-center md:absolute md:left-1/2 md:-translate-x-1/2 md:bottom-3">
           <GameButton
             onClick={() => onSelectStep(2)}
             className="shrink-0"
