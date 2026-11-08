@@ -127,6 +127,11 @@ export const DossierInvestigationView: React.FC = () => {
   // Etapa 5: Subnível de auditoria detalhada
   const [showDetailedAudit, setShowDetailedAudit] = useState<boolean>(false);
 
+  // Ciclo 3: Ajusta a atmosfera sonora por época e aplica silêncio intencional na Etapa 4 (Decisão)
+  useEffect(() => {
+    soundEngine.setCaseAtmosphere(selectedCase.id, state.activeStep);
+  }, [selectedCase.id, state.activeStep]);
+
   useEffect(() => {
     const p = getCasePlayProgress(selectedCase.id);
     const firstId = p.activeDocId || selectedCase.documents?.[0]?.id || '';

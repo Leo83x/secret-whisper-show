@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ShieldCheck, Sparkles, Stamp, X, Compass, Eye, Link2, FileText, Scale, Award } from 'lucide-react';
 import { soundEngine } from '../../utils/investigationAudio';
 
@@ -427,5 +427,86 @@ export const ClueFlyToken: React.FC<{ token: FlyingClueData | null }> = ({ token
       <span>📂 +PISTA ARQUIVADA:</span>
       <span className="max-w-[180px] truncate">{token.title}</span>
     </div>
+  );
+};
+
+// ============================================================================
+// 11. AmbientParticlesCanvas — Poeira Volumétrica Adaptativa (Leve no Mobile)
+// ============================================================================
+export const AmbientParticlesCanvas: React.FC<{
+  tint?: 'gold' | 'cyan' | 'emerald';
+  className?: string;
+}> = ({ tint = 'gold', className = '' }) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    if (soundEngine.getSettings().reduceMotion) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const isMobileOrLowPower =
+      window.innerWidth < 768 || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+    const count = isMobileOrLowPower ? 9 : 22;
+
+    let w = (canvas.width = window.innerWidth);
+    let h = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      if (!canvas) return;
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    const rgb =
+      tint === 'cyan'
+        ? '103, 232, 249'
+        : tint === 'emerald'
+        ? '110, 231, 183'
+        : '253, 224, 71';
+
+    const motes = Array.from({ length: count }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 1.6 + 0.5,
+      vx: (Math.random() - 0.5) * 0.18,
+      vy: -Math.random() * 0.22 - 0.05,
+      alpha: Math.random() * 0.38 + 0.08,
+    }));
+
+    let rafId = 0;
+    const render = () => {
+      if (!document.hidden) {
+        ctx.clearRect(0, 0, w, h);
+        for (const m of motes) {
+          m.x += m.vx;
+          m.y += m.vy;
+          if (m.y < -10) m.y = h + 10;
+          if (m.x < -10) m.x = w + 10;
+          if (m.x > w + 10) m.x = -10;
+          ctx.beginPath();
+          ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${rgb}, ${m.alpha})`;
+          ctx.fill();
+        }
+      }
+      rafId = requestAnimationFrame(render);
+    };
+    rafId = requestAnimationFrame(render);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [tint]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-0 w-full h-full z-10 opacity-70 ${className}`}
+    />
   );
 };

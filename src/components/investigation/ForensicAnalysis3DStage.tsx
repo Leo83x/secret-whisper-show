@@ -4,7 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { DecisionStamp } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -213,6 +213,8 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
           }}
         />
       </div>
+
+      <AmbientParticlesCanvas tint="gold" />
 
       {/* 2. BARRA ÚNICA DE TOPO FLUTUANTE (SEM SEGUNDA BARRA DUPLICADA) */}
       <div

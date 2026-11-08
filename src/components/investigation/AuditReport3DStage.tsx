@@ -7,7 +7,7 @@ import {
   SimulationChoice,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { DecisionStamp } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp } from './GameInteractionSystem';
 import {
   Award,
   FolderOpen,

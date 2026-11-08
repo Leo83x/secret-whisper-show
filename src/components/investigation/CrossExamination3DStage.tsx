@@ -5,7 +5,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { DecisionStamp, DiscoveryAnimation } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, DiscoveryAnimation } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -280,6 +280,8 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
           />
         )}
 
+        <AmbientParticlesCanvas tint={selectedCase.id === 'jobs' ? 'cyan' : selectedCase.id === 'turing' ? 'emerald' : 'gold'} />
+
         {/* Vinheta Cinematográfica Superior e Inferior para leitura limpa do HUD */}
         <div
           className="absolute inset-0 pointer-events-none"
@@ -525,7 +527,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                 type="button"
                 onClick={() => {
                   if (clue) {
-                    soundEngine.playClueSaved();
+                    soundEngine.playWoodDeskTap();
                     onToggleBoardClue(clue.id);
                   }
                 }}
@@ -589,7 +591,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                 type="button"
                 onClick={() => {
                   if (clue) {
-                    soundEngine.playClueSaved();
+                    soundEngine.playWoodDeskTap();
                     onToggleBoardClue(clue.id);
                   }
                 }}

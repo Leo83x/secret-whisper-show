@@ -4,7 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { DecisionStamp, SignatureStrokeSvg } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, SignatureStrokeSvg } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,

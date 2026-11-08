@@ -545,6 +545,68 @@ class InvestigationSoundEngine {
     gain.connect(ctx.destination);
     noise.start();
   }
+
+  // 13. Toque físico de madeira e papel ao posicionar ficha/pino sobre a mesa (95ms)
+  public playWoodDeskTap() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const wood = ctx.createOscillator();
+    const woodGain = ctx.createGain();
+    wood.type = 'sine';
+    wood.frequency.setValueAtTime(148, now);
+    wood.frequency.exponentialRampToValueAtTime(58, now + 0.075);
+
+    woodGain.gain.setValueAtTime(this.settings.sfxVolume * 0.16, now);
+    woodGain.gain.exponentialRampToValueAtTime(0.001, now + 0.085);
+
+    wood.connect(woodGain);
+    woodGain.connect(ctx.destination);
+    wood.start(now);
+    wood.stop(now + 0.09);
+
+    this.playPaperRustle();
+  }
+
+  // 14. Atmosfera Sonora Específica por Cenário/Época + Silêncio Intencional na Etapa 4 (Decisão)
+  public setCaseAtmosphere(caseId: string, activeStep: number) {
+    if (!this.isAmbientPlaying || !this.ctx || !this.ambientOsc1 || !this.ambientOsc2 || !this.ambientGain) {
+      return;
+    }
+
+    const now = this.ctx.currentTime;
+    let f1 = 65.41; // Padrão C2
+    let f2 = 98.0;  // Padrão G2
+
+    if (caseId === 'julio_cesar' || caseId === 'cleopatra') {
+      // Antiguidade Clássica: ressonância grave de pedra e biblioteca histórica (D2 + A2)
+      f1 = 73.42;
+      f2 = 110.0;
+    } else if (caseId === 'napoleao') {
+      // Waterloo 1815: tensão fria e sombria de tenda de campanha chuvosa (C2 + G2 menor)
+      f1 = 65.41;
+      f2 = 97.99;
+    } else if (caseId === 'turing') {
+      // Bletchley Park 1941: harmônico eletromecânico sutil de válvulas / Bombe (60Hz + 120Hz)
+      f1 = 60.0;
+      f2 = 120.0;
+    } else if (caseId === 'jobs') {
+      // São Francisco 2007: sala contemporânea noturna limpa (E2 + B2)
+      f1 = 82.41;
+      f2 = 123.47;
+    }
+
+    this.ambientOsc1.frequency.setTargetAtTime(f1, now, 0.9);
+    this.ambientOsc2.frequency.setTargetAtTime(f2, now, 0.9);
+
+    // Silêncio Narrativo Intencional na Etapa 4 (Ponto Crítico de Decisão):
+    // Reduz a trilha em 82% para criar gravidade antes da assinatura da ordem.
+    const baseGain = Math.max(0.005, this.settings.ambientVolume * 0.08);
+    const targetGain = activeStep === 4 ? Math.max(0.0015, baseGain * 0.18) : baseGain;
+    this.ambientGain.gain.setTargetAtTime(targetGain, now, 1.1);
+  }
 }
 
 export const soundEngine = new InvestigationSoundEngine();
