@@ -337,9 +337,14 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
       >
         {/* --- VERSÃO MOBILE (< md): 2 Linhas Organizadas, Zero Sobreposição --- */}
         <div className="md:hidden pointer-events-auto rounded-2xl bg-[#070B14]/95 backdrop-blur-md border border-slate-800/90 p-2.5 shadow-2xl space-y-2">
-          {/* Linha 1 Mobile: Título do Caso + Áudio + Sair */}
+          {/* Linha 1 Mobile: Logo PWA + Título do Caso + Áudio + Sair */}
           <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <img
+                src="/reader/icons/icon-192.png"
+                alt="O Último Segredo"
+                className="w-5 h-5 rounded-md object-cover border border-amber-400/60 shrink-0"
+              />
               <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold truncate">
                 {caseShortHeader} ({selectedCase.name})
               </div>
@@ -629,15 +634,24 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
         </div>
       )}
 
+      {/* Atmosfera 3D de Fundo para Preencher Tela Vertical no Mobile */}
+      <div className="md:hidden fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <img
+          src={eraTheme.stage1Bg}
+          alt=""
+          className="w-full h-full object-cover object-center blur-md opacity-30 brightness-50 scale-110"
+        />
+      </div>
+
       {/* =====================================================================
-          2. VIEWPORT 3D REALISTA (RESPONSIVO NO MOBILE E TELA CHEIA NO DESKTOP)
+          2. VIEWPORT 3D REALISTA (QUADRO 16:10 COMPLETO NO MOBILE / TELA CHEIA DESKTOP)
          ===================================================================== */}
       <div
-        className="relative md:fixed md:inset-0 flex-1 w-full flex flex-col items-center justify-center overflow-hidden z-10 px-2 md:px-0"
+        className="relative md:fixed md:inset-0 flex-1 w-full flex flex-col items-center justify-center overflow-hidden z-10 px-2.5 md:px-0"
         style={{ perspective: '1200px' }}
       >
         <div
-          className="relative w-[136vw] sm:w-full h-full max-h-[54vh] sm:max-h-none md:w-full md:h-full rounded-2xl md:rounded-none overflow-hidden border border-amber-500/25 md:border-none shadow-[0_0_40px_rgba(0,0,0,0.9)] transition-transform duration-300 ease-out"
+          className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-auto md:w-full md:h-full rounded-2xl md:rounded-none overflow-hidden border border-amber-500/35 md:border-none shadow-[0_0_40px_rgba(0,0,0,0.95)] transition-transform duration-300 ease-out"
           style={{
             transformStyle: 'preserve-3d',
             transformOrigin: `${camOrigin.x}% ${camOrigin.y}%`,
@@ -823,7 +837,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                       left: `${spot.badgePos.left}%`,
                       top: `${spot.badgePos.top}%`,
                     }}
-                    className={`hidden md:flex absolute z-20 -translate-x-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-md font-mono text-xs sm:text-sm font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer items-center gap-1.5 shadow-[0_6px_20px_rgba(0,0,0,0.9)] ${
+                    className={`flex absolute z-20 -translate-x-1/2 -translate-y-1/2 px-1.5 py-0.5 md:px-3.5 md:py-1.5 rounded md:rounded-md font-mono text-[8px] sm:text-xs md:text-sm font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer items-center gap-1 md:gap-1.5 shadow-[0_6px_20px_rgba(0,0,0,0.9)] ${
                       isHovered
                         ? 'bg-amber-400 text-slate-950 border border-amber-200 scale-110 shadow-[0_0_25px_rgba(251,191,36,0.6)]'
                         : allExtracted

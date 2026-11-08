@@ -433,7 +433,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                   width: spot.width,
                   height: spot.height,
                 }}
-                className={`absolute z-20 rounded-xl transition-all duration-200 cursor-pointer group ${
+                className={`hidden md:block absolute z-20 rounded-xl transition-all duration-200 cursor-pointer group ${
                   isSelected
                     ? 'ring-2 ring-amber-300/90 bg-amber-400/10 shadow-[0_0_35px_rgba(251,191,36,0.35)]'
                     : 'hover:ring-1 hover:ring-amber-300/50 hover:bg-amber-300/5'
@@ -495,7 +495,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                   left: `${spot.pinX}%`,
                   top: `${spot.pinY}%`,
                 }}
-                className="absolute z-30 -translate-x-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center cursor-pointer group focus:outline-none"
+                className="hidden md:flex absolute z-30 -translate-x-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center cursor-pointer group focus:outline-none"
                 title={clue ? `Conectar pino: ${clue.title}` : `Pino ${spot.tag}`}
               >
                 <span
@@ -533,8 +533,13 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
       >
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="pointer-events-auto flex flex-col items-start gap-1.5 max-w-full">
-            <div className="px-3.5 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg flex flex-wrap items-center gap-2.5">
-              <h1 className="font-serif text-xs sm:text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase truncate max-w-[88vw] sm:max-w-none">
+            <div className="px-3 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg flex items-center gap-2">
+              <img
+                src="/reader/icons/icon-192.png"
+                alt="O Último Segredo"
+                className="w-5 h-5 sm:w-6 sm:h-6 rounded-md object-cover border border-amber-400/60 shrink-0"
+              />
+              <h1 className="font-serif text-[11px] sm:text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase truncate max-w-[78vw] sm:max-w-none">
                 {caseShortHeader} ({selectedCase.name.toUpperCase()})
               </h1>
             </div>
@@ -746,6 +751,104 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
           )}
         </div>
       )}
+
+      {/* =====================================================================
+          5B. VISÃO MOBILE (< md): MESA PANORÂMICA 16:9 COMPLETA + GRADE 2x2
+         ===================================================================== */}
+      <div
+        data-hud="true"
+        className="md:hidden relative z-30 flex-1 w-full px-3 py-1.5 flex flex-col justify-center gap-2 overflow-y-auto"
+      >
+        {/* Pergunta do Vínculo Ativo no Mobile */}
+        {activeChallenge && (
+          <div className="p-2.5 rounded-xl bg-[#080D18]/90 backdrop-blur-md border border-amber-500/35 text-xs text-slate-100 leading-snug shadow-lg">
+            <span className="text-[10px] font-mono uppercase text-amber-400 font-bold block mb-0.5">
+              VÍNCULO ATIVO ({solvedConnectionIds.length}/{challenges.length} COMPROVADOS) //
+            </span>
+            <span>{activeChallenge.prompt}</span>
+          </div>
+        )}
+
+        {/* Quadro 16:9 Completo da Mesa Top-Down com Pinos e Fios Luminosos (Sem Corte Lateral) */}
+        <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-amber-500/40 shadow-2xl shrink-0">
+          <img
+            src={eraTheme.stage2TopDownBg}
+            alt="Mesa Top-Down 3D"
+            className="w-full h-full object-cover object-center"
+          />
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full pointer-events-none z-20">
+            {topDownSpots.length >= 3 && (
+              <g opacity="0.9">
+                <line x1={topDownSpots[0].pinX} y1={topDownSpots[0].pinY} x2={topDownSpots[1].pinX} y2={topDownSpots[1].pinY} stroke={eraTheme.primaryAccentHex} strokeWidth="0.6" />
+                <line x1={topDownSpots[0].pinX} y1={topDownSpots[0].pinY} x2={topDownSpots[2].pinX} y2={topDownSpots[2].pinY} stroke={eraTheme.secondaryAccentHex} strokeWidth="0.5" />
+                <line x1={topDownSpots[1].pinX} y1={topDownSpots[1].pinY} x2={topDownSpots[2].pinX} y2={topDownSpots[2].pinY} stroke={eraTheme.secondaryAccentHex} strokeWidth="0.45" strokeDasharray="1.2 0.8" />
+              </g>
+            )}
+          </svg>
+          <div className="absolute left-1/2 -translate-x-1/2 top-[24%] z-30 pointer-events-none flex items-center gap-1.5 bg-[#060A12]/90 text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-500/40 shadow-lg text-[9px] font-mono uppercase tracking-wider whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span>VÍNCULO TÁTICO // {eraTheme.eraName.toUpperCase()}</span>
+          </div>
+          {topDownSpots.map((spot, idx) => {
+            const clue = deskClues[idx];
+            const isSelected = Boolean(clue && boardSelectedClues.includes(clue.id));
+            return (
+              <button
+                key={spot.tag}
+                type="button"
+                onClick={() => clue && onToggleBoardClue(clue.id)}
+                style={{ left: `${spot.pinX}%`, top: `${spot.pinY}%` }}
+                className="absolute z-30 -translate-x-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded bg-[#060A12]/90 border border-amber-400/60 text-[8px] font-mono font-bold text-amber-300 shadow-md flex items-center gap-1"
+              >
+                <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-amber-300 animate-ping' : 'bg-amber-400'}`} />
+                <span>{spot.tag}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Grade 2x2 de Fichas Translúcidas no Mobile (Legibilidade Total Sem Espremer) */}
+        <div className="grid grid-cols-2 gap-2">
+          {topDownSpots.map((spot, idx) => {
+            const clue = deskClues[idx];
+            if (!clue) return null;
+            const isSelected = boardSelectedClues.includes(clue.id);
+            const isPartOfSolved = challenges
+              .filter(ch => solvedConnectionIds.includes(ch.id))
+              .some(ch => ch.requiredClueIds.includes(clue.id));
+
+            return (
+              <button
+                key={spot.tag}
+                type="button"
+                onClick={() => {
+                  soundEngine.playClueSaved();
+                  onToggleBoardClue(clue.id);
+                }}
+                className={`p-2.5 rounded-xl backdrop-blur-md border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  isSelected
+                    ? 'bg-amber-500/25 border-amber-300 shadow-[0_0_18px_rgba(251,191,36,0.35)]'
+                    : isPartOfSolved
+                    ? 'bg-emerald-950/50 border-emerald-400/60'
+                    : 'bg-[#0b1320]/75 border-amber-400/35'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-[10px] font-mono font-bold text-amber-300 uppercase">
+                    {spot.tag}
+                  </span>
+                  <span className="text-[9px] font-mono text-cyan-300">
+                    {isSelected ? '● Ativo' : isPartOfSolved ? '✓ Elo' : 'Confrontar'}
+                  </span>
+                </div>
+                <div className="text-xs font-sans font-semibold text-white line-clamp-2 mt-1">
+                  {clue.title}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* =====================================================================
           6. BARRA INFERIOR COMPACTA

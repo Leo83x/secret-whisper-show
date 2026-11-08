@@ -283,8 +283,12 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
           {/* Topo Mobile / Esquerda Desktop: Identificação Limpa e Sem Aglutinação */}
           <div className="flex items-center justify-between lg:justify-start gap-3 min-w-0">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-amber-400 font-serif font-bold text-sm shrink-0">
-                Φ
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg overflow-hidden bg-[#060A12] border border-amber-400/60 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(212,175,55,0.25)]">
+                <img
+                  src="/reader/icons/icon-192.png"
+                  alt="O Último Segredo"
+                  className="w-full h-full object-cover select-none"
+                />
               </div>
               <div className="min-w-0">
                 <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-cyan-400 truncate">

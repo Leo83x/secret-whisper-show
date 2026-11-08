@@ -54,8 +54,12 @@ export const InvestigationHeader: React.FC = () => {
         
         {/* Lado Esquerdo: Marca & Brasão Φ (Único ponto com font-serif) */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <div className="relative w-7 h-7 sm:w-9 sm:h-9 rounded-full border border-amber-400/50 bg-gradient-to-b from-amber-500/20 to-transparent flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.25)] shrink-0">
-            <span className="font-serif text-sm sm:text-lg font-bold text-amber-400 select-none">Φ</span>
+          <div className="relative w-7 h-7 sm:w-9 sm:h-9 rounded-xl overflow-hidden border border-amber-400/60 bg-[#060A12] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.25)] shrink-0">
+            <img
+              src="/reader/icons/icon-192.png"
+              alt="O Último Segredo"
+              className="w-full h-full object-cover select-none"
+            />
           </div>
           <div className="min-w-0 flex-1">
             <h1 className="font-serif text-[11px] sm:text-sm md:text-base tracking-[0.06em] sm:tracking-[0.14em] uppercase font-bold text-slate-100 truncate">

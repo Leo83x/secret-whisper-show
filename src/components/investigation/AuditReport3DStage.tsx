@@ -191,8 +191,13 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
       >
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="pointer-events-auto flex flex-col items-start gap-1.5 max-w-full">
-            <div className="px-3.5 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg">
-              <h1 className="font-serif text-xs sm:text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase truncate max-w-[88vw] sm:max-w-none">
+            <div className="px-3 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg flex items-center gap-2">
+              <img
+                src="/reader/icons/icon-192.png"
+                alt="O Último Segredo"
+                className="w-5 h-5 sm:w-6 sm:h-6 rounded-md object-cover border border-amber-400/60 shrink-0"
+              />
+              <h1 className="font-serif text-[11px] sm:text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase truncate max-w-[78vw] sm:max-w-none">
                 {caseShortHeader} ({selectedCase.name.toUpperCase()})
               </h1>
             </div>
@@ -269,7 +274,7 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
       {/* 3. FICHAS DE AUDITORIA TRANSLÚCIDAS E COMPACTAS (SEM SCROLL) */}
       <div
         data-hud="true"
-        className="relative z-30 flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 flex flex-col justify-center gap-2.5 overflow-hidden"
+        className="relative z-30 flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto md:overflow-hidden py-2 md:py-0"
       >
         <div className="p-4 sm:p-5 rounded-2xl bg-[#0b1320]/45 backdrop-blur-sm border border-amber-400/40 space-y-3 shadow-2xl">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">

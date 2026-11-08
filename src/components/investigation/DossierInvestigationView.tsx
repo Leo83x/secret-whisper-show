@@ -339,7 +339,7 @@ export const DossierInvestigationView: React.FC = () => {
           </div>
 
           {/* Direita: Alternador 3D/2D Dinâmico + Arquivo Pessoal + Ações */}
-          <div className="w-full sm:w-auto flex flex-wrap items-center justify-between sm:justify-end gap-2">
+          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={() => {
