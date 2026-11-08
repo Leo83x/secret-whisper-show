@@ -740,7 +740,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 OS 4 DOCUMENTOS FÍSICOS SOBRE A MESA DE MADEIRA (HOTSPOTS 3D)
                =============================================================== */}
             {activeDeskHotspots.map(spot => {
-              const doc = documents[spot.slotIndex];
+              const doc = documents[spot.slotIndex] || documents[spot.slotIndex % Math.max(1, documents.length)];
               if (!doc) return null;
 
               const extractedInDoc = doc.clues.filter(c => extractedClueIds.includes(c.id)).length;
@@ -853,7 +853,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
         {/* Dock Rápido de Documentos da Mesa no Mobile (< md) — 100% visível e sem corte */}
         <div className="md:hidden grid grid-cols-4 gap-1.5">
           {activeDeskHotspots.map(spot => {
-            const doc = documents[spot.slotIndex];
+            const doc = documents[spot.slotIndex] || documents[spot.slotIndex % Math.max(1, documents.length)];
             if (!doc) return null;
             const extractedInDoc = doc.clues.filter(c => extractedClueIds.includes(c.id)).length;
             const allExtracted = extractedInDoc === doc.clues.length && doc.clues.length > 0;
