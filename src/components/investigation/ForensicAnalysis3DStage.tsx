@@ -78,10 +78,10 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
   // Dolly-In Camera Zoom: Starts at normal scale and smoothly zooms into the open forensic folder
   const [camRotX, setCamRotX] = useState<number>(1);
   const [camRotY, setCamRotY] = useState<number>(0);
-  const [camScale, setCamScale] = useState<number>(1.02);
+  const [camScale, setCamScale] = useState<number>(1.08);
 
   useEffect(() => {
-    setCamScale(1.02);
+    setCamScale(1.08);
     const timer = setTimeout(() => {
       setCamScale(1.22);
       setCamRotX(1);

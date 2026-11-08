@@ -70,9 +70,9 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
   const eraTheme = getEra3DTheme(selectedCase.id);
 
   // Dynamic Camera Transition: Starts angled and automatically rises to Top-Down (Vista Superior)
-  const [camRotX, setCamRotX] = useState<number>(16);
+  const [camRotX, setCamRotX] = useState<number>(0);
   const [camRotY, setCamRotY] = useState<number>(0);
-  const [camScale, setCamScale] = useState<number>(0.96);
+  const [camScale, setCamScale] = useState<number>(1.06);
   const [isAutoOrbiting, setIsAutoOrbiting] = useState<boolean>(false);
   const [bankerLampOn, setBankerLampOn] = useState<boolean>(true);
   const [briefingOpen, setBriefingOpen] = useState<boolean>(false);
@@ -92,16 +92,30 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
   }, []);
 
   // Smoothly animate camera from diagonal perspective up into Top-Down overhead view on mount/case change
+  const activeChallengeIdx = Math.max(
+    0,
+    challenges.findIndex(ch => ch.id === activeChallenge?.id)
+  );
+
   useEffect(() => {
-    setCamRotX(15);
-    setCamScale(0.96);
-    const t = setTimeout(() => {
-      setCamRotX(0);
-      setCamRotY(0);
-      setCamScale(1.06);
-    }, 60);
-    return () => clearTimeout(t);
+    setCamRotX(0);
+    setCamRotY(0);
+    setCamScale(1.06);
   }, [selectedCase.id]);
+
+  // Refoco tático sutil da câmera ao alternar entre Vínculo #1, #2 e #3
+  useEffect(() => {
+    if (!activeChallenge?.id) return;
+    const offsets = [
+      { rotX: 0, rotY: -1.2, scale: 1.06 },
+      { rotX: 1.2, rotY: 1.2, scale: 1.075 },
+      { rotX: -1.0, rotY: 0, scale: 1.065 },
+    ];
+    const target = offsets[activeChallengeIdx % offsets.length];
+    setCamRotX(target.rotX);
+    setCamRotY(target.rotY);
+    setCamScale(target.scale);
+  }, [activeChallenge?.id, activeChallengeIdx]);
 
   useEffect(() => {
     if (!isAutoOrbiting) return;
@@ -153,9 +167,46 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
   };
 
   const activeCluesPool =
-    extractedCluesList.length >= 2 ? extractedCluesList : allCaseClues;
+    extractedCluesList.length >= 4 ? extractedCluesList : allCaseClues;
 
-  const deskClues = activeCluesPool.slice(0, 4);
+  // Monta dinamicamente as 4 evidências da mesa para o Vínculo Ativo (#1, #2 ou #3),
+  // garantindo que as 2 pistas exigidas pelo vínculo estejam sempre presentes na mesa
+  // junto com 2 pistas de contraste que mudam a cada vínculo!
+  const deskClues = React.useMemo(() => {
+    const pool = activeCluesPool.length > 0 ? activeCluesPool : allCaseClues;
+    if (!activeChallenge || pool.length <= 4) {
+      // Mesmo quando há 4 pistas, rotaciona a disposição conforme o Vínculo (#1, #2, #3)
+      const rotated = [...pool.slice(0, 4)];
+      if (rotated.length > 1 && activeChallengeIdx > 0) {
+        const shift = activeChallengeIdx % rotated.length;
+        return [...rotated.slice(shift), ...rotated.slice(0, shift)];
+      }
+      return rotated;
+    }
+
+    const reqIds = activeChallenge.requiredClueIds || [];
+    const requiredClues = pool.filter(c => reqIds.includes(c.id));
+    const otherClues = pool.filter(c => !reqIds.includes(c.id));
+
+    // Seleciona 2 pistas de contraste diferentes conforme o índice do Vínculo (#1, #2, #3)
+    const startOffset = activeChallengeIdx % Math.max(1, otherClues.length);
+    const rotatedOthers = [
+      ...otherClues.slice(startOffset),
+      ...otherClues.slice(0, startOffset),
+    ];
+    const combined = [...requiredClues, ...rotatedOthers].slice(0, 4);
+
+    // Intercala a posição nas 4 áreas da mesa conforme o Vínculo para mudança visual clara
+    if (combined.length === 4) {
+      if (activeChallengeIdx % 3 === 1) {
+        return [combined[2], combined[0], combined[3], combined[1]];
+      }
+      if (activeChallengeIdx % 3 === 2) {
+        return [combined[1], combined[2], combined[0], combined[3]];
+      }
+    }
+    return combined;
+  }, [activeCluesPool, allCaseClues, activeChallenge, activeChallengeIdx]);
 
   const isCurrentSolved = Boolean(
     activeChallenge && solvedConnectionIds.includes(activeChallenge.id)
@@ -257,47 +308,61 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
             </filter>
           </defs>
 
-          {/* Feixes Ambiente de Cruzamento Tátil na Vista Top-Down */}
-          {boardSelectedClues.length < 2 && solvedConnectionIds.length === 0 && topDownSpots.length >= 3 && (
-            <g opacity="0.92">
-              <line
-                x1={topDownSpots[0].pinX}
-                y1={topDownSpots[0].pinY}
-                x2={topDownSpots[1].pinX}
-                y2={topDownSpots[1].pinY}
-                stroke={eraTheme.primaryAccentHex}
-                strokeWidth="0.32"
-                filter="url(#goldLaserGlow)"
-              />
-              <line
-                x1={topDownSpots[0].pinX}
-                y1={topDownSpots[0].pinY}
-                x2={topDownSpots[1].pinX}
-                y2={topDownSpots[1].pinY}
-                stroke="#fef3c7"
-                strokeWidth="0.12"
-              />
-              <line
-                x1={topDownSpots[0].pinX}
-                y1={topDownSpots[0].pinY}
-                x2={topDownSpots[2].pinX}
-                y2={topDownSpots[2].pinY}
-                stroke={eraTheme.secondaryAccentHex}
-                strokeWidth="0.28"
-                filter="url(#cyanLaserGlow)"
-              />
-              <line
-                x1={topDownSpots[1].pinX}
-                y1={topDownSpots[1].pinY}
-                x2={topDownSpots[2].pinX}
-                y2={topDownSpots[2].pinY}
-                stroke={eraTheme.secondaryAccentHex}
-                strokeWidth="0.24"
-                strokeDasharray="0.9 0.5"
-                filter="url(#cyanLaserGlow)"
-              />
-            </g>
-          )}
+          {/* Feixes Ambiente Dinâmicos: mudam de geometria conforme o Vínculo Ativo (#1, #2 ou #3) */}
+          {boardSelectedClues.length < 2 && topDownSpots.length >= 4 && (() => {
+            const pairsByChallenge: [number, number, number][] = [
+              [0, 1, 2],
+              [1, 3, 0],
+              [0, 3, 2],
+            ];
+            const [idxA, idxB, idxC] = pairsByChallenge[activeChallengeIdx % pairsByChallenge.length];
+            const sA = topDownSpots[idxA] || topDownSpots[0];
+            const sB = topDownSpots[idxB] || topDownSpots[1];
+            const sC = topDownSpots[idxC] || topDownSpots[2];
+            return (
+              <g opacity="0.88">
+                <line
+                  x1={sA.pinX}
+                  y1={sA.pinY}
+                  x2={sB.pinX}
+                  y2={sB.pinY}
+                  stroke={eraTheme.primaryAccentHex}
+                  strokeWidth="0.34"
+                  strokeDasharray="1.1 0.6"
+                  filter="url(#goldLaserGlow)"
+                />
+                <line
+                  x1={sA.pinX}
+                  y1={sA.pinY}
+                  x2={50}
+                  y2={31}
+                  stroke={eraTheme.secondaryAccentHex}
+                  strokeWidth="0.26"
+                  strokeDasharray="0.8 0.5"
+                  filter="url(#cyanLaserGlow)"
+                />
+                <line
+                  x1={sB.pinX}
+                  y1={sB.pinY}
+                  x2={50}
+                  y2={31}
+                  stroke={eraTheme.secondaryAccentHex}
+                  strokeWidth="0.26"
+                  strokeDasharray="0.8 0.5"
+                  filter="url(#cyanLaserGlow)"
+                />
+                <line
+                  x1={sC.pinX}
+                  y1={sC.pinY}
+                  x2={50}
+                  y2={31}
+                  stroke={eraTheme.primaryAccentHex}
+                  strokeWidth="0.2"
+                  strokeDasharray="0.6 0.6"
+                />
+              </g>
+            );
+          })()}
 
           {/* Fios das Conexões Já Comprovadas */}
           {challenges
@@ -397,10 +462,25 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
           })()}
         </svg>
 
-        {/* Badge Horizontal de Alto Contraste sobre a Linha de Conexão (Fix #3) */}
-        <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 top-[29%] z-30 pointer-events-none items-center gap-2 bg-[#060A12]/90 text-amber-300 px-3.5 py-1 rounded-full border border-amber-500/40 shadow-lg text-[10px] font-mono uppercase tracking-wider">
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-          <span>VÍNCULO TÁTICO // {eraTheme.eraName.toUpperCase()}</span>
+        {/* Badge Horizontal Dinâmico do Vínculo Ativo (#1, #2 ou #3) no Centro da Mesa */}
+        <div
+          className={`hidden sm:flex absolute left-1/2 -translate-x-1/2 top-[31%] z-30 pointer-events-none items-center gap-2 px-4 py-1.5 rounded-full border shadow-[0_0_25px_rgba(0,0,0,0.9)] text-[11px] font-mono uppercase tracking-wider transition-all duration-300 ${
+            isCurrentSolved
+              ? 'bg-emerald-950/95 text-emerald-300 border-emerald-400/70'
+              : 'bg-[#060A12]/95 text-amber-300 border-amber-400/60'
+          }`}
+        >
+          <span
+            className={`w-2 h-2 rounded-full ${
+              isCurrentSolved ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
+            }`}
+          />
+          <span>
+            VÍNCULO #{activeChallengeIdx + 1} DE {challenges.length} //{' '}
+            {isCurrentSolved
+              ? 'CONEXÃO COMPROVADA ✓'
+              : `SELECIONE 2 PISTAS NA MESA (${boardSelectedClues.length}/2)`}
+          </span>
         </div>
 
         {/* ===================================================================
@@ -409,11 +489,17 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
         {topDownSpots.map((spot, idx) => {
           const clue = deskClues[idx];
           const isSelected = Boolean(clue && boardSelectedClues.includes(clue.id));
-          const isPartOfSolved = Boolean(
+          const isPartOfCurrentSolved = Boolean(
             clue &&
-              challenges
-                .filter(ch => solvedConnectionIds.includes(ch.id))
-                .some(ch => ch.requiredClueIds.includes(clue.id))
+              isCurrentSolved &&
+              activeChallenge?.requiredClueIds.includes(clue.id)
+          );
+          const isPartOfSolved = Boolean(
+            isPartOfCurrentSolved ||
+              (clue &&
+                challenges
+                  .filter(ch => solvedConnectionIds.includes(ch.id))
+                  .some(ch => ch.requiredClueIds.includes(clue.id)))
           );
 
           return (
@@ -689,18 +775,93 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
           </div>
         </div>
 
+        {/* PAINEL PERMANENTE DO VÍNCULO ATIVO (#1, #2 OU #3) — Muda imediatamente ao clicar em Vínculo #1, #2 ou #3 */}
+        {activeChallenge && (
+          <div
+            key={activeChallenge.id}
+            className={`pointer-events-auto mt-2 max-w-2xl p-3 sm:p-3.5 rounded-xl backdrop-blur-xl border shadow-[0_12px_35px_rgba(0,0,0,0.85)] transition-all duration-200 ${
+              isCurrentSolved
+                ? 'bg-[#061E18]/92 border-emerald-400/60'
+                : 'bg-[#090D16]/92 border-amber-400/55'
+            }`}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider font-bold ${
+                    isCurrentSolved
+                      ? 'bg-emerald-400 text-slate-950'
+                      : 'bg-amber-400 text-slate-950'
+                  }`}
+                >
+                  VÍNCULO #{activeChallengeIdx + 1} DE {challenges.length}
+                </span>
+                <span
+                  className={`text-[11px] font-mono font-bold uppercase tracking-wider ${
+                    isCurrentSolved ? 'text-emerald-300' : 'text-amber-300'
+                  }`}
+                >
+                  {isCurrentSolved
+                    ? '✓ Conexão Comprovada (+35 XP)'
+                    : `Em Aberto • Selecione 2 evidências na mesa (${boardSelectedClues.length}/2)`}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                {challenges.map((ch, idx) => {
+                  const isThisActive = ch.id === activeChallenge.id;
+                  const isThisSolved = solvedConnectionIds.includes(ch.id);
+                  return (
+                    <button
+                      key={ch.id}
+                      type="button"
+                      onClick={() => {
+                        soundEngine.playDocumentOpen();
+                        onSelectChallenge(ch.id);
+                      }}
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                        isThisActive
+                          ? 'bg-amber-400 text-slate-950 shadow'
+                          : isThisSolved
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                          : 'bg-slate-800/90 text-slate-300 hover:text-white'
+                      }`}
+                    >
+                      #{idx + 1}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="text-xs sm:text-sm font-sans font-bold text-white leading-snug">
+              {activeChallenge.question}
+            </div>
+
+            {isCurrentSolved && activeChallenge.conclusion ? (
+              <div className="mt-1.5 pt-1.5 border-t border-emerald-500/30 text-xs font-sans text-emerald-200 leading-relaxed">
+                <strong className="font-mono uppercase text-[10px] text-emerald-300 mr-1.5">
+                  Conclusão Forense:
+                </strong>
+                {activeChallenge.conclusion}
+              </div>
+            ) : (
+              activeChallenge.promptHint && (
+                <div className="mt-1 text-[11px] font-mono text-cyan-300/95">
+                  Dica Tática: {activeChallenge.promptHint}
+                </div>
+              )
+            )}
+          </div>
+        )}
+
         {briefingOpen && (
-          <div className="pointer-events-auto mt-2 max-w-xl p-3.5 rounded-xl bg-[#090D16]/90 backdrop-blur-xl border border-amber-500/40 text-xs text-slate-200 leading-relaxed shadow-2xl flex items-start justify-between gap-3 animate-in fade-in duration-150">
+          <div className="pointer-events-auto mt-2 max-w-xl p-3.5 rounded-xl bg-[#090D16]/95 backdrop-blur-xl border border-amber-500/40 text-xs text-slate-200 leading-relaxed shadow-2xl flex items-start justify-between gap-3">
             <div className="space-y-1.5">
               <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
-                BRIEFING & QUESTÃO DE CRUZAMENTO ({solvedConnectionIds.length}/{challenges.length}) — {eraTheme.eraName}
+                CONTEXTO HISTÓRICO DO CASO — {eraTheme.eraName}
               </div>
               <p className="text-slate-300">{selectedCase.shortDescription}</p>
-              {activeChallenge && (
-                <div className="pt-1.5 border-t border-slate-800 text-amber-200 font-medium">
-                  Vínculo Ativo: {activeChallenge.question}
-                </div>
-              )}
             </div>
             <button
               type="button"

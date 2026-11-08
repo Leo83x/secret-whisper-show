@@ -407,7 +407,7 @@ export const DossierInvestigationView: React.FC = () => {
       )}
 
       {/* ALERTA CONTEXTUAL DE AUDITORIA (QUANDO CONTRADIÇÃO É DESCOBERTA) */}
-      {contradictionAlert && (
+      {!isAny3DStageActive && contradictionAlert && (
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-between gap-4 animate-in fade-in duration-200 shadow-[0_0_20px_rgba(245,158,11,0.12)]">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 shrink-0">
@@ -794,6 +794,7 @@ export const DossierInvestigationView: React.FC = () => {
           onSelectStep={step => setActiveStep(step)}
           onSelectChallenge={chId => {
             setActiveChallengeId(chId);
+            setBoardSelectedClues([]);
             setConnectionFeedback(null);
           }}
           onToggleBoardClue={clueId => toggleBoardClue(clueId)}
@@ -837,6 +838,7 @@ export const DossierInvestigationView: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setActiveChallengeId(ch.id);
+                      setBoardSelectedClues([]);
                       setConnectionFeedback(null);
                     }}
                     className={`w-full text-left p-4 rounded-xl border transition-all cursor-pointer space-y-2 ${

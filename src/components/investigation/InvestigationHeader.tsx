@@ -30,8 +30,18 @@ export const InvestigationHeader: React.FC = () => {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
+      try {
+        sessionStorage.removeItem('ush_fs_manual_exit');
+      } catch {
+        // ignore
+      }
       document.documentElement.requestFullscreen?.().catch(() => {});
     } else {
+      try {
+        sessionStorage.setItem('ush_fs_manual_exit', '1');
+      } catch {
+        // ignore
+      }
       document.exitFullscreen?.().catch(() => {});
     }
   };
@@ -122,6 +132,28 @@ export const InvestigationHeader: React.FC = () => {
         {/* Lado Direito: Controle de Áudio/Animação + Credencial + Perfil (Compacto no Mobile) */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 relative">
           
+          {/* Botão Modo Jogo: Tela Cheia Nativa (Sem barra de navegador / sem barra de tarefas) */}
+          <button
+            type="button"
+            data-no-autofullscreen="true"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? 'Sair da Tela Cheia (ESC)' : 'Modo Jogo: Tela Cheia Total (Sem barras)'}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg border text-xs font-mono flex items-center justify-center gap-1.5 cursor-pointer transition-all shrink-0 ${
+              isFullscreen
+                ? 'bg-amber-500/20 border-amber-400/60 text-amber-300 font-bold shadow-[0_0_12px_rgba(245,158,11,0.25)]'
+                : 'bg-[#0B1320] border-amber-500/35 text-amber-300 hover:border-amber-400 hover:bg-amber-500/10'
+            }`}
+          >
+            {isFullscreen ? (
+              <Minimize2 className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <Maximize2 className="w-3.5 h-3.5 text-amber-400" />
+            )}
+            <span className="hidden lg:inline text-[11px]">
+              {isFullscreen ? 'Sair Tela Cheia' : 'Tela Cheia'}
+            </span>
+          </button>
+
           {/* Botão de Som & Acessibilidade */}
           <button
             onClick={() => setAudioMenuOpen(o => !o)}

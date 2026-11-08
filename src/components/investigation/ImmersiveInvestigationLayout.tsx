@@ -196,13 +196,6 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
 
   const handleConfirmExitToMap = async () => {
     setExitModalOpen(false);
-    if (typeof document !== 'undefined' && document.fullscreenElement) {
-      try {
-        await document.exitFullscreen();
-      } catch {
-        // Ignore
-      }
-    }
     soundEngine.playDocumentOpen();
     setActiveTab('mapa');
   };

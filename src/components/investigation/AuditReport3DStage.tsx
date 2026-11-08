@@ -65,7 +65,7 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
 }) => {
   const [camRotX, setCamRotX] = useState<number>(3);
   const [camRotY, setCamRotY] = useState<number>(0);
-  const [camScale, setCamScale] = useState<number>(1.03);
+  const [camScale, setCamScale] = useState<number>(1.08);
   const [isAutoOrbiting, setIsAutoOrbiting] = useState<boolean>(false);
   const [stageMenuOpen, setStageMenuOpen] = useState(false);
   const [muted, setMuted] = useState(() => soundEngine.getSettings().mutedAll);

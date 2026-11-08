@@ -32,6 +32,44 @@ const TerminalContent: React.FC = () => {
     }
   }, [state.activeTab, state.selectedCaseId, state.activeStep]);
 
+  // Modo Jogo Fullscreen Nativo: Entra automaticamente em tela cheia (sem barra do navegador e sem barra do Windows)
+  // no primeiro clique do jogador, respeitando caso ele saia manualmente com ESC ou botão.
+  useEffect(() => {
+    let wasFullscreen = Boolean(document.fullscreenElement);
+
+    const handleFsChange = () => {
+      const isNowFs = Boolean(document.fullscreenElement);
+      if (wasFullscreen && !isNowFs) {
+        try {
+          sessionStorage.setItem('ush_fs_manual_exit', '1');
+        } catch {
+          // ignore
+        }
+      }
+      wasFullscreen = isNowFs;
+    };
+
+    const handleFirstInteraction = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('[data-no-autofullscreen="true"]')) return;
+      try {
+        if (sessionStorage.getItem('ush_fs_manual_exit') === '1') return;
+      } catch {
+        // ignore
+      }
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFsChange);
+    window.addEventListener('click', handleFirstInteraction, { passive: true });
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      window.removeEventListener('click', handleFirstInteraction);
+    };
+  }, []);
+
   const isImmersiveInvestigation = state.activeTab === 'dossies';
 
   return (
