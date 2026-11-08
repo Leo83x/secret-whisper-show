@@ -539,7 +539,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                 alt="O Último Segredo"
                 className="w-5 h-5 sm:w-6 sm:h-6 rounded-md object-cover border border-amber-400/60 shrink-0"
               />
-              <h1 className="font-serif text-[11px] sm:text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase truncate max-w-[78vw] sm:max-w-none">
+              <h1 className="font-sans text-[11px] sm:text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase truncate max-w-[78vw] sm:max-w-none">
                 {caseShortHeader} ({selectedCase.name.toUpperCase()})
               </h1>
             </div>

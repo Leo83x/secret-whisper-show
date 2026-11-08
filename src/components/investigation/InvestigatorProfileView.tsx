@@ -149,11 +149,11 @@ export const InvestigatorProfileView: React.FC = () => {
                 />
               </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-2 text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold truncate">
+                <div className="flex items-center gap-2 text-xs sm:text-xs font-mono uppercase tracking-widest text-amber-400 font-bold truncate">
                   <span>REGISTRO OPERACIONAL // STRATA PROTOCOL</span>
                   <span className="text-emerald-400 hidden xs:inline">● Sincronizado</span>
                 </div>
-                <h1 className="font-serif text-lg sm:text-2xl font-bold tracking-wide text-white truncate">
+                <h1 className="font-sans text-lg sm:text-2xl font-bold tracking-wide text-white truncate">
                   ARQUIVO DO INVESTIGADOR
                 </h1>
               </div>
@@ -169,7 +169,7 @@ export const InvestigatorProfileView: React.FC = () => {
                   soundEngine.playDocumentOpen();
                   setActiveSubTab('credencial');
                 }}
-                className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-mono text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 cursor-pointer transition-all border ${
+                className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-mono text-xs sm:text-xs flex items-center gap-1.5 sm:gap-2 cursor-pointer transition-all border ${
                   activeSubTab === 'credencial'
                     ? 'bg-amber-500/25 border-amber-400 text-amber-200 font-bold shadow-[0_0_20px_rgba(245,158,11,0.25)]'
                     : 'bg-[#090F1B]/85 border-slate-700/80 text-slate-300 hover:border-amber-400/50 hover:text-white'
@@ -185,7 +185,7 @@ export const InvestigatorProfileView: React.FC = () => {
                   soundEngine.playDocumentOpen();
                   setActiveSubTab('competencias');
                 }}
-                className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-mono text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 cursor-pointer transition-all border ${
+                className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-mono text-xs sm:text-xs flex items-center gap-1.5 sm:gap-2 cursor-pointer transition-all border ${
                   activeSubTab === 'competencias'
                     ? 'bg-amber-500/25 border-amber-400 text-amber-200 font-bold shadow-[0_0_20px_rgba(245,158,11,0.25)]'
                     : 'bg-[#090F1B]/85 border-slate-700/80 text-slate-300 hover:border-amber-400/50 hover:text-white'
@@ -201,7 +201,7 @@ export const InvestigatorProfileView: React.FC = () => {
                   soundEngine.playDocumentOpen();
                   setActiveSubTab('arquivo');
                 }}
-                className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-mono text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 cursor-pointer transition-all border ${
+                className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-mono text-xs sm:text-xs flex items-center gap-1.5 sm:gap-2 cursor-pointer transition-all border ${
                   activeSubTab === 'arquivo'
                     ? 'bg-amber-500/25 border-amber-400 text-amber-200 font-bold shadow-[0_0_20px_rgba(245,158,11,0.25)]'
                     : 'bg-[#090F1B]/85 border-slate-700/80 text-slate-300 hover:border-amber-400/50 hover:text-white'
@@ -217,7 +217,7 @@ export const InvestigatorProfileView: React.FC = () => {
             <button
               type="button"
               onClick={() => setXpHelpOpen(true)}
-              className="ml-auto px-3 py-1.5 sm:py-2 rounded-xl bg-[#090F1B]/85 hover:bg-[#131D31] border border-amber-500/40 text-amber-300 text-[11px] sm:text-xs font-mono flex items-center gap-1.5 cursor-pointer transition-all shrink-0"
+              className="ml-auto px-3 py-1.5 sm:py-2 rounded-xl bg-[#090F1B]/85 hover:bg-[#131D31] border border-amber-500/40 text-amber-300 text-xs sm:text-xs font-mono flex items-center gap-1.5 cursor-pointer transition-all shrink-0"
               title="Como funciona a progressão e XP"
             >
               <HelpCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -237,12 +237,12 @@ export const InvestigatorProfileView: React.FC = () => {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3.5">
                     <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-amber-500 via-amber-300 to-amber-700 p-[2px] shadow-lg flex items-center justify-center shrink-0">
-                      <div className="w-full h-full rounded-2xl bg-[#060A12] flex items-center justify-center text-amber-300 font-serif text-xl sm:text-2xl font-bold">
+                      <div className="w-full h-full rounded-2xl bg-[#060A12] flex items-center justify-center text-amber-300 font-sans text-xl sm:text-2xl font-bold">
                         {investigatorName.charAt(0).toUpperCase()}
                       </div>
                     </div>
                     <div>
-                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/15 border border-amber-400/40 text-[10px] font-mono uppercase tracking-wider text-amber-300 font-bold">
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/15 border border-amber-400/40 text-xs font-mono uppercase tracking-wider text-amber-300 font-bold">
                         {investigatorRole}
                       </div>
                       <h2 className="text-lg sm:text-2xl font-bold text-white mt-1">
@@ -256,7 +256,7 @@ export const InvestigatorProfileView: React.FC = () => {
 
                   {/* Carimbo Diegético de Credencial */}
                   <div className="hidden sm:block px-3 py-1.5 rounded-lg border border-emerald-500/40 bg-emerald-950/30 text-right font-mono shrink-0">
-                    <div className="text-[9px] uppercase tracking-widest text-emerald-400 font-bold">
+                    <div className="text-xs uppercase tracking-widest text-emerald-400 font-bold">
                       CREDENCIAL STRATA
                     </div>
                     <div className="text-xs text-slate-200 font-semibold">
@@ -284,19 +284,19 @@ export const InvestigatorProfileView: React.FC = () => {
                 {/* Indicadores Rápidos do Caderno */}
                 <div className="grid grid-cols-3 gap-2.5 pt-1">
                   <div className="p-2.5 rounded-xl bg-[#070B14]/80 border border-slate-800 text-center">
-                    <div className="text-[10px] font-mono uppercase text-slate-400">Missões</div>
+                    <div className="text-xs font-mono uppercase text-slate-400">Missões</div>
                     <div className="text-sm sm:text-base font-bold text-amber-300 mt-0.5">
                       {state.completedNodes.length}/{playableNodesCount}
                     </div>
                   </div>
                   <div className="p-2.5 rounded-xl bg-[#070B14]/80 border border-slate-800 text-center">
-                    <div className="text-[10px] font-mono uppercase text-slate-400">Pistas</div>
+                    <div className="text-xs font-mono uppercase text-slate-400">Pistas</div>
                     <div className="text-sm sm:text-base font-bold text-cyan-300 mt-0.5">
                       {totalSavedClues}
                     </div>
                   </div>
                   <div className="p-2.5 rounded-xl bg-[#070B14]/80 border border-slate-800 text-center">
-                    <div className="text-[10px] font-mono uppercase text-slate-400">Vínculos</div>
+                    <div className="text-xs font-mono uppercase text-slate-400">Vínculos</div>
                     <div className="text-sm sm:text-base font-bold text-emerald-300 mt-0.5">
                       {totalSolvedLinks}
                     </div>
@@ -308,7 +308,7 @@ export const InvestigatorProfileView: React.FC = () => {
               <div className="lg:col-span-7 p-5 sm:p-6 rounded-2xl bg-[#0A111F]/65 backdrop-blur-md border border-slate-700/80 shadow-2xl flex flex-col justify-between space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
                   <div>
-                    <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+                    <div className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold">
                       PERFIL COGNITIVO DE CAMPO //
                     </div>
                     <h3 className="text-base sm:text-lg font-bold text-white">
@@ -336,7 +336,7 @@ export const InvestigatorProfileView: React.FC = () => {
                           style={{ width: `${t.value}%` }}
                         />
                       </div>
-                      <p className="text-[11px] text-slate-300 leading-relaxed">{t.description}</p>
+                      <p className="text-xs text-slate-300 leading-relaxed">{t.description}</p>
                     </div>
                   ))}
                 </div>
@@ -346,7 +346,7 @@ export const InvestigatorProfileView: React.FC = () => {
             {/* Síntese Executiva & Integração com o Livro */}
             <div className="p-5 rounded-2xl bg-[#0A111F]/60 backdrop-blur-md border border-amber-500/30 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               <div className="space-y-1 max-w-3xl">
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-cyan-300 font-bold">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-cyan-300 font-bold">
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                   <span>SÍNTESE DO DOSSIÊ PESSOAL //</span>
                 </div>
@@ -379,7 +379,7 @@ export const InvestigatorProfileView: React.FC = () => {
             <div className="p-5 sm:p-6 rounded-2xl bg-[#0A111F]/70 backdrop-blur-md border border-amber-400/35 shadow-2xl space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+                  <div className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold">
                     APTIDÕES TÉCNICAS AUDITADAS //
                   </div>
                   <h2 className="text-base sm:text-xl font-bold text-white">
@@ -423,7 +423,7 @@ export const InvestigatorProfileView: React.FC = () => {
             <div className="p-5 sm:p-6 rounded-2xl bg-[#0A111F]/60 backdrop-blur-md border border-slate-700/80 shadow-xl space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 font-bold">
+                  <div className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold">
                     TELEMETRIA SECUNDÁRIA DE CAMPO //
                   </div>
                   <h3 className="text-sm sm:text-base font-bold text-slate-100">
@@ -466,7 +466,7 @@ export const InvestigatorProfileView: React.FC = () => {
           <div className="space-y-4 animate-in fade-in duration-200">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+                <div className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold">
                   GAVETA DE DOSSIÊS // REGISTRO DE AUDITORIA
                 </div>
                 <h2 className="text-base sm:text-xl font-bold text-white">
@@ -508,7 +508,7 @@ export const InvestigatorProfileView: React.FC = () => {
                     {/* Aba Física Superior da Pasta de Arquivo */}
                     <div className="flex items-center justify-between px-1">
                       <div
-                        className={`px-3.5 py-1 rounded-t-xl border-t border-x text-[10px] font-mono uppercase tracking-wider font-bold flex items-center gap-1.5 ${
+                        className={`px-3.5 py-1 rounded-t-xl border-t border-x text-xs font-mono uppercase tracking-wider font-bold flex items-center gap-1.5 ${
                           isQuarantine
                             ? 'bg-slate-900/90 border-slate-700/80 text-slate-400'
                             : isCompleted
@@ -523,7 +523,7 @@ export const InvestigatorProfileView: React.FC = () => {
                       </div>
 
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold flex items-center gap-1 ${
+                        className={`px-2.5 py-0.5 rounded-full text-xs font-mono uppercase font-bold flex items-center gap-1 ${
                           isQuarantine
                             ? 'bg-slate-900/90 border border-amber-500/35 text-amber-200/80'
                             : isCompleted
@@ -568,7 +568,7 @@ export const InvestigatorProfileView: React.FC = () => {
                       <div className="space-y-2">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <div className="text-[11px] font-mono text-amber-300/90">
+                            <div className="text-xs font-mono text-amber-300/90">
                               {node.name} • {node.location} ({node.year})
                             </div>
                             <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
@@ -578,7 +578,7 @@ export const InvestigatorProfileView: React.FC = () => {
                         </div>
 
                         {isQuarantine ? (
-                          <div className="p-3 rounded-lg bg-[#060A12]/80 border border-slate-800/90 text-[11px] text-slate-300 leading-relaxed flex items-start gap-2.5">
+                          <div className="p-3 rounded-lg bg-[#060A12]/80 border border-slate-800/90 text-xs text-slate-300 leading-relaxed flex items-start gap-2.5">
                             <Lock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                             <div>
                               <span className="font-mono text-amber-300 font-semibold block">
@@ -594,13 +594,13 @@ export const InvestigatorProfileView: React.FC = () => {
                             {/* Resumo de Progresso Interno da Pasta */}
                             <div className="grid grid-cols-2 gap-2 pt-1">
                               <div className="p-2 rounded-lg bg-[#060A12]/75 border border-slate-800/90 text-xs font-mono">
-                                <span className="text-slate-400 block text-[10px]">PISTAS EXTRAÍDAS</span>
+                                <span className="text-slate-400 block text-xs">PISTAS EXTRAÍDAS</span>
                                 <span className="text-cyan-300 font-bold">
                                   {extractedCount}/{totalCaseClues || 6} catalogadas
                                 </span>
                               </div>
                               <div className="p-2 rounded-lg bg-[#060A12]/75 border border-slate-800/90 text-xs font-mono">
-                                <span className="text-slate-400 block text-[10px]">HIPÓTESE / LAUDO</span>
+                                <span className="text-slate-400 block text-xs">HIPÓTESE / LAUDO</span>
                                 <span className="text-amber-300 font-bold truncate block">
                                   {chosenThesis ? chosenThesis.tag : isCompleted ? 'Validada' : 'Pendente'}
                                 </span>
@@ -608,7 +608,7 @@ export const InvestigatorProfileView: React.FC = () => {
                             </div>
 
                             {(chosenThesis || chosenDecision) && (
-                              <div className="p-2.5 rounded-lg bg-[#060A12]/80 border border-white/5 text-[11px] text-slate-200 space-y-1">
+                              <div className="p-2.5 rounded-lg bg-[#060A12]/80 border border-white/5 text-xs text-slate-200 space-y-1">
                                 {chosenThesis && (
                                   <div className="truncate">
                                     <strong className="text-amber-300 font-mono">Hipótese:</strong>{' '}

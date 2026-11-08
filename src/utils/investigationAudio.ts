@@ -44,6 +44,26 @@ class InvestigationSoundEngine {
 
   constructor() {
     this.loadSettings();
+    this.setupMobileTouchUnlock();
+  }
+
+  private setupMobileTouchUnlock() {
+    if (typeof window === 'undefined') return;
+    const unlock = () => {
+      try {
+        if (!this.settings.mutedAll) {
+          const ctx = this.ensureContext();
+          if (ctx && ctx.state === 'suspended') {
+            ctx.resume().catch(() => {});
+          }
+        }
+      } catch {
+        // Ignora bloqueio antes de gesto válido
+      }
+    };
+    window.addEventListener('touchstart', unlock, { passive: true, once: true });
+    window.addEventListener('pointerdown', unlock, { passive: true, once: true });
+    window.addEventListener('click', unlock, { passive: true, once: true });
   }
 
   private loadSettings() {

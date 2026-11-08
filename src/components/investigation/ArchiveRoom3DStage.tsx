@@ -486,7 +486,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
           {/* Esquerda Desktop */}
           <div className="pointer-events-auto flex flex-col items-start gap-2 max-w-xl">
             <div className="px-3.5 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg">
-              <h1 className="font-serif text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase">
+              <h1 className="font-sans text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase">
                 {caseShortHeader} ({selectedCase.name.toUpperCase()})
               </h1>
             </div>
@@ -501,9 +501,9 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                 }}
                 className="px-3 py-1.5 rounded-lg bg-[#0B111E]/85 hover:bg-[#131D31] backdrop-blur-md border border-slate-600/80 hover:border-amber-400/60 text-xs font-sans text-slate-200 flex items-center gap-1.5 cursor-pointer transition-all shadow-lg"
               >
-                <span className="text-amber-400 font-serif italic font-bold">[ i</span>
+                <span className="text-amber-400 font-sans italic font-bold">[ i</span>
                 <span>Briefing</span>
-                <span className="text-amber-400 font-serif">]</span>
+                <span className="text-amber-400 font-sans">]</span>
               </button>
 
               <button

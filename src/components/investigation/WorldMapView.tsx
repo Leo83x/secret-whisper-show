@@ -62,7 +62,7 @@ export const WorldMapView: React.FC = () => {
             <Globe2 className="w-3.5 h-3.5 text-amber-400" />
             <span>Cartografia de Convergência // O Padrão</span>
           </div>
-          <h2 className="font-serif text-lg sm:text-2xl md:text-3xl font-bold tracking-wider uppercase text-white leading-tight">
+          <h2 className="font-sans text-lg sm:text-2xl md:text-3xl font-bold tracking-wider uppercase text-white leading-tight">
             CONECTE O PASSADO. DESCUBRA O <span className="text-amber-400">PADRÃO.</span>
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 font-sans mt-1">
@@ -294,7 +294,7 @@ export const WorldMapView: React.FC = () => {
                     </div>
 
                     <div className="text-left leading-tight flex-1 min-w-0">
-                      <div className="font-serif text-[11px] sm:text-xs font-bold text-slate-100 truncate">
+                      <div className="font-sans text-[11px] sm:text-xs font-bold text-slate-100 truncate">
                         {node.name}
                       </div>
                       <div className="font-mono text-[10px] text-amber-400/90 mt-0.5">

@@ -3,7 +3,7 @@
   "short_name": "O Último Segredo",
   "description": "E-Reader Oficial de O Último Segredo da Humanidade — Leonardo de Paula",
   "start_url": "/reader/",
-  "scope": "/reader/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#070b14",

@@ -408,7 +408,7 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
       const token = typeof window !== 'undefined' ? localStorage.getItem('ush_token') : null;
       if (!token) return;
       try {
-        await fetch('/api/save-reading-progress', {
+        await fetch('/api/track-progress', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
