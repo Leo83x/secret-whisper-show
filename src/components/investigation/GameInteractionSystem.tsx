@@ -17,13 +17,69 @@ export const InteractionAudio = {
 };
 
 // ============================================================================
-// 2. GameButton — Família 1: Botões de Ação Principal (Bronze/Ouro com Relevo)
+// Ícone de Lupa em Relevo Dourado Fotorrealista (image_57.png)
+// ============================================================================
+export const BrassMagnifierIcon: React.FC<{ className?: string }> = ({ className = 'w-6 h-6 sm:w-7 sm:h-7' }) => (
+  <svg
+    viewBox="0 0 32 32"
+    className={`shrink-0 drop-shadow-[0_2px_3px_rgba(0,0,0,0.85)] ${className}`}
+    fill="none"
+    aria-hidden="true"
+  >
+    {/* Aro da lupa em relevo dourado escovado */}
+    <circle cx="13" cy="13" r="8.5" stroke="url(#brassMagnifierRing)" strokeWidth="3" fill="rgba(60, 42, 9, 0.45)" />
+    <circle cx="13" cy="13" r="6.8" stroke="#fffbeb" strokeWidth="0.8" opacity="0.7" />
+    <circle cx="13" cy="13" r="10" stroke="#362404" strokeWidth="0.75" opacity="0.8" />
+    {/* Cabo da lupa em relevo com virola */}
+    <rect
+      x="18.5"
+      y="18.5"
+      width="4.8"
+      height="10.5"
+      rx="1.6"
+      transform="rotate(-45 18.5 18.5)"
+      fill="url(#brassMagnifierHandle)"
+      stroke="#2b1a01"
+      strokeWidth="0.8"
+    />
+    <circle cx="19.2" cy="19.2" r="1.4" fill="#fef08a" opacity="0.85" />
+    <defs>
+      <linearGradient id="brassMagnifierRing" x1="5" y1="5" x2="21" y2="21">
+        <stop offset="0%" stopColor="#fef08a" />
+        <stop offset="35%" stopColor="#d4af37" />
+        <stop offset="70%" stopColor="#8a6521" />
+        <stop offset="100%" stopColor="#4a3307" />
+      </linearGradient>
+      <linearGradient id="brassMagnifierHandle" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#fef08a" />
+        <stop offset="45%" stopColor="#c59b27" />
+        <stop offset="85%" stopColor="#63450c" />
+        <stop offset="100%" stopColor="#362404" />
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
+// Rebite metálico circular com sombra e brilho entalhado
+const BrassRivet: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <span
+    aria-hidden="true"
+    className={`absolute w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#4c3c13] border border-[#2b200b] shadow-[inset_0_1px_1px_rgba(0,0,0,0.85),0_1px_0_rgba(255,255,255,0.25)] pointer-events-none ${className}`}
+  />
+);
+
+// ============================================================================
+// 2. GameButton — Botão Fotorrealista de Latão Envelhecido e Relevo 3D (image_57.png)
 // ============================================================================
 export interface GameButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg';
   soundType?: 'brass' | 'stamp' | 'discovery' | 'none';
+  showMagnifier?: boolean;
+  showArrow?: boolean;
+  showDivider?: boolean;
+  showRivets?: boolean;
 }
 
 export const GameButton: React.FC<GameButtonProps> = ({
@@ -32,18 +88,15 @@ export const GameButton: React.FC<GameButtonProps> = ({
   rightIcon,
   size = 'md',
   soundType = 'brass',
+  showMagnifier = true,
+  showArrow = true,
+  showDivider = true,
+  showRivets = true,
   className = '',
   onClick,
   disabled,
   ...rest
 }) => {
-  const sizeClasses =
-    size === 'sm'
-      ? 'px-4 py-2 text-xs gap-1.5'
-      : size === 'lg'
-      ? 'px-7 py-3.5 text-sm sm:text-base gap-2.5'
-      : 'px-5 py-2.5 text-xs sm:text-sm gap-2';
-
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
     if (soundType === 'brass') InteractionAudio.primaryPress();
@@ -52,18 +105,87 @@ export const GameButton: React.FC<GameButtonProps> = ({
     onClick?.(e);
   };
 
+  const padY = size === 'sm' ? 'py-2 sm:py-2.5' : size === 'lg' ? 'py-3.5 sm:py-4' : 'py-2.5 sm:py-3.5';
+  const textSz = size === 'sm' ? 'text-xs sm:text-sm' : size === 'lg' ? 'text-sm sm:text-lg' : 'text-sm md:text-base';
+
+  const leftElement = icon !== undefined ? icon : showMagnifier ? <BrassMagnifierIcon /> : null;
+  const rightElement =
+    rightIcon !== undefined ? (
+      rightIcon
+    ) : showArrow ? (
+      <span
+        aria-hidden="true"
+        className="text-amber-200 drop-shadow-[0_0_8px_rgba(251,191,36,0.9)] font-serif font-black text-lg sm:text-2xl shrink-0 transition-transform duration-150 group-hover/brass:translate-x-1"
+      >
+        ➔
+      </span>
+    ) : null;
+
   return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={handleClick}
-      className={`game-btn-primary font-sans font-extrabold uppercase tracking-wider inline-flex items-center justify-center select-none cursor-pointer ${sizeClasses} ${className}`}
-      {...rest}
-    >
-      {icon && <span className="shrink-0 drop-shadow-sm">{icon}</span>}
-      <span className="drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]">{children}</span>
-      {rightIcon && <span className="shrink-0 drop-shadow-sm">{rightIcon}</span>}
-    </button>
+    <div className={`relative inline-block select-none group/brass ${className.includes('w-full') ? 'w-full' : ''}`}>
+      {/* 1. O Berço/Chassi Escuro com bordas chanfradas e sombra de profundidade */}
+      <div
+        className="brass-plate-chassis p-[2.5px] sm:p-[3px] bg-gradient-to-b from-[#2e1f08] via-[#1a1204] to-[#0c0802] shadow-[0_8px_24px_rgba(0,0,0,0.95)]"
+        style={{
+          clipPath:
+            'polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px)',
+        }}
+      >
+        {/* 2. O Corpo do Botão (Latão Envelhecido e Relevo 3D de 4px) */}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={handleClick}
+          className={`relative w-full flex items-center justify-between px-3 sm:px-6 ${padY}
+            bg-gradient-to-r from-[#8a6521] via-[#d4af37] to-[#8a6521]
+            border-t border-amber-300/40 border-l border-r border-amber-500/30
+            border-b-[4px] border-b-[#523903]
+            cursor-pointer select-none transition-all duration-150 ease-out
+            hover:brightness-[1.12] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)]
+            active:translate-y-[3px] active:border-b-0 active:shadow-[0_2px_8px_rgba(0,0,0,0.9)]
+            disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0
+            ${className}`}
+          style={{
+            clipPath:
+              'polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px)',
+          }}
+          {...rest}
+        >
+          {/* 3. Acabamentos e Rebites Circulares nos Cantos Chanfrados */}
+          {showRivets && (
+            <>
+              <BrassRivet className="top-1.5 left-2 sm:top-2 sm:left-2.5" />
+              <BrassRivet className="bottom-1.5 left-2 sm:bottom-2 sm:left-2.5" />
+              <BrassRivet className="top-1.5 right-2 sm:top-2 sm:right-2.5" />
+              <BrassRivet className="bottom-1.5 right-2 sm:bottom-2 sm:right-2.5" />
+            </>
+          )}
+
+          {/* Lado Esquerdo: Ícone de Lupa em Alto-Relevo + Linha Divisória Escura */}
+          <div className="flex items-center shrink-0 pl-1 sm:pl-2">
+            {leftElement}
+            {leftElement && showDivider && (
+              <div
+                aria-hidden="true"
+                className="w-[1.5px] h-6 sm:h-8 bg-gradient-to-b from-transparent via-[#422e06] to-transparent shadow-[1px_0_0_rgba(255,255,255,0.35)] mx-2 sm:mx-3.5 shrink-0 pointer-events-none"
+              />
+            )}
+          </div>
+
+          {/* Centro: Texto com Tipografia Serifada de Baixo-Relevo Entalhado */}
+          <span
+            className={`flex-1 text-center font-serif font-extrabold uppercase tracking-[0.14em] text-slate-950/90 ${textSz} drop-shadow-[0_1px_0_rgba(255,255,255,0.4)] px-2 truncate`}
+          >
+            {children}
+          </span>
+
+          {/* Lado Direito: Seta Dourada Brilhante com Glow */}
+          <div className="flex items-center shrink-0 pr-1 sm:pr-2">
+            {rightElement}
+          </div>
+        </button>
+      </div>
+    </div>
   );
 };
 

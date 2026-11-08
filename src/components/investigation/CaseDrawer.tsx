@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import { RestrictedFileModal } from './RestrictedFileModal';
+import { GameButton } from './GameInteractionSystem';
 import { soundEngine } from '../../utils/investigationAudio';
 import {
   Sparkles,
@@ -230,16 +231,15 @@ export const CaseDrawer: React.FC = () => {
           {/* Botão de Ação Principal (font-sans limpa e legível) */}
           <div className="pt-3">
             {!isQuarantine ? (
-              <button
+              <GameButton
+                size="lg"
                 onClick={() => {
-                  soundEngine.playBrassPress();
                   startCaseInvestigation(selectedCase.id);
                 }}
-                className="game-btn-primary w-full py-3.5 px-5 font-sans font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full"
               >
-                <span>{isCompleted ? 'REVISAR INVESTIGAÇÃO' : 'INVESTIGAR CASO'}</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-              </button>
+                {isCompleted ? 'REVISAR INVESTIGAÇÃO' : 'INVESTIGAR CASO'}
+              </GameButton>
             ) : (
               <button
                 onClick={() => {

@@ -218,68 +218,57 @@
 }
 
 /* FAMÍLIA 1: Botão de Ação Principal (Bronze Iluminado / Dourado Envelhecido com Relevo Metálico) */
+/* ESTRUTURA DO BOTÃO DE LATÃO E OURO ESCOVADO (image_57.png) */
+.brass-plate-chassis {
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.95), 0 2px 6px rgba(0, 0, 0, 0.85);
+}
+
 .game-btn-primary {
   position: relative;
   overflow: hidden;
-  border-radius: 0.75rem;
-  background: linear-gradient(180deg, #f3dca2 0%, #d4a64a 48%, #9e711f 100%);
-  color: #090d16;
-  border: 1px solid rgba(254, 243, 199, 0.72);
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
+  background: linear-gradient(180deg, #d8b04a 0%, #aa7c28 20%, #d4af37 50%, #8a6521 80%, #5c400d 100%);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0px, rgba(255, 255, 255, 0.04) 2px, transparent 2px, transparent 4px),
+    linear-gradient(180deg, #d8b04a 0%, #aa7c28 20%, #d4af37 50%, #8a6521 80%, #5c400d 100%);
+  color: #0c0803;
+  border-top: 1px solid rgba(254, 243, 199, 0.65);
+  border-left: 1px solid rgba(212, 175, 55, 0.45);
+  border-right: 1px solid rgba(212, 175, 55, 0.45);
+  border-bottom: 4px solid #523903;
   box-shadow:
-    inset 0 1.5px 0 rgba(255, 252, 235, 0.85),
-    inset 0 -2.5px 0 rgba(66, 40, 5, 0.85),
-    0 8px 24px rgba(0, 0, 0, 0.72),
-    0 0 20px rgba(212, 175, 55, 0.25);
-  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 180ms ease,
-              filter 180ms ease;
-}
-
-.game-btn-primary::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -120%;
-  width: 65%;
-  height: 200%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 253, 240, 0.55) 50%,
-    transparent 100%
-  );
-  transform: skewX(-24deg);
-  transition: left 480ms cubic-bezier(0.22, 1, 0.36, 1);
-  pointer-events: none;
+    inset 0 1px 1px rgba(255, 255, 255, 0.75),
+    inset 0 -1px 2px rgba(45, 27, 3, 0.8),
+    0 8px 24px rgba(0, 0, 0, 0.95);
+  transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 150ms ease,
+              border-bottom-width 120ms ease,
+              filter 150ms ease;
 }
 
 .game-btn-primary:hover:not(:disabled) {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
+  filter: brightness(1.12);
   box-shadow:
-    inset 0 1.5px 0 rgba(255, 253, 240, 0.95),
-    inset 0 -2.5px 0 rgba(66, 40, 5, 0.85),
-    0 10px 28px rgba(0, 0, 0, 0.8),
-    0 0 28px rgba(245, 158, 11, 0.42);
-}
-
-.game-btn-primary:hover:not(:disabled)::after {
-  left: 155%;
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 2px rgba(45, 27, 3, 0.8),
+    0 10px 28px rgba(0, 0, 0, 0.95),
+    0 0 20px rgba(212, 175, 55, 0.35);
 }
 
 .game-btn-primary:active:not(:disabled) {
-  transform: translateY(2px) scale(0.985);
-  filter: brightness(0.97);
+  transform: translateY(3px);
+  border-bottom-width: 0px;
   box-shadow:
-    inset 0 2px 4px rgba(45, 27, 3, 0.75),
-    0 3px 10px rgba(0, 0, 0, 0.75),
-    0 0 16px rgba(245, 158, 11, 0.35);
+    inset 0 2px 4px rgba(30, 18, 2, 0.9),
+    0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 .game-btn-primary:disabled {
-  background: linear-gradient(180deg, #263042 0%, #161e2e 100%);
-  color: #64748b;
-  border-color: rgba(100, 116, 139, 0.3);
+  background: linear-gradient(180deg, #2a2014 0%, #17120a 100%);
+  color: #6d5b45;
+  border-top: 1px solid rgba(100, 80, 50, 0.3);
+  border-bottom: 3px solid #140d04;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   cursor: not-allowed;
 }

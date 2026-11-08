@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EvidenceDocument, HistoricalNode } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
+import { GameButton } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -956,17 +957,12 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              soundEngine.playBrassPress();
-              onSelectStep(2);
-            }}
-            className="game-btn-primary px-5 sm:px-6 py-2.5 font-sans font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer shrink-0"
+          <GameButton
+            onClick={() => onSelectStep(2)}
+            className="shrink-0"
           >
-            <span>Mesa de Conexões</span>
-            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
-          </button>
+            MESA DE CONEXÕES
+          </GameButton>
         </div>
       </div>
     </div>

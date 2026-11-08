@@ -35,6 +35,7 @@ import { FieldSimulation3DStage } from './FieldSimulation3DStage';
 import { AuditReport3DStage } from './AuditReport3DStage';
 import { DiscoveryRevealModal } from './DiscoveryRevealModal';
 import { soundEngine } from '../../utils/investigationAudio';
+import { GameButton } from './GameInteractionSystem';
 
 export const DossierInvestigationView: React.FC = () => {
   const {
@@ -772,6 +773,24 @@ export const DossierInvestigationView: React.FC = () => {
                         </div>
                       );
                     })}
+
+                    {/* Botão de Latão Fotorrealista de Avanço para a Mesa de Conexões (image_57.png) */}
+                    <div className="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="text-xs font-mono text-slate-300">
+                        Evidências coletadas neste dossiê:{' '}
+                        <strong className="text-amber-300 font-bold">
+                          {progress.extractedClueIds.length}/{allCaseClues.length}
+                        </strong>
+                      </div>
+                      <GameButton
+                        onClick={() => {
+                          setActiveStep(2);
+                        }}
+                        className="w-full sm:w-auto"
+                      >
+                        MESA DE CONEXÕES
+                      </GameButton>
+                    </div>
                   </div>
                 )}
               </div>
@@ -992,17 +1011,14 @@ export const DossierInvestigationView: React.FC = () => {
                   </div>
 
                   <div className="flex justify-center pt-1">
-                    <button
+                    <GameButton
+                      size="lg"
                       onClick={handleValidateConnection}
                       disabled={boardSelectedClues.length !== 2}
-                      className={`px-6 py-3 rounded-xl font-sans font-bold text-xs sm:text-sm uppercase tracking-wider transition-all ${
-                        boardSelectedClues.length === 2
-                          ? 'bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.35)] cursor-pointer'
-                          : 'bg-slate-800/80 text-slate-500 cursor-not-allowed'
-                      }`}
+                      soundType="stamp"
                     >
-                      Validar Conexão na Mesa
-                    </button>
+                      VALIDAR CONEXÃO NA MESA
+                    </GameButton>
                   </div>
                 </div>
 
@@ -1723,15 +1739,15 @@ export const DossierInvestigationView: React.FC = () => {
                 Fechar [Esc]
               </button>
               {state.activeStep === 1 && (
-                <button
+                <GameButton
+                  size="sm"
                   onClick={() => {
                     setIsArchiveDrawerOpen(false);
                     setActiveStep(2);
                   }}
-                  className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-xs uppercase tracking-wider cursor-pointer"
                 >
-                  Ir para Mesa de Conexões →
-                </button>
+                  MESA DE CONEXÕES
+                </GameButton>
               )}
             </div>
           </div>
