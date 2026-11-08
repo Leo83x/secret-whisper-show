@@ -103,6 +103,10 @@
         <div class="value" style="color:var(--amber);" id="stat-clicked-buy">0</div>
       </div>
       <div class="card-stat">
+        <div class="label">Investigadores 3D</div>
+        <div class="value" style="color:#a855f7;" id="stat-investigators">0</div>
+      </div>
+      <div class="card-stat">
         <div class="label">Faturamento Total</div>
         <div class="value" style="color:#eab308;" id="stat-revenue">R$ 0,00</div>
       </div>
@@ -116,6 +120,7 @@
             <th>Leitor</th>
             <th>E-mail / WhatsApp</th>
             <th>Status</th>
+            <th>Investigação 3D</th>
             <th>Último Lido</th>
             <th>Clicou Comprar?</th>
             <th>Corrente</th>
@@ -165,6 +170,8 @@
         document.getElementById('stat-paid').innerText = data.stats.paidReaders;
         document.getElementById('stat-free').innerText = data.stats.freeReaders;
         document.getElementById('stat-clicked-buy').innerText = data.stats.clickedBuyCount || 0;
+        const invEl = document.getElementById('stat-investigators');
+        if (invEl) invEl.innerText = data.stats.activeInvestigatorsCount || 0;
         document.getElementById('stat-revenue').innerText = 'R$ ' + (data.stats.totalRevenue || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2});
 
         renderTable(allReaders);
@@ -224,6 +231,12 @@
           <td><strong>${r.name}</strong></td>
           <td>${r.email}<br><span style="color:var(--tx2); font-size:0.75rem;">${r.phone || 'Sem WhatsApp'}</span>${waLink}</td>
           <td>${statusBadge}</td>
+          <td>
+            ${r.inv_active
+              ? `<span class="badge" style="background:rgba(168,85,247,0.18); color:#e9d5ff; border:1px solid rgba(168,85,247,0.4);">🕵️ ${r.inv_completed_count || 0}/4 Missões • ${r.inv_xp || 0} XP</span>${r.inv_profile ? `<br><span style="font-size:0.7rem; color:var(--tx2);">Perfil: ${r.inv_profile}</span>` : ''}`
+              : `<span class="badge badge-muted">Não iniciou 3D</span>`
+            }
+          </td>
           <td>${lastChapterHtml}</td>
           <td>${clickedBuyHtml}</td>
           <td><strong style="color:var(--acc);">${r.referrals_count || 0}</strong> leitores</td>

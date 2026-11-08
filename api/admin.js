@@ -17,7 +17,11 @@ export default async function handler(req, res) {
   }
 
   const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ydezgyxfggplxapargdq.supabase.co';
-  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
+  const SUPABASE_KEY =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    'sb_publishable_-qMnoAUnFU0chU6ySsDaXQ_pHHhU26J';
 
   try {
     const action = req.query.action || (req.body ? req.body.action : null);
@@ -34,45 +38,60 @@ export default async function handler(req, res) {
       const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/readers?id=eq.${readerId}`, {
         method: 'PATCH',
         headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
           'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
+          Prefer: 'return=representation',
         },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ status: newStatus }),
       });
 
       if (!updateRes.ok) {
         const errText = await updateRes.text();
-        return res.status(500).json({ success: false, error: `Erro ao alterar no Supabase (${updateRes.status}): ${errText}` });
+        return res.status(500).json({
+          success: false,
+          error: `Erro ao alterar no Supabase (${updateRes.status}): ${errText}`,
+        });
       }
 
       const updatedData = await updateRes.json();
       return res.status(200).json({
         success: true,
-        message: `Acesso do leitor alterado para ${newStatus === 'paid' ? 'LIBERADO (PAGO)' : 'DEGUSTACAO (GRATIS)'}!`,
-        reader: updatedData
+        message: `Acesso do leitor alterado para ${
+          newStatus === 'paid' ? 'LIBERADO (PAGO)' : 'DEGUSTACAO (GRATIS)'
+        }!`,
+        reader: updatedData,
       });
     }
 
-    // Chamada REST nativa para listar leitores COM dados de progresso e intencao de compra
-    const restRes = await fetch(`${SUPABASE_URL}/rest/v1/readers?select=*,reader_traits(*)&order=created_at.desc`, {
-      method: 'GET',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
+    // Chamada REST nativa para listar leitores COM dados de progresso e investigacao 3D
+    const restRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/readers?select=*,reader_traits(*)&order=created_at.desc`,
+      {
+        method: 'GET',
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+        },
       }
-    });
+    );
 
     const readersData = await restRes.json();
 
     if (!restRes.ok) {
       return res.status(200).json({
         success: false,
-        stats: { totalReaders: 0, paidReaders: 0, freeReaders: 0, totalRevenue: 0, clickedBuyCount: 0 },
+        stats: {
+          totalReaders: 0,
+          paidReaders: 0,
+          freeReaders: 0,
+          totalRevenue: 0,
+          clickedBuyCount: 0,
+          activeInvestigatorsCount: 0,
+        },
         readers: [],
-        error: `Supabase retornou erro (${restRes.status}). Verifique se o projeto esta ativo.`
+        error: `Supabase retornou erro (${restRes.status}). Verifique se o projeto esta ativo.`,
       });
     }
 
@@ -80,7 +99,7 @@ export default async function handler(req, res) {
     const totalReaders = safeReaders.length;
     const paidReaders = safeReaders.filter(r => r.status === 'paid').length;
     const freeReaders = safeReaders.filter(r => r.status !== 'paid').length;
-    const totalRevenue = paidReaders * 29.90;
+    const totalRevenue = paidReaders * 29.9;
 
     const referralMap = {};
     safeReaders.forEach(r => {
@@ -90,10 +109,15 @@ export default async function handler(req, res) {
     });
 
     let clickedBuyTotal = 0;
+    let activeInvestigatorsCount = 0;
 
     const readersWithChain = safeReaders.map(r => {
-      const traits = Array.isArray(r.reader_traits) && r.reader_traits.length > 0 ? r.reader_traits[0] : null;
+      const traits =
+        Array.isArray(r.reader_traits) && r.reader_traits.length > 0 ? r.reader_traits[0] : null;
       const progress = traits && traits.reading_progress ? traits.reading_progress : null;
+      const interactions = traits && traits.interactions ? traits.interactions : null;
+      const invState =
+        interactions && interactions.investigation_state ? interactions.investigation_state : null;
 
       let lastChapter = 'Não iniciado';
       let lastChapterNum = -1;
@@ -108,8 +132,38 @@ export default async function handler(req, res) {
         }
       }
 
-      const clickedBuy = (r.status === 'paid') || (progress ? progress.clicked_buy === true : false);
+      const clickedBuy = r.status === 'paid' || (progress ? progress.clicked_buy === true : false);
       if (clickedBuy) clickedBuyTotal++;
+
+      // Telemetria da Central de Investigação 3D
+      const invCompletedNodes =
+        invState && Array.isArray(invState.completedNodes)
+          ? invState.completedNodes
+          : traits && Array.isArray(traits.explored_links)
+          ? traits.explored_links
+          : [];
+      const invTotalXp = invState && typeof invState.totalXp === 'number' ? invState.totalXp : 0;
+      const invLastCase = invState && invState.lastActiveCase ? invState.lastActiveCase : null;
+
+      let invDominantProfile = null;
+      if (invState && invState.decisionProfile) {
+        const dp = invState.decisionProfile;
+        const entries = [
+          ['Analítico', dp.analitico || 0],
+          ['Estratégico', dp.estrategico || 0],
+          ['Humanista', dp.humanista || 0],
+          ['Exploratório', dp.exploratorio || 0],
+        ].sort((a, b) => b[1] - a[1]);
+        if (entries[0][1] > 0) {
+          invDominantProfile = entries[0][0];
+        }
+      }
+
+      const hasStartedInvestigation =
+        invTotalXp > 0 || invCompletedNodes.length > 0 || Boolean(invLastCase);
+      if (hasStartedInvestigation) {
+        activeInvestigatorsCount++;
+      }
 
       return {
         ...r,
@@ -117,7 +171,13 @@ export default async function handler(req, res) {
         ultimo_capitulo_lido: lastChapter,
         ultimo_capitulo_num: lastChapterNum,
         clicou_comprar: clickedBuy,
-        clicou_comprar_em: progress?.clicked_buy_at || null
+        clicou_comprar_em: progress ? progress.clicked_buy_at || null : null,
+        inv_active: hasStartedInvestigation,
+        inv_completed_count: invCompletedNodes.length,
+        inv_completed_cases: invCompletedNodes,
+        inv_xp: invTotalXp,
+        inv_last_case: invLastCase,
+        inv_profile: invDominantProfile,
       };
     });
 
@@ -128,17 +188,24 @@ export default async function handler(req, res) {
         paidReaders,
         freeReaders,
         totalRevenue,
-        clickedBuyCount: clickedBuyTotal
+        clickedBuyCount: clickedBuyTotal,
+        activeInvestigatorsCount,
       },
-      readers: readersWithChain
+      readers: readersWithChain,
     });
-
   } catch (err) {
     return res.status(200).json({
       success: false,
-      stats: { totalReaders: 0, paidReaders: 0, freeReaders: 0, totalRevenue: 0, clickedBuyCount: 0 },
+      stats: {
+        totalReaders: 0,
+        paidReaders: 0,
+        freeReaders: 0,
+        totalRevenue: 0,
+        clickedBuyCount: 0,
+        activeInvestigatorsCount: 0,
+      },
       readers: [],
-      error: `Falha ao conectar com o banco Supabase: ${err.message || String(err)}. Verifique se o projeto no Supabase nao esta pausado por inatividade.`
+      error: 'Erro ao conectar no Supabase: ' + (err.message || 'Erro desconhecido'),
     });
   }
 }
