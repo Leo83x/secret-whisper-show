@@ -439,19 +439,19 @@ export const InvestigatorProfileView: React.FC = () => {
                 <SemiCircleGauge
                   label="Caos Global"
                   value={state.metrics?.caosGlobal ?? 48}
-                  color="#f59e0b"
+                  color="orange"
                   subtitle="Tensão geopolítica acumulada nas simulações"
                 />
                 <SemiCircleGauge
                   label="Livre-Arbítrio"
                   value={state.metrics?.livreArbitrio ?? 52}
-                  color="#10b981"
+                  color="cyan"
                   subtitle="Grau de autonomia humana preservado"
                 />
                 <SemiCircleGauge
                   label="Suspeita"
                   value={state.metrics?.suspeita ?? 18}
-                  color="#06b6d4"
+                  color="purple"
                   subtitle="Exposição operacional perante o protocolo"
                 />
               </div>
