@@ -510,6 +510,41 @@ class InvestigationSoundEngine {
     osc.stop(now + 0.4);
     this.playPaperRustle();
   }
+
+  // 12. Som de pena/caneta assinando ordem no papel antes do carimbo (170ms)
+  public playPenScratch() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const duration = 0.17;
+    const bufferSize = Math.floor(ctx.sampleRate * duration);
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / bufferSize;
+      // Dois traços rápidos de escrita a tinta
+      const strokeEnv = Math.abs(Math.sin(t * Math.PI * 3.2));
+      data[i] = (Math.random() * 2 - 1) * strokeEnv;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(2600, ctx.currentTime);
+    filter.Q.setValueAtTime(2.2, ctx.currentTime);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(this.settings.sfxVolume * 0.11, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start();
+  }
 }
 
 export const soundEngine = new InvestigationSoundEngine();

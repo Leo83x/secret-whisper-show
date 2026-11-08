@@ -118,6 +118,15 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
     setCamScale(target.scale);
   }, [activeChallenge?.id, activeChallengeIdx]);
 
+  // Aproximação cinematográfica da câmera ao selecionar 2 pistas para confronto
+  useEffect(() => {
+    if (boardSelectedClues.length === 2) {
+      setCamScale(1.095);
+    } else {
+      setCamScale(1.06);
+    }
+  }, [boardSelectedClues.length]);
+
   useEffect(() => {
     if (!isAutoOrbiting) return;
     let frameId: number;
@@ -387,8 +396,10 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                     y1={p1.pinY}
                     x2={p2.pinX}
                     y2={p2.pinY}
+                    pathLength={100}
                     stroke="#ffffff"
-                    strokeWidth="0.14"
+                    strokeWidth="0.22"
+                    className="game-laser-flow"
                   />
                 </g>
               );
@@ -402,23 +413,27 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
             const isOk = connectionFeedback?.status === 'success' || isCurrentSolved;
             const mainStroke = isErr ? '#f87171' : isOk ? '#34d399' : '#fbbf24';
             return (
-              <g>
+              <g className={isErr ? 'game-laser-fail' : ''}>
                 <line
                   x1={pA.pinX}
                   y1={pA.pinY}
                   x2={pB.pinX}
                   y2={pB.pinY}
+                  pathLength={100}
                   stroke={mainStroke}
-                  strokeWidth="0.5"
+                  strokeWidth="0.55"
                   filter="url(#goldLaserGlow)"
+                  className="game-laser-draw"
                 />
                 <line
                   x1={pA.pinX}
                   y1={pA.pinY}
                   x2={pB.pinX}
                   y2={pB.pinY}
+                  pathLength={100}
                   stroke="#fffbeb"
-                  strokeWidth="0.18"
+                  strokeWidth="0.2"
+                  className="game-laser-draw"
                 />
                 <line
                   x1={pA.pinX}

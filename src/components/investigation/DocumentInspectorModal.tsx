@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EvidenceDocument } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
+import { ClueFlyToken, FlyingClueData } from './GameInteractionSystem';
 import {
   X,
   ZoomIn,
@@ -118,6 +119,7 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
     visible: false,
   });
   const [transcriptRead, setTranscriptRead] = useState<boolean>(saved.transcriptRead);
+  const [flyingClue, setFlyingClue] = useState<FlyingClueData | null>(null);
 
   const transcriptRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -206,6 +208,7 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
       }}
       className="fixed inset-0 z-[115] flex items-center justify-center p-2 sm:p-4 bg-[#03050A]/80 backdrop-blur-xl animate-in fade-in duration-200 font-sans"
     >
+      <ClueFlyToken token={flyingClue} />
       <div className="relative w-[96vw] max-w-[1440px] h-[90dvh] rounded-2xl bg-gradient-to-b from-[#101828] via-[#0A101C] to-[#060A12] border-2 border-amber-400/55 shadow-[0_25px_95px_rgba(0,0,0,0.95),0_0_60px_rgba(212,175,55,0.22)] overflow-hidden flex flex-col font-sans game-modal-object game-light-scan">
         
         {/* Top Bar do Visualizador (Sem Serifa no Título Operacional!) */}
@@ -462,7 +465,18 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
                   return (
                     <div
                       key={clue.id}
-                      onClick={() => onExtractClue(clue.id, clue.xpReward, clue.isContradiction)}
+                      onClick={e => {
+                        if (!isSaved) {
+                          setFlyingClue({
+                            id: Date.now(),
+                            title: clue.title,
+                            startX: e.clientX || window.innerWidth / 2,
+                            startY: e.clientY || window.innerHeight / 2,
+                          });
+                          setTimeout(() => setFlyingClue(null), 680);
+                        }
+                        onExtractClue(clue.id, clue.xpReward, clue.isContradiction);
+                      }}
                       className={`p-4 rounded-xl border transition-all cursor-pointer space-y-2 ${
                         isSaved
                           ? 'bg-emerald-950/30 border-emerald-500/50'

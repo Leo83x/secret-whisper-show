@@ -7,6 +7,7 @@ import {
   SimulationChoice,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
+import { DecisionStamp } from './GameInteractionSystem';
 import {
   Award,
   FolderOpen,
@@ -81,6 +82,29 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
   useEffect(() => {
     return soundEngine.subscribe(s => setMuted(s.mutedAll));
   }, []);
+
+  const [displayedXp, setDisplayedXp] = useState<number>(0);
+
+  useEffect(() => {
+    soundEngine.playCaseConclusion();
+    const target = xpBreakdown.totalCaseXp || 0;
+    if (target <= 0) {
+      setDisplayedXp(0);
+      return;
+    }
+    let frame: number;
+    const start = performance.now();
+    const duration = 700;
+    const step = (now: number) => {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setDisplayedXp(Math.round(target * eased));
+      if (p < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [xpBreakdown.totalCaseXp]);
+
 
   useEffect(() => {
     if (!isAutoOrbiting) return;
@@ -281,7 +305,8 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
             <div>
               <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-emerald-300 font-bold">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>LAUDO OFICIAL DE AUDITORIA HISTÓRICA // STRATA ARCHIVES</span>
+                <span>LAUDO OFICIAL DE AUDITORIA HISTÓRICA</span>
+                <DecisionStamp label="MISSÃO HOMOLOGADA" tone="emerald" className="ml-2" />
               </div>
               <h2 className="font-sans text-base sm:text-xl font-bold text-white">
                 {selectedCase.fullName} ({selectedCase.year})
@@ -291,7 +316,7 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
             <div className="px-3.5 py-1.5 rounded-xl bg-[#090D16]/75 border border-amber-400/50 text-center">
               <div className="text-[9px] font-mono uppercase text-slate-300">Mérito no Caso</div>
               <div className="text-base sm:text-lg font-mono font-bold text-amber-300">
-                +{xpBreakdown.totalCaseXp} XP
+                +{displayedXp} XP
               </div>
             </div>
           </div>

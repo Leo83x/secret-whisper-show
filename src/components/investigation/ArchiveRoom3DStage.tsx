@@ -679,6 +679,21 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
               />
             )}
 
+            {/* Foco Dinâmico de Iluminação Concentrada sobre o Documento sob Inspeção */}
+            {hoveredSlot !== null && activeDeskHotspots[hoveredSlot] && (() => {
+              const hs = activeDeskHotspots[hoveredSlot];
+              const cx = hs.box.left + hs.box.width / 2;
+              const cy = hs.box.top + hs.box.height / 2;
+              return (
+                <div
+                  className="pointer-events-none absolute inset-0 z-10 transition-all duration-300"
+                  style={{
+                    background: `radial-gradient(circle at ${cx}% ${cy}%, rgba(254, 243, 199, 0.24) 0%, rgba(245, 158, 11, 0.10) 18%, rgba(4, 6, 11, 0.46) 62%)`,
+                  }}
+                />
+              );
+            })()}
+
             {/* Partículas de Poeira 3D no Feixe de Luz */}
             <canvas
               ref={canvasRef}
@@ -777,7 +792,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
                       height: `${spot.box.height}%`,
                       transform: `skewX(${spot.skewDeg}deg)`,
                     }}
-                    className={`absolute z-20 rounded-xl transition-all duration-300 cursor-pointer group focus:outline-none ${
+                    className={`absolute z-20 rounded-xl transition-all duration-300 cursor-game-inspect group focus:outline-none ${
                       isHovered
                         ? 'bg-amber-400/15 border-2 border-amber-300/80 shadow-[0_0_35px_rgba(251,191,36,0.45)] -translate-y-1'
                         : allExtracted

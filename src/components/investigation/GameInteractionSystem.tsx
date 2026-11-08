@@ -365,3 +365,67 @@ export const SceneTransition: React.FC<SceneTransitionProps> = ({
     </div>
   );
 };
+
+// ============================================================================
+// 9. SignatureStrokeSvg — Traço Manuscrito Animado ao Assinar Ordem de Campo
+// ============================================================================
+export const SignatureStrokeSvg: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <svg
+    viewBox="0 0 180 38"
+    fill="none"
+    className={`w-32 sm:w-36 h-8 pointer-events-none select-none ${className}`}
+    aria-hidden="true"
+  >
+    <path
+      d="M8 28 C 22 8, 30 32, 44 18 C 55 8, 60 29, 74 20 C 88 11, 96 27, 114 16 C 128 8, 138 25, 172 14"
+      stroke="#fde68a"
+      strokeWidth="2.3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="game-signature-path"
+    />
+    <path
+      d="M24 33 L 158 29"
+      stroke="rgba(251, 191, 36, 0.55)"
+      strokeWidth="1.1"
+      strokeLinecap="round"
+      className="game-signature-path"
+    />
+  </svg>
+);
+
+// ============================================================================
+// 10. ClueFlyToken — Fragmento de Pista Migrando para o Arquivo Pessoal
+// ============================================================================
+export interface FlyingClueData {
+  id: number;
+  title: string;
+  startX: number;
+  startY: number;
+}
+
+export const ClueFlyToken: React.FC<{ token: FlyingClueData | null }> = ({ token }) => {
+  if (!token) return null;
+  const targetX = typeof window !== 'undefined' ? window.innerWidth - 140 : 800;
+  const targetY = 36;
+  const dx = Math.round(targetX - token.startX);
+  const dy = Math.round(targetY - token.startY);
+
+  return (
+    <div
+      key={token.id}
+      style={
+        {
+          left: `${token.startX}px`,
+          top: `${token.startY}px`,
+          '--fly-dx': `${dx}px`,
+          '--fly-dy': `${dy}px`,
+        } as React.CSSProperties
+      }
+      className="fixed z-[160] pointer-events-none -translate-x-1/2 -translate-y-1/2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-slate-950 font-mono text-xs font-extrabold shadow-[0_0_30px_rgba(251,191,36,0.85)] border border-white flex items-center gap-2 game-clue-fly-token"
+    >
+      <span>📂 +PISTA ARQUIVADA:</span>
+      <span className="max-w-[180px] truncate">{token.title}</span>
+    </div>
+  );
+};

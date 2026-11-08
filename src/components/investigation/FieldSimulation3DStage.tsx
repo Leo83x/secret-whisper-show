@@ -4,7 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { DecisionStamp } from './GameInteractionSystem';
+import { DecisionStamp, SignatureStrokeSvg } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -351,7 +351,7 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
             return (
               <div
                 key={choice.id}
-                onClick={() => { soundEngine.playWaxStamp(); onSelectDecision(choice.id); }}
+                onClick={() => { soundEngine.playPenScratch(); setTimeout(() => soundEngine.playWaxStamp(), 180); onSelectDecision(choice.id); }}
                 className={`game-order-sheet p-4 rounded-xl backdrop-blur-md border transition-all cursor-game-pen flex flex-col justify-between ${
                   isSelected
                     ? 'bg-amber-500/25 border-amber-300 shadow-[0_0_25px_rgba(245,158,11,0.35)]'
@@ -387,11 +387,17 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
                   )}
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[10px] font-mono">
+                <div className="mt-3 pt-2.5 border-t border-white/10 flex flex-col gap-1.5 text-[10px] font-mono">
                   {isSelected ? (
-                    <DecisionStamp label="ORDEM ASSINADA // CHANCELARIA" tone="gold" />
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <SignatureStrokeSvg />
+                      <DecisionStamp label="ORDEM ASSINADA" tone="gold" />
+                    </div>
                   ) : (
-                    <span className="text-amber-300/90">Assinar ordem operacional →</span>
+                    <span className="text-amber-300/90 flex items-center justify-between">
+                      <span>Rubricar e assinar ordem operacional</span>
+                      <span>→</span>
+                    </span>
                   )}
                 </div>
               </div>

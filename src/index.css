@@ -439,3 +439,104 @@
 .game-pulse-ring {
   animation: gamePulseRing 650ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+
+
+/* ==========================================================================
+   CICLO 2 — INTERAÇÕES FÍSICAS NOS CENÁRIOS 3D (PISTAS, FEIXES E ASSINATURA)
+   ========================================================================== */
+
+/* 1. Fragmento de Pista Migrando Fisicamente para o Arquivo Pessoal */
+@keyframes gameClueFlyToArchive {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(20px, -45px) scale(1.06) rotate(-2deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--fly-dx, 320px), var(--fly-dy, -360px)) scale(0.32) rotate(6deg);
+  }
+}
+
+.game-clue-fly-token {
+  animation: gameClueFlyToArchive 640ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* 2. Feixe Luminoso Percorrendo o Fio entre os Dois Pinos (pathLength=100) */
+@keyframes gameLaserDraw {
+  0% {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    opacity: 0.4;
+  }
+  100% {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.game-laser-draw {
+  stroke-dasharray: 100;
+  animation: gameLaserDraw 460ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Pulso Dourado Contínuo Percorrendo Conexão Comprovada */
+@keyframes gameLaserFlow {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.game-laser-flow {
+  stroke-dasharray: 14 86;
+  animation: gameLaserFlow 2.2s linear infinite;
+}
+
+/* Conexão Incorreta: Linha Falha, Oscila, Perde Intensidade e Desaparece */
+@keyframes gameLaserFailFade {
+  0% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 0.9;
+  }
+  65% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.game-laser-fail {
+  animation: gameLaserFailFade 720ms ease-out forwards;
+}
+
+/* 3. Assinatura Manuscrita Animada a Tinta nas Ordens da Etapa 4 */
+@keyframes gameSignatureWrite {
+  0% {
+    stroke-dasharray: 220;
+    stroke-dashoffset: 220;
+    opacity: 0.3;
+  }
+  100% {
+    stroke-dasharray: 220;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.game-signature-path {
+  stroke-dasharray: 220;
+  animation: gameSignatureWrite 520ms cubic-bezier(0.35, 0, 0.25, 1) forwards;
+}
