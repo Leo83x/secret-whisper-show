@@ -1124,13 +1124,12 @@ export const DossierInvestigationView: React.FC = () => {
                   >
                     ← Voltar aos documentos
                   </button>
-                  <button
+                  <GameButton
                     onClick={() => setActiveStep(3)}
-                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg transition-all"
+                    className="w-full sm:w-auto"
                   >
-                    <span>Avançar para Etapa 3: Hipótese</span>
-                    <ChevronRight className="w-4 h-4 stroke-[2.5]" />
-                  </button>
+                    AVANÇAR PARA HIPÓTESES
+                  </GameButton>
                 </div>
               </>
             )}
@@ -1319,17 +1318,17 @@ export const DossierInvestigationView: React.FC = () => {
               )}
             </div>
 
-            <button
-              onClick={handleSubmitHypothesis}
-              disabled={!chosenThesisId}
-              className={`w-full py-3.5 px-5 rounded-xl font-sans font-bold text-sm uppercase tracking-wider transition-all ${
-                chosenThesisId
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-lg cursor-pointer'
-                  : 'bg-slate-800 text-slate-500 cursor-not-allowed'
-              }`}
-            >
-              Validar e Registrar Hipótese
-            </button>
+            <div className="flex justify-center pt-1">
+              <GameButton
+                onClick={handleSubmitHypothesis}
+                disabled={!chosenThesisId}
+                soundType="stamp"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                VALIDAR E REGISTRAR HIPÓTESE
+              </GameButton>
+            </div>
 
             {hypothesisResult && (
               <div className="p-5 rounded-2xl bg-emerald-950/35 border border-emerald-500/40 space-y-3 animate-in fade-in duration-300">
@@ -1350,13 +1349,12 @@ export const DossierInvestigationView: React.FC = () => {
                   {hypothesisResult.feedback}
                 </p>
                 <div className="pt-2 flex justify-end">
-                  <button
+                  <GameButton
                     onClick={() => setActiveStep(4)}
-                    className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-sm flex items-center gap-2 cursor-pointer shadow-lg transition-all"
+                    className="w-full sm:w-auto"
                   >
-                    <span>Avançar para Etapa 4: Tomar Decisão</span>
-                    <ChevronRight className="w-4 h-4 stroke-[2.5]" />
-                  </button>
+                    AVANÇAR PARA DECISÃO (ETAPA 4)
+                  </GameButton>
                 </div>
               </div>
             )}
@@ -1442,12 +1440,16 @@ export const DossierInvestigationView: React.FC = () => {
                       >
                         {isExpanded ? 'Ocultar detalhes' : 'Ver detalhes'}
                       </button>
-                      <button
-                        type="button"
-                        className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-xs sm:text-sm cursor-pointer"
+                      <GameButton
+                        size="sm"
+                        soundType="stamp"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleConfirmDecision(choice.id);
+                        }}
                       >
-                        Escolher {choice.tag} →
-                      </button>
+                        ASSINAR {choice.tag}
+                      </GameButton>
                     </div>
                   </div>
 
@@ -1652,13 +1654,12 @@ export const DossierInvestigationView: React.FC = () => {
                 Ver Perfil Completo do Investigador
               </button>
 
-              <button
+              <GameButton
                 onClick={() => setActiveTab('mapa')}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-sm uppercase tracking-wider cursor-pointer flex items-center gap-2 shadow-lg"
+                className="shrink-0"
               >
-                <span>Voltar ao Mapa Mundial</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-              </button>
+                RETORNAR AO MAPA MUNDIAL
+              </GameButton>
             </div>
 
           </div>

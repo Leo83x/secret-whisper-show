@@ -4,7 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp, SignatureStrokeSvg } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, SignatureStrokeSvg, GameButton } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -426,17 +426,17 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
           <span>Assine uma ordem tática na mesa de campanha</span>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            soundEngine.playCaseConclusion();
-            onSelectStep(5);
-          }}
-          className="pointer-events-auto game-btn-primary px-6 sm:px-8 py-2.5 sm:py-3 font-sans font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer"
-        >
-          <span>VER LAUDO DE AUDITORIA (ETAPA 5)</span>
-          <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-        </button>
+        <div className="pointer-events-auto">
+          <GameButton
+            onClick={() => {
+              soundEngine.playCaseConclusion();
+              onSelectStep(5);
+            }}
+            className="shrink-0"
+          >
+            VER LAUDO DE AUDITORIA (ETAPA 5)
+          </GameButton>
+        </div>
       </div>
     </div>
   );

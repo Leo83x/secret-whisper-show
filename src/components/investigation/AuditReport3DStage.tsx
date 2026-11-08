@@ -7,7 +7,7 @@ import {
   SimulationChoice,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, GameButton } from './GameInteractionSystem';
 import {
   Award,
   FolderOpen,
@@ -405,15 +405,14 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={onReturnToMap}
-          className="pointer-events-auto game-btn-primary px-6 sm:px-8 py-2.5 sm:py-3 font-sans font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer"
-        >
-          <Globe className="w-4 h-4" />
-          <span>RETORNAR AO MAPA MUNDIAL</span>
-          <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-        </button>
+        <div className="pointer-events-auto">
+          <GameButton
+            onClick={onReturnToMap}
+            className="shrink-0"
+          >
+            RETORNAR AO MAPA MUNDIAL
+          </GameButton>
+        </div>
       </div>
     </div>
   );

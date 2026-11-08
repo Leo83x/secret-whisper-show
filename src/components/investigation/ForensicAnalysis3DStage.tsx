@@ -4,7 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, GameButton } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -534,20 +534,20 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            if (chosenThesisId && !hypothesisResult) {
-              onSubmitHypothesis();
-            }
-            soundEngine.playDocumentOpen();
-            onSelectStep(4);
-          }}
-          className="pointer-events-auto game-btn-primary px-6 sm:px-8 py-2.5 sm:py-3 font-sans font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer"
-        >
-          <span>AVANÇAR PARA SIMULAÇÃO (ETAPA 4)</span>
-          <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-        </button>
+        <div className="pointer-events-auto">
+          <GameButton
+            onClick={() => {
+              if (chosenThesisId && !hypothesisResult) {
+                onSubmitHypothesis();
+              }
+              soundEngine.playDocumentOpen();
+              onSelectStep(4);
+            }}
+            className="shrink-0"
+          >
+            AVANÇAR PARA SIMULAÇÃO (ETAPA 4)
+          </GameButton>
+        </div>
       </div>
     </div>
   );

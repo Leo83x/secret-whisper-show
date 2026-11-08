@@ -5,7 +5,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp, DiscoveryAnimation } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, DiscoveryAnimation, GameButton } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -393,7 +393,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
 
         {/* Badge Horizontal Dinâmico do Vínculo Ativo (#1, #2 ou #3) no Centro da Mesa */}
         <div
-          className={`hidden sm:flex absolute left-1/2 -translate-x-1/2 top-[31%] z-30 pointer-events-none items-center gap-2 px-4 py-1.5 rounded-full border shadow-[0_0_25px_rgba(0,0,0,0.9)] text-[11px] font-mono uppercase tracking-wider transition-all duration-300 ${
+          className={`hidden sm:flex absolute left-1/2 -translate-x-1/2 top-[31%] z-30 pointer-events-none items-center gap-2.5 px-5 py-2 rounded-full border shadow-[0_6px_30px_rgba(0,0,0,0.95)] text-xs sm:text-sm font-mono font-bold uppercase tracking-wider transition-all duration-300 ${
             isCurrentSolved
               ? 'bg-emerald-950/95 text-emerald-300 border-emerald-400/70'
               : 'bg-[#060A12]/95 text-amber-300 border-amber-400/60'
@@ -459,38 +459,38 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                     : spot.eraLabel
                 }
               >
-                {/* Ficha Compacta Quase Transparente (bg-[#0b1320]/40 backdrop-blur-sm) */}
+                                {/* Ficha de Evidência com Alto Contraste e Legibilidade (Fundo Sólido #070B14/95) */}
                 {clue && (
                   <div
-                    className={`absolute left-1/2 -translate-x-1/2 bottom-2 w-[94%] px-2.5 py-1.5 rounded-lg backdrop-blur-sm border transition-all text-left pointer-events-none ${
+                    className={`absolute left-1/2 -translate-x-1/2 bottom-2 w-[95%] px-3 py-2 rounded-xl backdrop-blur-md border shadow-[0_6px_22px_rgba(0,0,0,0.95)] transition-all text-left pointer-events-none ${
                       isSelected
-                        ? 'bg-[#0b1320]/70 border-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.45)]'
+                        ? 'bg-[#070B14]/98 border-amber-300 ring-2 ring-amber-400/40 shadow-[0_0_25px_rgba(251,191,36,0.6)]'
                         : isPartOfSolved
-                        ? 'bg-[#0b1320]/50 border-emerald-400/60'
-                        : 'bg-[#0b1320]/40 border-amber-400/35 group-hover:bg-[#0b1320]/65 group-hover:border-amber-300/70'
+                        ? 'bg-[#061A14]/95 border-emerald-400/70 ring-1 ring-emerald-400/30'
+                        : 'bg-[#070B14]/95 border-amber-500/50 group-hover:border-amber-300 group-hover:bg-[#0A101D]/98'
                     }`}
                   >
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-bold text-amber-300">
+                    <div className="flex items-center justify-between gap-1.5">
+                      <span className="text-[11px] font-mono uppercase tracking-wider font-extrabold text-amber-400 drop-shadow">
                         {spot.tag}
                       </span>
                       <span
-                        className={`text-[8px] sm:text-[9px] font-mono ${
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-tight ${
                           isSelected
-                            ? 'text-amber-200 font-bold'
+                            ? 'bg-amber-400 text-slate-950 font-black'
                             : isPartOfSolved
-                            ? 'text-emerald-300'
-                            : 'text-cyan-300/90'
+                            ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50'
+                            : 'bg-amber-400/15 text-amber-300 border border-amber-400/40'
                         }`}
                       >
                         {isSelected
-                          ? '● Selecionado'
+                          ? '✓ SELECIONADO'
                           : isPartOfSolved
-                          ? '✓ Vinculado'
+                          ? '✓ VINCULADO'
                           : 'Clique p/ confrontar'}
                       </span>
                     </div>
-                    <div className="text-[10px] sm:text-xs font-sans font-semibold text-white truncate mt-0.5 drop-shadow">
+                    <div className="text-xs sm:text-sm font-sans font-bold text-slate-100 truncate mt-1 leading-snug drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                       {clue.title}
                     </div>
                   </div>
@@ -763,21 +763,24 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
               </div>
             </div>
 
-            <div className="text-xs sm:text-sm font-sans font-bold text-white leading-snug">
+            <div className="text-sm sm:text-base font-sans font-bold text-white leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
               {activeChallenge.question}
             </div>
 
             {isCurrentSolved && activeChallenge.conclusion ? (
-              <div className="mt-1.5 pt-1.5 border-t border-emerald-500/30 text-xs font-sans text-emerald-200 leading-relaxed">
-                <strong className="font-mono uppercase text-[10px] text-emerald-300 mr-1.5">
+              <div className="mt-2 pt-2 border-t border-emerald-500/40 text-xs sm:text-sm font-sans text-emerald-200 leading-relaxed">
+                <strong className="font-mono uppercase text-xs text-emerald-300 mr-1.5 font-bold">
                   Conclusão Forense:
                 </strong>
                 {activeChallenge.conclusion}
               </div>
             ) : (
               activeChallenge.promptHint && (
-                <div className="mt-1 text-[11px] font-mono text-cyan-300/95">
-                  Dica Tática: {activeChallenge.promptHint}
+                <div className="mt-2.5 px-3 py-2 rounded-xl bg-[#06121D]/95 border border-cyan-400/50 text-xs sm:text-sm text-cyan-100 flex items-start gap-2 shadow-sm leading-relaxed">
+                  <span className="font-mono font-bold uppercase text-[10px] sm:text-xs text-cyan-300 shrink-0 mt-0.5 tracking-wider">
+                    💡 DICA TÁTICA:
+                  </span>
+                  <span className="font-medium text-cyan-100">{activeChallenge.promptHint}</span>
                 </div>
               )
             )}
@@ -990,17 +993,15 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
 
         <div className="pointer-events-auto flex items-center gap-2">
           {boardSelectedClues.length === 2 && !isCurrentSolved ? (
-            <button
-              type="button"
+            <GameButton
               onClick={() => { soundEngine.playWaxStamp(); onValidateConnection(); }}
-              className="game-btn-primary px-6 sm:px-8 py-2.5 sm:py-3 font-sans font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer"
+              className="shrink-0"
+              soundType="stamp"
             >
-              <span>CONFRONTAR EVIDÊNCIAS NA MESA</span>
-              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-            </button>
+              CONFRONTAR EVIDÊNCIAS NA MESA
+            </GameButton>
           ) : (
-            <button
-              type="button"
+            <GameButton
               onClick={() => {
                 if (boardSelectedClues.length === 2) {
                   onValidateConnection();
@@ -1009,15 +1010,16 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                   onSelectStep(3);
                 }
               }}
-              className="game-btn-primary px-6 sm:px-8 py-2.5 sm:py-3 font-sans font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer"
+              className="shrink-0"
             >
-              <span>CONFRONTAR EVIDÊNCIAS NA MESA</span>
-              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-            </button>
+              {allSolved
+                ? 'AVANÇAR PARA HIPÓTESES'
+                : isCurrentSolved
+                ? 'AVANÇAR PARA HIPÓTESE (ETAPA 3)'
+                : 'CONFRONTAR EVIDÊNCIAS NA MESA'}
+            </GameButton>
           )}
         </div>
-
-        <div className="hidden xl:block w-64" />
       </div>
     </div>
   );
