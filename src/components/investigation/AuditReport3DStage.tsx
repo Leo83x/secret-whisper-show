@@ -7,7 +7,7 @@ import {
   SimulationChoice,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp, GameButton } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, AnimatedCounter, DecisionStamp, GameButton, HistoricalCharacterPortrait } from './GameInteractionSystem';
 import {
   Award,
   FolderOpen,
@@ -78,6 +78,12 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
     rotX: 3,
     rotY: 0,
   });
+
+  // Atmosfera Sonora Adaptativa e Assinatura da Etapa 5 (Harmônicos Solenes e Auditoria)
+  useEffect(() => {
+    soundEngine.setCaseAtmosphere(selectedCase.id, 5);
+    soundEngine.playStageIntroMotif(5);
+  }, [selectedCase.id]);
 
   useEffect(() => {
     return soundEngine.subscribe(s => setMuted(s.mutedAll));
@@ -301,22 +307,37 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
         className="relative z-30 flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto md:overflow-hidden py-2 md:py-0"
       >
         <div className="p-4 sm:p-5 rounded-2xl bg-[#070B14]/94 backdrop-blur-md border border-amber-400/55 shadow-[0_12px_40px_rgba(0,0,0,0.95)] space-y-3 shadow-2xl">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-emerald-300 font-bold">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>LAUDO OFICIAL DE AUDITORIA HISTÓRICA</span>
-                <DecisionStamp label="MISSÃO HOMOLOGADA" tone="emerald" className="ml-2" />
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+            <div className="flex items-center gap-3.5">
+              <HistoricalCharacterPortrait
+                image={selectedCase.image}
+                name={selectedCase.name}
+                year={selectedCase.year}
+                variant="audit-seal"
+                className="shrink-0"
+              />
+              <div>
+                <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-emerald-300 font-bold">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>LAUDO OFICIAL DE AUDITORIA HISTÓRICA</span>
+                  <DecisionStamp label="MISSÃO HOMOLOGADA" tone="emerald" className="ml-2" />
+                </div>
+                <h2 className="font-sans text-base sm:text-xl font-bold text-white mt-0.5">
+                  {selectedCase.fullName} ({selectedCase.year})
+                </h2>
               </div>
-              <h2 className="font-sans text-base sm:text-xl font-bold text-white">
-                {selectedCase.fullName} ({selectedCase.year})
-              </h2>
             </div>
 
-            <div className="px-3.5 py-1.5 rounded-xl bg-[#090D16]/75 border border-amber-400/50 text-center">
-              <div className="text-[11px] font-mono uppercase font-semibold text-slate-300">Mérito no Caso</div>
-              <div className="text-base sm:text-lg font-mono font-bold text-amber-300">
-                +{displayedXp} XP
+            <div className="px-4 py-2 rounded-xl bg-[#090D16]/90 border border-amber-400/60 text-center shadow-lg">
+              <div className="text-xs font-mono uppercase font-semibold text-slate-300">Mérito no Caso</div>
+              <div className="text-lg sm:text-2xl font-mono font-bold text-amber-300 mt-0.5">
+                <AnimatedCounter
+                  targetValue={xpBreakdown.totalCaseXp || 0}
+                  prefix="+"
+                  suffix=" XP"
+                  durationMs={2000}
+                  playSound={true}
+                />
               </div>
             </div>
           </div>

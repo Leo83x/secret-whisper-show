@@ -35,7 +35,7 @@ import { FieldSimulation3DStage } from './FieldSimulation3DStage';
 import { AuditReport3DStage } from './AuditReport3DStage';
 import { DiscoveryRevealModal } from './DiscoveryRevealModal';
 import { soundEngine } from '../../utils/investigationAudio';
-import { GameButton } from './GameInteractionSystem';
+import { GameButton, FlipClueCard, HistoricalCharacterPortrait, TypewriterText, AnimatedCounter } from './GameInteractionSystem';
 
 export const DossierInvestigationView: React.FC = () => {
   const {
@@ -65,6 +65,12 @@ export const DossierInvestigationView: React.FC = () => {
   const simChoices = selectedCase.simulationChoices || [];
 
   // Subníveis Retráteis + Modo Cenário 3D Realista para as 5 Etapas
+  // Efeito Sonoro Adaptativo ao Mudar de Etapa (em Modo 2D ou 3D)
+  useEffect(() => {
+    soundEngine.setCaseAtmosphere(selectedCase.id, state.activeStep);
+    soundEngine.playStageIntroMotif(state.activeStep);
+  }, [selectedCase.id, state.activeStep]);
+
   const [is3DStageOne, setIs3DStageOne] = useState<boolean>(true);
   const [is3DStageTwo, setIs3DStageTwo] = useState<boolean>(true);
   const [is3DStageThree, setIs3DStageThree] = useState<boolean>(true);
@@ -328,15 +334,27 @@ export const DossierInvestigationView: React.FC = () => {
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
           
-          {/* Esquerda: Título da Missão + Botão Discreto [ i Ver Briefing da Missão ] */}
-          <div className="flex flex-wrap items-center gap-2.5 min-w-0">
-            <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
-              {selectedCase.missionCode || 'OPERAÇÃO'} — {selectedCase.missionTitle || selectedCase.title}
-            </span>
+          {/* Esquerda: Placa do Personagem Histórico + Título da Missão + Botão Discreto Briefing */}
+          <div className="flex flex-wrap items-center gap-3 min-w-0">
+            <HistoricalCharacterPortrait
+              image={selectedCase.image}
+              name={selectedCase.name}
+              year={selectedCase.year}
+              variant="archive-plaque"
+              className="shrink-0"
+            />
+            <div className="min-w-0">
+              <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-amber-400 font-bold block truncate">
+                {selectedCase.missionCode || 'OPERAÇÃO'} — {selectedCase.missionTitle || selectedCase.title}
+              </span>
+              <span className="text-xs text-slate-300">
+                {selectedCase.name} • {selectedCase.year} • {selectedCase.location}
+              </span>
+            </div>
             <button
               type="button"
               onClick={() => setIsBriefingOpen(o => !o)}
-              className={`px-3 py-1 rounded-lg border text-xs font-mono flex items-center gap-1.5 cursor-pointer transition-all ${
+              className={`px-3 py-1.5 rounded-lg border text-xs font-mono flex items-center gap-1.5 cursor-pointer transition-all ${
                 isBriefingOpen
                   ? 'bg-amber-500/20 border-amber-400/50 text-amber-200'
                   : 'bg-[#0B1320] border-slate-800 text-slate-300 hover:border-amber-500/40 hover:text-white'
@@ -711,68 +729,28 @@ export const DossierInvestigationView: React.FC = () => {
                       Selecione os fragmentos abaixo para guardar em seu Arquivo Pessoal:
                     </div>
 
-                    {activeDoc.clues.map(clue => {
-                      const isSaved = progress.extractedClueIds.includes(clue.id);
-                      return (
-                        <div
-                          key={clue.id}
-                          onClick={() =>
-                            handleExtractClueWithFeedback(
-                              clue.id,
-                              clue.xpReward,
-                              clue.isContradiction,
-                              clue.title
-                            )
-                          }
-                          className={`p-5 rounded-2xl border transition-all cursor-pointer space-y-3 ${
-                            isSaved
-                              ? 'bg-emerald-950/25 border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.12)]'
-                              : 'bg-[#060A12]/90 border-amber-500/40 hover:border-amber-400'
-                          }`}
-                        >
-                          <div className="flex flex-wrap items-center justify-between gap-2">
-                            <div className="flex items-center gap-2">
-                              {clue.isContradiction && (
-                                <span className="px-2.5 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-red-300 text-[10px] font-mono font-bold uppercase">
-                                  Inconsistência
-                                </span>
-                              )}
-                              <span className="text-sm sm:text-base font-bold text-white">
-                                {clue.title}
-                              </span>
-                            </div>
-
-                            <span
-                              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold shrink-0 ${
-                                isSaved
-                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                                  : 'bg-amber-500 text-slate-950 shadow-sm'
-                              }`}
-                            >
-                              {isSaved ? (
-                                <>
-                                  <BookmarkCheck className="w-4 h-4" /> Guardada (+{clue.xpReward} XP)
-                                </>
-                              ) : (
-                                <>
-                                  <BookmarkPlus className="w-4 h-4" /> Guardar Pista
-                                </>
-                              )}
-                            </span>
-                          </div>
-
-                          <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-sans bg-white/[0.02] p-3.5 rounded-xl border-l-2 border-amber-400">
-                            "{clue.excerpt}"
-                          </p>
-
-                          {isSaved && (
-                            <div className="text-xs sm:text-sm font-mono text-cyan-300 pt-2 border-t border-white/10 leading-relaxed">
-                              <strong>Nota de Análise:</strong> {clue.analysisNote}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {activeDoc.clues.map(clue => {
+                        const isSaved = progress.extractedClueIds.includes(clue.id);
+                        return (
+                          <FlipClueCard
+                            key={clue.id}
+                            clue={clue}
+                            docCode={activeDoc.code.split('//')[0].trim()}
+                            docTitle={activeDoc.title}
+                            isSaved={isSaved}
+                            onSelect={() =>
+                              handleExtractClueWithFeedback(
+                                clue.id,
+                                clue.xpReward,
+                                clue.isContradiction,
+                                clue.title
+                              )
+                            }
+                          />
+                        );
+                      })}
+                    </div>
 
                     {/* Botão de Latão Fotorrealista de Avanço para a Mesa de Conexões (image_57.png) */}
                     <div className="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -1501,42 +1479,59 @@ export const DossierInvestigationView: React.FC = () => {
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="rounded-2xl bg-[#0B1320]/95 border border-amber-500/40 p-6 sm:p-8 shadow-2xl space-y-6">
             
-            {/* Cabeçalho do Relatório */}
+            {/* Cabeçalho do Relatório com Retrato de Auditoria e Contador Lento */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-              <div>
-                <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">
-                  <Award className="w-4 h-4" />
-                  <span>RELATÓRIO DE CONSEQUÊNCIAS // {selectedCase.missionCode}</span>
+              <div className="flex items-center gap-3.5">
+                <HistoricalCharacterPortrait
+                  image={selectedCase.image}
+                  name={selectedCase.name}
+                  year={selectedCase.year}
+                  variant="audit-seal"
+                  className="shrink-0"
+                />
+                <div>
+                  <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">
+                    <Award className="w-4 h-4" />
+                    <span>RELATÓRIO DE CONSEQUÊNCIAS // {selectedCase.missionCode}</span>
+                  </div>
+                  <h3 className="font-sans text-xl sm:text-2xl font-bold text-white mt-1">
+                    Síntese da Investigação: {selectedCase.fullName}
+                  </h3>
                 </div>
-                <h3 className="font-sans text-xl sm:text-2xl font-bold text-white mt-1">
-                  Síntese da Investigação: {selectedCase.fullName}
-                </h3>
               </div>
 
-              <div className="px-4 py-2.5 rounded-xl bg-[#060A12] border border-amber-500/40 text-center shrink-0">
-                <div className="text-[10px] font-mono uppercase text-slate-400">Mérito no Caso</div>
-                <div className="text-lg font-mono font-bold text-amber-400">+{xpBreakdown.totalCaseXp} XP</div>
+              <div className="px-5 py-2.5 rounded-xl bg-[#060A12] border border-amber-500/40 text-center shrink-0 shadow-lg">
+                <div className="text-xs font-mono uppercase text-slate-300 font-semibold">Mérito no Caso</div>
+                <div className="text-xl sm:text-2xl font-mono font-bold text-amber-400 mt-0.5">
+                  <AnimatedCounter
+                    targetValue={xpBreakdown.totalCaseXp}
+                    prefix="+"
+                    suffix=" XP"
+                    durationMs={2000}
+                    playSound={true}
+                  />
+                </div>
               </div>
             </div>
 
             {/* 4 Indicadores Principais em Cards Limpos */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
               <div className="p-4 rounded-xl bg-[#060A12] border border-slate-800">
-                <div className="text-[10px] font-mono uppercase text-slate-400">Pistas Extraídas</div>
+                <div className="text-xs font-mono uppercase text-slate-300 font-semibold">Pistas Extraídas</div>
                 <div className="text-lg font-bold text-emerald-400 mt-1">
                   {extractedCluesList.length}/{allCaseClues.length}
                 </div>
               </div>
 
               <div className="p-4 rounded-xl bg-[#060A12] border border-slate-800">
-                <div className="text-[10px] font-mono uppercase text-slate-400">Conexões Comprovadas</div>
+                <div className="text-xs font-mono uppercase text-slate-300 font-semibold">Conexões Comprovadas</div>
                 <div className="text-lg font-bold text-cyan-400 mt-1">
                   {validatedChallenges.length}/{challenges.length}
                 </div>
               </div>
 
               <div className="p-4 rounded-xl bg-[#060A12] border border-slate-800">
-                <div className="text-[10px] font-mono uppercase text-slate-400">Consistência</div>
+                <div className="text-xs font-mono uppercase text-slate-300 font-semibold">Consistência</div>
                 <div className="text-sm font-bold text-amber-300 mt-1.5 uppercase">
                   {progress.hypothesisScore === 'forte'
                     ? 'Alta (+100 XP)'
@@ -1547,7 +1542,7 @@ export const DossierInvestigationView: React.FC = () => {
               </div>
 
               <div className="p-4 rounded-xl bg-[#060A12] border border-slate-800">
-                <div className="text-[10px] font-mono uppercase text-slate-400">Elos no Mapa</div>
+                <div className="text-xs font-mono uppercase text-slate-300 font-semibold">Elos no Mapa</div>
                 <div className="text-sm font-bold text-white mt-1.5">
                   {mapConnectionsUnlocked ? 'Comprovados' : 'Não Demonstrados'}
                 </div>
@@ -1556,7 +1551,7 @@ export const DossierInvestigationView: React.FC = () => {
 
             {/* Hipótese Registrada */}
             <div className="p-5 rounded-2xl bg-[#060A12]/90 border border-slate-800 space-y-1.5">
-              <div className="text-[10px] font-mono uppercase text-amber-400">
+              <div className="text-xs font-mono uppercase text-amber-300 font-bold">
                 Hipótese Registrada pelo Investigador:
               </div>
               <div className="text-base font-bold text-white">
@@ -1679,7 +1674,7 @@ export const DossierInvestigationView: React.FC = () => {
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="relative w-full max-w-md h-full bg-[#0B1320] border-l border-cyan-500/35 shadow-2xl p-6 flex flex-col justify-between overflow-y-auto custom-scrollbar"
+            className="relative w-full max-w-md sm:max-w-lg h-full bg-[#0B1320] border-l border-cyan-500/35 shadow-2xl p-6 flex flex-col justify-between overflow-y-auto custom-scrollbar"
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
@@ -1710,23 +1705,14 @@ export const DossierInvestigationView: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {extractedCluesList.map(c => (
-                    <div
+                    <FlipClueCard
                       key={c.id}
-                      className="p-4 rounded-xl bg-[#060A12] border border-emerald-500/30 space-y-1.5"
-                    >
-                      <div className="flex items-center justify-between text-[10px] font-mono text-emerald-400">
-                        <span>{c.docCode.split('//')[0]}</span>
-                        <span>+{c.xpReward} XP</span>
-                      </div>
-                      <div className="text-sm font-bold text-white">
-                        {c.title}
-                      </div>
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        {c.analysisNote}
-                      </p>
-                    </div>
+                      clue={c}
+                      docCode={c.docCode.split('//')[0]}
+                      isSaved={true}
+                    />
                   ))}
                 </div>
               )}

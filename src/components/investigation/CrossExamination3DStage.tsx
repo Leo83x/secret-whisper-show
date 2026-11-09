@@ -5,7 +5,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp, DiscoveryAnimation, GameButton } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, DiscoveryAnimation, GameButton, HistoricalCharacterPortrait, TypewriterText } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -87,6 +87,12 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
     rotX: 0,
     rotY: 0,
   });
+
+  // Atmosfera Sonora Adaptativa e Assinatura da Etapa 2 (Pulso Tático e Tensão)
+  useEffect(() => {
+    soundEngine.setCaseAtmosphere(selectedCase.id, 2);
+    soundEngine.playStageIntroMotif(2);
+  }, [selectedCase.id]);
 
   useEffect(() => {
     return soundEngine.subscribe(s => setMuted(s.mutedAll));
@@ -764,8 +770,24 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
               </div>
             </div>
 
-            <div className="text-sm sm:text-base font-sans font-bold text-white leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-              {activeChallenge.question}
+            <div className="flex items-start gap-3 mt-1">
+              <HistoricalCharacterPortrait
+                image={selectedCase.image}
+                name={selectedCase.name}
+                year={selectedCase.year}
+                variant="tactical-cameo"
+                className="shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <TypewriterText
+                  key={activeChallenge.id}
+                  text={activeChallenge.question}
+                  speedMs={15}
+                  delayMs={40}
+                  playSound={true}
+                  className="text-sm sm:text-base md:text-lg font-sans font-bold text-white leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+                />
+              </div>
             </div>
 
             {isCurrentSolved && activeChallenge.conclusion ? (
@@ -773,7 +795,14 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                 <strong className="font-mono uppercase text-xs text-emerald-300 mr-1.5 font-bold">
                   Conclusão Forense:
                 </strong>
-                {activeChallenge.conclusion}
+                <TypewriterText
+                  key={`conclusion-${activeChallenge.id}`}
+                  text={activeChallenge.conclusion}
+                  speedMs={14}
+                  delayMs={50}
+                  playSound={false}
+                  className="font-medium text-emerald-100"
+                />
               </div>
             ) : (
               activeChallenge.promptHint && (
@@ -781,7 +810,14 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
                   <span className="font-mono font-bold uppercase text-[10px] sm:text-xs text-cyan-300 shrink-0 mt-0.5 tracking-wider">
                     💡 DICA TÁTICA:
                   </span>
-                  <span className="font-medium text-cyan-100">{activeChallenge.promptHint}</span>
+                  <TypewriterText
+                    key={`hint-${activeChallenge.id}`}
+                    text={activeChallenge.promptHint}
+                    speedMs={12}
+                    delayMs={250}
+                    playSound={false}
+                    className="font-medium text-cyan-100"
+                  />
                 </div>
               )
             )}

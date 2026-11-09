@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EvidenceDocument, HistoricalNode } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { GameButton } from './GameInteractionSystem';
+import { GameButton, HistoricalCharacterPortrait, TypewriterText } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -157,6 +157,12 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
   const extractedCount = documents
     .flatMap(d => d.clues)
     .filter(c => extractedClueIds.includes(c.id)).length;
+
+  // Atmosfera Sonora Adaptativa e Assinatura da Etapa 1
+  useEffect(() => {
+    soundEngine.setCaseAtmosphere(selectedCase.id, 1);
+    soundEngine.playStageIntroMotif(1);
+  }, [selectedCase.id]);
 
   useEffect(() => {
     return soundEngine.subscribe(s => setMuted(s.mutedAll));
@@ -342,9 +348,9 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <img
-                src="/reader/icons/icon-192.png"
-                alt="O Último Segredo"
-                className="w-5 h-5 rounded-md object-cover border border-amber-400/60 shrink-0"
+                src={selectedCase.image || "/reader/icons/icon-192.png"}
+                alt={selectedCase.name}
+                className="w-7 h-7 rounded-md object-cover border border-amber-400/60 shrink-0"
               />
               <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold truncate">
                 {caseShortHeader} ({selectedCase.name})
@@ -486,10 +492,18 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
         <div className="hidden md:flex items-start justify-between gap-4">
           {/* Esquerda Desktop */}
           <div className="pointer-events-auto flex flex-col items-start gap-2 max-w-xl">
-            <div className="px-3.5 py-1.5 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg">
-              <h1 className="font-sans text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase">
-                {caseShortHeader} ({selectedCase.name.toUpperCase()})
-              </h1>
+            <div className="flex items-center gap-3">
+              <HistoricalCharacterPortrait
+                image={selectedCase.image}
+                name={selectedCase.name}
+                year={selectedCase.year}
+                variant="archive-plaque"
+              />
+              <div className="px-3.5 py-2 rounded-lg bg-[#080C14]/85 backdrop-blur-md border border-amber-500/30 shadow-lg">
+                <h1 className="font-sans text-base lg:text-lg font-bold tracking-wide text-[#EAD29C] uppercase">
+                  {caseShortHeader} ({selectedCase.name.toUpperCase()})
+                </h1>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -941,7 +955,7 @@ export const ArchiveRoom3DStage: React.FC<ArchiveRoom3DStageProps> = ({
             </button>
             <span className="text-amber-400">•</span>
             <span className="hidden sm:inline">
-              Clique em um documento para inspecionar com zoom
+              <TypewriterText text="Clique em um documento para inspecionar com zoom" speedMs={18} delayMs={120} cursor={false} />
             </span>
             <span className="sm:hidden text-slate-300">Toque para zoom</span>
 

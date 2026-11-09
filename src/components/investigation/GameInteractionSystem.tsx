@@ -9,11 +9,15 @@ export const InteractionAudio = {
   primaryPress: () => soundEngine.playBrassPress(),
   secondaryClick: () => soundEngine.playMechanicalClick(),
   paperHandle: () => soundEngine.playPaperRustle(),
+  cardFlip: () => soundEngine.playCardFlip(),
+  typewriter: () => soundEngine.playTypewriterClick(),
+  counterTick: () => soundEngine.playCounterTick(),
   stampSeal: () => soundEngine.playWaxStamp(),
   contradiction: () => soundEngine.playContradictionAlert(),
   discovery: () => soundEngine.playDiscoveryReveal(),
   errorPulse: () => soundEngine.playErrorPulse(),
   stageShift: () => soundEngine.playStageTransition(),
+  stageMotif: (step: 1 | 2 | 3 | 4 | 5) => soundEngine.playStageIntroMotif(step),
 };
 
 // ============================================================================
@@ -630,5 +634,463 @@ export const AmbientParticlesCanvas: React.FC<{
       aria-hidden="true"
       className={`pointer-events-none absolute inset-0 w-full h-full z-10 opacity-70 ${className}`}
     />
+  );
+};
+
+// ============================================================================
+// 10. TypewriterText — Entrada Progressiva de Texto com Estilo Telex / Terminal
+// ============================================================================
+export interface TypewriterTextProps {
+  text: string;
+  speedMs?: number;
+  delayMs?: number;
+  cursor?: boolean;
+  className?: string;
+  as?: 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div';
+  playSound?: boolean;
+  onComplete?: () => void;
+}
+
+export const TypewriterText: React.FC<TypewriterTextProps> = ({
+  text,
+  speedMs = 18,
+  delayMs = 35,
+  cursor = true,
+  className = '',
+  as: Tag = 'span',
+  playSound = false,
+  onComplete,
+}) => {
+  const [displayedLength, setDisplayedLength] = useState<number>(() => {
+    if (typeof window !== 'undefined' && soundEngine.getSettings().reduceMotion) {
+      return text.length;
+    }
+    return 0;
+  });
+  const [isDone, setIsDone] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && soundEngine.getSettings().reduceMotion) {
+      return true;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (soundEngine.getSettings().reduceMotion) {
+      setDisplayedLength(text.length);
+      setIsDone(true);
+      onComplete?.();
+      return;
+    }
+
+    setDisplayedLength(0);
+    setIsDone(false);
+
+    let current = 0;
+    const timeoutId = setTimeout(() => {
+      const intervalId = setInterval(() => {
+        current += 1;
+        setDisplayedLength(current);
+        if (playSound && current % 3 === 0) {
+          InteractionAudio.typewriter();
+        }
+        if (current >= text.length) {
+          clearInterval(intervalId);
+          setIsDone(true);
+          onComplete?.();
+        }
+      }, speedMs);
+    }, delayMs);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [text, speedMs, delayMs, playSound]);
+
+  const handleClick = () => {
+    if (!isDone) {
+      setDisplayedLength(text.length);
+      setIsDone(true);
+      onComplete?.();
+    }
+  };
+
+  const visibleText = text.slice(0, displayedLength);
+
+  return (
+    <Tag
+      onClick={handleClick}
+      className={`${className} cursor-pointer`}
+      title="Clique para revelar o texto completo"
+    >
+      {visibleText}
+      {!isDone && cursor && (
+        <span className="inline-block w-1.5 h-4 ml-0.5 bg-amber-400 animate-pulse align-middle" />
+      )}
+    </Tag>
+  );
+};
+
+// ============================================================================
+// 11. AnimatedCounter — Contagem Progressiva Lenta e Perceptível (1.5s a 2.5s)
+// ============================================================================
+export interface AnimatedCounterProps {
+  targetValue: number;
+  startValue?: number;
+  durationMs?: number;
+  prefix?: string;
+  suffix?: string;
+  className?: string;
+  playSound?: boolean;
+}
+
+export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
+  targetValue,
+  startValue = 0,
+  durationMs = 1800,
+  prefix = '',
+  suffix = '',
+  className = '',
+  playSound = true,
+}) => {
+  const [current, setCurrent] = useState<number>(startValue);
+
+  useEffect(() => {
+    if (soundEngine.getSettings().reduceMotion) {
+      setCurrent(targetValue);
+      return;
+    }
+
+    let startTimestamp: number | null = null;
+    let frameId: number;
+    let lastSoundValue = startValue;
+
+    const step = (now: number) => {
+      if (!startTimestamp) startTimestamp = now;
+      const elapsed = now - startTimestamp;
+      const progress = Math.min(1, elapsed / durationMs);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      const nextVal = Math.round(startValue + (targetValue - startValue) * easeProgress);
+
+      setCurrent(nextVal);
+
+      if (playSound && nextVal !== lastSoundValue && Math.abs(nextVal - lastSoundValue) >= 1) {
+        lastSoundValue = nextVal;
+        InteractionAudio.counterTick();
+      }
+
+      if (progress < 1) {
+        frameId = requestAnimationFrame(step);
+      }
+    };
+
+    frameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frameId);
+  }, [targetValue, startValue, durationMs, playSound]);
+
+  return (
+    <span className={className}>
+      {prefix}{current}{suffix}
+    </span>
+  );
+};
+
+// ============================================================================
+// 12. FlipClueCard — Ficha/Carta Tátil que Vira em 3D (Frente e Verso Forense)
+// ============================================================================
+export interface FlipClueCardProps {
+  clue: {
+    id: string;
+    title: string;
+    excerpt: string;
+    analysisNote?: string;
+    isContradiction?: boolean;
+    xpReward?: number;
+  };
+  docCode?: string;
+  docTitle?: string;
+  isSelected?: boolean;
+  isSaved?: boolean;
+  onSelect?: () => void;
+  className?: string;
+}
+
+export const FlipClueCard: React.FC<FlipClueCardProps> = ({
+  clue,
+  docCode = 'DOC-01',
+  docTitle = 'Arquivo Oficial',
+  isSelected = false,
+  isSaved = false,
+  onSelect,
+  className = '',
+}) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  const handleFlip = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    InteractionAudio.cardFlip();
+    setIsFlipped(f => !f);
+  };
+
+  return (
+    <div
+      className={`group relative [perspective:1000px] w-full min-h-[175px] select-none ${className}`}
+      onClick={onSelect}
+    >
+      <div
+        className={`w-full h-full transition-transform duration-500 [transform-style:preserve-3d] rounded-2xl ${
+          isFlipped ? '[transform:rotateY(180deg)]' : ''
+        }`}
+      >
+        {/* FRENTE DA CARTA */}
+        <div
+          className={`[backface-visibility:hidden] w-full h-full p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.9)] cursor-pointer ${
+            isSelected
+              ? 'bg-[#0D1628]/98 border-amber-300 ring-2 ring-amber-400/50 shadow-[0_0_28px_rgba(251,191,36,0.5)]'
+              : isSaved
+              ? 'bg-[#061814]/95 border-emerald-400/60'
+              : 'bg-[#070B14]/95 border-amber-500/40 hover:border-amber-300 hover:bg-[#0A101D]/98'
+          }`}
+        >
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
+              <div className="flex items-center gap-1.5">
+                <span className="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-400/40 text-[11px] font-mono font-extrabold text-amber-300 uppercase">
+                  {docCode}
+                </span>
+                {clue.isContradiction && (
+                  <span className="px-2 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-red-300 text-[10px] font-mono font-bold uppercase">
+                    Contradição
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={handleFlip}
+                className="text-xs font-mono text-cyan-300 hover:text-amber-300 flex items-center gap-1 px-2.5 py-1 rounded bg-white/5 border border-white/10 hover:border-amber-400/40 cursor-pointer transition-colors"
+                title="Virar para examinar verso confidencial"
+              >
+                <span>↻ Examinar Verso</span>
+              </button>
+            </div>
+
+            <h4 className="font-sans text-base sm:text-lg font-bold text-white leading-snug drop-shadow">
+              {clue.title}
+            </h4>
+
+            <p className="text-xs sm:text-sm font-sans text-slate-200 line-clamp-3 leading-relaxed border-l-2 border-amber-400/70 pl-2.5 py-0.5">
+              "{clue.excerpt}"
+            </p>
+          </div>
+
+          <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+            <span className={isSelected ? 'text-amber-300 font-bold' : isSaved ? 'text-emerald-300' : 'text-slate-400'}>
+              {isSelected ? '✓ SELECIONADO NA MESA' : isSaved ? '✓ PISTA ARQUIVADA' : 'Clique p/ selecionar'}
+            </span>
+            {clue.xpReward && (
+              <span className="text-amber-300 font-bold">+{clue.xpReward} XP</span>
+            )}
+          </div>
+        </div>
+
+        {/* VERSO DA CARTA (TRANSCRIÇÃO E ANÁLISE FORENSE) */}
+        <div
+          className="[backface-visibility:hidden] [transform:rotateY(180deg)] absolute inset-0 w-full h-full p-4 sm:p-5 rounded-2xl border border-amber-400/60 bg-gradient-to-b from-[#0F172A] to-[#070B14] text-slate-100 flex flex-col justify-between shadow-[0_12px_40px_rgba(0,0,0,0.95)]"
+        >
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between border-b border-amber-400/30 pb-2">
+              <div className="text-[11px] font-mono uppercase tracking-widest text-amber-300 font-bold flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                <span>CHANCELA FORENSE // VERSO CONFIDENCIAL</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleFlip}
+                className="text-xs font-mono text-amber-300 hover:text-white flex items-center gap-1 px-2.5 py-1 rounded bg-amber-500/10 border border-amber-400/40 cursor-pointer transition-colors"
+              >
+                <span>↺ Ver Frente</span>
+              </button>
+            </div>
+
+            <div className="text-xs font-mono text-cyan-300">
+              Origem Documental: <strong>{docTitle}</strong>
+            </div>
+
+            <div className="p-3 rounded-xl bg-black/60 border border-white/10 text-xs sm:text-sm font-sans text-slate-200 leading-relaxed max-h-24 overflow-y-auto">
+              <strong className="text-amber-200 block text-xs font-mono uppercase mb-0.5">Nota de Análise:</strong>
+              {clue.analysisNote || clue.excerpt}
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>REGISTRO ORIGINAL HOMOLOGADO</span>
+            <span className="text-emerald-400 font-bold">GRAU A+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// 13. HistoricalCharacterPortrait — Presença Visual do Personagem nas 5 Etapas
+// ============================================================================
+export interface HistoricalCharacterPortraitProps {
+  image: string;
+  name: string;
+  year: string;
+  role?: string;
+  variant: 'archive-plaque' | 'tactical-cameo' | 'pericial-file' | 'dramatic-bust' | 'audit-seal';
+  className?: string;
+}
+
+export const HistoricalCharacterPortrait: React.FC<HistoricalCharacterPortraitProps> = ({
+  image,
+  name,
+  year,
+  role,
+  variant,
+  className = '',
+}) => {
+  if (variant === 'archive-plaque') {
+    return (
+      <div
+        className={`relative rounded-2xl bg-gradient-to-b from-[#1E160A] via-[#100D06] to-[#0A0703] border-2 border-amber-500/60 p-2 sm:p-2.5 shadow-[0_12px_35px_rgba(0,0,0,0.9),0_0_25px_rgba(212,175,55,0.2)] select-none ${className}`}
+      >
+        <span className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#523e12] border border-[#2b200b] shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)]" />
+        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#523e12] border border-[#2b200b] shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)]" />
+        <span className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#523e12] border border-[#2b200b] shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)]" />
+        <span className="absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#523e12] border border-[#2b200b] shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)]" />
+
+        <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden border border-amber-400/50 shadow-inner bg-slate-950">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover object-top filter contrast-105 brightness-95"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-amber-900/10 pointer-events-none" />
+          <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/80 border border-amber-400/40 text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider">
+            DOSSIÊ OFICIAL
+          </div>
+        </div>
+
+        <div className="mt-2 text-center px-1">
+          <div className="font-serif font-extrabold text-xs sm:text-sm uppercase tracking-wider text-[#EAD29C] drop-shadow leading-tight">
+            {name}
+          </div>
+          <div className="font-mono text-[11px] text-cyan-300 uppercase tracking-widest mt-0.5">
+            {year} {role ? `• ${role}` : ''}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === 'tactical-cameo') {
+    return (
+      <div
+        className={`flex items-center gap-3 p-2 sm:p-2.5 rounded-2xl bg-[#070B14]/95 border border-amber-500/50 shadow-[0_8px_25px_rgba(0,0,0,0.9)] select-none shrink-0 ${className}`}
+      >
+        <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 border-amber-400/70 shadow-[0_0_16px_rgba(212,175,55,0.35)] shrink-0 bg-slate-950">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+        </div>
+        <div className="min-w-0 pr-1">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+            ALVO DA OPERAÇÃO
+          </div>
+          <div className="font-sans font-bold text-xs sm:text-sm text-white truncate">
+            {name}
+          </div>
+          <div className="text-[11px] font-mono text-cyan-300 truncate">
+            {year}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === 'pericial-file') {
+    return (
+      <div
+        className={`p-3.5 sm:p-4 rounded-2xl bg-[#070B14]/95 border border-amber-400/50 shadow-2xl flex items-center gap-3.5 select-none ${className}`}
+      >
+        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 border-amber-400/70 shadow-lg shrink-0 bg-slate-950">
+          <img src={image} alt={name} className="w-full h-full object-cover object-top" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        </div>
+        <div className="space-y-1 min-w-0 flex-1">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span>FIGURA CENTRAL // INVESTIGADA</span>
+          </div>
+          <div className="font-sans font-bold text-sm sm:text-base text-white truncate">
+            {name}
+          </div>
+          <div className="text-xs font-mono text-slate-300">
+            Marco Temporal: <strong className="text-amber-200">{year}</strong>
+          </div>
+          {role && (
+            <div className="text-[11px] font-sans text-cyan-200/90 leading-tight truncate">
+              {role}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === 'dramatic-bust') {
+    return (
+      <div
+        className={`relative rounded-2xl overflow-hidden border-2 border-amber-400/60 shadow-[0_15px_45px_rgba(0,0,0,0.95)] bg-slate-950 select-none ${className}`}
+      >
+        <div className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[3/1] w-full">
+          <img src={image} alt={name} className="w-full h-full object-cover object-top" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#060A12] via-[#060A12]/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#060A12] via-transparent to-black/40" />
+
+          <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-end max-w-xl">
+            <div className="text-xs font-mono uppercase tracking-widest text-amber-400 font-extrabold flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-amber-400" />
+              <span>DILEMA HISTÓRICO EM CAMPO // {name.toUpperCase()}</span>
+            </div>
+            <div className="font-serif font-bold text-lg sm:text-2xl text-[#EAD29C] mt-1 drop-shadow">
+              {name} ({year})
+            </div>
+            {role && (
+              <div className="text-xs sm:text-sm font-sans text-slate-300 mt-0.5 font-medium">
+                {role}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`flex items-center gap-3.5 p-3 rounded-2xl bg-[#090D18]/90 border border-amber-400/60 shadow-xl select-none ${className}`}
+    >
+      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 border-amber-400/70 shadow-md shrink-0 bg-slate-950">
+        <img src={image} alt={name} className="w-full h-full object-cover object-top" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      </div>
+      <div className="min-w-0">
+        <div className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
+          AUDITORIA HISTÓRICA CONCLUÍDA
+        </div>
+        <div className="font-sans font-bold text-sm sm:text-base text-white">
+          {name}
+        </div>
+        <div className="text-xs font-mono text-amber-300">
+          Era: {year}
+        </div>
+      </div>
+    </div>
   );
 };

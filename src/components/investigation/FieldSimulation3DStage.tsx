@@ -4,7 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp, SignatureStrokeSvg, GameButton } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, SignatureStrokeSvg, GameButton, HistoricalCharacterPortrait, TypewriterText } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -58,6 +58,12 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
     rotX: 3,
     rotY: 0,
   });
+
+  // Atmosfera Sonora Adaptativa e Assinatura da Etapa 4 (Queda Tensa no Volume e Urgência de Decisão)
+  useEffect(() => {
+    soundEngine.setCaseAtmosphere(selectedCase.id, 4);
+    soundEngine.playStageIntroMotif(4);
+  }, [selectedCase.id]);
 
   useEffect(() => {
     return soundEngine.subscribe(s => setMuted(s.mutedAll));
@@ -325,20 +331,34 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
         className="relative z-30 flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto md:overflow-hidden py-2 md:py-0"
       >
         <div className="px-4 py-3 rounded-xl bg-[#070B14]/94 backdrop-blur-md border border-amber-400/55 shadow-[0_10px_30px_rgba(0,0,0,0.95)] flex flex-wrap items-start justify-between gap-3 shadow-lg">
-          <div className="max-w-3xl">
-            <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold block">
-              DILEMA ESTRATÉGICO DE CAMPO // {eraTheme.eraName.toUpperCase()}
-            </span>
-            <h2 className="text-sm sm:text-lg font-sans font-bold text-white mt-0.5">
-              Diante do padrão identificado, qual ordem tática você assina?
-            </h2>
-            <p className="text-slate-100 text-xs sm:text-sm mt-1.5 mb-1 leading-relaxed font-medium">
-              {selectedCase.simulationPrompt}
-            </p>
+          <div className="flex items-start gap-3.5 max-w-3xl">
+            <HistoricalCharacterPortrait
+              image={selectedCase.image}
+              name={selectedCase.name}
+              year={selectedCase.year}
+              variant="dramatic-bust"
+              className="shrink-0 mt-0.5"
+            />
+            <div className="flex-1 min-w-0">
+              <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold block">
+                DILEMA ESTRATÉGICO DE CAMPO // {eraTheme.eraName.toUpperCase()}
+              </span>
+              <h2 className="text-sm sm:text-lg font-sans font-bold text-white mt-0.5">
+                Diante do padrão identificado, qual ordem tática você assina?
+              </h2>
+              <div className="text-slate-100 text-xs sm:text-sm mt-1.5 mb-1 leading-relaxed font-medium">
+                <TypewriterText
+                  text={selectedCase.simulationPrompt || "Diante do padrão identificado, qual ordem tática você assina?"}
+                  speedMs={14}
+                  delayMs={60}
+                  className="text-slate-100"
+                />
+              </div>
+            </div>
           </div>
           {selectedDecisionId && (
-            <span className="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-mono text-[10px] font-bold uppercase flex items-center gap-1 shrink-0">
-              <Check className="w-3 h-3 stroke-[3]" /> DECISÃO REGISTRADA
+            <span className="px-2.5 py-1 rounded bg-amber-400 text-slate-950 font-mono text-xs font-bold uppercase flex items-center gap-1 shrink-0">
+              <Check className="w-3.5 h-3.5 stroke-[3]" /> DECISÃO REGISTRADA
             </span>
           )}
         </div>

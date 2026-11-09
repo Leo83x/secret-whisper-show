@@ -607,6 +607,124 @@ class InvestigationSoundEngine {
     const targetGain = activeStep === 4 ? Math.max(0.0015, baseGain * 0.18) : baseGain;
     this.ambientGain.gain.setTargetAtTime(targetGain, now, 1.1);
   }
+
+  // 15. Virada tátil de carta/ficha em 3D (frente e verso)
+  public playCardFlip() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(320, now);
+    osc.frequency.exponentialRampToValueAtTime(120, now + 0.12);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1400, now);
+    filter.frequency.exponentialRampToValueAtTime(450, now + 0.12);
+
+    gain.gain.setValueAtTime(this.settings.sfxVolume * 0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.13);
+    this.playPaperRustle();
+  }
+
+  // 16. Tecla mecânica suave de telex/terminal para animação de digitação
+  public playTypewriterClick() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    const baseFreq = 700 + Math.random() * 200;
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.025);
+
+    gain.gain.setValueAtTime(this.settings.sfxVolume * 0.04, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.035);
+  }
+
+  // 17. Clique suave e harmônico para contadores progressivos (XP e porcentagens)
+  public playCounterTick() {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(440, now + 0.035);
+
+    gain.gain.setValueAtTime(this.settings.sfxVolume * 0.035, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.045);
+  }
+
+  // 18. Micro-motivo musical de transição cinematográfica por etapa (Assinatura Sonora)
+  public playStageIntroMotif(step: 1 | 2 | 3 | 4 | 5) {
+    if (!this.canPlaySfx()) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const notesByStep: Record<number, number[]> = {
+      1: [130.81, 196.0, 293.66],          // C3 -> G3 -> D4 (Mistério e Arquivo)
+      2: [146.83, 174.61, 220.0],          // D3 -> F3 -> A3 (Conexão e Tensão Menor)
+      3: [98.0, 130.81, 155.56],           // G2 -> C3 -> Eb3 (Incerteza e Hipótese)
+      4: [164.81, 246.94, 329.63],         // E3 -> B3 -> E4 (Urgência e Decisão)
+      5: [130.81, 164.81, 196.0, 261.63],  // C3 -> E3 -> G3 -> C4 (Chancela e Revelação)
+    };
+
+    const notes = notesByStep[step] || notesByStep[1];
+    const now = ctx.currentTime;
+    const noteDuration = 0.22;
+
+    notes.forEach((freq, idx) => {
+      const start = now + idx * 0.16;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, start);
+
+      gain.gain.setValueAtTime(0.001, start);
+      gain.gain.exponentialRampToValueAtTime(this.settings.sfxVolume * 0.12, start + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + noteDuration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(start);
+      osc.stop(start + noteDuration + 0.05);
+    });
+  }
 }
 
 export const soundEngine = new InvestigationSoundEngine();
