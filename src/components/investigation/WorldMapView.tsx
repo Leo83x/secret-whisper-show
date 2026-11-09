@@ -2,6 +2,7 @@ import React from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import { EraFilter } from '../../types/investigation';
 import { CaseDrawer } from './CaseDrawer';
+import { soundEngine } from '../../utils/investigationAudio';
 import { Check, Lock, Sparkles, Compass, Globe2 } from 'lucide-react';
 
 export const WorldMapView: React.FC = () => {

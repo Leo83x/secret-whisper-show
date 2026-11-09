@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Award, CheckCircle2, Sparkles, FolderLock, Share2, Compass, FileCheck } from "lucide-react";
+import { Award, CheckCircle2, Sparkles, FolderLock, Share2, Compass, FileCheck, ArrowRight } from "lucide-react";
 
 export const SpecialDossiersSection = () => {
   const dossiersList = [

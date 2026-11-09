@@ -221,6 +221,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
   const isCurrentSolved = Boolean(
     activeChallenge && solvedConnectionIds.includes(activeChallenge.id)
   );
+  const allSolved = challenges.length > 0 && solvedConnectionIds.length >= challenges.length;
 
   const caseShortHeader = `${selectedCase.missionCode?.split('//')[0]?.trim() || 'CASO 001'} // ${
     selectedCase.missionTitle || selectedCase.title

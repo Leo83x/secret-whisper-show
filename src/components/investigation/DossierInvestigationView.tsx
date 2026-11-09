@@ -1445,7 +1445,7 @@ export const DossierInvestigationView: React.FC = () => {
                         soundType="stamp"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleConfirmDecision(choice.id);
+                          handleSelectSimulationDecision(choice.id);
                         }}
                       >
                         ASSINAR {choice.tag}

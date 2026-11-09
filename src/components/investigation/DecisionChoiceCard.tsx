@@ -1,3 +1,5 @@
+import { soundEngine } from '../../utils/investigationAudio';
+import { DecisionStamp } from './GameInteractionSystem';
 import React, { useState, useEffect } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
 import { ShieldCheck, Check, MessageSquare } from 'lucide-react';
