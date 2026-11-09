@@ -580,7 +580,19 @@ class InvestigationSoundEngine {
     let f1 = 65.41; // Padrão C2
     let f2 = 98.0;  // Padrão G2
 
-    if (caseId === 'julio_cesar' || caseId === 'cleopatra') {
+    if (caseId === 'salomao') {
+      // Jerusalém 970 a.C.: Templo de pedra e arca de cedro (Lá 55Hz + Mi 82.4Hz)
+      f1 = 55.0;
+      f2 = 82.41;
+    } else if (caseId === 'alexandre') {
+      // Punjab 326 a.C.: Tenda de campanha sob monção no Rio Hífasis (Dó 65.4Hz + Dó 130.8Hz)
+      f1 = 65.41;
+      f2 = 130.81;
+    } else if (caseId === 'da_vinci') {
+      // Milão 1498: Ateliê renascentista com engrenagens e canais (Ré 73.4Hz + Lá 110Hz)
+      f1 = 73.42;
+      f2 = 110.0;
+    } else if (caseId === 'cesar' || caseId === 'julio_cesar' || caseId === 'cleopatra') {
       // Antiguidade Clássica: ressonância grave de pedra e biblioteca histórica (D2 + A2)
       f1 = 73.42;
       f2 = 110.0;
@@ -592,6 +604,14 @@ class InvestigationSoundEngine {
       // Bletchley Park 1941: harmônico eletromecânico sutil de válvulas / Bombe (60Hz + 120Hz)
       f1 = 60.0;
       f2 = 120.0;
+        } else if (caseId === 'joana') {
+      // Orléans 1429: Ressonância medieval e eco de fortaleza (Fá 87.3Hz + Dó 130.8Hz)
+      f1 = 87.31;
+      f2 = 130.81;
+    } else if (caseId === 'mandela') {
+      // Robben Island 1964: Ressonância oceânica e pedra penitenciária (Sol 49.0Hz + Ré 73.4Hz)
+      f1 = 48.99;
+      f2 = 73.42;
     } else if (caseId === 'jobs') {
       // São Francisco 2007: sala contemporânea noturna limpa (E2 + B2)
       f1 = 82.41;

@@ -4,7 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp, GameButton, HistoricalCharacterPortrait, TypewriterText } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, GameButton, TypewriterText } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -377,27 +377,18 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
         data-hud="true"
         className="relative z-30 flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto md:overflow-hidden py-2 md:py-0"
       >
-        {/* Pergunta com Ficha Pericial do Personagem e Typewriter */}
+        {/* Pergunta da Pasta Pericial e Typewriter */}
         <div className="px-3.5 py-2.5 rounded-xl bg-[#070B14]/94 backdrop-blur-md border border-amber-400/55 shadow-[0_8px_25px_rgba(0,0,0,0.9)] flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <HistoricalCharacterPortrait
-              image={selectedCase.image}
-              name={selectedCase.name}
-              year={selectedCase.year}
-              variant="pericial-file"
-              className="shrink-0"
+          <div>
+            <span className="text-[11px] font-mono uppercase tracking-widest text-amber-300 font-bold block">
+              PASTA PERICIAL ({selectedCase.location.toUpperCase()} • {selectedCase.year}) //
+            </span>
+            <TypewriterText
+              text="Qual interpretação explica melhor o caso investigado?"
+              speedMs={15}
+              delayMs={50}
+              className="text-sm sm:text-base font-sans font-bold text-white block mt-0.5"
             />
-            <div>
-              <span className="text-[11px] font-mono uppercase tracking-widest text-amber-300 font-bold block">
-                PASTA PERICIAL ({selectedCase.location.toUpperCase()} • {selectedCase.year}) //
-              </span>
-              <TypewriterText
-                text="Qual interpretação explica melhor o caso investigado?"
-                speedMs={15}
-                delayMs={50}
-                className="text-sm sm:text-base font-sans font-bold text-white block mt-0.5"
-              />
-            </div>
           </div>
           {hypothesisResult && (
             <span className="px-2.5 py-1 rounded bg-emerald-500/25 border border-emerald-400/60 text-xs font-mono text-emerald-200 font-bold">

@@ -48,47 +48,98 @@ const docSessionMemory: Record<string, SavedDocViewState> = {};
 // Identidade visual específica de cada período histórico
 export const getEraDocumentTheme = (caseId?: string) => {
   switch (caseId) {
-    case 'julio_cesar':
-    case 'cleopatra':
+    case "salomao":
       return {
-        eraStamp: 'TABULARIUM SENATORIAL // SUPORTE EPIGRÁFICO & PAPIRO ROMANO (49 a.C.)',
-        materialLabel: 'Reconstrução Visual de Registro Clássico / Fonte Histórica: Suetônio, Plutarco e Cícero',
-        paperBg: 'bg-[#17120B]',
-        paperBorder: 'border-amber-600/45',
-        textStyle: 'text-amber-100/95 font-sans tracking-wide',
-        headerBadge: 'bg-amber-950/60 text-amber-300 border-amber-500/40',
-        imgFilter: 'sepia(0.45) contrast(1.12) brightness(0.95)',
+        eraStamp: "TEMPLO DE SALOMÃO // CRÔNICA REAL & ROLO DE PAPIRO HEBRAICO (970 a.C.)",
+        materialLabel: "Reconstrução Visual de Registro Fundacional / Fonte: Arquivo Zero & Crônicas de Jerusalém",
+        paperBg: "bg-[#18130a]",
+        paperBorder: "border-amber-500/50",
+        textStyle: "text-amber-50 font-serif tracking-wide",
+        headerBadge: "bg-amber-950/70 text-amber-300 border-amber-400/50",
+        imgFilter: "sepia(0.5) contrast(1.15) brightness(0.92)",
       };
-    case 'napoleao':
+    case "alexandre":
       return {
-        eraStamp: 'CHANCELARIA IMPERIAL // DESPACHO MILITAR DE CAMPANHA (WATERLOO, 1815)',
-        materialLabel: 'Reconstrução Visual de Despacho de Estado-Maior / Fonte: Arquivos de Guerra da França',
-        paperBg: 'bg-[#14140F]',
-        paperBorder: 'border-yellow-600/40',
-        textStyle: 'text-stone-100 font-sans',
-        headerBadge: 'bg-yellow-950/60 text-yellow-300 border-yellow-500/40',
-        imgFilter: 'sepia(0.32) contrast(1.15)',
+        eraStamp: "EXPEDIÇÃO MACEDÔNIA // DIÁRIO DE CAMPANHA & PERGAMINHO GREGO (326 a.C.)",
+        materialLabel: "Reconstrução Visual de Registro de Marcha / Fonte: Arriano, Plutarco & Registros do Hífasis",
+        paperBg: "bg-[#16140d]",
+        paperBorder: "border-yellow-600/50",
+        textStyle: "text-yellow-50 font-sans tracking-wide",
+        headerBadge: "bg-yellow-950/70 text-yellow-300 border-yellow-400/50",
+        imgFilter: "sepia(0.4) contrast(1.12)",
       };
-    case 'turing':
+    case "cesar":
+    case "julio_cesar":
+    case "cleopatra":
       return {
-        eraStamp: 'BLETCHLEY PARK — HUT 8 // RELATÓRIO CRIPTOGRÁFICO DATILOGRAFADO (1941)',
-        materialLabel: 'Reconstrução Visual de Prontuário Técnico / Fonte: GC&CS / National Archives UK',
-        paperBg: 'bg-[#0C1317]',
-        paperBorder: 'border-emerald-500/35',
-        textStyle: 'text-emerald-50 font-mono text-[13px] sm:text-sm',
-        headerBadge: 'bg-emerald-950/60 text-emerald-300 border-emerald-500/40',
-        imgFilter: 'grayscale(0.45) contrast(1.2)',
+        eraStamp: "TABULARIUM SENATORIAL // SUPORTE EPIGRÁFICO & PAPIRO ROMANO (49 a.C.)",
+        materialLabel: "Reconstrução Visual de Registro Clássico / Fonte Histórica: Suetônio, Plutarco e Cícero",
+        paperBg: "bg-[#17120B]",
+        paperBorder: "border-amber-600/45",
+        textStyle: "text-amber-100/95 font-sans tracking-wide",
+        headerBadge: "bg-amber-950/60 text-amber-300 border-amber-500/40",
+        imgFilter: "sepia(0.45) contrast(1.12) brightness(0.95)",
       };
-    case 'jobs':
+    case "joana":
+      return {
+        eraStamp: "CHANCELARIA DE ORLÉANS // REGISTRO MANUSCRITO MEDIEVAL (1429)",
+        materialLabel: "Reconstrução Visual de Pergaminho Medieval / Fonte: Arquivos da Coroa Francesa",
+        paperBg: "bg-[#15120c]",
+        paperBorder: "border-amber-600/40",
+        textStyle: "text-amber-100 font-serif",
+        headerBadge: "bg-amber-950/60 text-amber-300 border-amber-500/40",
+        imgFilter: "sepia(0.4) contrast(1.1)",
+      };
+    case "da_vinci":
+      return {
+        eraStamp: "OFICINA SFORZESCA // MANUSCRITO RENASCENTISTA & TINTA FERROGÁLICA (1490)",
+        materialLabel: "Reconstrução Visual de Caderno Técnico / Fonte: Codex Atlanticus & Cartórios de Veneza",
+        paperBg: "bg-[#17130e]",
+        paperBorder: "border-amber-500/40",
+        textStyle: "text-stone-100 font-mono text-[13px] sm:text-sm",
+        headerBadge: "bg-amber-950/60 text-amber-200 border-amber-500/40",
+        imgFilter: "sepia(0.35) contrast(1.15)",
+      };
+    case "napoleao":
+      return {
+        eraStamp: "CHANCELARIA IMPERIAL // DESPACHO MILITAR DE CAMPANHA (WATERLOO, 1815)",
+        materialLabel: "Reconstrução Visual de Despacho de Estado-Maior / Fonte: Arquivos de Guerra da França",
+        paperBg: "bg-[#14140F]",
+        paperBorder: "border-yellow-600/40",
+        textStyle: "text-stone-100 font-sans",
+        headerBadge: "bg-yellow-950/60 text-yellow-300 border-yellow-500/40",
+        imgFilter: "sepia(0.32) contrast(1.15)",
+      };
+    case "turing":
+      return {
+        eraStamp: "BLETCHLEY PARK — HUT 8 // RELATÓRIO CRIPTOGRÁFICO DATILOGRAFADO (1941)",
+        materialLabel: "Reconstrução Visual de Prontuário Técnico / Fonte: GC&CS / National Archives UK",
+        paperBg: "bg-[#0C1317]",
+        paperBorder: "border-emerald-500/35",
+        textStyle: "text-emerald-50 font-mono text-[13px] sm:text-sm",
+        headerBadge: "bg-emerald-950/60 text-emerald-300 border-emerald-500/40",
+        imgFilter: "grayscale(0.45) contrast(1.2)",
+      };
+    case "mandela":
+      return {
+        eraStamp: "PRISÃO DE ROBBEN ISLAND // REGISTROS JUDICIAIS & CARTAS CENSURADAS (1964)",
+        materialLabel: "Reconstrução Visual de Processo de Rivonia / Fonte: National Archives of South Africa",
+        paperBg: "bg-[#13110e]",
+        paperBorder: "border-orange-500/35",
+        textStyle: "text-orange-50 font-sans",
+        headerBadge: "bg-orange-950/60 text-orange-300 border-orange-500/40",
+        imgFilter: "contrast(1.1) brightness(0.95)",
+      };
+    case "jobs":
     default:
       return {
-        eraStamp: 'AUDITORIA DE SISTEMA // TELEMETRIA & REGISTRO CORPORATIVO (2007–2026)',
-        materialLabel: 'Reconstrução Visual para Investigação / Fonte: Registros Técnicos & Engenharia de Produto',
-        paperBg: 'bg-[#060C16]',
-        paperBorder: 'border-cyan-500/35',
-        textStyle: 'text-cyan-50 font-sans',
-        headerBadge: 'bg-cyan-950/60 text-cyan-300 border-cyan-500/40',
-        imgFilter: 'contrast(1.1) saturate(1.05)',
+        eraStamp: "AUDITORIA DE SISTEMA // TELEMETRIA & REGISTRO CORPORATIVO (2007–2026)",
+        materialLabel: "Reconstrução Visual para Investigação / Fonte: Registros Técnicos & Engenharia de Produto",
+        paperBg: "bg-[#060C16]",
+        paperBorder: "border-cyan-500/35",
+        textStyle: "text-cyan-50 font-sans",
+        headerBadge: "bg-cyan-950/60 text-cyan-300 border-cyan-500/40",
+        imgFilter: "contrast(1.1) saturate(1.05)",
       };
   }
 };

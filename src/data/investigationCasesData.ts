@@ -1,3 +1,4 @@
+import { EXTENDED_HISTORICAL_NODES } from "./investigationCasesExtended";
 import { HistoricalNode } from '../types/investigation';
 import cesarImg from '../assets/characters/julio_cesar.webp';
 import jobsImg from '../assets/characters/jobs.webp';
@@ -7,7 +8,7 @@ import cleopatraImg from '../assets/characters/cleopatra.webp';
 import joanaImg from '../assets/characters/joana_darc.webp';
 import mandelaImg from '../assets/characters/mandela.webp';
 
-export const HISTORICAL_NODES: HistoricalNode[] = [
+const ORIGINAL_HISTORICAL_NODES: HistoricalNode[] = [
   {
     id: 'cesar',
     name: 'Júlio César',
@@ -878,3 +879,26 @@ export const HISTORICAL_NODES: HistoricalNode[] = [
     ]
   }
 ];
+
+
+const allNodesMap = new Map<string, HistoricalNode>();
+[...EXTENDED_HISTORICAL_NODES, ...ORIGINAL_HISTORICAL_NODES].forEach(node => {
+  allNodesMap.set(node.id, node);
+});
+
+const chronologicalOrder = [
+  "salomao",
+  "alexandre",
+  "cesar",
+  "cleopatra",
+  "joana",
+  "da_vinci",
+  "napoleao",
+  "turing",
+  "mandela",
+  "jobs"
+];
+
+export const HISTORICAL_NODES: HistoricalNode[] = chronologicalOrder
+  .map(id => allNodesMap.get(id)!)
+  .filter(Boolean);

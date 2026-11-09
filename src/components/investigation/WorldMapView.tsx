@@ -25,7 +25,7 @@ export const WorldMapView: React.FC = () => {
   ];
 
   // Ordem estritamente cronológica
-  const chronologicalOrder = ['cesar', 'cleopatra', 'joana', 'napoleao', 'turing', 'mandela', 'jobs'];
+  const chronologicalOrder = ['salomao', 'alexandre', 'cesar', 'cleopatra', 'joana', 'da_vinci', 'napoleao', 'turing', 'mandela', 'jobs'];
   const orderedAllNodes = [...allNodes].sort(
     (a, b) => chronologicalOrder.indexOf(a.id) - chronologicalOrder.indexOf(b.id)
   );

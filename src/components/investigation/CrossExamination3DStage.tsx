@@ -5,7 +5,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp, DiscoveryAnimation, GameButton, HistoricalCharacterPortrait, TypewriterText } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, DiscoveryAnimation, GameButton, TypewriterText } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -770,24 +770,15 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
               </div>
             </div>
 
-            <div className="flex items-start gap-3 mt-1">
-              <HistoricalCharacterPortrait
-                image={selectedCase.image}
-                name={selectedCase.name}
-                year={selectedCase.year}
-                variant="tactical-cameo"
-                className="shrink-0"
+            <div className="mt-1">
+              <TypewriterText
+                key={activeChallenge.id}
+                text={activeChallenge.question}
+                speedMs={15}
+                delayMs={40}
+                playSound={true}
+                className="text-sm sm:text-base md:text-lg font-sans font-bold text-white leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
               />
-              <div className="flex-1 min-w-0">
-                <TypewriterText
-                  key={activeChallenge.id}
-                  text={activeChallenge.question}
-                  speedMs={15}
-                  delayMs={40}
-                  playSound={true}
-                  className="text-sm sm:text-base md:text-lg font-sans font-bold text-white leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
-                />
-              </div>
             </div>
 
             {isCurrentSolved && activeChallenge.conclusion ? (

@@ -4,7 +4,7 @@ import {
   HistoricalNode,
 } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
-import { AmbientParticlesCanvas, DecisionStamp, SignatureStrokeSvg, GameButton, HistoricalCharacterPortrait, TypewriterText } from './GameInteractionSystem';
+import { AmbientParticlesCanvas, DecisionStamp, SignatureStrokeSvg, GameButton, TypewriterText } from './GameInteractionSystem';
 import { getEra3DTheme } from '../../utils/era3DTheme';
 import {
   Info,
@@ -331,29 +331,20 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
         className="relative z-30 flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto md:overflow-hidden py-2 md:py-0"
       >
         <div className="px-4 py-3 rounded-xl bg-[#070B14]/94 backdrop-blur-md border border-amber-400/55 shadow-[0_10px_30px_rgba(0,0,0,0.95)] flex flex-wrap items-start justify-between gap-3 shadow-lg">
-          <div className="flex items-start gap-3.5 max-w-3xl">
-            <HistoricalCharacterPortrait
-              image={selectedCase.image}
-              name={selectedCase.name}
-              year={selectedCase.year}
-              variant="dramatic-bust"
-              className="shrink-0 mt-0.5"
-            />
-            <div className="flex-1 min-w-0">
-              <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold block">
-                DILEMA ESTRATÉGICO DE CAMPO // {eraTheme.eraName.toUpperCase()}
-              </span>
-              <h2 className="text-sm sm:text-lg font-sans font-bold text-white mt-0.5">
-                Diante do padrão identificado, qual ordem tática você assina?
-              </h2>
-              <div className="text-slate-100 text-xs sm:text-sm mt-1.5 mb-1 leading-relaxed font-medium">
-                <TypewriterText
-                  text={selectedCase.simulationPrompt || "Diante do padrão identificado, qual ordem tática você assina?"}
-                  speedMs={14}
-                  delayMs={60}
-                  className="text-slate-100"
-                />
-              </div>
+          <div className="max-w-3xl">
+            <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold block">
+              DILEMA ESTRATÉGICO DE CAMPO // {eraTheme.eraName.toUpperCase()}
+            </span>
+            <h2 className="text-sm sm:text-lg font-sans font-bold text-white mt-0.5">
+              Diante do padrão identificado, qual ordem tática você assina?
+            </h2>
+            <div className="text-slate-100 text-xs sm:text-sm mt-1.5 mb-1 leading-relaxed font-medium">
+              <TypewriterText
+                text={selectedCase.simulationPrompt || "Diante do padrão identificado, qual ordem tática você assina?"}
+                speedMs={14}
+                delayMs={60}
+                className="text-slate-100"
+              />
             </div>
           </div>
           {selectedDecisionId && (
