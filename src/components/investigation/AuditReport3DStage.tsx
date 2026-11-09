@@ -300,7 +300,7 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
         data-hud="true"
         className="relative z-30 flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto md:overflow-hidden py-2 md:py-0"
       >
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#0b1320]/45 backdrop-blur-sm border border-amber-400/40 space-y-3 shadow-2xl">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#070B14]/94 backdrop-blur-md border border-amber-400/55 shadow-[0_12px_40px_rgba(0,0,0,0.95)] space-y-3 shadow-2xl">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
             <div>
               <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-emerald-300 font-bold">
@@ -314,7 +314,7 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
             </div>
 
             <div className="px-3.5 py-1.5 rounded-xl bg-[#090D16]/75 border border-amber-400/50 text-center">
-              <div className="text-[9px] font-mono uppercase text-slate-300">Mérito no Caso</div>
+              <div className="text-[11px] font-mono uppercase font-semibold text-slate-300">Mérito no Caso</div>
               <div className="text-base sm:text-lg font-mono font-bold text-amber-300">
                 +{displayedXp} XP
               </div>
@@ -322,22 +322,22 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className="p-2.5 rounded-xl bg-[#090D16]/60 border border-slate-700/70">
-              <div className="text-[9px] font-mono uppercase text-slate-300">Pistas Extraídas</div>
+            <div className="p-2.5 rounded-xl bg-[#0B1220]/95 border border-slate-700/90 shadow-inner">
+              <div className="text-[11px] font-mono uppercase font-semibold text-slate-300">Pistas Extraídas</div>
               <div className="text-sm sm:text-base font-bold text-emerald-300 mt-0.5">
                 {extractedCluesList.length}/{allCaseClues.length}
               </div>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-[#090D16]/60 border border-slate-700/70">
-              <div className="text-[9px] font-mono uppercase text-slate-300">Vínculos Comprovados</div>
+            <div className="p-2.5 rounded-xl bg-[#0B1220]/95 border border-slate-700/90 shadow-inner">
+              <div className="text-[11px] font-mono uppercase font-semibold text-slate-300">Vínculos Comprovados</div>
               <div className="text-sm sm:text-base font-bold text-cyan-300 mt-0.5">
                 {validatedChallenges.length}/{challenges.length}
               </div>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-[#090D16]/60 border border-slate-700/70">
-              <div className="text-[9px] font-mono uppercase text-slate-300">Consistência</div>
+            <div className="p-2.5 rounded-xl bg-[#0B1220]/95 border border-slate-700/90 shadow-inner">
+              <div className="text-[11px] font-mono uppercase font-semibold text-slate-300">Consistência</div>
               <div className="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 uppercase">
                 {hypothesisScore === 'forte'
                   ? 'Alta (+100 XP)'
@@ -349,8 +349,8 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
               </div>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-[#090D16]/60 border border-slate-700/70">
-              <div className="text-[9px] font-mono uppercase text-slate-300">Elos Históricos</div>
+            <div className="p-2.5 rounded-xl bg-[#0B1220]/95 border border-slate-700/90 shadow-inner">
+              <div className="text-[11px] font-mono uppercase font-semibold text-slate-300">Elos Históricos</div>
               <div className="text-xs sm:text-sm font-bold text-white mt-0.5">
                 {mapConnectionsUnlocked ? 'Desbloqueados' : 'Em Aberto'}
               </div>
@@ -358,8 +358,8 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <div className="p-3 rounded-xl bg-[#090D16]/60 border border-slate-700/70 space-y-1">
-              <div className="text-[10px] font-mono uppercase text-amber-300 font-bold">
+            <div className="p-3 rounded-xl bg-[#0B1220]/95 border border-slate-700/90 shadow-inner space-y-1">
+              <div className="text-xs font-mono uppercase text-amber-300 font-bold">
                 Hipótese Registrada:
               </div>
               <div className="text-xs sm:text-sm font-sans font-bold text-white line-clamp-2">
@@ -367,8 +367,8 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#090D16]/60 border border-slate-700/70 space-y-1">
-              <div className="text-[10px] font-mono uppercase text-cyan-300 font-bold">
+            <div className="p-3 rounded-xl bg-[#0B1220]/95 border border-slate-700/90 shadow-inner space-y-1">
+              <div className="text-xs font-mono uppercase text-cyan-300 font-bold">
                 Ordem Assinada em Campo:
               </div>
               <div className="text-xs sm:text-sm font-sans font-bold text-white line-clamp-2">

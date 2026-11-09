@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
+import { GameButton } from './GameInteractionSystem';
 import {
   Target,
   CheckCircle2,
@@ -146,13 +147,14 @@ export const MissionsView: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                onClick={() => startCaseInvestigation(node.id)}
-                className="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 text-xs sm:text-sm font-mono font-bold flex items-center justify-center gap-2 shrink-0 cursor-pointer self-start md:self-auto"
-              >
-                <span>{isCompleted ? 'Reexaminar Dossiê' : 'Iniciar Missão'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              <div className="shrink-0 self-start md:self-auto">
+                <GameButton
+                  size="sm"
+                  onClick={() => startCaseInvestigation(node.id)}
+                >
+                  {isCompleted ? 'REEXAMINAR DOSSIÊ' : 'INICIAR MISSÃO'}
+                </GameButton>
+              </div>
             </div>
           );
         })}

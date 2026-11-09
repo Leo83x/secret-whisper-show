@@ -641,13 +641,7 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
               >
                 Continuar Investigando [Esc]
               </button>
-              <button
-                onClick={handleConfirmExitToMap}
-                className="game-btn-primary w-full sm:w-auto px-5 py-2.5 font-sans font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Voltar ao Mapa Mundial</span>
-              </button>
+              <GameButton size="sm" onClick={handleConfirmExitToMap}>VOLTAR AO MAPA MUNDIAL</GameButton>
             </div>
           </div>
         </div>

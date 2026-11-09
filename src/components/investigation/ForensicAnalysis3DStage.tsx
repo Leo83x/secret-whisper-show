@@ -372,7 +372,7 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
         className="relative z-30 flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto md:overflow-hidden py-2 md:py-0"
       >
         {/* Pergunta Compacta em Pill Translúcida */}
-        <div className="px-3.5 py-2 rounded-xl bg-[#0b1320]/45 backdrop-blur-sm border border-amber-400/35 flex flex-wrap items-center justify-between gap-2">
+        <div className="px-3.5 py-2 rounded-xl bg-[#070B14]/92 backdrop-blur-md border border-amber-400/55 shadow-[0_8px_25px_rgba(0,0,0,0.9)] flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold">
               PASTA PERICIAL ({selectedCase.location.toUpperCase()} • {selectedCase.year}) //
@@ -402,8 +402,8 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
                 }}
                 className={`game-order-sheet p-3.5 rounded-xl backdrop-blur-md border transition-all cursor-game-pen flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-amber-500/25 border-amber-300 shadow-[0_0_24px_rgba(245,158,11,0.35)]'
-                    : 'bg-[#0b1320]/40 border-amber-400/30 hover:bg-[#0b1320]/60 hover:border-amber-300/60'
+                    ? 'bg-[#0D1626]/95 border-amber-300 ring-2 ring-amber-400/40 shadow-[0_0_28px_rgba(245,158,11,0.5)]'
+                    : 'bg-[#070B14]/92 border-amber-500/45 hover:bg-[#0A101D]/98 hover:border-amber-300 shadow-[0_8px_24px_rgba(0,0,0,0.9)]'
                 }`}
               >
                 <div className="space-y-1">
@@ -426,7 +426,7 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
                     {th.title}
                   </div>
                   {isExpanded && (
-                    <p className="text-[11px] text-slate-200 leading-relaxed pt-1 border-t border-slate-700/60 line-clamp-3">
+                    <p className="text-xs sm:text-sm text-slate-100 leading-relaxed pt-1.5 border-t border-slate-700/60 line-clamp-3">
                       {th.description}
                     </p>
                   )}
@@ -443,7 +443,7 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
         </div>
 
         {/* Pistas de Sustentação em Chips Compactos Translúcidos */}
-        <div className="p-2.5 sm:p-3 rounded-xl bg-[#0b1320]/40 backdrop-blur-sm border border-slate-600/50 space-y-2">
+        <div className="p-2.5 sm:p-3 rounded-xl bg-[#070B14]/92 backdrop-blur-md border border-amber-500/40 shadow-[0_8px_25px_rgba(0,0,0,0.9)] space-y-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-amber-300 font-bold">
               Anexar Provas à Pasta ({hypothesisClues.length}/3):
@@ -472,7 +472,7 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
                   className={`px-2.5 py-1.5 rounded-lg border text-left transition-all flex items-center gap-2 cursor-pointer ${
                     attached
                       ? 'bg-emerald-500/25 border-emerald-400 text-white'
-                      : 'bg-[#090D16]/55 border-slate-700/70 text-slate-300 hover:border-amber-400/50'
+                      : 'bg-[#0B1220]/95 border-slate-600/80 text-slate-100 hover:border-amber-400/50'
                   }`}
                 >
                   <div
@@ -483,10 +483,10 @@ export const ForensicAnalysis3DStage: React.FC<ForensicAnalysis3DStageProps> = (
                     {attached && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                   </div>
                   <div className="min-w-0 truncate">
-                    <span className="text-[9px] font-mono text-amber-300 font-bold mr-1">
+                    <span className="text-[11px] font-mono text-amber-400 font-extrabold mr-1.5">
                       {clue.docCode.split('//')[0].trim()}
                     </span>
-                    <span className="text-[11px] font-sans text-white truncate">{clue.title}</span>
+                    <span className="text-xs font-sans font-semibold text-white truncate">{clue.title}</span>
                   </div>
                 </button>
               );

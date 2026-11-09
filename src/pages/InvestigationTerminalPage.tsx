@@ -10,6 +10,7 @@ import { InvestigatorProfileView } from '../components/investigation/Investigato
 import { MissionsView } from '../components/investigation/MissionsView';
 import { CommunityView } from '../components/investigation/CommunityView';
 import { ImmersiveInvestigationLayout } from '../components/investigation/ImmersiveInvestigationLayout';
+import { GameButton } from '../components/investigation/GameInteractionSystem';
 import { soundEngine } from '../utils/investigationAudio';
 
 const TerminalContent: React.FC = () => {
@@ -122,28 +123,21 @@ const TerminalContent: React.FC = () => {
             <div className="grid grid-cols-3 gap-2 pt-1">
               <div className="p-2 rounded-xl bg-[#060A12]/90 border border-slate-800 flex flex-col items-center gap-1">
                 <Maximize2 className="w-4 h-4 text-amber-400" />
-                <span className="text-[10px] font-mono text-slate-300">Tela 100%</span>
+                <span className="text-xs font-mono font-semibold text-slate-200">Tela 100%</span>
               </div>
               <div className="p-2 rounded-xl bg-[#060A12]/90 border border-slate-800 flex flex-col items-center gap-1">
                 <Volume2 className="w-4 h-4 text-cyan-400" />
-                <span className="text-[10px] font-mono text-slate-300">Áudio 3D</span>
+                <span className="text-xs font-mono font-semibold text-slate-200">Áudio 3D</span>
               </div>
               <div className="p-2 rounded-xl bg-[#060A12]/90 border border-slate-800 flex flex-col items-center gap-1">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span className="text-[10px] font-mono text-slate-300">Dossiês V1</span>
+                <span className="text-xs font-mono font-semibold text-slate-200">Dossiês V1</span>
               </div>
             </div>
 
             {/* Botões de Ação */}
             <div className="space-y-2.5 pt-1">
-              <button
-                type="button"
-                onClick={handleEnterGameFullscreen}
-                className="game-btn-primary w-full py-3.5 px-5 font-sans font-extrabold text-sm tracking-wider flex items-center justify-center gap-2.5 cursor-pointer"
-              >
-                <Maximize2 className="w-4 h-4 stroke-[2.5]" />
-                <span>ATIVAR TELA CHEIA (MODO JOGO)</span>
-              </button>
+              <GameButton onClick={handleEnterGameFullscreen} className="w-full" size="md">ATIVAR TELA CHEIA (MODO JOGO)</GameButton>
 
               <button
                 type="button"
@@ -154,7 +148,7 @@ const TerminalContent: React.FC = () => {
               </button>
             </div>
 
-            <div className="text-[10px] font-mono text-slate-400 flex items-center justify-center gap-1.5">
+            <div className="text-xs font-mono text-slate-300 flex items-center justify-center gap-1.5">
               <Sparkles className="w-3 h-3 text-amber-400" />
               <span>Pressione [ESC] a qualquer momento para alternar a janela</span>
             </div>

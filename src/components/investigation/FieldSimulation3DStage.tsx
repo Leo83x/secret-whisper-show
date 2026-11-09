@@ -324,15 +324,15 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
         data-hud="true"
         className="relative z-30 flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto md:overflow-hidden py-2 md:py-0"
       >
-        <div className="px-4 py-3 rounded-xl bg-[#0b1320]/65 backdrop-blur-md border border-amber-400/40 flex flex-wrap items-start justify-between gap-3 shadow-lg">
+        <div className="px-4 py-3 rounded-xl bg-[#070B14]/94 backdrop-blur-md border border-amber-400/55 shadow-[0_10px_30px_rgba(0,0,0,0.95)] flex flex-wrap items-start justify-between gap-3 shadow-lg">
           <div className="max-w-3xl">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold block">
+            <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold block">
               DILEMA ESTRATÉGICO DE CAMPO // {eraTheme.eraName.toUpperCase()}
             </span>
             <h2 className="text-sm sm:text-lg font-sans font-bold text-white mt-0.5">
               Diante do padrão identificado, qual ordem tática você assina?
             </h2>
-            <p className="text-slate-300 text-xs sm:text-sm mt-1 mb-1 leading-relaxed">
+            <p className="text-slate-100 text-xs sm:text-sm mt-1.5 mb-1 leading-relaxed font-medium">
               {selectedCase.simulationPrompt}
             </p>
           </div>
@@ -354,8 +354,8 @@ export const FieldSimulation3DStage: React.FC<FieldSimulation3DStageProps> = ({
                 onClick={() => { soundEngine.playPenScratch(); setTimeout(() => soundEngine.playWaxStamp(), 180); onSelectDecision(choice.id); }}
                 className={`game-order-sheet p-4 rounded-xl backdrop-blur-md border transition-all cursor-game-pen flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-amber-500/25 border-amber-300 shadow-[0_0_25px_rgba(245,158,11,0.35)]'
-                    : 'bg-[#0b1320]/40 border-amber-400/30 hover:bg-[#0b1320]/60 hover:border-amber-300/60'
+                    ? 'bg-[#0D1626]/96 border-amber-300 ring-2 ring-amber-400/40 shadow-[0_0_28px_rgba(245,158,11,0.5)]'
+                    : 'bg-[#070B14]/92 border-amber-500/45 hover:bg-[#0A101D]/98 hover:border-amber-300 shadow-[0_8px_25px_rgba(0,0,0,0.92)]'
                 }`}
               >
                 <div className="space-y-1.5">

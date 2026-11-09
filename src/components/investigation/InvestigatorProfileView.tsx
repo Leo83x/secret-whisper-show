@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
+import { GameButton } from './GameInteractionSystem';
 import { SemiCircleGauge } from './SemiCircleGauge';
 import { RestrictedFileModal } from './RestrictedFileModal';
 import { HistoricalNode } from '../../types/investigation';
@@ -641,28 +642,20 @@ export const InvestigatorProfileView: React.FC = () => {
                             <span>Em Preparação (Vol. II) — Ver Condições</span>
                           </button>
                         ) : (
-                          <button
-                            type="button"
+                          <GameButton
+                            size="sm"
+                            className="w-full"
                             onClick={() => {
                               soundEngine.playDocumentOpen();
                               startCaseInvestigation(node.id);
                             }}
-                            className={`w-full py-2 px-3.5 rounded-xl font-sans text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all ${
-                              isCompleted
-                                ? 'bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/50 text-emerald-200'
-                                : 'bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-md'
-                            }`}
                           >
-                            <FileCheck2 className="w-3.5 h-3.5" />
-                            <span>
-                              {isCompleted
-                                ? 'Revisar Dossiê Auditado'
-                                : isInProgress
-                                ? 'Continuar Investigação'
-                                : 'Abrir Pasta de Investigação'}
-                            </span>
-                            <ArrowRight className="w-3.5 h-3.5" />
-                          </button>
+                            {isCompleted
+                              ? 'REVISAR DOSSIÊ AUDITADO'
+                              : isInProgress
+                              ? 'CONTINUAR INVESTIGAÇÃO'
+                              : 'INVESTIGAR CASO'}
+                          </GameButton>
                         )}
                       </div>
                     </div>

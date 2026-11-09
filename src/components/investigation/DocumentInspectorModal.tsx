@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EvidenceDocument } from '../../types/investigation';
 import { soundEngine } from '../../utils/investigationAudio';
+import { GameButton } from './GameInteractionSystem';
 import { ClueFlyToken, FlyingClueData } from './GameInteractionSystem';
 import {
   X,
@@ -529,6 +530,19 @@ export const DocumentInspectorModal: React.FC<DocumentInspectorModalProps> = ({
               </div>
             </div>
           )}
+
+          {/* Rodapé Tático do Inspetor Documental */}
+          <div className="pt-4 mt-4 border-t border-slate-800/90 flex flex-wrap items-center justify-between gap-3">
+            <span className="text-xs font-mono text-slate-300">
+              Pistas catalogadas neste documento:{' '}
+              <strong className="text-amber-300 font-bold">
+                {extractedCount}/{document.clues.length}
+              </strong>
+            </span>
+            <GameButton size="sm" onClick={onClose}>
+              CONCLUIR INSPEÇÃO DO DOCUMENTO
+            </GameButton>
+          </div>
 
         </div>
 

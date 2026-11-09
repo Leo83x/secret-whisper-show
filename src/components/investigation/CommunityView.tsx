@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
+import { GameButton } from './GameInteractionSystem';
 import {
   Users,
   ShieldCheck,
@@ -356,13 +357,7 @@ export const CommunityView: React.FC = () => {
                 placeholder="Ex: A diferença entre os 9 dias de trigo e os 12 dias de viagem comprova que..."
                 className="flex-1 px-3.5 py-2.5 rounded-xl bg-[#060A12] border border-slate-700 text-sm text-white focus:outline-none focus:border-amber-400"
               />
-              <button
-                type="submit"
-                className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shrink-0"
-              >
-                <Send className="w-4 h-4" />
-                <span>Publicar</span>
-              </button>
+              <GameButton type="submit" size="sm" showMagnifier={false} className="shrink-0">PUBLICAR NO MURAL</GameButton>
             </div>
           </div>
         </div>
