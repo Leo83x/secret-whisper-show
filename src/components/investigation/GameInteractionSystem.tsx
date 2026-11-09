@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ShieldCheck, Sparkles, Stamp, X, Compass, Eye, Link2, FileText, Scale, Award } from 'lucide-react';
 import { soundEngine } from '../../utils/investigationAudio';
 
@@ -954,12 +954,12 @@ export const HistoricalCharacterPortrait: React.FC<HistoricalCharacterPortraitPr
   if (variant === 'archive-plaque') {
     return (
       <div
-        className={`relative rounded-2xl bg-gradient-to-b from-[#1E160A] via-[#100D06] to-[#0A0703] border-2 border-amber-500/60 p-2 sm:p-2.5 shadow-[0_12px_35px_rgba(0,0,0,0.9),0_0_25px_rgba(212,175,55,0.2)] select-none ${className}`}
+        className={`relative w-20 sm:w-24 shrink-0 rounded-2xl bg-gradient-to-b from-[#1E160A] via-[#100D06] to-[#0A0703] border-2 border-amber-500/60 p-1.5 sm:p-2 shadow-[0_10px_25px_rgba(0,0,0,0.9),0_0_20px_rgba(212,175,55,0.2)] select-none ${className}`}
       >
-        <span className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#523e12] border border-[#2b200b] shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)]" />
-        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#523e12] border border-[#2b200b] shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)]" />
-        <span className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-[#523e12] border border-[#2b200b] shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)]" />
-        <span className="absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#523e12] border border-[#2b200b] shadow-[inset_0_1px_1px_rgba(0,0,0,0.9)]" />
+        <span className="absolute top-1 left-1 w-1 h-1 rounded-full bg-[#523e12] border border-[#2b200b]" />
+        <span className="absolute top-1 right-1 w-1 h-1 rounded-full bg-[#523e12] border border-[#2b200b]" />
+        <span className="absolute bottom-1 left-1 w-1 h-1 rounded-full bg-[#523e12] border border-[#2b200b]" />
+        <span className="absolute bottom-1 right-1 w-1 h-1 rounded-full bg-[#523e12] border border-[#2b200b]" />
 
         <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden border border-amber-400/50 shadow-inner bg-slate-950">
           <img
@@ -968,17 +968,17 @@ export const HistoricalCharacterPortrait: React.FC<HistoricalCharacterPortraitPr
             className="w-full h-full object-cover object-top filter contrast-105 brightness-95"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-amber-900/10 pointer-events-none" />
-          <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/80 border border-amber-400/40 text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider">
-            DOSSIÊ OFICIAL
+          <div className="absolute top-1 left-1 px-1.5 py-0.2 rounded bg-black/80 border border-amber-400/40 text-[9px] font-mono font-bold text-amber-300 uppercase tracking-wider">
+            DOSSIÊ
           </div>
         </div>
 
-        <div className="mt-2 text-center px-1">
-          <div className="font-serif font-extrabold text-xs sm:text-sm uppercase tracking-wider text-[#EAD29C] drop-shadow leading-tight">
+        <div className="mt-1 text-center px-0.5">
+          <div className="font-serif font-extrabold text-[10px] sm:text-xs uppercase tracking-wider text-[#EAD29C] drop-shadow leading-tight truncate">
             {name}
           </div>
-          <div className="font-mono text-[11px] text-cyan-300 uppercase tracking-widest mt-0.5">
-            {year} {role ? `• ${role}` : ''}
+          <div className="font-mono text-[9px] text-cyan-300 uppercase tracking-widest truncate mt-0.5">
+            {year}
           </div>
         </div>
       </div>
@@ -988,9 +988,9 @@ export const HistoricalCharacterPortrait: React.FC<HistoricalCharacterPortraitPr
   if (variant === 'tactical-cameo') {
     return (
       <div
-        className={`flex items-center gap-3 p-2 sm:p-2.5 rounded-2xl bg-[#070B14]/95 border border-amber-500/50 shadow-[0_8px_25px_rgba(0,0,0,0.9)] select-none shrink-0 ${className}`}
+        className={`flex items-center gap-2.5 p-1.5 sm:p-2 rounded-2xl bg-[#070B14]/95 border border-amber-500/50 shadow-[0_8px_25px_rgba(0,0,0,0.9)] select-none shrink-0 ${className}`}
       >
-        <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 border-amber-400/70 shadow-[0_0_16px_rgba(212,175,55,0.35)] shrink-0 bg-slate-950">
+        <div className="relative w-11 h-11 sm:w-13 sm:h-13 rounded-xl overflow-hidden border-2 border-amber-400/70 shadow-[0_0_16px_rgba(212,175,55,0.35)] shrink-0 bg-slate-950">
           <img
             src={image}
             alt={name}
@@ -1016,28 +1016,22 @@ export const HistoricalCharacterPortrait: React.FC<HistoricalCharacterPortraitPr
   if (variant === 'pericial-file') {
     return (
       <div
-        className={`p-3.5 sm:p-4 rounded-2xl bg-[#070B14]/95 border border-amber-400/50 shadow-2xl flex items-center gap-3.5 select-none ${className}`}
+        className={`p-2 rounded-xl bg-[#070B14]/95 border border-amber-400/50 shadow-xl flex items-center gap-2.5 select-none shrink-0 ${className}`}
       >
-        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 border-amber-400/70 shadow-lg shrink-0 bg-slate-950">
+        <div className="relative w-11 h-11 sm:w-13 sm:h-13 rounded-lg overflow-hidden border border-amber-400/70 shadow-md shrink-0 bg-slate-950">
           <img src={image} alt={name} className="w-full h-full object-cover object-top" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
-        <div className="space-y-1 min-w-0 flex-1">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span>FIGURA CENTRAL // INVESTIGADA</span>
+        <div className="min-w-0 pr-1">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold">
+            FIGURA CENTRAL
           </div>
-          <div className="font-sans font-bold text-sm sm:text-base text-white truncate">
+          <div className="font-sans font-bold text-xs sm:text-sm text-white truncate">
             {name}
           </div>
-          <div className="text-xs font-mono text-slate-300">
-            Marco Temporal: <strong className="text-amber-200">{year}</strong>
+          <div className="text-[11px] font-mono text-slate-300 truncate">
+            {year}
           </div>
-          {role && (
-            <div className="text-[11px] font-sans text-cyan-200/90 leading-tight truncate">
-              {role}
-            </div>
-          )}
         </div>
       </div>
     );
@@ -1046,27 +1040,12 @@ export const HistoricalCharacterPortrait: React.FC<HistoricalCharacterPortraitPr
   if (variant === 'dramatic-bust') {
     return (
       <div
-        className={`relative rounded-2xl overflow-hidden border-2 border-amber-400/60 shadow-[0_15px_45px_rgba(0,0,0,0.95)] bg-slate-950 select-none ${className}`}
+        className={`relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-2xl overflow-hidden border-2 border-amber-400/60 shadow-[0_10px_25px_rgba(0,0,0,0.95)] bg-slate-950 select-none ${className}`}
       >
-        <div className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[3/1] w-full">
-          <img src={image} alt={name} className="w-full h-full object-cover object-top" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#060A12] via-[#060A12]/80 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#060A12] via-transparent to-black/40" />
-
-          <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-end max-w-xl">
-            <div className="text-xs font-mono uppercase tracking-widest text-amber-400 font-extrabold flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-amber-400" />
-              <span>DILEMA HISTÓRICO EM CAMPO // {name.toUpperCase()}</span>
-            </div>
-            <div className="font-serif font-bold text-lg sm:text-2xl text-[#EAD29C] mt-1 drop-shadow">
-              {name} ({year})
-            </div>
-            {role && (
-              <div className="text-xs sm:text-sm font-sans text-slate-300 mt-0.5 font-medium">
-                {role}
-              </div>
-            )}
-          </div>
+        <img src={image} alt={name} className="w-full h-full object-cover object-top" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute bottom-1 left-0.5 right-0.5 px-1 py-0.5 rounded bg-black/75 text-[9px] font-mono text-amber-300 font-bold uppercase text-center truncate">
+          {name.split(' ')[0]}
         </div>
       </div>
     );
