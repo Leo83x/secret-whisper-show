@@ -21,6 +21,8 @@ import {
 
 interface ImmersiveInvestigationLayoutProps {
   children: React.ReactNode;
+  onBackToBriefing?: () => void;
+  onOpenArchive?: () => void;
 }
 
 interface StageTransitionBanner {
@@ -32,6 +34,8 @@ interface StageTransitionBanner {
 
 export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayoutProps> = ({
   children,
+  onBackToBriefing,
+  onOpenArchive,
 }) => {
   const {
     state,
