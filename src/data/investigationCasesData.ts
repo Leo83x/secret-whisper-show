@@ -430,6 +430,26 @@ const ORIGINAL_HISTORICAL_NODES: HistoricalNode[] = [
           }
         ]
       }
+    ,
+      {
+        id: "doc_nap_cavalaria",
+        code: "DOC-04 // RELATÓRIO DE CAVALARIA",
+        title: "Registro de Ataque da Cavalaria do Marechal Ney",
+        typeLabel: "Diário de Combate de Vanguarda",
+        dateLabel: "18 de Junho de 1815, 16h00 — Colina de Mont-Saint-Jean",
+        summary: "Relatório das sucessivas cargas de couraçados contra os quadrados britânicos sem apoio coordenado de infantaria ou artilharia de reserva.",
+        fullText: "O Marechal Ney lançou 5.000 cavaleiros sobre o planalto de Mont-Saint-Jean sem infantaria de suporte. Os britânicos formaram quadrados impenetráveis. A cavalaria pesada exauriu seus cavalos e perdeu o momento decisivo sem conseguir capturar as baterias inimigas.",
+        clues: [
+          {
+            id: "clue_nap_cavalaria",
+            title: "Carga Isolada de Cavalaria sem Apoio Combinado",
+            excerpt: "\"Ney lançou 5.000 cavaleiros sobre o planalto sem infantaria de suporte; os britânicos formaram quadrados impenetráveis e exauriram a cavalaria.\"",
+            analysisNote: "Quebra da doutrina tática de armas combinadas: ação precipitada que esgotou a reserva de choque francesa antes do clímax.",
+            category: "logistica",
+            xpReward: 40
+          }
+        ]
+      }
     ],
     connectionChallenges: [
       {

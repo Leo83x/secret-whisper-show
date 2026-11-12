@@ -398,27 +398,6 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
           {/* Sem linha solta para pino único */}
         </svg>
 
-        {/* Badge Horizontal Dinâmico do Vínculo Ativo (#1, #2 ou #3) no Centro da Mesa */}
-        <div
-          className={`hidden sm:flex absolute left-1/2 -translate-x-1/2 top-[31%] z-30 pointer-events-none items-center gap-2.5 px-5 py-2 rounded-full border shadow-[0_6px_30px_rgba(0,0,0,0.95)] text-xs sm:text-sm font-mono font-bold uppercase tracking-wider transition-all duration-300 ${
-            isCurrentSolved
-              ? 'bg-emerald-950/95 text-emerald-300 border-emerald-400/70'
-              : 'bg-[#060A12]/95 text-amber-300 border-amber-400/60'
-          }`}
-        >
-          <span
-            className={`w-2 h-2 rounded-full ${
-              isCurrentSolved ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
-            }`}
-          />
-          <span>
-            VÍNCULO #{activeChallengeIdx + 1} DE {challenges.length} //{' '}
-            {isCurrentSolved
-              ? 'CONEXÃO COMPROVADA ✓'
-              : `SELECIONE 2 PISTAS NA MESA (${boardSelectedClues.length}/2)`}
-          </span>
-        </div>
-
         {/* ===================================================================
             3. DOCUMENTOS FÍSICOS, ALFINETES METÁLICOS E FICHAS TRANSLÚCIDAS
            =================================================================== */}
@@ -1026,7 +1005,7 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
               className="shrink-0"
               soundType="stamp"
             >
-              CONFRONTAR EVIDÊNCIAS NA MESA
+              CONFRONTAR PISTAS
             </GameButton>
           ) : (
             <GameButton
@@ -1041,10 +1020,10 @@ export const CrossExamination3DStage: React.FC<CrossExamination3DStageProps> = (
               className="shrink-0"
             >
               {allSolved
-                ? 'AVANÇAR PARA HIPÓTESES'
+                ? 'AVANÇAR HIPÓTESES'
                 : isCurrentSolved
-                ? 'AVANÇAR PARA HIPÓTESE (ETAPA 3)'
-                : 'CONFRONTAR EVIDÊNCIAS NA MESA'}
+                ? 'AVANÇAR HIPÓTESE'
+                : 'CONFRONTAR PISTAS'}
             </GameButton>
           )}
         </div>

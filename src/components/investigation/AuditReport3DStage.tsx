@@ -431,7 +431,7 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
             onClick={onReturnToMap}
             className="shrink-0"
           >
-            RETORNAR AO MAPA MUNDIAL
+            RETORNAR AO MAPA
           </GameButton>
         </div>
       </div>

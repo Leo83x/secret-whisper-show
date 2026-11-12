@@ -146,15 +146,15 @@ export const CaseMissionHub: React.FC<CaseMissionHubProps> = ({
          ======================================================================= */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div
-          className="absolute inset-0 bg-cover bg-center transition-all duration-700 filter brightness-[0.65] contrast-[1.14] saturate-[0.9]"
+          className="absolute inset-0 bg-cover bg-center transition-all duration-700 filter brightness-[0.88] contrast-[1.06] saturate-[0.98]"
           style={{
-            backgroundImage: `url(${meta.backdropDesktop || "/dossiers/waterloo_hero_desktop.jpg"})`,
+            backgroundImage: `url(${meta.backdropDesktop || "/dossiers/napoleon_stage1_3d_clean.webp"})`,
           }}
         />
 
-        {/* Gradiente em camadas de obsidiana e ardósia escura (sem excesso de amarelo) */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#04060c] via-[#060a14]/80 to-[#070c18]/90" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(180,140,70,0.08)_0%,rgba(0,0,0,0.65)_60%,rgba(0,0,0,0.96)_100%)]" />
+        {/* Vinheta periférica elegante que preserva a visão do cenário 3D com contraste para os textos */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(5,8,17,0.30)_0%,rgba(5,8,17,0.70)_70%,rgba(3,5,10,0.92)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#04060c] via-transparent to-[#070c18]/80" />
       </div>
 
       {/* =======================================================================
@@ -309,20 +309,20 @@ export const CaseMissionHub: React.FC<CaseMissionHubProps> = ({
             size="lg"
             variant={isCaseLocked ? "brass-dark" : "brass"}
             icon={isCaseLocked ? <Lock className="w-5 h-5 text-[#d5be8a]" /> : <BrassCompassRoseIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
-            className="w-full text-xs sm:text-sm md:text-base tracking-[0.16em]"
+            className="w-full text-xs sm:text-sm md:text-base tracking-wider"
           >
-            {isCaseLocked ? "DESBLOQUEAR ARQUIVO ZERO" : "INICIAR INVESTIGAÇÃO"}
+            {isCaseLocked ? "DESBLOQUEAR CASO 0" : "INVESTIGAR CASO"}
           </GameButton>
 
-          <div className="mt-1.5 flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-mono text-[#bfa46e]/80">
+          <div className="mt-2 flex items-center justify-center gap-2 text-xs sm:text-sm font-sans font-medium text-[#cfb885]">
             {isCaseLocked ? (
-              <span className="text-[#cfb885] font-semibold">
-                🔒 Requer 3 Casos Resolvidos, 1.000 XP ou Código do Livro
+              <span className="font-semibold text-[#d5be8a]">
+                🔒 Requer 3 Casos Concluídos, 1.000 XP ou Código do Livro
               </span>
             ) : (
               <>
-                <Sparkles className="w-3 h-3 text-[#bfa46e]" />
-                <span>Mesa de Evidências Forenses 3D • Resposta Tátil</span>
+                <Sparkles className="w-3.5 h-3.5 text-[#d5be8a]" />
+                <span>Mesa Forense 3D • Resposta Tátil</span>
               </>
             )}
           </div>

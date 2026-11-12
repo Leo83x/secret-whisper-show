@@ -14,8 +14,8 @@ export const CASE_PRESENTATION_MAP: Record<string, CasePresentationMeta> = {
     heroTitle: "O ATRASO NA LAMA DE WATERLOO",
     heroSubtitle: "Napoleão Bonaparte • 1815",
     punchline: "Uma batalha decisiva. Uma decisão que mudaria a história.",
-    backdropDesktop: "/dossiers/waterloo_hero_desktop.jpg",
-    backdropMobile: "/dossiers/waterloo_hero_mobile.jpg",
+    backdropDesktop: "/dossiers/napoleon_stage1_3d_clean.webp",
+    backdropMobile: "/dossiers/napoleon_stage1_3d_clean.webp",
     historicalEraBadge: "ERA NAPOLEÔNICA // 1815",
   },
   salomao: {

@@ -494,14 +494,24 @@ export const ImmersiveInvestigationLayout: React.FC<ImmersiveInvestigationLayout
               Ao retornar ao <strong>Mapa Mundial</strong>, toda a sua sessão permanece preservada. Quando voltar a este dossiê, você continuará exatamente na <strong>Etapa {state.activeStep}</strong>.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-1">
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 items-center">
               <button
+                type="button"
                 onClick={() => setExitModalOpen(false)}
-                className="game-btn-capsule w-full sm:w-auto px-4 py-2.5 text-xs font-mono cursor-pointer"
+                className="game-btn-capsule w-full py-2.5 px-4 text-xs font-mono font-semibold cursor-pointer flex items-center justify-center order-2 sm:order-1"
               >
-                Continuar Investigando [Esc]
+                Continuar [Esc]
               </button>
-              <GameButton size="sm" onClick={handleConfirmExitToMap}>VOLTAR AO MAPA MUNDIAL</GameButton>
+              <div className="w-full order-1 sm:order-2">
+                <GameButton
+                  size="sm"
+                  onClick={handleConfirmExitToMap}
+                  className="w-full text-xs font-bold tracking-wider"
+                  showMagnifier={false}
+                >
+                  VOLTAR AO MAPA
+                </GameButton>
+              </div>
             </div>
           </div>
         </div>
