@@ -445,10 +445,28 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
     state.selectedCaseId,
   ]);
 
-  const selectedCase = HISTORICAL_NODES.find(n => n.id === state.selectedCaseId) || HISTORICAL_NODES[0];
+  // Dossiê Zero (Salomão - 970 a.C.): Bônus Final / Arquivo Fundacional Desbloqueável
+  const isSalomaoUnlocked = Boolean(
+    state.totalXp >= 1000 ||
+    state.completedNodes.length >= 3 ||
+    isAuthenticated
+  );
 
-  const filteredNodes = HISTORICAL_NODES.filter(node => {
-    if (state.eraFilter === 'todos') return true;
+  const computedHistoricalNodes = HISTORICAL_NODES.map(node => {
+    if (node.id === "salomao") {
+      return {
+        ...node,
+        status: isSalomaoUnlocked ? ("disponivel" as NodeStatus) : ("bloqueado" as NodeStatus),
+      };
+    }
+    return node;
+  });
+
+  const selectedCase =
+    computedHistoricalNodes.find(n => n.id === state.selectedCaseId) || computedHistoricalNodes[0];
+
+  const filteredNodes = computedHistoricalNodes.filter(node => {
+    if (state.eraFilter === "todos") return true;
     return node.era === state.eraFilter;
   });
 
