@@ -180,7 +180,7 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      className="fixed inset-0 top-0 left-0 !mt-0 !m-0 z-50 w-screen h-[100dvh] overflow-hidden bg-[#04060B] select-none font-sans flex flex-col justify-between cursor-game-grab"
+      className="fixed inset-0 top-0 left-0 !mt-0 !m-0 z-50 w-full max-w-full h-[100dvh] overflow-x-hidden overflow-y-auto bg-[#04060B] select-none font-sans flex flex-col justify-between cursor-game-grab"
       style={{ perspective: '1300px' }}
     >
       {/* 1. CENÁRIO 3D REALISTA DE FUNDO (CÂMARA DE AUDITORIA HISTÓRICA) */}
@@ -304,7 +304,7 @@ export const AuditReport3DStage: React.FC<AuditReport3DStageProps> = ({
       {/* 3. FICHAS DE AUDITORIA TRANSLÚCIDAS E COMPACTAS (SEM SCROLL) */}
       <div
         data-hud="true"
-        className="relative z-30 flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto md:overflow-hidden py-2 md:py-0"
+        className="relative z-30 flex-1 w-full max-w-4xl mx-auto px-2.5 sm:px-6 flex flex-col justify-start md:justify-center gap-2.5 overflow-y-auto overflow-x-hidden py-2 md:py-0"
       >
         <div className="p-4 sm:p-5 rounded-2xl bg-[#070B14]/94 backdrop-blur-md border border-amber-400/55 shadow-[0_12px_40px_rgba(0,0,0,0.95)] space-y-3 shadow-2xl">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">

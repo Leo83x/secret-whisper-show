@@ -835,7 +835,7 @@ export const InvestigationProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         state,
         selectedCase,
-        allNodes: HISTORICAL_NODES,
+        allNodes: computedHistoricalNodes,
         filteredNodes,
         isAuthenticated,
         readerStatus,

@@ -57,7 +57,7 @@ export const WorldMapView: React.FC = () => {
     <div className="flex-1 flex flex-col justify-between gap-2.5 lg:h-full lg:min-h-0">
       
       {/* 1. BARRA TÁTICA COMPACTA DE COMANDO DO MAPA-MÚNDI (MODO JOGO FULL-SCREEN) */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-[#09101D]/90 border border-amber-500/25 shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-3 sm:px-3.5 py-2 rounded-xl bg-[#080d19]/90 border border-[#523d16]/50 max-w-full overflow-hidden shrink-0">
         <div className="flex flex-wrap items-center gap-3 min-w-0">
           <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
             <Globe2 className="w-4 h-4 text-amber-400 shrink-0" />

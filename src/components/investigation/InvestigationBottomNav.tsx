@@ -1,6 +1,5 @@
 import React from "react";
 import { useInvestigation } from "../../context/InvestigationContext";
-import { TabKey } from "../../types/investigation";
 import { Eye, FolderOpen, User, Globe, Award } from "lucide-react";
 import { InteractionAudio } from "./GameInteractionSystem";
 
@@ -38,7 +37,7 @@ export const InvestigationBottomNav: React.FC<InvestigationBottomNavProps> = ({
   return (
     <nav
       aria-label="Navegação Principal da Central"
-      className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-[#040710] via-[#080d1a] to-[#0c1424] border-t-2 border-amber-500/40 shadow-[0_-8px_30px_rgba(0,0,0,0.95)] px-2 sm:px-6 py-2.5 sm:py-3.5 select-none"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-[#04060d] via-[#080d19] to-[#0c1322] border-t border-[#4a3614]/60 shadow-[0_-6px_25px_rgba(0,0,0,0.95)] px-2 sm:px-6 py-2 sm:py-2.5 select-none"
     >
       <div className="max-w-3xl mx-auto flex items-center justify-around gap-1 sm:gap-4">
         
@@ -47,42 +46,44 @@ export const InvestigationBottomNav: React.FC<InvestigationBottomNavProps> = ({
           type="button"
           onClick={handleCaseSelectClick}
           className="group flex flex-col items-center gap-1 cursor-pointer transition-transform active:scale-95"
+          title="Casos Históricos da Central"
         >
           <div
-            className={`relative w-11 h-11 sm:w-14 sm:h-14 rounded-full border-2 transition-all flex items-center justify-center ${
+            className={`relative w-11 h-11 sm:w-13 sm:h-13 rounded-full transition-all flex items-center justify-center ${
               state.activeTab === "dossies"
-                ? "bg-gradient-to-b from-[#3d2c0b] via-[#221806] to-[#0a0702] border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.6),inset_0_2px_4px_rgba(255,255,255,0.35)] text-amber-200 scale-105"
-                : "bg-gradient-to-b from-[#2a1e08] via-[#140f04] to-[#080602] border-amber-500/70 shadow-[0_4px_14px_rgba(0,0,0,0.85),inset_0_2px_3px_rgba(255,255,255,0.25)] text-amber-300 group-hover:border-amber-300 group-hover:text-amber-100"
+                ? "bg-gradient-to-b from-[#2d210b] via-[#1a1306] to-[#0a0702] border-2 border-[#d5be8a] shadow-[0_0_14px_rgba(180,140,70,0.35),inset_0_2px_4px_rgba(255,255,255,0.25)] text-[#faf6ee] scale-105"
+                : "bg-gradient-to-b from-[#1c1407] via-[#100b03] to-[#050301] border border-[#6b4e1c]/70 shadow-[0_3px_10px_rgba(0,0,0,0.85),inset_0_1px_2px_rgba(255,255,255,0.2)] text-[#c2ab79] group-hover:border-[#a37f37] group-hover:text-white"
             }`}
           >
-            <Eye className="w-5 h-5 sm:w-6 sm:h-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+            <Eye className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
           </div>
           <span
-            className={`text-[10px] sm:text-xs font-serif font-extrabold uppercase tracking-wider ${
+            className={`text-[10px] sm:text-xs font-serif uppercase tracking-wider ${
               state.activeTab === "dossies"
-                ? "text-amber-200 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"
-                : "text-amber-300/90 group-hover:text-amber-200"
+                ? "font-black text-[#d5be8a] drop-shadow-[0_0_6px_rgba(180,140,70,0.4)]"
+                : "font-bold text-[#a89263] group-hover:text-[#cfb885]"
             }`}
           >
             MEUS CASOS
           </span>
         </button>
 
-        {/* MEDALHÃO 2: MEU ARQUIVO (COM BADGE VERMELHO DE PISTAS) */}
+        {/* MEDALHÃO 2: MEU ARQUIVO (SEMPRE AÇÃO DIRETA COM BADGE DE PISTAS) */}
         <button
           type="button"
           onClick={handleArchiveClick}
           className="group flex flex-col items-center gap-1 cursor-pointer transition-transform active:scale-95"
+          title="Abrir Gaveta de Pistas Catalogadas"
         >
-          <div className="relative w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-gradient-to-b from-[#2a1e08] via-[#140f04] to-[#080602] border-2 border-amber-500/70 shadow-[0_4px_14px_rgba(0,0,0,0.85),inset_0_2px_3px_rgba(255,255,255,0.25)] flex items-center justify-center text-amber-300 group-hover:border-amber-300 group-hover:text-amber-100 transition-all">
-            <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+          <div className="relative w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-b from-[#1c1407] via-[#100b03] to-[#050301] border border-[#6b4e1c]/70 shadow-[0_3px_10px_rgba(0,0,0,0.85),inset_0_1px_2px_rgba(255,255,255,0.2)] flex items-center justify-center text-[#c2ab79] group-hover:border-[#a37f37] group-hover:text-white transition-all">
+            <FolderOpen className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
             
             {/* Badge circular vermelho de notificações/pistas */}
-            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-b from-red-500 to-red-700 border border-amber-200 shadow-[0_2px_6px_rgba(0,0,0,0.85)] text-white text-[10px] font-mono font-bold flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-gradient-to-b from-red-600 to-red-800 border border-[#e2caa0] shadow-[0_2px_5px_rgba(0,0,0,0.9)] text-white text-[9px] font-mono font-bold flex items-center justify-center">
               {extractedCount}
             </span>
           </div>
-          <span className="text-[10px] sm:text-xs font-serif font-extrabold uppercase tracking-wider text-amber-300/90 group-hover:text-amber-200">
+          <span className="text-[10px] sm:text-xs font-serif font-bold uppercase tracking-wider text-[#a89263] group-hover:text-[#cfb885]">
             MEU ARQUIVO
           </span>
         </button>
@@ -95,21 +96,22 @@ export const InvestigationBottomNav: React.FC<InvestigationBottomNavProps> = ({
             setActiveTab("perfil");
           }}
           className="group flex flex-col items-center gap-1 cursor-pointer transition-transform active:scale-95"
+          title="Ver Perfil do Investigador"
         >
           <div
-            className={`relative w-11 h-11 sm:w-14 sm:h-14 rounded-full border-2 transition-all flex items-center justify-center ${
+            className={`relative w-11 h-11 sm:w-13 sm:h-13 rounded-full transition-all flex items-center justify-center ${
               state.activeTab === "perfil"
-                ? "bg-gradient-to-b from-[#3d2c0b] via-[#221806] to-[#0a0702] border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.6),inset_0_2px_4px_rgba(255,255,255,0.35)] text-amber-200 scale-105"
-                : "bg-gradient-to-b from-[#2a1e08] via-[#140f04] to-[#080602] border-amber-500/70 shadow-[0_4px_14px_rgba(0,0,0,0.85),inset_0_2px_3px_rgba(255,255,255,0.25)] text-amber-300 group-hover:border-amber-300 group-hover:text-amber-100"
+                ? "bg-gradient-to-b from-[#2d210b] via-[#1a1306] to-[#0a0702] border-2 border-[#d5be8a] shadow-[0_0_14px_rgba(180,140,70,0.35),inset_0_2px_4px_rgba(255,255,255,0.25)] text-[#faf6ee] scale-105"
+                : "bg-gradient-to-b from-[#1c1407] via-[#100b03] to-[#050301] border border-[#6b4e1c]/70 shadow-[0_3px_10px_rgba(0,0,0,0.85),inset_0_1px_2px_rgba(255,255,255,0.2)] text-[#c2ab79] group-hover:border-[#a37f37] group-hover:text-white"
             }`}
           >
-            <User className="w-5 h-5 sm:w-6 sm:h-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+            <User className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
           </div>
           <span
-            className={`text-[10px] sm:text-xs font-serif font-extrabold uppercase tracking-wider ${
+            className={`text-[10px] sm:text-xs font-serif uppercase tracking-wider ${
               state.activeTab === "perfil"
-                ? "text-amber-200 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"
-                : "text-amber-300/90 group-hover:text-amber-200"
+                ? "font-black text-[#d5be8a] drop-shadow-[0_0_6px_rgba(180,140,70,0.4)]"
+                : "font-bold text-[#a89263] group-hover:text-[#cfb885]"
             }`}
           >
             PERFIL
@@ -124,21 +126,22 @@ export const InvestigationBottomNav: React.FC<InvestigationBottomNavProps> = ({
             setActiveTab("mapa");
           }}
           className="group flex flex-col items-center gap-1 cursor-pointer transition-transform active:scale-95"
+          title="Abrir Mapa Mundial Geopolítico"
         >
           <div
-            className={`relative w-11 h-11 sm:w-14 sm:h-14 rounded-full border-2 transition-all flex items-center justify-center ${
+            className={`relative w-11 h-11 sm:w-13 sm:h-13 rounded-full transition-all flex items-center justify-center ${
               state.activeTab === "mapa"
-                ? "bg-gradient-to-b from-[#3d2c0b] via-[#221806] to-[#0a0702] border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.6),inset_0_2px_4px_rgba(255,255,255,0.35)] text-amber-200 scale-105"
-                : "bg-gradient-to-b from-[#2a1e08] via-[#140f04] to-[#080602] border-amber-500/70 shadow-[0_4px_14px_rgba(0,0,0,0.85),inset_0_2px_3px_rgba(255,255,255,0.25)] text-amber-300 group-hover:border-amber-300 group-hover:text-amber-100"
+                ? "bg-gradient-to-b from-[#2d210b] via-[#1a1306] to-[#0a0702] border-2 border-[#d5be8a] shadow-[0_0_14px_rgba(180,140,70,0.35),inset_0_2px_4px_rgba(255,255,255,0.25)] text-[#faf6ee] scale-105"
+                : "bg-gradient-to-b from-[#1c1407] via-[#100b03] to-[#050301] border border-[#6b4e1c]/70 shadow-[0_3px_10px_rgba(0,0,0,0.85),inset_0_1px_2px_rgba(255,255,255,0.2)] text-[#c2ab79] group-hover:border-[#a37f37] group-hover:text-white"
             }`}
           >
-            <Globe className="w-5 h-5 sm:w-6 sm:h-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+            <Globe className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
           </div>
           <span
-            className={`text-[10px] sm:text-xs font-serif font-extrabold uppercase tracking-wider ${
+            className={`text-[10px] sm:text-xs font-serif uppercase tracking-wider ${
               state.activeTab === "mapa"
-                ? "text-amber-200 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"
-                : "text-amber-300/90 group-hover:text-amber-200"
+                ? "font-black text-[#d5be8a] drop-shadow-[0_0_6px_rgba(180,140,70,0.4)]"
+                : "font-bold text-[#a89263] group-hover:text-[#cfb885]"
             }`}
           >
             MAPA MUNDIAL
@@ -153,21 +156,22 @@ export const InvestigationBottomNav: React.FC<InvestigationBottomNavProps> = ({
             setActiveTab("missoes");
           }}
           className="group flex flex-col items-center gap-1 cursor-pointer transition-transform active:scale-95"
+          title="Ver Missões e Conquistas"
         >
           <div
-            className={`relative w-11 h-11 sm:w-14 sm:h-14 rounded-full border-2 transition-all flex items-center justify-center ${
+            className={`relative w-11 h-11 sm:w-13 sm:h-13 rounded-full transition-all flex items-center justify-center ${
               state.activeTab === "missoes"
-                ? "bg-gradient-to-b from-[#3d2c0b] via-[#221806] to-[#0a0702] border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.6),inset_0_2px_4px_rgba(255,255,255,0.35)] text-amber-200 scale-105"
-                : "bg-gradient-to-b from-[#2a1e08] via-[#140f04] to-[#080602] border-amber-500/70 shadow-[0_4px_14px_rgba(0,0,0,0.85),inset_0_2px_3px_rgba(255,255,255,0.25)] text-amber-300 group-hover:border-amber-300 group-hover:text-amber-100"
+                ? "bg-gradient-to-b from-[#2d210b] via-[#1a1306] to-[#0a0702] border-2 border-[#d5be8a] shadow-[0_0_14px_rgba(180,140,70,0.35),inset_0_2px_4px_rgba(255,255,255,0.25)] text-[#faf6ee] scale-105"
+                : "bg-gradient-to-b from-[#1c1407] via-[#100b03] to-[#050301] border border-[#6b4e1c]/70 shadow-[0_3px_10px_rgba(0,0,0,0.85),inset_0_1px_2px_rgba(255,255,255,0.2)] text-[#c2ab79] group-hover:border-[#a37f37] group-hover:text-white"
             }`}
           >
-            <Award className="w-5 h-5 sm:w-6 sm:h-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
+            <Award className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" />
           </div>
           <span
-            className={`text-[10px] sm:text-xs font-serif font-extrabold uppercase tracking-wider ${
+            className={`text-[10px] sm:text-xs font-serif uppercase tracking-wider ${
               state.activeTab === "missoes"
-                ? "text-amber-200 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"
-                : "text-amber-300/90 group-hover:text-amber-200"
+                ? "font-black text-[#d5be8a] drop-shadow-[0_0_6px_rgba(180,140,70,0.4)]"
+                : "font-bold text-[#a89263] group-hover:text-[#cfb885]"
             }`}
           >
             CONQUISTAS

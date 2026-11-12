@@ -332,46 +332,33 @@ export const DossierInvestigationView: React.FC = () => {
          ===================================================================== */}
       {!isAny3DStageActive && (
       <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
-          
-          {/* Esquerda: Placa do Personagem Histórico + Título da Missão + Botão Discreto Briefing */}
-          <div className="flex flex-wrap items-center gap-3 min-w-0">
-            <HistoricalCharacterPortrait
-              image={selectedCase.image}
-              name={selectedCase.name}
-              year={selectedCase.year}
-              variant="archive-plaque"
-              className="shrink-0"
-            />
+        {/* VERSÃO MOBILE (< sm): CABEÇALHO COMPACTO EM 2 LINHAS LIMPAS SEM SOBREPOSIÇÃO */}
+        <div className="flex sm:hidden flex-col gap-2 pb-2.5 border-b border-slate-800/80">
+          <div className="flex items-center justify-between gap-2 min-w-0">
             <div className="min-w-0">
-              <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-amber-400 font-bold block truncate">
-                {selectedCase.missionCode || 'OPERAÇÃO'} — {selectedCase.missionTitle || selectedCase.title}
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#cfb885] font-bold block truncate">
+                {selectedCase.missionCode || "OPERAÇÃO"} — {selectedCase.missionTitle || selectedCase.title}
               </span>
-              <span className="text-xs text-slate-300">
-                {selectedCase.name} • {selectedCase.year} • {selectedCase.location}
+              <span className="text-[10px] text-stone-400">
+                {selectedCase.name} • {selectedCase.year}
               </span>
             </div>
             <button
               type="button"
               onClick={() => setIsBriefingOpen(o => !o)}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-mono flex items-center gap-1.5 cursor-pointer transition-all ${
+              className={`px-2.5 py-1 rounded-lg border text-[10px] font-mono flex items-center gap-1 cursor-pointer transition-all shrink-0 ${
                 isBriefingOpen
-                  ? 'bg-amber-500/20 border-amber-400/50 text-amber-200'
-                  : 'bg-[#0B1320] border-slate-800 text-slate-300 hover:border-amber-500/40 hover:text-white'
+                  ? "bg-[#2d210b] border-[#d5be8a] text-[#faf6ee]"
+                  : "bg-[#080d19] border-slate-800 text-stone-300 hover:border-[#785924]"
               }`}
             >
-              <Info className="w-3.5 h-3.5 text-amber-400" />
-              <span>{isBriefingOpen ? 'Ocultar Briefing' : 'Ver Briefing da Missão'}</span>
-              {isBriefingOpen ? (
-                <ChevronUp className="w-3.5 h-3.5" />
-              ) : (
-                <ChevronDown className="w-3.5 h-3.5" />
-              )}
+              <Info className="w-3 h-3 text-[#cfb885]" />
+              <span>{isBriefingOpen ? "Briefing" : "Briefing"}</span>
+              {isBriefingOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
           </div>
 
-          {/* Direita: Alternador 3D/2D Dinâmico + Arquivo Pessoal + Ações */}
-          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex items-center justify-end gap-2">
+          <div className="grid grid-cols-2 gap-2 w-full">
             <button
               type="button"
               onClick={() => {
@@ -382,26 +369,89 @@ export const DossierInvestigationView: React.FC = () => {
                 if (state.activeStep === 4) setIs3DStageFour(v => !v);
                 if (state.activeStep === 5) setIs3DStageFive(v => !v);
               }}
-              className="px-3.5 py-2 rounded-xl border text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm bg-[#0B1320] border-cyan-500/40 text-cyan-300 hover:border-amber-400 hover:text-white"
+              className="w-full py-2 px-2.5 rounded-xl border text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all bg-gradient-to-r from-[#1c1407] via-[#2d210b] to-[#1c1407] border-[#96732f]/80 text-[#faf6ee] shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
             >
-              <Maximize2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <Maximize2 className="w-3.5 h-3.5 text-[#cfb885] shrink-0" />
+              <span>[ MODO 3D ]</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsArchiveDrawerOpen(true)}
+              className="w-full py-2 px-2.5 rounded-xl bg-[#080d19] hover:bg-slate-900 border border-slate-700 text-stone-200 text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm"
+            >
+              <FolderOpen className="w-3.5 h-3.5 text-[#cfb885] shrink-0" />
+              <span>
+                Arquivo ({extractedCluesList.length}/{allCaseClues.length})
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* VERSÃO DESKTOP (>= sm): PLACA EDITORIAL + TÍTULO + CONTROLES */}
+        <div className="hidden sm:flex items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+          <div className="flex items-center gap-3 min-w-0">
+            <HistoricalCharacterPortrait
+              image={selectedCase.image}
+              name={selectedCase.name}
+              year={selectedCase.year}
+              variant="archive-plaque"
+              className="shrink-0"
+            />
+            <div className="min-w-0">
+              <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-[#cfb885] font-bold block truncate">
+                {selectedCase.missionCode || "OPERAÇÃO"} — {selectedCase.missionTitle || selectedCase.title}
+              </span>
+              <span className="text-xs text-stone-300">
+                {selectedCase.name} • {selectedCase.year} • {selectedCase.location}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsBriefingOpen(o => !o)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-mono flex items-center gap-1.5 cursor-pointer transition-all shrink-0 ${
+                isBriefingOpen
+                  ? "bg-[#2d210b] border-[#d5be8a] text-[#faf6ee]"
+                  : "bg-[#080d19] border-slate-800 text-stone-300 hover:border-[#785924] hover:text-white"
+              }`}
+            >
+              <Info className="w-3.5 h-3.5 text-[#cfb885]" />
+              <span>{isBriefingOpen ? "Ocultar Briefing" : "Ver Briefing da Missão"}</span>
+              {isBriefingOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playDocumentOpen();
+                if (state.activeStep === 1) setIs3DStageOne(v => !v);
+                if (state.activeStep === 2) setIs3DStageTwo(v => !v);
+                if (state.activeStep === 3) setIs3DStageThree(v => !v);
+                if (state.activeStep === 4) setIs3DStageFour(v => !v);
+                if (state.activeStep === 5) setIs3DStageFive(v => !v);
+              }}
+              className="px-3.5 py-2 rounded-xl border text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm bg-gradient-to-r from-[#1c1407] via-[#2d210b] to-[#1c1407] border-[#96732f]/80 text-[#faf6ee] hover:border-[#cfb885]"
+            >
+              <Maximize2 className="w-3.5 h-3.5 text-[#cfb885] shrink-0" />
               <span>
                 {((state.activeStep === 1 && is3DStageOne) ||
                   (state.activeStep === 2 && is3DStageTwo) ||
                   (state.activeStep === 3 && is3DStageThree) ||
                   (state.activeStep === 4 && is3DStageFour) ||
                   (state.activeStep === 5 && is3DStageFive))
-                  ? '[ Alternar para Modo 2D ]'
-                  : '[ Entrar no Cenário 3D ]'}
+                  ? "[ Alternar para Modo 2D ]"
+                  : "[ Entrar no Cenário 3D ]"}
               </span>
             </button>
 
             <button
               type="button"
               onClick={() => setIsArchiveDrawerOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-[#0B1320] hover:bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-[#080d19] hover:bg-slate-900 border border-slate-700 text-stone-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-sm"
             >
-              <FolderOpen className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <FolderOpen className="w-3.5 h-3.5 text-[#cfb885] shrink-0" />
               <span>
                 Arquivo ({extractedCluesList.length}/{allCaseClues.length})
               </span>
